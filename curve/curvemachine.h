@@ -15,8 +15,8 @@ public:
 
 private:
     static void makeCurveCalculations();
-    static QStringList getOutput8thFunction(bool isClosed, Point puncturePoint, double diameter, QVector<Point> inputData);
-    static QStringList getOutput7thFunction(bool isClosed, Point pointOfIntersection, double angle, QVector<Point> inputData);
+    static QStringList getOutput8thFunction(Point puncturePoint, double diameter, QVector<Point> inputData);
+    static QStringList getOutput7thFunction(Point pointOfIntersection, double angle, QVector<Point> inputData);
     static Point getNearestPoint(Point pointOfIntersection, QVector<Point> middleCurve);
     static QVector<double> getEquationOfLine(Point firstPoint, Point secondPoint);
     static QVector<double> getEquationOfPerpendicular(Point firstPoint, Point secondPoint);

@@ -71,8 +71,8 @@ CircleFigure CurveMachine::getMaxWidthCircle(QVector<Point> points, Function18Pa
     return CircleFigure("empty");
 }
 
-QStringList CurveMachine::getOutput8thFunction(bool isClosed, Point puncturePoint, double diameter, QVector<Point> inputData) {
-    auto params8 = Function8Params(isClosed, puncturePoint.x, puncturePoint.y, 0, diameter);
+QStringList CurveMachine::getOutput8thFunction(Point puncturePoint, double diameter, QVector<Point> inputData) {
+    auto params8 = Function8Params(diameter, puncturePoint.x, puncturePoint.y);
     FileSystem::fillInputWithSingleSegment(inputData);
     FileSystem::fillParams(&params8);
     makeCurveCalculations();
@@ -91,8 +91,8 @@ Point CurveMachine::getNearestPoint(Point pointOfIntersection, QVector<Point> mi
     return nearestPoint;
 }
 
-QStringList CurveMachine::getOutput7thFunction(bool isClosed, Point pointOfIntersection, double angle, QVector<Point> inputData) {
-    auto params7 = Function7Params(true, pointOfIntersection.x, pointOfIntersection.y, 0, angle);
+QStringList CurveMachine::getOutput7thFunction(Point pointOfIntersection, double angle, QVector<Point> inputData) {
+    auto params7 = Function7Params(angle, pointOfIntersection.x, pointOfIntersection.y);
     FileSystem::fillInputWithSingleSegment(inputData);
     FileSystem::fillParams(&params7);
     makeCurveCalculations();
@@ -142,11 +142,11 @@ std::array<double, 2> CurveMachine::getWidthOfEdges(QVector<Point> points, doubl
     auto puncturePoints = FileSystem::parsePointsFromElement(outputData[1].split("\n"), ",", 1, 1);
     auto touchPoints = FileSystem::parsePointsFromElement(outputData[4].split("\n"), ",", 1, 1);
 
-    auto outputData8thFunction = getOutput8thFunction(true, puncturePoints[1], distanceFromLeadingEdge * 2, middleCurve);
+    auto outputData8thFunction = getOutput8thFunction(puncturePoints[1], distanceFromLeadingEdge * 2, middleCurve);
     auto firstPointOfIntesection = FileSystem::parsePointsFromElement(outputData8thFunction[0].split("\n"), ",", 1, 1)[0];
     auto nearestPointForFirstPoint = getNearestPoint(firstPointOfIntesection, middleCurve);
 
-    outputData8thFunction = getOutput8thFunction(true, puncturePoints[0], distanceFromTrailingEgde * 2, middleCurve);
+    outputData8thFunction = getOutput8thFunction(puncturePoints[0], distanceFromTrailingEgde * 2, middleCurve);
     auto secondPointOfIntesection = FileSystem::parsePointsFromElement(outputData8thFunction[0].split("\n"), ",", 1, 1)[0];
     auto nearestPointForSecondPoint = getNearestPoint(secondPointOfIntesection, middleCurve);
 
@@ -157,11 +157,11 @@ std::array<double, 2> CurveMachine::getWidthOfEdges(QVector<Point> points, doubl
     double firstAngle = getAngleBetweenLines(firstLine, mainLine);
     double secondAngle = getAngleBetweenLines(secondLine, mainLine);
 
-    auto outputData7thFunction = getOutput7thFunction(true, firstPointOfIntesection, firstAngle >= 0 ? 3.14 - firstAngle : -firstAngle, points);
+    auto outputData7thFunction = getOutput7thFunction(firstPointOfIntesection, firstAngle >= 0 ? 3.14 - firstAngle : -firstAngle, points);
     auto pointsOfLeadingEdge = FileSystem::parsePointsFromElement(outputData7thFunction[0].split("\n"), ",", 1, 1);
     pointsOfLeadingEdge = removeExtraPoints(pointsOfLeadingEdge, firstPointOfIntesection, widthOfThickestPart);
 
-    outputData7thFunction = getOutput7thFunction(true, secondPointOfIntesection, secondAngle >= 0 ? 3.14 - secondAngle : -secondAngle, points);
+    outputData7thFunction = getOutput7thFunction(secondPointOfIntesection, secondAngle >= 0 ? 3.14 - secondAngle : -secondAngle, points);
     auto pointsOfTrailingEdge = FileSystem::parsePointsFromElement(outputData7thFunction[0].split("\n"), ",", 1, 1);
     pointsOfTrailingEdge = removeExtraPoints(pointsOfTrailingEdge, secondPointOfIntesection, widthOfThickestPart);
 
