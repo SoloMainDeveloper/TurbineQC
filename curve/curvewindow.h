@@ -20,6 +20,7 @@ public:
     void getMiddleCurve();
     void getChordLength();
     void getMaxWidthCircle();
+    void getWidthOfEdges();
 
     void renameFigure(const QString &name, const QString &newName);
     void removeFigure(const QString &name);

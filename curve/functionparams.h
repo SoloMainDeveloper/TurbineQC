@@ -73,20 +73,28 @@ private:
 
 class Function7Params : public FunctionParams {
 public:
-    Function7Params();
+    Function7Params(bool isClosed, double xLine, double yLine, double zLine, double angle);
     QString toQString() override;
 
 private:
-    //properties
+    bool _isClosed;
+    double _xLine;
+    double _yLine;
+    double _zLine;
+    double _angle;
 };
 
 class Function8Params : public FunctionParams {
 public:
-    Function8Params();
+    Function8Params(bool isClosed, double xCircle, double yCircle, double zCircle, int diameter);
     QString toQString() override;
 
 private:
-    //properties
+    bool _isClosed;
+    double _xCircle;
+    double _yCircle;
+    double _zCircle;
+    int _diameter;
 };
 
 class Function9Params : public FunctionParams {

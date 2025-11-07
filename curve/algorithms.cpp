@@ -24,3 +24,7 @@ CircleFigure Algorithms::getMaxWidthCircle(QString figureName, const Function18P
     return CircleFigure("circle");
 }
 
+std::array<double, 2> Algorithms::getWidthOfEdges(QString figureName, const Function18Params *params, Project *project) {
+    return { 0, 0 }; //return CurveMachine::getWidthOfEdges();
+}
+

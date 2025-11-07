@@ -18,6 +18,32 @@ QString Function1Params::toQString() {
         .arg(_material == Direction::Left ? "L" : "R").arg(_threshold).arg(_intermediate).arg(_minline).arg(_needSort ? "Y" : "N");
 }
 
+Function7Params::Function7Params(bool isClosed, double xLine, double yLine, double zLine, double angle) {
+    _isClosed = isClosed;
+    _xLine = xLine;
+    _yLine = yLine;
+    _zLine = zLine;
+    _angle = angle;
+}
+
+QString Function7Params::toQString() {
+    QString result = "function=7\nplane=XY\nclosed=%1\nxline=%2\nyline=%3\nzline=%4\nangle=%5";
+    return result.arg(_isClosed ? "N" : "Y").arg(_xLine).arg(_yLine).arg(_zLine).arg(_angle);
+}
+
+Function8Params::Function8Params(bool isClosed, double xCircle, double yCircle, double zCircle, int diameter) {
+    _isClosed = isClosed;
+    _xCircle = xCircle;
+    _yCircle = yCircle;
+    _zCircle = zCircle;
+    _diameter = diameter;
+}
+
+QString Function8Params::toQString() {
+    QString result = "function=8\nplane=XY\nclosed=%1\nxcircle=%2\nycircle=%3\nzcircle=%4\ndiameter=%5";
+    return result.arg(_isClosed ? "N" : "Y").arg(_xCircle).arg(_yCircle).arg(_zCircle).arg(_diameter);
+}
+
 Function18Params::Function18Params(int directionLE, int percentLE, int percentTE, int joinedSegments) {
     _leadingEdgeDirection = (directionLE >= 0 && directionLE < 5) ? directionLE : 0; //default is 0
     _percentageLE = (percentLE >= 0 && percentLE <= 100) ? percentLE : 5; //default is 5
