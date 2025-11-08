@@ -1,11 +1,11 @@
 #pragma once
 
-enum Direction {
-    Right, Left
-};
-
 class FunctionParams {
 public:
+    enum class Direction {
+        Right, Left
+    };
+
     virtual QString toQString() = 0;
 };
 
@@ -79,7 +79,7 @@ private:
 
 class Function6Params : public FunctionParams {
 public:
-    enum Algorithm {
+    enum class Algorithm {
         Curve, Points
     };
 
@@ -171,10 +171,10 @@ private:
 
 class Function13Params : public FunctionParams {
 public:
-    enum Filter {
+    enum class Filter {
         Polar, Linear
     };
-    enum FilterType {
+    enum class FilterType {
         LowPass, HighPass, Band
     };
 
@@ -219,7 +219,7 @@ private:
 
 class Function17Params : public FunctionParams {
 public:
-    enum Sorter {
+    enum class Sorter {
         NotSort, OnIncrease, OnDecrease
     };
 
