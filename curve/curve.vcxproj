@@ -122,8 +122,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="project.cpp" />
+    <ClCompile Include="sashasecretwindow.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClInclude Include="project.h" />
+    <QtMoc Include="sashasecretwindow.h" />
     <QtMoc Include="tree.h" />
     <QtRcc Include="curvewindow.qrc" />
     <QtUic Include="curvewindow.ui" />
@@ -145,6 +147,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <QtUic Include="sashasecretwindow.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
