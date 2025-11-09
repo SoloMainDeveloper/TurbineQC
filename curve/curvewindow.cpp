@@ -37,6 +37,24 @@ void CurveWindow::getMaxWidthCircle() { //todo
     Algorithms::getMaxWidthCircle(name, &params, &project);
 }
 
+void CurveWindow::getWidthOfEdges() {
+    auto name = "points_a5";
+    auto params = Function18Params();
+    Algorithms::getWidthOfEdges(name, &params, &project);
+
+    //TEST CURVE-8 // Set the path to the curve library in filesystem.cpp
+    //QVector<Point> points;
+    //auto splittedPoints = FileSystem::readFile("pathToFile.txt").split('\n');//Set the path to the test file
+    //for(auto i = 0; i < splittedPoints.length(); i++) {
+    //    auto pointStr = splittedPoints[i].split(' '); //Set a separator between coordinates
+    //    Point point(pointStr[0].toDouble(), pointStr[1].toDouble());
+    //    points.append(point);
+    //}
+    //auto widthOfEdges = CurveMachine::getWidthOfEdges(points, 1, 1);
+    //qDebug() << widthOfEdges[0] << " " << widthOfEdges[1];
+    //TEST
+}
+
 void CurveWindow::openFile() {
     auto filePath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt)");
     if(!filePath.isEmpty()) {
