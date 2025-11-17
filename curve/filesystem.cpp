@@ -15,7 +15,11 @@ void FileSystem::fillInputWithSingleSegment(QVector<Point> points) {
 
     inputStream << "$ELE (NAM=input_TE,TYP=APT, FLD=(X,Y,Z))\n";
     for(auto i = 0; i < points.length(); i++) {
-        inputStream << QString::number(points[i].x, 'f', 4) << "," << QString::number(points[i].y, 'f', 4) << "\n";
+        inputStream << QString::number(points[i].x, 'f', 5) << "," << QString::number(points[i].y, 'f', 5) << ",";
+        inputStream << QString::number(points[i].z, 'f', 5) << "," << QString::number(points[i].i, 'f', 5) << ",";
+        inputStream << QString::number(points[i].j, 'f', 5) << "," << QString::number(points[i].k, 'f', 5) << ",";
+        inputStream << QString::number(points[i].dev, 'f', 5) << "," << QString::number(points[i].lt, 'f', 5) << ",";
+        inputStream << QString::number(points[i].ut, 'f', 5) << "\n";
     }
     inputStream << "$END\n";
     input.close();
@@ -46,7 +50,16 @@ QVector<Point> FileSystem::parsePointsFromElement(QStringList element, QString s
     QVector<Point> result;
     for(auto i = startLineToSkip; i < element.length() - finishLineToSkip; i++) {
         auto pointStr = element[i].split(separator);
-        Point point(pointStr[0].toDouble(), pointStr[1].toDouble()); //todo for all 9 doubles
+        auto point = Point();
+        point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
+        point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
+        point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
+        point.i = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
+        point.j = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
+        point.k = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
+        point.dev = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
+        point.lt = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
+        point.ut = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
         result.append(point);
     }
     return result;
@@ -62,4 +75,23 @@ QMap<QString, QStringList> FileSystem::parseOutputToElements(QStringList element
         result.insert(header, strList);
     }
     return result;
+}
+
+void FileSystem::fillInputWithMultipleElements(QList<QVector<Point>> points) {
+    QFile input("C:/temp/ca/project/2dinp.dat");
+    input.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream inputStream(&input);
+
+    for(auto i = 0; i < points.length(); i++) {
+        inputStream << "$ELE (NAM=input" << i << ",TYP = APT, FLD = (X, Y, Z))\n";
+        for(auto j = 0; j < points[i].length(); j++) {
+            inputStream << QString::number(points[i][j].x, 'f', 5) << "," << QString::number(points[i][j].y, 'f', 5) << ",";
+            inputStream << QString::number(points[i][j].z, 'f', 5) << "," << QString::number(points[i][j].i, 'f', 5) << ",";
+            inputStream << QString::number(points[i][j].j, 'f', 5) << "," << QString::number(points[i][j].k, 'f', 5) << ",";
+            inputStream << QString::number(points[i][j].dev, 'f', 5) << "," << QString::number(points[i][j].lt, 'f', 5) << ",";
+            inputStream << QString::number(points[i][j].ut, 'f', 5) << "\n";
+        }
+        inputStream << "$END\n";
+    }
+    input.close();
 }

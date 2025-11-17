@@ -121,11 +121,19 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="plot.cpp" />
+    <ClCompile Include="curvelibrary.cpp" />
+    <ClCompile Include="functionresults.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="sashasecretwindow.cpp" />
     <ClCompile Include="tree.cpp" />
-    <ClInclude Include="project.h" />
+    <ClInclude Include="curvelibrary.h" />
+    <ClInclude Include="functionresults.h" />
+    <QtMoc Include="plot.h" />
     <QtMoc Include="sashasecretwindow.h" />
+    <ClCompile Include="figurecontrols.cpp" />
+    <QtMoc Include="figurecontrols.h" />
+    <QtMoc Include="project.h" />
     <QtMoc Include="tree.h" />
     <QtRcc Include="curvewindow.qrc" />
     <QtUic Include="curvewindow.ui" />

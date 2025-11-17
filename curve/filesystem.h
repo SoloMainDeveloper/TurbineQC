@@ -9,6 +9,7 @@ public:
 
     static void createWorkEnvironment();
     static void fillInputWithSingleSegment(QVector<Point> points);
+    static void fillInputWithMultipleElements(QList<QVector<Point>> points);
     static void fillParams(FunctionParams* params);
     static QString readOutput();
     static QString readFile(QString fullFileName);
