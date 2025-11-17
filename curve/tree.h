@@ -1,5 +1,4 @@
-#ifndef TREE_H
-#define TREE_H
+#pragma once
 
 #include <QAction>
 #include <QContextMenuEvent>
@@ -8,7 +7,9 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QObject>
+#include <QMessageBox>
 #include "figure.h"
+#include "project.h"
 
 
 class Tree : public QTreeWidget {
@@ -20,6 +21,7 @@ public:
     ~Tree();
 
     void updateTree(const QList<Figure*> figures);
+    void setProject(Project* mainProject);
 
 private:
     QTreeWidgetItem* treeCurves;
@@ -30,18 +32,23 @@ private:
     QAction* renameItem;
     QAction* removeItem;
 
+    Project* project = nullptr;
+
     void contextMenuEvent(QContextMenuEvent *event);
     void onRenameItemTriggered();
     void onRemoveItemTriggered();
-    void onItemDoubleClicked(const QTreeWidgetItem *item);
     void onItemClicked(const QTreeWidgetItem *item);
+    void onItemDoubleClicked(const QTreeWidgetItem *item);
+
+public slots:
+    void addFigure(Figure* figure);
+    void removeFigure(const QString &name);
+    void renameFigure(const QString &name, const QString &newName);
 
 signals:
-
-    void objectRenamed(const QString &name, const QString &newName);
-    void objectRemoved(const QString &name);
-    void toggleVisibility(const QString &name);
-    void updateControls(const QString &name);
-
+    void figureRenameRequested(const QString &name, const QString &newName);
+    void figureRemoveRequested(const QString &name);
+    void figureToggleVisibilityRequested(const QString &name);
+    void currentFigureChanged(const QString &name);
 };
-#endif // TREE_H
+
