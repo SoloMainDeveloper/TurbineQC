@@ -8,6 +8,7 @@ class Project : public QObject {
 public:
     const QList<Figure*>& figures() const;
     const Figure* findFigure(const QString &name) const;
+    bool containsFigure(const QString &name);
 
 public slots:
     void insertFigure(Figure* figure);

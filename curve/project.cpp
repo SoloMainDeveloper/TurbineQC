@@ -15,6 +15,10 @@ const Figure* Project::findFigure(const QString &name) const {
     return nullptr;
 }
 
+bool Project::containsFigure(const QString &name) {
+    return findFigure(name) ? true : false;
+}
+
 void Project::insertFigure(Figure * figure) {
     _figures.append(figure);
     emit figureAdded(figure);

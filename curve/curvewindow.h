@@ -8,10 +8,13 @@
 #include "algorithms.h"
 #include "tree.h"
 #include "figurecontrols.h"
+#include "loadingcloudwindow.h"
 
 namespace Ui {
     class CurveWindow;
 };
+
+class LoadingCloudWindow;
 
 class CurveWindow : public QMainWindow {
     Q_OBJECT
@@ -31,7 +34,7 @@ public:
     void toggleVisibility(const QString &name);
 
 private slots:
-    void openFile();
+    void loadCloud();
 
 private:
     Ui::CurveWindow *_ui;
@@ -42,4 +45,6 @@ private:
 
     Tree *_tree;
     Plot *_plot;
+
+    LoadingCloudWindow *_loadingCloudWindow;
 };
