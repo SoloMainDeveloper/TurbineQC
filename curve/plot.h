@@ -9,7 +9,7 @@ class Plot : public QCustomPlot {
 public:
     explicit Plot(QWidget *parent = nullptr);
 
-    void setProject(Project *_project);
+    void setProject(Project *project);
 
 public slots:
     void addFigure(Figure *figure);

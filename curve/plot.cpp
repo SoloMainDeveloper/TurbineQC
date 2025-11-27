@@ -10,14 +10,14 @@ Plot::Plot(QWidget *parent) : QCustomPlot(parent), _project(nullptr) {
 	setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectItems);
 }
 
-void Plot::setProject(Project *_project) {
-	this->_project = _project;
+void Plot::setProject(Project *project) {
+	_project = project;
 
-	connect(_project, &Project::figureAdded, this, &Plot::addFigure);
-	connect(_project, &Project::figureRenamed, this, &Plot::renameFigure);
-	connect(_project, &Project::figureAboutToBeRemoved, this, &Plot::removeFigure);
-	connect(_project, &Project::figureVisibilityChanged, this, &Plot::changeFigureVisibility);
-	connect(_project, &Project::curveParametersChanged, this, &Plot::changeCurveParameters);
+	connect(project, &Project::figureAdded, this, &Plot::addFigure);
+	connect(project, &Project::figureRenamed, this, &Plot::renameFigure);
+	connect(project, &Project::figureAboutToBeRemoved, this, &Plot::removeFigure);
+	connect(project, &Project::figureVisibilityChanged, this, &Plot::changeFigureVisibility);
+	connect(project, &Project::curveParametersChanged, this, &Plot::changeCurveParameters);
 }
 
 void Plot::addFigure(Figure* figure) {

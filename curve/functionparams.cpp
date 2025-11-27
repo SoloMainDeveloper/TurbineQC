@@ -57,7 +57,7 @@ Function4Params::Function4Params(float nominalTolerance, int evaluationPlace, in
 QString Function4Params::toQString() {
     QString result = "function=4\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nsort=%4\nnomtol=%5\nevaluationplace=%6\nevaluationdirection=%7";
     return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N").arg(_material == Direction::Left ? "L" : "R")
-        .arg(_needSort ? "Y" : "N").arg(_nominalTolerance).arg(_evaluationPlace).arg(_evaluationDirection);
+        .arg(_needSort ? "Y" : "N").arg(QString::number(_nominalTolerance, 'f', 9)).arg(_evaluationPlace).arg(_evaluationDirection);
 }
 
 Function5Params::Function5Params(double scale, double magnification, bool isClosed) {
@@ -71,26 +71,27 @@ QString Function5Params::toQString() {
     return result.arg(_isClosed ? "Y" : "N").arg(_scale).arg(_magnification);
 }
 
-Function6Params::Function6Params(int evaluationPlace, int EvaluationDirection, Algorithm method, bool needXShift, 
-    bool needYShif, bool needRotation, bool needMinimize, bool isClosed, bool isExternal, Direction material) {
+Function6Params::Function6Params(bool needMinimize, Algorithm method, bool isClosed, 
+    bool needXShift, bool needYShif, bool needRotation) {
     _isClosed = isClosed;
-    _isExternal = isExternal;
+    //_isExternal = isExternal;
     _needXShift = needXShift;
     _needYShift = needYShif;
     _needRotation = needRotation;
     _needMinimize = needMinimize;
-    _evaluationPlace = evaluationPlace;
-    _evaluationDirection = EvaluationDirection;
-    _material = material;
+    //_evaluationPlace = evaluationPlace;
+    //_evaluationDirection = EvaluationDirection;
+    //_material = material;
     _method = method;
 }
 
 QString Function6Params::toQString() {
-    QString result = "function=5\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nxshift=%4\n\
-        yshift=%5\nrotation=%6\nminimize=%7\nevaluationplace=%8\nevaluationdirection=%9\nmethod=%10";
-    return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N").arg(_material == Direction::Left ? "L" : "R")
-        .arg(_needXShift ? "Y" : "N").arg(_needYShift ? "Y" : "N").arg(_needRotation ? "Y" : "N")
-        .arg(_needMinimize ? "Y" : "N").arg(_evaluationPlace).arg(_evaluationDirection).arg(_method == Algorithm::Curve ? "Curve" : "Points");
+    /*QString result = "function=6\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nxshift=%4\n\
+        yshift=%5\nrotation=%6\nminimize=%7\nevaluationplace=%8\nevaluationdirection=%9\nmethod=%10";*/
+    QString result = "function=6\nplane=XY\nminimize=%1\nmethod=%2\nclosed=%3\nxshift=%4\nyshift=%5\nrotation=%6\nunits=inch";
+    return result.arg(_needMinimize ? "Y" : "N").arg(_method == Algorithm::Curve ? "Curve" : "Points").arg(_isClosed ? "Y" : "N")
+        .arg(_needXShift ? "Y" : "N").arg(_needYShift ? "Y" : "N").arg(_needRotation ? "Y" : "N");
+    //return "function=6\nplane=XY\nminimize=Y\nmethod=curve\nclosed=Y\nxshift=Y\nyshift=Y\nrotation=Y\nunits=inch";
 }
 
 Function7Params::Function7Params(double angle, double xLine, double yLine, double zLine, bool isClosed) {
@@ -103,7 +104,8 @@ Function7Params::Function7Params(double angle, double xLine, double yLine, doubl
 
 QString Function7Params::toQString() {
     QString result = "function=7\nplane=XY\nclosed=%1\nxline=%2\nyline=%3\nzline=%4\nangle=%5";
-    return result.arg(_isClosed ? "Y" : "N").arg(_xLine).arg(_yLine).arg(_zLine).arg(_angle);
+    return result.arg(_isClosed ? "Y" : "N").arg(QString::number(_xLine, 'f', 9)).arg(QString::number(_yLine, 'f', 9))
+        .arg(QString::number(_zLine, 'f', 9)).arg(QString::number(_angle, 'f', 9));
 }
 
 Function8Params::Function8Params(int diameter, double xCircle, double yCircle, double zCircle, bool isClosed) {
@@ -116,7 +118,8 @@ Function8Params::Function8Params(int diameter, double xCircle, double yCircle, d
 
 QString Function8Params::toQString() {
     QString result = "function=8\nplane=XY\nclosed=%1\nxcircle=%2\nycircle=%3\nzcircle=%4\ndiameter=%5";
-    return result.arg(_isClosed ? "Y" : "N").arg(_xCircle).arg(_yCircle).arg(_zCircle).arg(_diameter);
+    return result.arg(_isClosed ? "Y" : "N").arg(QString::number(_xCircle, 'f', 9)).arg(QString::number(_yCircle, 'f', 9))
+        .arg(QString::number(_zCircle, 'f', 9)).arg(_diameter);
 }
 
 Function9Params::Function9Params(bool isClosed) {
@@ -169,7 +172,7 @@ Function13Params::Function13Params(Filter filter, FilterType filterType, double 
 }
 
 QString Function13Params::toQString() {
-    QString result = "function=13\nclosed=%1\nplane=XY\nfilter=%2\nfilter_type=%3\nfilter_factor=%4";
+    QString result = "function=13\nplane=XY\nclosed=%1\nfilter=%2\nfilter_type=%3\nfilter_factor=%4";
     QString filterTypeValue = "";
     switch(_filterType) {
         case FilterType::LowPass:
@@ -185,13 +188,15 @@ QString Function13Params::toQString() {
     return result.arg(_isClosed ? "Y" : "N").arg(_filter == Filter::Polar ? "polar" : "linear").arg(filterTypeValue).arg(_filterFactor);
 }
 
-Function14Params::Function14Params(bool isClosed) {
-    _isClosed = isClosed;
+Function14Params::Function14Params(bool isClosed1, bool isClosed2, int mode) {
+    _isClosed1 = isClosed1;
+    _isClosed2 = isClosed2;
+    _mode = mode;
 }
 
 QString Function14Params::toQString() {
-    QString result = "function=14\nclosed=%1\nplane=XY";
-    return result.arg(_isClosed ? "Y" : "N");
+    QString result = "function=14\nplane=XY\nclosed1=%1\nclosed2=%2\nmode=1";
+    return result.arg(_isClosed1 ? "Y" : "N").arg(_isClosed2 ? "Y" : "N").arg(_mode);
 }
 
 Function15Params::Function15Params(bool isClosed) {
@@ -199,7 +204,7 @@ Function15Params::Function15Params(bool isClosed) {
 }
 
 QString Function15Params::toQString() {
-    QString result = "function=15\nclosed=%1\nplane=XY";
+    QString result = "function=15\nplane=XY\nclosed=%1";
     return result.arg(_isClosed ? "Y" : "N");
 }
 

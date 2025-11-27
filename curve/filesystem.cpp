@@ -1,7 +1,7 @@
 #include "curve/pch.h"
 #include "filesystem.h"
 
-QString FileSystem::curveDirectory = "C:/Users/solom/source/repos/geomera projects/curve/curve-1.exe";
+QString FileSystem::curveDirectory = "C:/Users/Admin/Desktop/test/curve-1.exe";
 
 void FileSystem::createWorkEnvironment() {
     QDir dir;

@@ -83,21 +83,20 @@ public:
         Curve, Points
     };
 
-    Function6Params(int evaluationPlace = 1, int EvaluationDirection = 2, Algorithm method  = Algorithm::Curve,
-        bool needXShift = false, bool needYShift = false, bool needRotation = false, bool needMinimize = false,
-        bool isClosed = false, bool isExternal = true, Direction material = Direction::Left);
+    Function6Params(bool needMinimize = true, Algorithm method  = Algorithm::Curve, bool isClosed = true, 
+        bool needXShift = true, bool needYShift = true, bool needRotation = true);
     QString toQString() override;
 
 private:
     bool _isClosed;
-    bool _isExternal;
+    //bool _isExternal; defualt Y
     bool _needXShift;
     bool _needYShift;
     bool _needRotation;
     bool _needMinimize;
-    int _evaluationPlace;
-    int _evaluationDirection;
-    Direction _material;
+    //int _evaluationPlace; //defualt 1
+    //int _evaluationDirection; // defualt 2
+    //Direction _material; // defualt L
     Algorithm _method;
 };
 
@@ -190,11 +189,13 @@ private:
 
 class Function14Params : public FunctionParams {
 public:
-    Function14Params(bool isClosed = false);
+    Function14Params(bool isClosed1 = false, bool isClosed2 = false, int mode = 1);
     QString toQString() override;
 
 private:
-    bool _isClosed;
+    bool _isClosed1;
+    bool _isClosed2;
+    int _mode;
 };
 
 class Function15Params : public FunctionParams {
