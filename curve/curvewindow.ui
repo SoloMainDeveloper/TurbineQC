@@ -81,9 +81,9 @@
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="OpenFileButton">
+     <widget class="QPushButton" name="loadCloudBtn">
       <property name="text">
-       <string>Open File</string>
+       <string>Load cloud</string>
       </property>
      </widget>
     </item>

@@ -1,8 +1,6 @@
 #include "curve/pch.h"
 #include "curvewindow.h"
 
-//#include "curvelibrary.h" //to delete after CURVE-44 check
-
 void testCreateLine(Plot* plot, Project &project) {
     const auto startPoint = Point(-20, -20);
     const auto endPoint = Point(20, 20);
@@ -52,7 +50,10 @@ void testDelete(Plot *_plot, Project &_project) {
 
 CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::CurveWindow) {
     _ui->setupUi(this);
-    connect(_ui->OpenFileButton, &QPushButton::clicked, this, &CurveWindow::openFile);
+    
+    _loadingCloudWindow = new LoadingCloudWindow(&_project);
+
+    connect(_ui->loadCloudBtn, &QPushButton::clicked, this, &CurveWindow::loadCloud);
 
     _tree = _ui->tree;
     _tree->setProject(&_project);
@@ -112,21 +113,13 @@ void CurveWindow::getWidthOfEdges() {
     //TEST
 }
 
-void CurveWindow::openFile() {
-    auto filePath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt)");
-    if(!filePath.isEmpty()) {
-        auto data = FileSystem::readFile(filePath).split('\n');
-        auto name = filePath.split('/').last().split('.')[0];
-        auto curve = new CurveFigure(name, FileSystem::parsePointsFromElement(data, ","));
-        _project.insertFigure(curve);
-
-        //auto res = CurveLibrary::function18(curve->points(), Function18Params()); //to delete after CURVE-44 check
-        //auto res2 = CurveMachine::enlargeCurveWithIntermediatePoints(curve->points(), Function1Params(5)); //to delete after CURVE-44 check
-    }
+void CurveWindow::loadCloud() {
+    _loadingCloudWindow->exec();
 }
 
 CurveWindow::~CurveWindow() {
     delete _ui;
+    delete _loadingCloudWindow;
 
     for(auto item : _project.figures()) {
         delete item;

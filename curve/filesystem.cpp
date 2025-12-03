@@ -1,7 +1,7 @@
 #include "curve/pch.h"
 #include "filesystem.h"
 
-QString FileSystem::curveDirectory = "C:/Users/solom/source/repos/geomera projects/curve/curve-1.exe";
+QString FileSystem::curveDirectory = "C:/Users/Admin/Desktop/test/curve-1.exe";
 
 void FileSystem::createWorkEnvironment() {
     QDir dir;
@@ -50,17 +50,21 @@ QVector<Point> FileSystem::parsePointsFromElement(QStringList element, QString s
     QVector<Point> result;
     for(auto i = startLineToSkip; i < element.length() - finishLineToSkip; i++) {
         auto pointStr = element[i].split(separator);
-        auto point = Point();
-        point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
-        point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
-        point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
-        point.i = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
-        point.j = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
-        point.k = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
-        point.dev = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
-        point.lt = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
-        point.ut = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
-        result.append(point);
+        if(pointStr.length() != 1) {
+            auto point = Point();
+            point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
+            point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
+            point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
+            point.i = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
+            point.j = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
+            point.k = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
+            point.dev = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
+            point.lt = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
+            point.ut = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
+            result.append(point);
+        } else {
+            break;
+        }
     }
     return result;
 }

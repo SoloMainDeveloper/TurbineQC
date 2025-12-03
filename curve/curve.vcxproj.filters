@@ -82,6 +82,9 @@
     <ClCompile Include="figurecontrols.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="loadingcloudwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="figure.h">
@@ -97,9 +100,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="algorithms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="project.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="curvelibrary.h">
@@ -119,9 +119,21 @@
     <QtMoc Include="sashasecretwindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="figurecontrols.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="project.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="loadingcloudwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="sashasecretwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="loadingcloudwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
