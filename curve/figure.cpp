@@ -13,6 +13,13 @@ Point::Point(double x, double y, double z, double i, double j, double k, double 
 	this->ut = ut;
 }
 
+void CurveFigure::setTolerance(double upperTolerance, double lowerTolerance) {
+	for(int i = 0; i < _points.length(); i++) {
+		_points[i].ut = upperTolerance;
+		_points[i].lt = lowerTolerance;
+	}
+}
+
 CurveFigure::CurveFigure() {
 	this->_devMultiplier = 0;
 }

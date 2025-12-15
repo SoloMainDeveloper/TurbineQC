@@ -82,6 +82,9 @@
     <ClCompile Include="figurecontrols.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="airfoiltolerancesdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="loadingcloudwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -125,12 +128,18 @@
     <QtMoc Include="project.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="airfoiltolerancesdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
     <QtMoc Include="loadingcloudwindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="sashasecretwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="airfoiltolerancesdialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="loadingcloudwindow.ui">

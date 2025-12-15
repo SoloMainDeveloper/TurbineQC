@@ -8,6 +8,7 @@
 #include "algorithms.h"
 #include "tree.h"
 #include "figurecontrols.h"
+#include "airfoiltolerancesdialog.h"
 #include "loadingcloudwindow.h"
 
 namespace Ui {
@@ -29,10 +30,6 @@ public:
     void getMaxWidthCircle();
     void getWidthOfEdges();
 
-    void renameFigure(const QString &name, const QString &newName);
-    void removeFigure(const QString &name);
-    void toggleVisibility(const QString &name);
-
 private slots:
     void loadCloud();
 
@@ -42,9 +39,9 @@ private:
     Project _project;
 
     FigureControls* _figureControls;
-
     Tree *_tree;
     Plot *_plot;
 
+    AirfoilTolerancesDialog* _airfoilTolerancesDialog;
     LoadingCloudWindow *_loadingCloudWindow;
 };

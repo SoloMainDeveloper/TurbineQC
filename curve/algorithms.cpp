@@ -2,29 +2,48 @@
 #include "algorithms.h"
 
 
-QVector<Point> Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params *params, Project *project) { //todo
-    return QVector<Point>();
+void Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params *params, Project *project) {
+    auto figure = project->findFigure(figureName);
+    auto result = CurveMachine::enlargeCurveWithIntermediatePoints(figure->points(), *params);
+    auto newName = figureName + "_enlarged";
+    auto newCurve = new CurveFigure(newName, result.points());
+    if(project->containsFigure(newName)) {
+        project->removeFigure(newName);
+    }
+    project->insertFigure(newCurve);
 }
 
-QVector<Point> Algorithms::getMiddleCurve(QString figureName, const Function18Params *params, Project *project) { //todo
-    return QVector<Point>();
+void Algorithms::getMiddleCurve(QString figureName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(figureName);
+    auto result = CurveMachine::getMiddleCurve(figure->points(), *params);
+    auto newName = figureName + "_MCL";
+    auto middleCurve = new CurveFigure(newName, result.points());
+    if(project->containsFigure(newName)) {
+        project->removeFigure(newName);
+    }
+    project->insertFigure(middleCurve);
 }
 
-void Algorithms::getChordLength(QString figureName, const Function18Params *params, Project *project) { //todo
+void Algorithms::getChordLength(QString figureName, const Function18Params *params, Project *project) {
     auto figure = project->findFigure(figureName);
     auto chordLength = CurveMachine::getChordLength(figure->points(), *params);
-    //auto fullAnswerStr = FileSystem::readOutput().split("\n\n");
-    //auto functionAnswer = FileSystem::parseOutputToElements(fullAnswerStr);
-    //AnswersHistory[name].insert(18, FunctionAnswer(functionAnswer));
-    //build figures from data
-    //update drawer drawer->sync();
+    //need special interface to show the result
 }
 
-CircleFigure Algorithms::getMaxWidthCircle(QString figureName, const Function18Params *params, Project *project) { //todo
-    return CircleFigure("circle");
+void Algorithms::getMaxWidthCircle(QString figureName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(figureName);
+    auto result = CurveMachine::getMaxWidthCircle(figure->points(), *params);
+    auto newName = figureName + "_MaxDia";
+    auto circle = new CircleFigure(newName, result.centre(), result.radius());
+    if(project->containsFigure(newName)) {
+        project->removeFigure(newName);
+    }
+    project->insertFigure(circle);
 }
 
-std::array<double, 2> Algorithms::getWidthOfEdges(QString figureName, const Function18Params *params, Project *project) {
-    return { 0, 0 }; //return CurveMachine::getWidthOfEdges();
+void Algorithms::getWidthOfEdges(QString figureName, double distanceFromLeadingEdge, double distanceFromTrailingEgde, Project *project) {
+    auto figure = project->findFigure(figureName);
+    auto result = CurveMachine::getWidthOfEdges(figure->points(), distanceFromLeadingEdge, distanceFromTrailingEgde);
+    //need special interface to show the result
 }
 
