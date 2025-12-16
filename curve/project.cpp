@@ -35,6 +35,7 @@ void Project::removeFigure(const QString &name) {
 }
 
 void Project::changeCurrentFigure(const QString &currentFigureName) {
+    _currentFigureName = currentFigureName;
     emit currentFigureChanged(currentFigureName);
 }
 
@@ -65,6 +66,18 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
         showVectors, closed, showNumbering, numberingInterval);
 }
 
+void Project::changeCurveTolerance(const QString curveName, double upperTolerance, double lowerTolerance) {
+    auto figure = findFigureMutable(curveName);
+    if(auto curve = dynamic_cast<CurveFigure*>(figure)) {
+        curve->setTolerance(upperTolerance, lowerTolerance);
+        emit curveToleranceChanged(curveName, upperTolerance, lowerTolerance);
+    }
+}
+
 Figure* Project::findFigureMutable(const QString &name) {
     return const_cast<Figure*>(findFigure(name));
+}
+
+const QString Project::currentFigureName() const {
+    return _currentFigureName;
 }

@@ -89,6 +89,28 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>659</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuAirfoil">
+    <property name="title">
+     <string>Airfoil</string>
+    </property>
+    <addaction name="actionAssignTolerancesToNominal"/>
+   </widget>
+   <addaction name="menuAirfoil"/>
+  </widget>
+  <action name="actionAssignTolerancesToNominal">
+   <property name="text">
+    <string>Assign tolerances to nominal</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

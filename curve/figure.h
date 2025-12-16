@@ -57,6 +57,8 @@ public:
 	int numberingInterval() const;
 	void setNumberingInterval(int numberingInterval);
 
+	void setTolerance(double upperTolerance, double lowerTolerance);
+
 private:
 	QVector<Point> _points;
 	double _devMultiplier;

@@ -55,6 +55,10 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
 
     connect(_ui->loadCloudBtn, &QPushButton::clicked, this, &CurveWindow::loadCloud);
 
+    _airfoilTolerancesDialog = new AirfoilTolerancesDialog(&_project);
+
+    connect(_ui->actionAssignTolerancesToNominal, &QAction::triggered, _airfoilTolerancesDialog, &AirfoilTolerancesDialog::dialogInitialization);
+
     _tree = _ui->tree;
     _tree->setProject(&_project);
     _plot = _ui->plot;
@@ -97,8 +101,9 @@ void CurveWindow::getMaxWidthCircle() { //todo
 
 void CurveWindow::getWidthOfEdges() {
     auto name = "points_a5";
-    auto params = Function18Params();
-    Algorithms::getWidthOfEdges(name, &params, &_project);
+    auto trailingEdgeDistance = 1; //take from ui
+    auto leadingEdgeDistance = 1; //take from ui
+    Algorithms::getWidthOfEdges(name, leadingEdgeDistance, trailingEdgeDistance, &_project);
 
     //TEST CURVE-8 // Set the path to the curve library in filesystem.cpp
     //QVector<Point> points;
