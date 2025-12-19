@@ -12,6 +12,7 @@ public:
     static double getChordLength(const QVector<Point> points, const Function18Params params);
     static CircleFigure getMaxWidthCircle(const QVector<Point> points, const Function18Params params);
     static std::array<double, 2> getWidthOfEdges(const QVector<Point> points, double distanceFromLeadingEdge, double distanceFromTrailingEgde);
+    static std::array<double, 2> getRadiusOfEdges(const QVector<Point> points, const Function18Params params);
 
 private:
     static Point getOutput8thFunction(Point puncturePoint, double diameter, QVector<Point> inputData);

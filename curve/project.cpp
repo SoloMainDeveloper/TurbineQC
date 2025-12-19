@@ -15,7 +15,7 @@ const Figure* Project::findFigure(const QString &name) const {
     return nullptr;
 }
 
-bool Project::containsFigure(const QString &name) {
+bool Project::containsFigure(const QString &name) const {
     return findFigure(name) ? true : false;
 }
 
@@ -27,9 +27,18 @@ void Project::insertFigure(Figure * figure) {
 void Project::renameFigure(const QString &name, const QString &newName) {
     findFigureMutable(name)->setName(newName);
     emit figureRenamed(name, newName);
+
+    if(name == _currentFigureName) {
+        _currentFigureName = newName;
+        currentFigureChanged(newName);
+    }
 }
 
 void Project::removeFigure(const QString &name) {
+    if(_currentFigureName == name) {
+        changeCurrentFigure(QString());
+    }
+
     emit figureAboutToBeRemoved(name);
     _figures.removeOne(findFigure(name));
 }

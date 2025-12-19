@@ -18,18 +18,34 @@ void Plot::setProject(Project *project) {
 	connect(project, &Project::figureAboutToBeRemoved, this, &Plot::removeFigure);
 	connect(project, &Project::figureVisibilityChanged, this, &Plot::changeFigureVisibility);
 	connect(project, &Project::curveParametersChanged, this, &Plot::changeCurveParameters);
+	connect(project, &Project::currentFigureChanged, this, &Plot::changeCurrentFigure);
+	connect(project, &Project::curveToleranceChanged, this, &Plot::changeCurveTolerance);
+	connect(this, &Plot::plottableClick, this, &Plot::onPlottableClicked);
+	connect(this, &Plot::itemClick, this, &Plot::onItemClicked);
+	connect(this, &Plot::currentFigureChanged, project, &Project::changeCurrentFigure);
 }
 
-void Plot::addFigure(Figure* figure) {
+void Plot::addFigure(Figure *figure) {
 	createFigure(figure);
 };
 
 void Plot::renameFigure(const QString figureName, const QString newName) {
-	updateFigure(newName);
-};
+	auto figure = _project->findFigure(newName);
+
+	deleteFigure(figureName);
+	createFigure(figure);
+}
 
 void Plot::removeFigure(const QString figureName) {
 	deleteFigure(figureName);
+}
+
+void Plot::changeCurrentFigure(const QString &currentFigureName) {
+	if(currentFigureName == "") return;
+
+	updateFigure(currentFigureName);
+	updateFigure(_currentFigureName);
+	_currentFigureName = _project->currentFigureName();
 }
 
 void Plot::changeFigureVisibility(const QString figureName, bool visible) {
@@ -37,16 +53,18 @@ void Plot::changeFigureVisibility(const QString figureName, bool visible) {
 	layer(figureName)->replot();
 }
 
-void Plot::changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints, bool showVectors, bool closed, bool showNumbering, int numberingInterval) {
+void Plot::changeCurveParameters(const QString curveName,
+		bool showPoints, bool connectPoints, bool showVectors, bool closed, bool showNumbering, int numberingInterval) {
+	updateFigure(curveName);
+}
+
+void Plot::changeCurveTolerance(const QString curveName, double upperTolerance, double lowerTolerance) {
 	updateFigure(curveName);
 }
 
 void Plot::createFigure(const Figure *figure) {
-	auto isNewLayer = addLayer(figure->name());
-
-	if(isNewLayer == false) {
-		qCritical() << figure->name() << "already exists";
-		return;
+	if(layer(figure->name()) == nullptr) {
+		addLayer(figure->name());
 	}
 
 	setCurrentLayer(figure->name()); 
@@ -67,37 +85,37 @@ void Plot::createFigure(const Figure *figure) {
 void Plot::updateFigure(const QString &figureName) {
 	auto figure = _project->findFigure(figureName);
 
-	deleteFigure(figureName);
+	if(layer(figureName) == nullptr) {
+		qDebug() << "Layer" << figureName << "does not exist";
+		return;
+	}
+
+	clearFiguresFromLayer(figureName);
 	createFigure(figure);
 }
 
 void Plot::deleteFigure(const QString &figureName) {
 	auto layerToDelete = layer(figureName);
 
-	if(layerToDelete == nullptr) {
-		qCritical() << figureName << "doesn't exist";
-		return;
-	}
+	clearFiguresFromLayer(figureName);
 
-	QCPAbstractPlottable *abstractPlottable;
-	QCPAbstractItem *abstractItem;
-	for(auto &children : layerToDelete->children()) {
-		if(abstractPlottable = dynamic_cast<QCPAbstractPlottable*>(children)) {
-			removePlottable(abstractPlottable);
-		} else if(abstractItem = dynamic_cast<QCPAbstractItem*>(children)) {
-			removeItem(abstractItem);
-		}
-	}
+	layer(figureName)->replot();
 
-	layerToDelete->replot();
 	removeLayer(layerToDelete);
 }
 
 void Plot::addCurveLayer(const CurveFigure &curveFigure) {
 	auto curve = new Curve(xAxis, yAxis);
 
+	double penWidth;
+	if(_project->currentFigureName() == curveFigure.name()) {
+		penWidth = _currentFigurePenWidth;
+	} else {
+		penWidth = _penWidth;
+	}
+
 	auto brush = QBrush(curveFigure.color());
-	auto pen = QPen(brush, _penWidth);
+	auto pen = QPen(brush, penWidth);
 	curve->setPen(pen);
 	
 	for(const auto &point : curveFigure.points()) {
@@ -129,8 +147,15 @@ void Plot::addPointLayer(const PointFigure &pointFigure) {
 void Plot::addLineLayer(const LineFigure &lineFigure) {
 	auto line = new QCPItemLine(this);
 
+	double penWidth;
+	if(_project->currentFigureName() == lineFigure.name()) {
+		penWidth = _currentFigurePenWidth;
+	} else {
+		penWidth = _penWidth;
+	}
+
 	auto brush = QBrush(lineFigure.color());
-	auto pen = QPen(brush, _penWidth);
+	auto pen = QPen(brush, penWidth);
 	line->setPen(pen);
 
 	auto startPoint = lineFigure.start();
@@ -145,8 +170,15 @@ void Plot::addLineLayer(const LineFigure &lineFigure) {
 void Plot::addCircleLayer(const CircleFigure &circleFigure) {
 	auto circle = new QCPItemEllipse(this);
 
+	double penWidth;
+	if(_project->currentFigureName() == circleFigure.name()) {
+		penWidth = _currentFigurePenWidth;
+	} else {
+		penWidth = _penWidth;
+	}
+
 	auto brush = QBrush(circleFigure.color());
-	auto pen = QPen(brush, _penWidth);
+	auto pen = QPen(brush, penWidth);
 	circle->setPen(pen);
 
 	calculateCircleBox(circleFigure, circle);
@@ -162,6 +194,20 @@ void Plot::calculateCircleBox(const CircleFigure &circleFigure, QCPItemEllipse *
 	auto bottomRightAnchor = QPointF(center.x + radius, center.y - radius);
 	circle->topLeft->setCoords(topLeftAnchor);
 	circle->bottomRight->setCoords(bottomRightAnchor);
+}
+
+void Plot::clearFiguresFromLayer(const QString &layerName) {
+	auto layerToClear = layer(layerName);
+	
+	QCPAbstractPlottable *abstractPlottable;
+	QCPAbstractItem *abstractItem;
+	for(auto &children : layerToClear->children()) {
+		if(abstractPlottable = dynamic_cast<QCPAbstractPlottable*>(children)) {
+			removePlottable(abstractPlottable);
+		} else if(abstractItem = dynamic_cast<QCPAbstractItem*>(children)) {
+			removeItem(abstractItem);
+		}
+	}
 }
 
 Plot::Curve::Curve(QCPAxis *keyAxis, QCPAxis *valueAxis) : QCPCurve(keyAxis, valueAxis) {
@@ -181,4 +227,18 @@ void Plot::Curve::showPoints() {
 	const auto scatterShape = QCPScatterStyle::ScatterShape::ssSquare;
 	const auto scatterStyle = QCPScatterStyle(scatterShape, _scatterSize);
 	setScatterStyle(scatterStyle);
+}
+
+void Plot::onItemClicked(QCPAbstractItem *item, QMouseEvent *event) {
+	auto figureName = item->layer()->name();
+	emit currentFigureChanged(figureName);
+	updateFigure(figureName);
+	_currentFigureName = figureName;
+}
+
+void Plot::onPlottableClicked(QCPAbstractPlottable *plottable, int dataIndex, QMouseEvent *event) {
+	auto figureName = plottable->layer()->name();
+	emit currentFigureChanged(figureName);
+	updateFigure(figureName);
+	_currentFigureName = figureName;
 }

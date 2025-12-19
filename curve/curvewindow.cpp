@@ -68,9 +68,9 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
     _figureControls->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     _ui->leftBar->addWidget(_figureControls);
 
-    testCreateLine(_plot, _project);
-    testCreateCircle(_plot, _project);
-    testUpdate(_plot, _project);
+    // testCreateLine(_plot, _project);
+    // testCreateCircle(_plot, _project);
+    // testUpdate(_plot, _project);
     // testDelete(_plot, _project);
 }
 
@@ -104,18 +104,12 @@ void CurveWindow::getWidthOfEdges() {
     auto trailingEdgeDistance = 1; //take from ui
     auto leadingEdgeDistance = 1; //take from ui
     Algorithms::getWidthOfEdges(name, leadingEdgeDistance, trailingEdgeDistance, &_project);
+}
 
-    //TEST CURVE-8 // Set the path to the curve library in filesystem.cpp
-    //QVector<Point> points;
-    //auto splittedPoints = FileSystem::readFile("pathToFile.txt").split('\n');//Set the path to the test file
-    //for(auto i = 0; i < splittedPoints.length(); i++) {
-    //    auto pointStr = splittedPoints[i].split(' '); //Set a separator between coordinates
-    //    Point point(pointStr[0].toDouble(), pointStr[1].toDouble());
-    //    points.append(point);
-    //}
-    //auto widthOfEdges = CurveMachine::getWidthOfEdges(points, 1, 1);
-    //qDebug() << widthOfEdges[0] << " " << widthOfEdges[1];
-    //TEST
+void CurveWindow::getRadiusOfEdges() {
+    auto name = "points_a5"; //take figure name from ui
+    auto params = Function18Params(0, 2, 1);
+    Algorithms::getRadiusOfEdges(name, &params, &_project);
 }
 
 void CurveWindow::loadCloud() {

@@ -11,7 +11,7 @@ Tree::Tree(QWidget *parent) {
     connect(renameItem, &QAction::triggered, this, &Tree::onRenameItemTriggered);
     connect(removeItem, &QAction::triggered, this, &Tree::onRemoveItemTriggered);
 
-    connect(this, &QTreeWidget::itemClicked, this, &Tree::onItemClicked);
+    connect(this, &QTreeWidget::currentItemChanged, this, &Tree::changeCurrentFigure);
     connect(this, &QTreeWidget::itemDoubleClicked, this, &Tree::onItemDoubleClicked);
 
     treeCurves = new QTreeWidgetItem;
@@ -50,6 +50,7 @@ void Tree::setProject(Project* mainProject) {
     connect(project, &Project::figureAdded, this, &Tree::addFigure);
     connect(project, &Project::figureAboutToBeRemoved, this, &Tree::removeFigure);
     connect(project, &Project::figureRenamed, this, &Tree::renameFigure);
+    connect(project, &Project::currentFigureChanged, this, &Tree::changeCurrentFigureByName);
 }
 
 void Tree::contextMenuEvent(QContextMenuEvent *event) {
@@ -192,13 +193,56 @@ void Tree::onRemoveItemTriggered() {
     }
 }
 
-void Tree::onItemClicked(const QTreeWidgetItem *item) {
+void Tree::changeCurrentFigure(const QTreeWidgetItem *item) {
     if(item->parent()) {
         auto name = item->text(0);
         emit currentFigureChanged(name);
     } else {
-        emit currentFigureChanged(nullptr);
+        emit currentFigureChanged(QString());
     }
+}
+
+void Tree::changeCurrentFigureByName(const QString currentFigureName) {
+    auto oldCurrentFigureName = currentItem()->text(0);
+    if(oldCurrentFigureName == currentFigureName || currentFigureName == QString()) {
+        return;
+    } else {
+        QTreeWidgetItem* newItem;
+
+        for(int i = 0; i < treeCurves->childCount(); i++) {
+            auto child = treeCurves->child(i);
+            if(child->text(0) == currentFigureName) {
+                newItem = child;
+            }
+        }
+        for(int i = 0; i < treeCircles->childCount(); i++) {
+            auto child = treeCircles->child(i);
+            if(child->text(0) == currentFigureName) {
+                newItem = child;
+            }
+        }
+        for(int i = 0; i < treeLines->childCount(); i++) {
+            auto child = treeLines->child(i);
+            if(child->text(0) == currentFigureName) {
+                newItem = child;
+            }
+        }
+        for(int i = 0; i < treePoints->childCount(); i++) {
+            auto child = treePoints->child(i);
+            if(child->text(0) == currentFigureName) {
+                newItem = child;
+            }
+        }
+
+        if(!newItem) {
+            return;
+        } else {
+            blockSignals(true);
+            setCurrentItem(newItem);
+            blockSignals(false);
+        }       
+    }
+
 }
 
 void Tree::onItemDoubleClicked(const QTreeWidgetItem *item) {

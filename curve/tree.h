@@ -37,7 +37,8 @@ private:
     void contextMenuEvent(QContextMenuEvent *event);
     void onRenameItemTriggered();
     void onRemoveItemTriggered();
-    void onItemClicked(const QTreeWidgetItem *item);
+    void changeCurrentFigure(const QTreeWidgetItem *item);
+    void changeCurrentFigureByName(const QString currentFigureName);
     void onItemDoubleClicked(const QTreeWidgetItem *item);
 
 public slots:

@@ -15,9 +15,14 @@ public slots:
     void addFigure(Figure *figure);
     void renameFigure(const QString figureName, const QString newName);
     void removeFigure(const QString figureName);
+    void changeCurrentFigure(const QString &currentFigureName);
     void changeFigureVisibility(const QString figureName, bool visible);
-    void changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
-        bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+    void changeCurveParameters(const QString curveName,
+        bool showPoints, bool connectPoints, bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+    void changeCurveTolerance(const QString curveName, double upperTolerance, double lowerTolerance);
+
+signals:
+    void currentFigureChanged(const QString &name);
 
 private:
     class Curve : public QCPCurve {
@@ -41,9 +46,15 @@ private:
     void addPointLayer(const PointFigure &pointFigure);
     void addLineLayer(const LineFigure &lineFigure);
     void addCircleLayer(const CircleFigure &circleFigure);
+
     void calculateCircleBox(const CircleFigure &circleFigure, QCPItemEllipse *circle);
+    void clearFiguresFromLayer(const QString &layerName);
 
     const double _penWidth = 1;
-    const double _selectedObjectPenWidth = 1.5;
+    const double _currentFigurePenWidth = 2;
     const double _pointRadius = 5;
+    QString _currentFigureName;
+
+    void onItemClicked(QCPAbstractItem *item, QMouseEvent *event);
+    void onPlottableClicked(QCPAbstractPlottable *plottable, int dataIndex, QMouseEvent *event);
 };

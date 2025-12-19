@@ -29,6 +29,7 @@ public:
     void getChordLength();
     void getMaxWidthCircle();
     void getWidthOfEdges();
+    void getRadiusOfEdges();
 
 private slots:
     void loadCloud();
