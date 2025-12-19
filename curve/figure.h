@@ -16,7 +16,7 @@ public:
 	virtual QVector<Point> points() const;
 	//virtual QVector<Point> getPointsForDrawing //extra needed for circles
 	Figure();
-	Figure(QString name, bool isVisible = false);
+	Figure(QString name, bool isVisible = true);
 
 	const QString& name() const;
 	void setName(QString name);
@@ -28,7 +28,7 @@ public:
 
 private:
 	QString _name;
-	bool _isVisible = false;
+	bool _isVisible;
 	QColor _color;
 };
 
@@ -64,7 +64,7 @@ private:
 	double _devMultiplier;
 
 	bool _isShowPoints = false;
-	bool _isConnectPoints = false;
+	bool _isConnectPoints = true;
 	bool _isShowVectors = false;
 	bool _isClosed = false;
 	bool _isShowNumbering = false;

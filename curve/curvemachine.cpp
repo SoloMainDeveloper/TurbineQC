@@ -103,3 +103,18 @@ QVector<Point> CurveMachine::removeExtraPoints(QVector<Point> edgePoints, Point 
     }
     return edgeNewPoints;
 }
+
+std::array<double, 2> CurveMachine::getRadiusOfEdges(const QVector<Point> points, const Function18Params params) {
+    auto res18 = CurveLibrary::function18(points, params);
+
+    auto trailingEdgePoints = res18.curveTE.points();
+    auto leadingEdgePoints = res18.curveLE.points();
+
+    auto res12ForTE = CurveLibrary::function12(trailingEdgePoints, Function12Params());
+    auto res12ForLE = CurveLibrary::function12(leadingEdgePoints, Function12Params());
+
+    auto radiusOfTrailingEdge = res12ForTE.circle.radius();
+    auto radiusOfLeadingEdge = res12ForLE.circle.radius();
+
+    return { radiusOfTrailingEdge, radiusOfLeadingEdge };
+}

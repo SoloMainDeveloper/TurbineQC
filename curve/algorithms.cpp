@@ -47,3 +47,8 @@ void Algorithms::getWidthOfEdges(QString figureName, double distanceFromLeadingE
     //need special interface to show the result
 }
 
+void Algorithms::getRadiusOfEdges(QString figureName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(figureName);
+    auto result = CurveMachine::getRadiusOfEdges(figure->points(), *params);
+    //need special interface to show the result
+}

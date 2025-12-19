@@ -11,4 +11,5 @@ public:
     static void getChordLength(QString figureName, const Function18Params *params, Project *project);
     static void getMaxWidthCircle(QString figureName, const Function18Params *params, Project *project);
     static void getWidthOfEdges(QString figureName, double distanceFromLeadingEdge, double distanceFromTrailingEgde, Project *project);
+    static void getRadiusOfEdges(QString figureName, const Function18Params *params, Project *project);
 };

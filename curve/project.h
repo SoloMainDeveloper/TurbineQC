@@ -9,7 +9,7 @@ public:
     const QList<Figure*>& figures() const;
     const Figure* findFigure(const QString &name) const;
     const QString currentFigureName() const;
-    bool containsFigure(const QString &name);
+    bool containsFigure(const QString &name) const;
 
 public slots:
     void insertFigure(Figure* figure);
