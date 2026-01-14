@@ -1,63 +1,37 @@
 #include "curve/pch.h"
 #include "curvewindow.h"
 
-void testCreateLine(Plot* plot, Project &project) {
-    const auto startPoint = Point(-20, -20);
-    const auto endPoint = Point(20, 20);
-    const auto lineFigure = new LineFigure("line", startPoint, endPoint);
-
-    project.insertFigure(lineFigure);
-}
-
-void testCreateCircle(Plot *plot, Project &project) {
-    const auto radius = 20;
-    const auto centrePoint = Point(0, 0);
-
-    const auto circleFigure = new CircleFigure("circle", centrePoint, radius);
-    const auto pointFigure = new PointFigure("centre_point", centrePoint);
-
-    project.insertFigure(circleFigure);
-    project.insertFigure(pointFigure);
-}
-
-void testUpdate(Plot *plot, Project &project) {
-    auto circleFigure = dynamic_cast<const CircleFigure*>(project.findFigure("circle"));
-    auto centrePointFigure = dynamic_cast<const PointFigure*>(project.findFigure("centre_point"));
-
-    if(!circleFigure || !centrePointFigure) {
-        qCritical() << "incorrect figures to update";
-
-        return;
-    }
-
-    auto redColor = QColorConstants::Red;
-    auto greenColor = QColorConstants::Green;
-
-    // TODO: rewrite to signal-slots (_project->changeColor(...))
-
-    // circleFigure->setColor(redColor);
-    // centrePointFigure->setColor(greenColor);
-    // 
-    // plot->updateFigure(circleFigure);
-    // plot->updateFigure(centrePointFigure);
-}
-
-void testDelete(Plot *_plot, Project &_project) {
-    auto lineFigure = _project.findFigure("line");
-    
-    _project.removeFigure(lineFigure->name());
-}
-
 CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::CurveWindow) {
     _ui->setupUi(this);
     
     _loadingCloudWindow = new LoadingCloudWindow(&_project);
-
-    connect(_ui->loadCloudBtn, &QPushButton::clicked, this, &CurveWindow::loadCloud);
+    connect(_ui->actionLoadFile, &QAction::triggered, _loadingCloudWindow, &LoadingCloudWindow::exec);
 
     _airfoilTolerancesDialog = new AirfoilTolerancesDialog(&_project);
-
     connect(_ui->actionAssignTolerancesToNominal, &QAction::triggered, _airfoilTolerancesDialog, &AirfoilTolerancesDialog::dialogInitialization);
+
+    _turbineWindow = new TurbineWindow(&_project);
+    connect(_ui->actionCalculateTurbineParameters, &QAction::triggered, _turbineWindow, &TurbineWindow::initialization);
+    
+    _widthEdgeWindow = new WidthEdgeWindow(&_project);
+    connect(_ui->actionCalculateEdgeWidth, &QAction::triggered, _widthEdgeWindow, &WidthEdgeWindow::initialization);
+
+    _mergeCloudsWindow = new MergePointCloudsWindow(&_project);
+    connect(_ui->actionMergeClouds, &QAction::triggered, _mergeCloudsWindow, &MergePointCloudsWindow::windowInitialization);
+
+    _radiusCorrectionDialog = new RadiusCorrectionDialog(&_project);
+    connect(_ui->actionRadiusCorrection, &QAction::triggered, _radiusCorrectionDialog, &RadiusCorrectionDialog::initialization);
+
+    _saveProjectWindow = new SaveProjectWindow(&_project);
+    connect(_ui->actionSaveProject, &QAction::triggered, _saveProjectWindow, &SaveProjectWindow::initialization);
+
+    connect(_ui->actionLoadProject, &QAction::triggered, this, [&]() {
+        FileSystem::loadProject(&_project);
+    });
+
+    connect(_ui->actionClearProject, &QAction::triggered, &_project, &Project::clear);
+
+    _figureEditDialog = new FigureEditDialog(&_project);
 
     _tree = _ui->tree;
     _tree->setProject(&_project);
@@ -68,59 +42,12 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
     _figureControls->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     _ui->leftBar->addWidget(_figureControls);
 
-    // testCreateLine(_plot, _project);
-    // testCreateCircle(_plot, _project);
-    // testUpdate(_plot, _project);
-    // testDelete(_plot, _project);
-}
-
-void CurveWindow::enlargeCurveWithIntermediatePoints() { //todo
-    auto name = "points_a5"; //take figure name from ui
-    auto pointsToInsert = 5; //take from ui
-    auto params = Function1Params(pointsToInsert); //take params from ui
-    Algorithms::enlargeCurveWithIntermediatePoints(name, &params, &_project);
-}
-
-void CurveWindow::getMiddleCurve() { //todo
-    auto name = "points_a5"; //take figure name from ui
-    auto params = Function18Params(); //take params from ui
-    Algorithms::getMiddleCurve(name, &params, &_project);
-}
-
-void CurveWindow::getChordLength() { //todo
-    auto name = "points_a5"; //take figure name from ui
-    auto params = Function18Params(); //take params from ui
-    Algorithms::getChordLength(name, &params, &_project);
-}
-
-void CurveWindow::getMaxWidthCircle() { //todo
-    auto name = "points_a5"; //take figure name from ui
-    auto params = Function18Params(); //take params from ui
-    Algorithms::getMaxWidthCircle(name, &params, &_project);
-}
-
-void CurveWindow::getWidthOfEdges() {
-    auto name = "points_a5";
-    auto trailingEdgeDistance = 1; //take from ui
-    auto leadingEdgeDistance = 1; //take from ui
-    Algorithms::getWidthOfEdges(name, leadingEdgeDistance, trailingEdgeDistance, &_project);
-}
-
-void CurveWindow::getRadiusOfEdges() {
-    auto name = "points_a5"; //take figure name from ui
-    auto params = Function18Params(0, 2, 1);
-    Algorithms::getRadiusOfEdges(name, &params, &_project);
-}
-
-void CurveWindow::loadCloud() {
-    _loadingCloudWindow->exec();
+    _calculateDeviationsDialog = new CalculateDeviationsDialog(&_project);
+    connect(_ui->actionCalculateDeviations, &QAction::triggered, _calculateDeviationsDialog, &CalculateDeviationsDialog::initialization);
 }
 
 CurveWindow::~CurveWindow() {
     delete _ui;
     delete _loadingCloudWindow;
-
-    for(auto item : _project.figures()) {
-        delete item;
-    }
+    delete _mergeCloudsWindow;
 }

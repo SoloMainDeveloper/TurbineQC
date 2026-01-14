@@ -1,12 +1,18 @@
 #include "curve/pch.h"
 #include "sashasecretwindow.h"
 
-SashaSecretWindow::SashaSecretWindow(QWidget *parent)
+SashaSecretWindow::SashaSecretWindow(Project *project, QWidget *parent)
     : QMainWindow(parent), _ui(new Ui::SashaSecretWindowClass) {
     _ui->setupUi(this);
 
+    _project = project;
+    _loadingCloudWindow = new LoadingCloudWindow(_project);
     _pathToInputFile = "C:/Users/Admin/Desktop/test/testsFor42Task/%1";
     _pathToTestDataFile = "C:/Users/Admin/Desktop/test/functions/%1";
+
+    connect(_ui->loadFileBtn, &QPushButton::clicked, this, [this] {
+        _loadingCloudWindow->exec();
+    });
 
     connect(_ui->testButtonFor39Task, &QPushButton::clicked, this, [this] {
         QString pathToEndFile = "C:/temp/ca/project/2dend.dat";
@@ -123,14 +129,52 @@ SashaSecretWindow::SashaSecretWindow(QWidget *parent)
         _ui->testResult->setTextColor(QColor(0, 255, 0));
         printText("FUNCTION_18:", _pathToTestDataFile.arg("func18/out.txt"), pathToRealDataFile);
     });
+
+    connect(_ui->testButtonFor56Task, &QPushButton::clicked, this, [this] {
+        auto name = _loadingCloudWindow->name();
+        if(name.length() == 0 || !_project->containsFigure(name)) {
+            _ui->valueOfLE->setText("Error!!!");
+            _ui->valueOfTE->setText("Error!!!");
+            return;
+        } else {
+            _ui->valueOfLE->setText("");
+            _ui->valueOfTE->setText("");
+        }
+
+        auto params = Function18Params(0, 1, 1);
+        auto points = dynamic_cast<const CurveFigure*>(_project->findFigure(name))->points();
+        auto radiuses = CurveMachine::getRadiusOfEdges(points, params);
+        _ui->valueOfLE->setText(QString::number(radiuses[0]));
+        _ui->valueOfTE->setText(QString::number(radiuses[1]));
+    });
+
+    connect(_ui->testButtonFor4Task, &QPushButton::clicked, this, [this] {
+        auto nameOfFirstCloud = _ui->nameOfFirstCloud->text();
+        auto nameOfSecondCloud = _ui->nameOfSecondCloud->text();
+        auto firstCloud = dynamic_cast<const CurveFigure*>(_project->findFigure(nameOfFirstCloud))->points();
+        auto secondCloud = dynamic_cast<const CurveFigure*>(_project->findFigure(nameOfSecondCloud))->points();
+        if(firstCloud.length() == 0 || secondCloud.length() == 0) {
+            return;
+        }
+
+        auto threshold = _ui->threshold->text().toDouble();
+        auto needSort = _ui->needSort->isChecked();
+        auto mergedCloud = CurveMachine::mergePointClouds(firstCloud, secondCloud, threshold, needSort);
+        auto nameCurve = nameOfFirstCloud + "_" + nameOfSecondCloud;
+        auto curve = new CurveFigure(nameCurve, mergedCloud, 1);
+        if(_project->containsFigure(nameCurve)) {
+            _project->removeFigure(nameCurve);
+        }
+        _project->insertFigure(curve);
+    });
 }
 
-QVector<Point> SashaSecretWindow::getPointsOfFigure(const QString &fullPathToFile) {
-    QVector<Point> points;
+QVector<CurvePoint> SashaSecretWindow::getPointsOfFigure(const QString &fullPathToFile) {
+    QVector<CurvePoint> points;
     auto splittedPoints = FileSystem::readFile(fullPathToFile).split('\n');
     for(auto i = 0; i < splittedPoints.length(); i++) {
         auto pointStr = splittedPoints[i].split(',');
-        Point point(pointStr[0].toDouble(), pointStr[1].toDouble(), pointStr[2].toDouble(), pointStr[3].toDouble(), pointStr[4].toDouble(),
+        CurvePoint point(pointStr[0].toDouble(), pointStr[1].toDouble(), pointStr[2].toDouble(), pointStr[3].toDouble(), pointStr[4].toDouble(),
             pointStr[5].toDouble(), pointStr[6].toDouble(), pointStr[7].toDouble(), pointStr[8].toDouble());
         points.append(point);
     }

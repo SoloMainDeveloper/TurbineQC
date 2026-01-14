@@ -6,21 +6,25 @@
 #include "filesystem.h"
 #include "curvemachine.h"
 #include "curvelibrary.h"
+#include "loadingcloudwindow.h"
+#include "project.h"
 
 class SashaSecretWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit SashaSecretWindow(QWidget *parent = nullptr);
+    explicit SashaSecretWindow(Project *project = nullptr, QWidget *parent = nullptr);
     virtual ~SashaSecretWindow();
 
 private:
     Ui::SashaSecretWindowClass *_ui;
 
+    Project *_project;
+    LoadingCloudWindow *_loadingCloudWindow;
     QString _pathToInputFile;
     QString _pathToTestDataFile;
 
-    static QVector<Point> getPointsOfFigure(const QString &fullPathToFile);
+    static QVector<CurvePoint> getPointsOfFigure(const QString &fullPathToFile);
     static void makeCurveCalculations();
     static QString getResultOfComparingTwoFiles(const QString &pathToTestDataFile, const QString &pathToRealFile);
 

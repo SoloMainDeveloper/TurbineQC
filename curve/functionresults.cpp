@@ -27,11 +27,15 @@ Function6Result::Function6Result(CurveFigure curve, double offsetX, double offse
 }
 
 Function7Result::Function7Result(QStringList points) {
-    contactPoints = FileSystem::parsePointsFromElement(points, ",", 1, 1);
+    contactPoints.clear();
+
+    for(auto point : FileSystem::parsePointsFromElement(points, ",", 1, 1)) {
+        contactPoints.append(point); // TODO: check if no extra data in result
+    }
 }
 
 Function8Result::Function8Result(QStringList points) {
-    point = FileSystem::parsePointsFromElement(points, ",", 1, 1)[0];
+    point = Point(FileSystem::parsePointsFromElement(points, ",", 1, 1)[0]); // TODO: check if no extra data in result
 }
 
 Function9Result::Function9Result() {
@@ -49,11 +53,11 @@ Function11Result::Function11Result(QMap<QString, QStringList> elements) {
 Function12Result::Function12Result(QMap<QString, QStringList> elements) {
     points = FileSystem::parsePointsFromElement(elements["INPUTNAME"], ",", 1, 1);
     auto circleData = FileSystem::parsePointsFromElement(elements["CIRCLE$FIT"], ",", 1, 1)[0];
-    auto centre = Point(circleData.x, circleData.y);
-    circle = CircleFigure(QString(), centre, circleData.lt);
+    auto center = Point(circleData.x, circleData.y);
+    circle = CircleFigure(QString(), center, Point(0, 0, 1), circleData.dev);
 }
 
-Function13Result::Function13Result(QVector<Point> points) {
+Function13Result::Function13Result(QVector<CurvePoint> points) {
     this->points = points;
 }
 
@@ -80,15 +84,14 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
         if(header == "MCL") {
             this->middleCurve = CurveFigure(QString(), points);
         } else if(header == "TE_LE") {
-            this->trailingEdgePoint = PointFigure(QString(), points[0]);
-            this->leadingEdgePoint = PointFigure(QString(), points[1]);
+            this->trailingEdgePoint = PointFigure(QString(), CurvePoint(points[0]));
+            this->leadingEdgePoint = PointFigure(QString(), CurvePoint(points[1]));
         } else if(header == "CIRCLE$MAX") {
-            auto centre = Point(points[0].x, points[0].y);
-            auto radius = points[0].lt; //idk what to do with that
-            this->maxCircle = CircleFigure(QString(), centre, radius);
+            auto center = Point(points[0].x, points[0].y);
+            auto radius = points[0].dev; //idk what to do with that
+            this->maxCircle = CircleFigure(QString(), center, Point(0, 0, 1), radius);
         } else if(header == "LINE$FIT") {
-            //result.chordLine = LineFigure(QString(), points[0].x, points[0].y, points[0].z,
-            //  points[0].u, points[0].v, points[0].w) //waiting for new LineFigure struct
+            this->chordLine = LineFigure(QString(), Point(points[0].x, points[0].y), Point(points[0].i, points[0].j), points[0].dev);
         } else if(header == "CONTACT$TE_LE") {
             this->contactTEPoint = PointFigure(QString(), points[0]);
             this->contactLEPoint = PointFigure(QString(), points[1]);
@@ -102,7 +105,7 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
             this->curveHigh = CurveFigure(QString(), points);
         } else if(header == "CONTACT$ENDPOINTS") {
             this->contactEndPoints = points;
-            this->chordLength = points.last().lt;
+            this->chordLength = points.last().dev;
         }
     }
 }

@@ -1,0 +1,199 @@
+#include "curve/pch.h"
+#include "filesystem.h"
+
+<<<<<<< HEAD
+QString FileSystem::curveDirectory = "C:/Users/solom/source/repos/geomera projects/curve/curve-1.exe";
+=======
+QString FileSystem::curveDirectory = "C:/Users/Fyheck/Desktop/geomera/curve.exe";
+>>>>>>> origin/CURVE-6
+
+bool FileSystem::checkCurve() {
+    QFile file(curveDirectory);
+    return file.exists();
+}
+
+void FileSystem::createWorkEnvironment() {
+    QDir dir;
+    dir.mkpath("C:/temp/ca/project");
+}
+
+void FileSystem::fillInputWithSingleSegment(QVector<CurvePoint> points) {
+    QFile input("C:/temp/ca/project/2dinp.dat");
+    input.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream inputStream(&input);
+
+    inputStream << "$ELE (NAM=input_TE,TYP=APT, FLD=(X,Y,Z))\n";
+    for(auto i = 0; i < points.length(); i++) {
+        inputStream << QString::number(points[i].x, 'f', 4) << "," << QString::number(points[i].y, 'f', 4) << ",";
+        inputStream << QString::number(points[i].z, 'f', 4) << "," << QString::number(points[i].ut, 'f', 4) << ",";
+        inputStream << QString::number(points[i].i, 'f', 4) << "," << QString::number(points[i].j, 'f', 4) << ",";
+        inputStream << QString::number(points[i].k, 'f', 4) << "," << QString::number(points[i].dev, 'f', 4) << ",";
+        inputStream << QString::number(points[i].lt, 'f', 4) << "\n";
+    }
+    inputStream << "$END\n";
+    input.close();
+}
+
+void FileSystem::fillParams(FunctionParams* params) {
+    QFile param("C:/temp/ca/project/2dpar.dat");
+    param.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream paramStream(&param);
+    paramStream << params->toQString();
+    param.close();
+}
+
+QString FileSystem::readOutput() {
+    return readFile("C:/temp/ca/project/2dout.dat");
+}
+
+QString FileSystem::readFile(QString fullFileName) {
+    QFile output(fullFileName);
+    output.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream outputStream(&output);
+    auto result = outputStream.readAll().trimmed();
+    output.close();
+    return result;
+}
+
+QVector<CurvePoint> FileSystem::parsePointsFromElement(QStringList element, QString separator, int startLineToSkip, int finishLineToSkip) {
+    QVector<CurvePoint> result;
+    for(auto i = startLineToSkip; i < element.length() - finishLineToSkip; i++) {
+        auto pointStr = element[i].split(separator);
+        if(pointStr.length() != 1) {
+            auto point = CurvePoint();
+            point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
+            point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
+            point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
+            point.ut = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
+            point.i = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
+            point.j = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
+            point.k = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
+            point.dev = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
+            point.lt = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
+            result.append(point);
+        } else {
+            break;
+        }
+    }
+    return result;
+}
+
+QMap<QString, QStringList> FileSystem::parseOutputToElements(QStringList elements) {
+    QMap<QString, QStringList> result;
+    for(auto i = 0; i < elements.length(); i++) {
+        auto strList = elements[i].split('\n');
+        auto index1 = strList[0].indexOf('=') + 1;
+        auto index2 = strList[0].indexOf(',');
+        auto header = strList[0].mid(index1, index2 - index1);
+        result.insert(header, strList);
+    }
+    return result;
+}
+
+void FileSystem::fillInputWithMultipleElements(QList<QVector<CurvePoint>> points) {
+    QFile input("C:/temp/ca/project/2dinp.dat");
+    input.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream inputStream(&input);
+
+    for(auto i = 0; i < points.length(); i++) {
+        inputStream << "$ELE (NAM=input" << i << ",TYP = APT, FLD = (X, Y, Z))\n";
+        for(auto j = 0; j < points[i].length(); j++) {
+            inputStream << QString::number(points[i][j].x, 'f', 4) << "," << QString::number(points[i][j].y, 'f', 4) << ",";
+            inputStream << QString::number(points[i][j].z, 'f', 4) << "," << QString::number(points[i][j].ut, 'f', 4) << ",";
+            inputStream << QString::number(points[i][j].i, 'f', 4) << "," << QString::number(points[i][j].j, 'f', 4) << ",";
+            inputStream << QString::number(points[i][j].k, 'f', 4) << "," << QString::number(points[i][j].dev, 'f', 4) << ",";
+            inputStream << QString::number(points[i][j].lt, 'f', 4) << "\n";
+        }
+        inputStream << "$END\n";
+    }
+    input.close();
+}
+
+void FileSystem::saveProject(Project *project, QString dir, QString projectName, bool createCRV) {
+    auto resultTXT = dir + "/" + projectName + ".txt";
+    QFile input(resultTXT);
+    input.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream stream(&input);
+    stream << "$GENERAL\n" << "WPlane=XY\n";
+    stream << "ScaleFac=0.13926210182025\n";
+    stream << "DMovX=1.57995\n" << "DMovY=-0.8466\n";
+    stream << "ShowAxis=1\n" << "AutoAxis=1\n";
+    stream << "ShowGrid=0\n";
+    stream << "AxisXOri=0\n" << "AxisYOri=0\n";
+    stream << "AxisXDiv=10\n" << "AxisYDiv=10\n";
+    stream << "YAmp=1\n" << "XFac=1\n";
+    stream << "PartName=\n" << "Drawing=\n";
+    stream << "Order=\n" << "PartNumber=\n";
+    stream << "Operator=\n" << "Note=\n";
+    stream << "Date=\n" << "Time=\n";
+    stream << "TraceField1=\n";
+    stream << "TraceField2=\n";
+    stream << "TraceField3=\n";
+    stream << "TraceField4=\n";
+    stream << "TraceField5=\n";
+    stream << "TraceField6=\n";
+    stream << "TraceField7=\n";
+    stream << "TraceField8=\n";
+    stream << "TraceField9=\n";
+    stream << "$END GENERAL\n";
+    for(auto figure : project->figures()) {
+        inputFigure(stream, figure->settings());
+    }
+    input.close();
+    if(createCRV) {
+        QString command;
+        QTextStream commandStream(&command);
+        commandStream << "powershell.exe -Command " << "\"$file_text = Get-Content '" << resultTXT << "';"
+            << "copy C:/temp/ca/project/template.crv '" << dir << "';"
+            << "Set-Content -Path '" << dir + "/template" + ".crv" << "' -Value $file_text;" 
+            << "Rename-Item -Path '" << dir + "/template" + ".crv' '" << projectName + ".crv'" << "\"";
+        system(command.toStdString().c_str());
+    }
+}
+
+void FileSystem::inputFigure(QTextStream &stream, FigureSettings *set) {
+    stream << "$POINT SETTINGS\nName=" << set->name;
+    stream << "\nEleType=" << set->type << "\n";
+    stream << "Rif=" << set->rif << "\nRif1=" << set->rif1 << "\n";
+    stream << "Colour=" << set->colour << "\n";
+    stream << "X=" << set->x << "\n" << "Y=" << set->y << "\n" << "Z=" << set->z << "\n";
+    stream << "U=" << set->u << "\n" << "V=" << set->v << "\n" << "W=" << set->w << "\n";
+    stream << "L=" << set->l << "\n" << "M=" << set->m << "\n" << "N=" << set->n << "\n";
+    stream << "A=" << set->a << "\n" << "B=" << set->b << "\n" << "C=" << set->c << "\n";
+    stream << "D=" << set->d << "\n" << "E=" << set->e << "\n" << "F=" << set->f << "\n";
+
+    stream << "Visible=" << set->isVisible << "\n";
+    stream << "ShowPoints=" << set->showPoints << "\n";
+    stream << "ConnectPoints=" << set->connectPoints << "\n";
+    stream << "ShowVectors=" << set->showVectors << "\n";
+    stream << "PointNumbering=" << set->showNumbering << "\n";
+    stream << "PointNumberingShowEach=" << set->numberEach << "\n";
+    stream << "Closed=" << set->isClosed << "\n";
+    stream << "Amp=" << set->amplitude << "\n";
+    stream << "ShowTols=" << set->showTols << "\n";
+    stream << "UseGenTols=" << set->useGenTols << "\n";
+    stream << "UT=" << set->UT << "\n";
+    stream << "LT=" << set->LT << "\n";
+    stream << "ShowDev=" << set->showDev << "\n";
+    stream << "ConnectDev=" << set->connectDev << "\n";
+    stream << "HighlightDev=" << set->highlightDev << "\n";
+    inputPoints(stream, set->points);
+}
+
+void FileSystem::inputPoints(QTextStream &stream, const QVector<CurvePoint> points) {
+    stream << "$START POINTS\n";
+    auto precision = 12;
+    for(auto i = 0; i < points.length(); i++) {
+        stream << QString::number(points.at(i).x, 'f', precision) << "," << QString::number(points.at(i).y, 'f', precision) << "," <<
+            QString::number(points.at(i).z, 'f', precision) << "," << QString::number(points.at(i).i, 'f', precision) << "," <<
+            QString::number(points.at(i).j, 'f', precision) << "," << QString::number(points.at(i).k, 'f', precision) << "," <<
+            QString::number(points.at(i).dev, 'f', precision) << "," << QString::number(points.at(i).ut, 'f', precision) << "," <<
+            QString::number(points.at(i).lt, 'f', precision) << "\n";
+    }
+    stream << "$END POINTS\n";
+}
+
+bool FileSystem::isValidFileName(QString fileName) {
+    QRegularExpression pattern("^[a-zA-Z0-9_-]+$");
+    return fileName.contains(pattern);
+}

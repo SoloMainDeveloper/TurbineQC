@@ -88,6 +88,27 @@
     <ClCompile Include="loadingcloudwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="figureeditdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="turbinewindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="widthedgewindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="radiuscorrectiondialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mergepointcloudswindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="curvegraphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="saveprojectwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="figure.h">
@@ -109,6 +130,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="functionresults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="curvegraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,6 +158,24 @@
     <QtMoc Include="loadingcloudwindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="figureeditdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="turbinewindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="widthedgewindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="radiuscorrectiondialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mergepointcloudswindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="saveprojectwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="sashasecretwindow.ui">
@@ -143,6 +185,24 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="loadingcloudwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="figureeditdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="turbinewindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="widthedgewindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="radiuscorrectiondialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="mergepointcloudswindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="saveprojectwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -108,7 +108,7 @@ QString Function7Params::toQString() {
         .arg(QString::number(_zLine, 'f', 9)).arg(QString::number(_angle, 'f', 9));
 }
 
-Function8Params::Function8Params(int diameter, double xCircle, double yCircle, double zCircle, bool isClosed) {
+Function8Params::Function8Params(double diameter, double xCircle, double yCircle, double zCircle, bool isClosed) {
     _isClosed = isClosed;
     _xCircle = xCircle;
     _yCircle = yCircle;

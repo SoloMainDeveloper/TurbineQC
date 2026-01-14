@@ -3,27 +3,46 @@
 class Point {
 public:
 	double x, y, z;
+
+	Point();
+	Point(double x, double y, double z = 0.0);
+};
+
+class CurvePoint {
+public:
+	double x, y, z;
 	double i, j, k;
 	double dev, lt, ut;
 
-	Point(double x, double y, double z = 0, double i = 0, double j = 0, double k = 0, double dev = 0, double lt = 0, double ut = 0);
-	Point() : Point(0, 0) {
-	};
+	CurvePoint();
+	CurvePoint(double x, double y, double z = 0, double i = 0, double j = 0, double k = 0, double dev = 0, double lt = 0, double ut = 0);
+	
+	explicit operator Point();
+};
+
+struct FigureSettings {
+public:
+	QString name, type, rif, rif1;
+	int colour, numberEach;
+	double x, y, z, u, v, w, l, m, n, a, b, c, d, e, f, amplitude, UT, LT;
+	bool isVisible, showPoints, connectPoints, showVectors, isClosed,
+		showNumbering, showTols, useGenTols, showDev, connectDev, highlightDev;
+	const QVector<CurvePoint> points;
 };
 
 class Figure {
 public:
-	virtual QVector<Point> points() const;
-	//virtual QVector<Point> getPointsForDrawing //extra needed for circles
 	Figure();
 	Figure(QString name, bool isVisible = true);
+	virtual ~Figure() = default;
+	virtual FigureSettings* settings();
 
 	const QString& name() const;
 	void setName(QString name);
 	bool isVisible() const;
 	void setVisible(bool visibility);
 	void toggleVisible();
-	void setColor(QColor& color);
+	void setColor(QColor color);
 	const QColor& color() const;
 
 private:
@@ -35,8 +54,10 @@ private:
 class CurveFigure : public Figure {
 public:
 	CurveFigure();
-	CurveFigure(QString name, QVector<Point> points, double devMultiplier = 0);
-	QVector<Point> points() const override;
+	CurveFigure(QString name, QVector<CurvePoint> points, double devMultiplier = 1.0);
+	virtual FigureSettings* settings();
+
+	const QVector<CurvePoint>& points() const;
 	double devMultiplier() const; 
 
 	bool isShowPoints() const;
@@ -57,10 +78,15 @@ public:
 	int numberingInterval() const;
 	void setNumberingInterval(int numberingInterval);
 
-	void setTolerance(double upperTolerance, double lowerTolerance);
+	void changePoints(QVector<CurvePoint> updatePoints);
+	void assignToleranceToSegment(double upperTolerance, double lowerTolerance);
+	void computeToleranceClouds();
+
+	const QVector<CurvePoint>& upperTolerance() const;
+	const QVector<CurvePoint>& lowerTolerance() const;
 
 private:
-	QVector<Point> _points;
+	QVector<CurvePoint> _points, _upperTolerancePoints, _lowerTolerancePoints;
 	double _devMultiplier;
 
 	bool _isShowPoints = false;
@@ -74,36 +100,55 @@ private:
 class LineFigure : public Figure {
 public:
 	LineFigure();
-	LineFigure(QString name, Point start, Point end);
-	QVector<Point> points() const override;
-	Point start() const;
-	Point end() const;
+	LineFigure(QString name, Point position, Point direction, double length = qInf());
+	virtual FigureSettings* settings();
+	void setLength(double length);
+	void setOrigin(Point origin);
+	void setDirection(Point direction);
+	Point origin() const;
+	Point direction() const;
+	double length() const;
 
 private:
-	Point _start;
-	Point _end;
+	Point _origin;
+	Point _direction;
+	double _length;
 };
 
 class PointFigure : public Figure {
 public:
-	PointFigure();
-	PointFigure(QString name, Point point);
-	QVector<Point> points() const override;
-	const Point& point() const;
+	PointFigure() = default;
+	PointFigure(QString name, CurvePoint point);
+	virtual FigureSettings* settings();
+	CurvePoint point() const;
 
 private:
-	Point _point;
+	CurvePoint _point;
 };
 
 class CircleFigure : public Figure {
 public:
 	CircleFigure();
-	CircleFigure(QString name, Point centre = Point(0, 0), double radius = 0);
-	QVector<Point> points() const override;
-	Point centre() const;
+	CircleFigure(QString name, Point center, Point normal, double radius);
+	virtual FigureSettings* settings();
+	Point center() const;
+	Point normal() const;
 	double radius() const;
 
 private:
-	Point _centre;
+	Point _center;
+	Point _normal;
 	double _radius;
+};
+
+class DimFigure : public LineFigure {
+public:
+	DimFigure(QString name, PointFigure *start, PointFigure *end);
+	virtual FigureSettings* settings();
+	PointFigure* start() const;
+	PointFigure* end() const;
+
+private:
+	PointFigure *_start;
+	PointFigure *_end;
 };

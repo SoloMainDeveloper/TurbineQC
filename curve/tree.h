@@ -30,6 +30,7 @@ private:
     QTreeWidgetItem* treePoints;
 
     QAction* renameItem;
+    QAction* editItem;
     QAction* removeItem;
 
     Project* project = nullptr;
@@ -40,6 +41,7 @@ private:
     void changeCurrentFigure(const QTreeWidgetItem *item);
     void changeCurrentFigureByName(const QString currentFigureName);
     void onItemDoubleClicked(const QTreeWidgetItem *item);
+    void onEditItemTriggered();
 
 public slots:
     void addFigure(Figure* figure);
@@ -49,6 +51,7 @@ public slots:
 signals:
     void figureRenameRequested(const QString &name, const QString &newName);
     void figureRemoveRequested(const QString &name);
+    void figureEditRequested(const QString &name);
     void figureToggleVisibilityRequested(const QString &name);
     void currentFigureChanged(const QString &name);
 };

@@ -1,7 +1,21 @@
 #include "curve/pch.h"
 #include "figure.h"
 
-Point::Point(double x, double y, double z, double i, double j, double k, double dev, double lt, double ut) {
+Point::Point() : Point(0.0, 0.0) {
+	// empty
+}
+
+Point::Point(double x, double y, double z) {
+	this->x = x;
+	this->y = y;
+	this->z = z;
+}
+
+CurvePoint::CurvePoint() : CurvePoint(0.0, 0.0) {
+	// empty
+}
+
+CurvePoint::CurvePoint(double x, double y, double z, double i, double j, double k, double dev, double lt, double ut) {
 	this->x = x;
 	this->y = y;
 	this->z = z;
@@ -13,23 +27,65 @@ Point::Point(double x, double y, double z, double i, double j, double k, double 
 	this->ut = ut;
 }
 
-void CurveFigure::setTolerance(double upperTolerance, double lowerTolerance) {
+CurvePoint::operator Point() {
+	return Point(x, y, z);
+}
+
+void CurveFigure::changePoints(QVector<CurvePoint> newPoints) {
+	_points = newPoints;
+}
+
+void CurveFigure::assignToleranceToSegment(double upperTolerance, double lowerTolerance) {
 	for(int i = 0; i < _points.length(); i++) {
 		_points[i].ut = upperTolerance;
 		_points[i].lt = lowerTolerance;
 	}
 }
 
+void CurveFigure::computeToleranceClouds() {
+	_lowerTolerancePoints.clear();
+	_upperTolerancePoints.clear();
+
+	for(auto point = _points.begin(); point != _points.end(); point++) {
+		auto upperOffsetPoint = *point;
+		upperOffsetPoint.x += point->i * point->ut;
+		upperOffsetPoint.y += point->j * point->ut;
+		upperOffsetPoint.z += point->k * point->ut;
+		_upperTolerancePoints.push_back(upperOffsetPoint);
+
+		auto lowerOffsetPoint = *point;
+		if(point->lt >= 0) { // fix bug. It should be negative, but curve send positive
+			lowerOffsetPoint.x += point->i * point->lt;
+			lowerOffsetPoint.y += point->j * point->lt;
+			lowerOffsetPoint.z += point->j * point->lt;
+		} else {
+			lowerOffsetPoint.x += point->i * point->lt;
+			lowerOffsetPoint.y += point->j * point->lt;
+			lowerOffsetPoint.z += point->k * point->lt;
+		}
+		
+		_lowerTolerancePoints.push_back(lowerOffsetPoint);
+	}
+}
+
+const QVector<CurvePoint>& CurveFigure::upperTolerance() const {
+	return _upperTolerancePoints;
+}
+
+const QVector<CurvePoint>& CurveFigure::lowerTolerance() const {
+	return _lowerTolerancePoints;
+}
+
 CurveFigure::CurveFigure() {
 	this->_devMultiplier = 0;
 }
 
-CurveFigure::CurveFigure(QString name, QVector<Point> points, double devMultiplier) : Figure(name) {
+CurveFigure::CurveFigure(QString name, QVector<CurvePoint> points, double devMultiplier) : Figure(name) {
 	_points = points;
 	_devMultiplier = devMultiplier;
 }
 
-QVector<Point> CurveFigure::points() const {
+const QVector<CurvePoint>& CurveFigure::points() const {
 	return _points;
 }
 
@@ -37,38 +93,61 @@ double CurveFigure::devMultiplier() const {
 	return _devMultiplier;
 }
 
-PointFigure::PointFigure() {
-}
-
-PointFigure::PointFigure(QString name, Point point) : Figure(name) {
+PointFigure::PointFigure(QString name, CurvePoint point) : Figure(name) {
 	_point = point;
 }
 
-QVector<Point> PointFigure::points() const {
-	return QVector<Point> { _point };
-}
-
-const Point& PointFigure::point() const {
+CurvePoint PointFigure::point() const {
 	return _point;
 }
 
 LineFigure::LineFigure() {
+	_length = qInf();
 }
 
-LineFigure::LineFigure(QString name, Point start, Point end) : Figure(name) {
+LineFigure::LineFigure(QString name, Point origin, Point direction, double length) : Figure(name) {
+	_origin = origin;	
+	_direction = direction;
+	_length = length;
+}
+
+void LineFigure::setLength(double length) {
+	if(length >= 0) {
+		_length = length;
+    }
+}
+
+void LineFigure::setOrigin(Point origin) {
+	_origin = origin;
+}
+
+void LineFigure::setDirection(Point direction) {
+	_direction = direction;
+}
+
+Point LineFigure::origin() const {
+	return _origin;
+}
+
+Point LineFigure::direction() const {
+	return _direction;
+}
+
+double LineFigure::length() const {
+	return _length;
+}
+
+DimFigure::DimFigure(QString name, PointFigure *start, PointFigure *end) {
+	this->setName(name);
 	_start = start;
 	_end = end;
 }
 
-QVector<Point> LineFigure::points() const {
-	return QVector<Point> { _start, _end };
-}
-
-Point LineFigure::start() const {
+PointFigure* DimFigure::start() const {
 	return _start;
 }
 
-Point LineFigure::end() const {
+PointFigure* DimFigure::end() const {
 	return _end;
 }
 
@@ -76,28 +155,26 @@ CircleFigure::CircleFigure() {
 	this->_radius = 0;
 }
 
-CircleFigure::CircleFigure(QString name, Point centre, double radius) : Figure(name) {
-	_centre = centre;
+CircleFigure::CircleFigure(QString name, Point center, Point normal, double radius) : Figure(name) {
+	_center = center;
+	_normal = normal;
 	_radius = radius;
 }
 
-QVector<Point> CircleFigure::points() const {
-	return QVector<Point> { _centre };
+Point CircleFigure::center() const {
+	return _center;
 }
 
-Point CircleFigure::centre() const {
-	return _centre;
+Point CircleFigure::normal() const {
+	return _normal;
 }
 
 double CircleFigure::radius() const {
 	return _radius;
 }
 
-QVector<Point> Figure::points() const {
-	throw _EXCEPTION_; //not implemented figure
-}
-
 Figure::Figure() {
+	_isVisible = true;
 }
 
 Figure::Figure(QString name, bool isVisible) {
@@ -125,7 +202,7 @@ void Figure::toggleVisible() {
 	_isVisible = !_isVisible;
 }
 
-void Figure::setColor(QColor& color) {
+void Figure::setColor(QColor color) {
     _color = color;
 }
 
@@ -140,7 +217,6 @@ bool CurveFigure::isShowPoints() const {
 void CurveFigure::setShowPoints(bool showPoints) {
 	_isShowPoints = showPoints;
 }
-
 
 void CurveFigure::toggleShowPoints() {
 	_isShowPoints = !_isShowPoints;
@@ -200,4 +276,57 @@ int CurveFigure::numberingInterval() const {
 
 void CurveFigure::setNumberingInterval(int numberingInterval) {
 	_numberingInterval = numberingInterval;
+}
+
+FigureSettings* CurveFigure::settings() {
+	return new FigureSettings { name(), "CRV", "", "", 0, numberingInterval(), //colour = 0
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+		isVisible(), isShowPoints(), isConnectPoints(), isShowVectors(), isClosed(),
+		isShowNumbering(), true, false, false, false, false, points()
+	};
+}
+
+FigureSettings* PointFigure::settings() {
+	const QVector<CurvePoint> empty = { };
+	return new FigureSettings { name(), "PNT", "", "", 0, 0,
+		point().x, point().y, point().z, point().i, point().j, point().k, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		isVisible(), false, false, false, false,
+		false, false, false, false, false, false, empty
+	};
+}
+
+FigureSettings* LineFigure::settings() {
+	const QVector<CurvePoint> empty = {};
+	return new FigureSettings { name(), "LIN", "", "", 0, 0,
+		origin().x, origin().y, origin().z, direction().x, direction().y, direction().z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		isVisible(), false, false, false, false,
+		false, false, false, false, false, false, empty
+	};
+}
+
+FigureSettings* DimFigure::settings() {
+	const QVector<CurvePoint> point = { CurvePoint(1, 0, 0, 0, 0, length(), 0, 0, 0) };
+	return new FigureSettings { name(), "DIM", start()->name(), end()->name(), 0, 0,
+		origin().x, origin().y, origin().z, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0,
+		isVisible(), false, false, false, false,
+		false, false, false, false, false, false, point
+	};
+}
+
+FigureSettings* Figure::settings() {
+	const QVector<CurvePoint> empty = {};
+	return new FigureSettings { "ERROR FIGURE", "ERROR", "", "", 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		false, false, false, false, false,
+		false, false, false, false, false, false, empty
+	};
+}
+
+FigureSettings* CircleFigure::settings() {
+	const QVector<CurvePoint> empty = {};
+	return new FigureSettings { name(), "CIR", "", "", 0, 0,
+		center().x, center().y, center().z, normal().x, normal().y, normal().z, 0, 0, 0, radius() * 2, 0, 0, 0, 0, 0, 0, 0, 0,
+		isVisible(), false, false, false, false,
+		false, false, false, false, false, false, empty
+	};
 }
