@@ -52,14 +52,6 @@ double CurveMachine::getDistanceBetweenPoints(CurvePoint firstPoint, CurvePoint 
     return hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
 }
 
-DimFigure* CurveMachine::getLineSegment(QString segmentName, PointFigure *start, PointFigure *end) {
-    auto dim = new DimFigure(segmentName, start, end);
-    dim->setLength(CurveMachine::getDistanceBetweenPoints(start->point(), end->point()));
-    dim->setOrigin(Point((start->point().x + end->point().x) / 2, (start->point().y + end->point().y) / 2));
-    dim->setDirection(CurveMachine::normalizeVector(Point(end->point().x - start->point().x, end->point().y - start->point().y)));
-    return dim;
-}
-
 Point CurveMachine::normalizeVector(Point vector) {
     auto length = hypot(vector.x, vector.y);
     return Point(vector.x / length, vector.y / length);
@@ -280,4 +272,12 @@ CurveFigure CurveMachine::offsetCurve(const QVector<CurvePoint> curve, const Fun
 
 CurveFigure CurveMachine::calculateDeviations(const QVector<CurvePoint> nomCurve, const QVector<CurvePoint> measCurve, const Function4Params params) {
     return CurveLibrary::function4(nomCurve, measCurve, params).curve;
+}
+
+CurveFigure CurveMachine::calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params, ReportData *reportData) {
+    auto result = CurveLibrary::function6(measuredCurve, nominalCurve, params);
+    if(reportData != nullptr) {
+        reportData->setBestFitValues(result.offsetX, result.offsetY, result.rotation);
+    }
+    return result.curve;
 }

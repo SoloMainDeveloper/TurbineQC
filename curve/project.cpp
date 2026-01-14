@@ -21,8 +21,34 @@ const Figure* Project::findFigure(const QString &name) const {
     return nullptr;
 }
 
-bool Project::containsFigure(const QString &name) const {
+const bool Project::containsFigure(const QString &name) const {
     return findFigure(name) ? true : false;
+}
+
+void Project::setVisibility(const QStringList &figureNames) {
+    for(auto &figureName : figureNames) {
+        changeFigureVisibility(figureName, true);
+    }
+}
+
+void Project::resetVisibilityForAllFigures() {
+    for(auto figure : _figures) {
+        if(figure->isVisible()) {
+            changeFigureVisibility(figure->name(), false);
+        }
+    }
+}
+
+void Project::setCurrentFigure(const QString &currentFigureName) {
+    changeCurrentFigure(currentFigureName);
+}
+
+double Project::scaleFactor() const {
+    return _scaleFactor;
+}
+
+const Point* Project::centerPoint() const {
+    return _centerPoint;
 }
 
 void Project::insertFigure(Figure * figure) {
@@ -38,6 +64,7 @@ void Project::renameFigure(const QString &name, const QString &newName) {
         _currentFigureName = newName;
         currentFigureChanged(newName, name);
     }
+    MacrosManager::log(MacrosManager::RenameFigure, { { "figureName", name }, { "newName", newName } });
 }
 
 void Project::removeFigure(const QString &name) {
@@ -47,6 +74,7 @@ void Project::removeFigure(const QString &name) {
 
     emit figureAboutToBeRemoved(name);
     _figures.removeOne(findFigure(name));
+    MacrosManager::log(MacrosManager::RemoveFigure, { { "figureName", name } });
 }
 
 void Project::changeCurrentFigure(const QString &currentFigureName) {
@@ -69,7 +97,8 @@ void Project::toggleFigureVisibility(const QString figureName) {
 }
 
 void Project::changeCurveParameters(const QString figureName, bool showPoints, bool connectPoints,
-    bool showVectors, bool closed, bool showNumbering, int numberingInterval) {
+    bool showVectors, bool closed, bool showNumbering, int numberingInterval,
+    double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut) {
     auto curve = findFigureMutable(figureName);
     auto currentCurve = dynamic_cast<CurveFigure*>(curve);
     currentCurve->setShowPoints(showPoints);
@@ -78,8 +107,14 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
     currentCurve->setClosed(closed);
     currentCurve->setShowNumbering(showNumbering);
     currentCurve->setNumberingInterval(numberingInterval);
+    currentCurve->setAmplification(amplification);
+    currentCurve->setShowTolerances(showTolerances);
+    currentCurve->setShowDeviations(showDeviations);
+    currentCurve->setConnectDeviations(connectDeviations);
+    currentCurve->setHighLightOut(highLightOut);
     emit curveParametersChanged(figureName, showPoints, connectPoints,
-        showVectors, closed, showNumbering, numberingInterval);
+        showVectors, closed, showNumbering, numberingInterval, 
+        amplification, showTolerances, showDeviations, connectDeviations, highLightOut);
 }
 
 void Project::changeCurveTolerance(const QString curveName, QVector<CurvePoint> curveWithTolerances) {
@@ -87,8 +122,9 @@ void Project::changeCurveTolerance(const QString curveName, QVector<CurvePoint> 
     if(auto curve = dynamic_cast<CurveFigure*>(figure)) {
         curve->changePoints(curveWithTolerances);
         curve->setClosed(true);
-        curve->computeToleranceClouds();
-        emit curveParametersChanged(curveName, curve->isShowPoints(), curve->isConnectPoints(), curve->isShowVectors(), curve->isClosed(), curve->isShowNumbering(), curve->numberingInterval());
+        curve->setShowTolerances(true);
+        emit curveParametersChanged(curveName, curve->isShowPoints(), curve->isConnectPoints(), curve->isShowVectors(), curve->isClosed(), curve->isShowNumbering(), curve->numberingInterval(), 
+            curve->amplification(), curve->isShowTolerances(), curve->isShowDeviations(), curve->isConnectDeviations(), curve->isHighLightOut());
         emit curveToleranceChanged(curveName);
     }
 }
@@ -111,7 +147,7 @@ void Project::safeInsert(QString figureName, Figure *figure) {
         insertFigure(figure);
         changeCurrentFigure(figureName);
         return;
-    } else if (containsFigure(figureName)) {
+    } else if(containsFigure(figureName)) {
         removeFigure(figureName);
     }
     insertFigure(figure);
@@ -125,9 +161,24 @@ void Project::changeCurvePoints(QString curveName, QVector<CurvePoint> newPoints
     }
 }
 
+void Project::changeFigureColor(const QString figureName, QColor color) {
+    auto figure = findFigureMutable(figureName);
+    figure->setColor(color);
+    emit figureColorChanged(figureName);
+}
+
+void Project::changeScale(double scaleFactor, const Point &center) {
+    _scaleFactor = scaleFactor;
+    _centerPoint = &center;
+
+    emit scaleChanged(scaleFactor, center);
+}
+
 void Project::clear() {
     auto length = _figures.length();
     for(auto i = length - 1; i >= 0; i--) {
         removeFigure(_figures[i]->name());
     }
+    MacrosManager::log(MacrosManager::ClearProject);
+    emit cleared();
 }

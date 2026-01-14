@@ -137,18 +137,49 @@ double LineFigure::length() const {
 	return _length;
 }
 
-DimFigure::DimFigure(QString name, PointFigure *start, PointFigure *end) {
-	this->setName(name);
-	_start = start;
-	_end = end;
+void LineFigure::setHead(const QCPLineEnding &head) {
+    _head = head;
 }
 
-PointFigure* DimFigure::start() const {
-	return _start;
+void LineFigure::setTail(const QCPLineEnding &tail) {
+    _tail = tail;
 }
 
-PointFigure* DimFigure::end() const {
-	return _end;
+const QCPLineEnding & LineFigure::head() const {
+	return _head;
+}
+
+const QCPLineEnding & LineFigure::tail() const {
+	return _tail;
+}
+
+const Figure* DimFigure::firstReference() const {
+	return _firstReference;
+}
+
+const Figure* DimFigure::secondReference() const {
+	return _secondReference;
+}
+
+void DimFigure::addValue(const Value & value) {
+	_values.push_back(value);
+}
+
+const QVector<DimFigure::Value>& DimFigure::values() const {
+	return _values;
+}
+
+const DimFigure::DimType DimFigure::dimType() const {
+	return _dimType;
+}
+
+const QVector<CurvePoint> DimFigure::convertDimValueToPoints(const QVector<Value>& values) {
+	QVector<CurvePoint> points;
+    for (auto i = 0; i < values.length(); i++) {
+		points.push_back(CurvePoint(values[i].isShow , values[i].nominal, 0, 0, 0,
+			values[i].measurement, 0, values[i].upperTolerance, values[i].lowerTolerance));
+    }
+	return points;
 }
 
 CircleFigure::CircleFigure() {
@@ -278,8 +309,64 @@ void CurveFigure::setNumberingInterval(int numberingInterval) {
 	_numberingInterval = numberingInterval;
 }
 
+bool CurveFigure::isShowTolerances() const {
+	return _isShowTolerances;
+}
+
+void CurveFigure::setShowTolerances(bool showTolerances) {
+	_isShowTolerances = showTolerances;
+}
+
+bool CurveFigure::isShowDeviations() const {
+	return _isShowDeviations;
+}
+
+void CurveFigure::setShowDeviations(bool showDeviations) {
+	_isShowDeviations = showDeviations;
+}
+
+bool CurveFigure::isShowNumericalDeviations() const {
+	return _isShowNumericalDeviations;
+}
+
+void CurveFigure::setShowNumericalDeviations(bool isShowNumericalDeviations) {
+	_isShowNumericalDeviations = isShowNumericalDeviations;
+}
+
+int CurveFigure::numericalInterval() const {
+	return _numericalInterval;
+}
+
+void CurveFigure::setNumericalInterval(int numericalInterval) {
+	_numericalInterval = numericalInterval;
+}
+
+bool CurveFigure::isConnectDeviations() const {
+	return _isConnectDeviations;
+}
+
+void CurveFigure::setConnectDeviations(bool connectDeviations) {
+	_isConnectDeviations = connectDeviations;
+}
+
+void CurveFigure::setHighLightOut(bool highLightOut) {
+    _isHighLightOut = highLightOut;
+}
+
+bool CurveFigure::isHighLightOut() const {
+	return _isHighLightOut;
+}
+
+void CurveFigure::setAmplification(double amplification) {
+	_amplification = amplification;
+}
+
+double CurveFigure::amplification() const {
+	return _amplification;
+}
+
 FigureSettings* CurveFigure::settings() {
-	return new FigureSettings { name(), "CRV", "", "", 0, numberingInterval(), //colour = 0
+	return new FigureSettings { name(), "CRV", "", "", ColorTranslator::getIntFromColor(&color()), numberingInterval(),
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
 		isVisible(), isShowPoints(), isConnectPoints(), isShowVectors(), isClosed(),
 		isShowNumbering(), true, false, false, false, false, points()
@@ -288,7 +375,7 @@ FigureSettings* CurveFigure::settings() {
 
 FigureSettings* PointFigure::settings() {
 	const QVector<CurvePoint> empty = { };
-	return new FigureSettings { name(), "PNT", "", "", 0, 0,
+	return new FigureSettings { name(), "PNT", "", "", ColorTranslator::getIntFromColor(&color()), 0,
 		point().x, point().y, point().z, point().i, point().j, point().k, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
 		false, false, false, false, false, false, empty
@@ -297,25 +384,52 @@ FigureSettings* PointFigure::settings() {
 
 FigureSettings* LineFigure::settings() {
 	const QVector<CurvePoint> empty = {};
-	return new FigureSettings { name(), "LIN", "", "", 0, 0,
+	return new FigureSettings { name(), "LIN", "", "", ColorTranslator::getIntFromColor(&color()), 0,
 		origin().x, origin().y, origin().z, direction().x, direction().y, direction().z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
 		false, false, false, false, false, false, empty
 	};
 }
 
+DimFigure::DimFigure(const QString &name, const DimType type, const Point &labelPoint, const Figure *firstReference,
+	const Figure *secondReference) : Figure(name) {
+		_dimType = type;
+		_labelPoint = labelPoint;
+		_firstReference = firstReference;
+		_secondReference = secondReference;
+}
+
 FigureSettings* DimFigure::settings() {
-	const QVector<CurvePoint> point = { CurvePoint(1, 0, 0, 0, 0, length(), 0, 0, 0) };
-	return new FigureSettings { name(), "DIM", start()->name(), end()->name(), 0, 0,
-		origin().x, origin().y, origin().z, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0,
+	auto point = labelPoint();
+	auto rif = firstReference() ? firstReference()->name() : "";
+	auto rif1 = secondReference() ? secondReference()->name() : "";
+	double A;
+
+	if(_dimType == DimType::Position) A = 1;
+	else if(_dimType == DimType::Radius) A = 2;
+	else if(_dimType == DimType::Diameter) A = 3;
+	else if(_dimType == DimType::Distance) A = 6;
+	else if(_dimType == DimType::AngleTo) A = 8;
+	else if(_dimType == DimType::AngleBetween) A = 11;
+	else if(_dimType == DimType::Perimeter) A = 16;
+	else if(_dimType == DimType::BestFitData) A = 19;
+	else if(_dimType == DimType::Form) A = 20;
+	else if(_dimType == DimType::TruePosition) A = 21;
+	return new FigureSettings { name(), "DIM", rif, rif1, 0, 0,
+		point.x, point.y, point.z, 0, 0, 1, 0, 0, 0, A, 0, 0, 0, 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
-		false, false, false, false, false, false, point
+		false, false, false, false, false, false, convertDimValueToPoints(values())
 	};
+	return nullptr;
+}
+
+const Point & DimFigure::labelPoint() const {
+	return _labelPoint;
 }
 
 FigureSettings* Figure::settings() {
 	const QVector<CurvePoint> empty = {};
-	return new FigureSettings { "ERROR FIGURE", "ERROR", "", "", 0, 0,
+	return new FigureSettings { "ERROR FIGURE", "ERROR", "", "", ColorTranslator::getIntFromColor(&color()), 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		false, false, false, false, false,
 		false, false, false, false, false, false, empty
@@ -324,9 +438,13 @@ FigureSettings* Figure::settings() {
 
 FigureSettings* CircleFigure::settings() {
 	const QVector<CurvePoint> empty = {};
-	return new FigureSettings { name(), "CIR", "", "", 0, 0,
+	return new FigureSettings { name(), "CIR", "", "", ColorTranslator::getIntFromColor(&color()), 0,
 		center().x, center().y, center().z, normal().x, normal().y, normal().z, 0, 0, 0, radius() * 2, 0, 0, 0, 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
 		false, false, false, false, false, false, empty
 	};
+}
+
+DimFigure::Value::Value(ValueType valueType) {
+	type = valueType;
 }

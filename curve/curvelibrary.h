@@ -25,6 +25,9 @@ public:
     static Function16Result function16(QVector<CurvePoint> points, Function16Params params); //auto curve split
     static Function17Result function17(QVector<CurvePoint> points, Function17Params params); //shift points
     static Function18Result function18(QVector<CurvePoint> points, Function18Params params); //blade
+    static Function19Result function19(QVector<CurvePoint> points, Function19Params params); //specified number of points
+    static Function21Result function21(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, QVector<CurvePoint> curve3, Function21Params params); //best-fit analog
+    static Function31Result function31(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, Function31Params params); //stretch LE, TE
 
 private:
     static void runCurve();

@@ -1,7 +1,9 @@
 #include "curve/pch.h"
 #include "filesystem.h"
 
-QString FileSystem::curveDirectory = "C:/Users/Admin/Desktop/test/curve-1.exe";
+Point FileSystem::_offsetPoint = Point(0, 0);
+double FileSystem::_scaleFactor = 1;
+QString FileSystem::curveDirectory = "C:/Users/solom/source/repos/Work/geomera projects/curve/curve-1.exe";
 
 bool FileSystem::checkCurve() {
     QFile file(curveDirectory);
@@ -49,48 +51,98 @@ QString FileSystem::readFile(QString fullFileName) {
     return result;
 }
 
-QVector<CurvePoint> FileSystem::parsePointsFromElement(QStringList element, QString separator, int startLineToSkip,
-    int finishLineToSkip, Order order) {
+void FileSystem::writeFile(QString fullFileName, QString text) {
+    QFile output(fullFileName);
+    output.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream outputStream(&output);
+    outputStream << text;
+    output.close();
+}
+
+QVector<CurvePoint> FileSystem::parsePointsFromElement(QStringList element, QString separator, int startLineToSkip, int finishLineToSkip,
+    Order order, QString columnNames, QString numberOfColumns, QString decimal) {
     QVector<CurvePoint> result;
+
     for(auto i = startLineToSkip; i < element.length() - finishLineToSkip; i++) {
         auto pointStr = element[i].split(separator);
-        if(pointStr.length() != 1) {
-            auto point = CurvePoint();
-            switch (order) {
-                case Order::CurveLibrary: {
-                    point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
-                    point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
-                    point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
-                    point.ut = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
-                    point.i = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
-                    point.j = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
-                    point.k = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
-                    point.dev = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
-                    point.lt = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
+        if(pointStr.length() > 1) {
+            if(columnNames != nullptr && numberOfColumns != nullptr) {
+                auto resultColumnNames = columnNames.replace(",", "");
+                auto resultNumberOfColumns = numberOfColumns.replace(",", "");
+
+                if(!isColumnsCorrect(resultColumnNames, resultNumberOfColumns) || !hasDecimalSeparator(pointStr, decimal)
+                    || pointStr.length() < resultNumberOfColumns.length()) {
                     break;
+                } else {
+                    auto point = getPoint(pointStr, order, decimal, resultNumberOfColumns.length());
+                    result.append(point);
                 }
-                case Order::Default: {
-                    point.x = pointStr.length() > 0 ? pointStr[0].toDouble() : 0;
-                    point.y = pointStr.length() > 1 ? pointStr[1].toDouble() : 0;
-                    point.z = pointStr.length() > 2 ? pointStr[2].toDouble() : 0;
-                    point.i = pointStr.length() > 3 ? pointStr[3].toDouble() : 0;
-                    point.j = pointStr.length() > 4 ? pointStr[4].toDouble() : 0;
-                    point.k = pointStr.length() > 5 ? pointStr[5].toDouble() : 0;
-                    point.dev = pointStr.length() > 6 ? pointStr[6].toDouble() : 0;
-                    point.ut = pointStr.length() > 7 ? pointStr[7].toDouble() : 0;
-                    point.lt = pointStr.length() > 8 ? pointStr[8].toDouble() : 0;
-                    break;
-                }
-                default:
-                    QMessageBox::critical(nullptr, "Error", "Unknown order");
-                    break;
+            } else {
+                auto point = getPoint(pointStr, order, decimal);
+                result.append(point);
             }
-            result.append(point);
         } else {
             break;
         }
     }
     return result;
+}
+
+bool FileSystem::isColumnsCorrect(const QString &columnNames, const QString &numberOfColumns) {
+    if(columnNames == "XY" && numberOfColumns == "12" || columnNames == "XYZ" && numberOfColumns == "123"
+        || columnNames == "XYZIJK" && numberOfColumns == "123456" || columnNames == "XYZIJKD" && numberOfColumns == "1234567"
+        || columnNames == "XYZIJKDUTLT" && numberOfColumns == "123456789") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool FileSystem::hasDecimalSeparator(const QStringList &pointStr, const QString &decimal) {
+    for(auto i = 0; i < pointStr.length(); i++) {
+        if(!pointStr[i].contains(decimal)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+CurvePoint FileSystem::getPoint(QStringList pointStr, Order order, const QString &decimal, int numberOfColumns) {
+    auto point = CurvePoint();
+    switch(order) {
+        case Order::CurveLibrary:
+        {
+            point.x = pointStr.length() > 0 && 1 <= numberOfColumns ? pointStr[0].replace(decimal, ".").toDouble() : 0;
+            point.y = pointStr.length() > 1 && 2 <= numberOfColumns ? pointStr[1].replace(decimal, ".").toDouble() : 0;
+            point.z = pointStr.length() > 2 && 3 <= numberOfColumns ? pointStr[2].replace(decimal, ".").toDouble() : 0;
+            point.ut = pointStr.length() > 3 && 4 <= numberOfColumns ? pointStr[3].replace(decimal, ".").toDouble() : 0;
+            point.i = pointStr.length() > 4 && 5 <= numberOfColumns ? pointStr[4].replace(decimal, ".").toDouble() : 0;
+            point.j = pointStr.length() > 5 && 6 <= numberOfColumns ? pointStr[5].replace(decimal, ".").toDouble() : 0;
+            point.k = pointStr.length() > 6 && 7 <= numberOfColumns ? pointStr[6].replace(decimal, ".").toDouble() : 0;
+            point.dev = pointStr.length() > 7 && 8 <= numberOfColumns ? pointStr[7].replace(decimal, ".").toDouble() : 0;
+            point.lt = pointStr.length() > 8 && 9 <= numberOfColumns ? pointStr[8].replace(decimal, ".").toDouble() : 0;
+            break;
+        }
+        case Order::Default:
+        {
+            point.x = pointStr.length() > 0 && 1 <= numberOfColumns ? pointStr[0].replace(decimal, ".").toDouble() : 0;
+            point.y = pointStr.length() > 1 && 2 <= numberOfColumns ? pointStr[1].replace(decimal, ".").toDouble() : 0;
+            point.z = pointStr.length() > 2 && 3 <= numberOfColumns ? pointStr[2].replace(decimal, ".").toDouble() : 0;
+            point.i = pointStr.length() > 3 && 4 <= numberOfColumns ? pointStr[3].replace(decimal, ".").toDouble() : 0;
+            point.j = pointStr.length() > 4 && 5 <= numberOfColumns ? pointStr[4].replace(decimal, ".").toDouble() : 0;
+            point.k = pointStr.length() > 5 && 6 <= numberOfColumns ? pointStr[5].replace(decimal, ".").toDouble() : 0;
+            point.dev = pointStr.length() > 6 && 7 <= numberOfColumns ? pointStr[6].replace(decimal, ".").toDouble() : 0;
+            point.ut = pointStr.length() > 7 && 8 <= numberOfColumns ? pointStr[7].replace(decimal, ".").toDouble() : 0;
+            point.lt = pointStr.length() > 8 && 9 <= numberOfColumns ? pointStr[8].replace(decimal, ".").toDouble() : 0;
+            break;
+        }
+        default:
+        {
+            QMessageBox::critical(nullptr, "Error", "Unknown order");
+            break;
+        }
+    }
+    return point;
 }
 
 QMap<QString, QStringList> FileSystem::parseOutputToElements(QStringList elements) {
@@ -111,10 +163,32 @@ void FileSystem::fillInputWithMultipleElements(QList<QVector<CurvePoint>> points
     QTextStream inputStream(&input);
     for(auto i = 0; i < points.length(); i++) {
         inputStream << "$ELE (NAM=input" << i << ",TYP = APT, FLD = (X, Y, Z))\n";
-        fillFileWithPoints(inputStream, points[i], 4, Order::CurveLibrary);
+        fillFileWithPoints(inputStream, points[i], 9, Order::CurveLibrary);
         inputStream << "$END\n";
     }
     input.close();
+}
+
+bool FileSystem::loadCloud(Project *project, QString filePath, QString name, QString sep, int skipStart, int skipAfter,
+    QString columnNames, QString columnNumbers, QString decimal, Order order) {
+    auto data = readFile(filePath).split("\n");
+    auto points = parsePointsFromElement(data, sep, skipStart, skipAfter, order, columnNames, columnNumbers, decimal);
+    if(points.length() > 0) {
+        auto curve = new CurveFigure(name, points, 1);
+        project->insertFigure(curve);
+        MacrosManager::log(MacrosManager::LoadCloud, {
+            { "filepath", filePath },
+            { "name", name },
+            { "separator", sep },
+            { "skipStart", QString::number(skipStart) },
+            { "skipAfter", QString::number(skipAfter) },
+            { "columnNames", columnNames },
+            { "columnNumbers", columnNumbers },
+            { "decimal", decimal },
+            });
+        return true;
+    }
+    return false;
 }
 
 void FileSystem::saveProject(Project *project, QString dir, QString projectName, bool createCRV) {
@@ -122,8 +196,11 @@ void FileSystem::saveProject(Project *project, QString dir, QString projectName,
     QFile input(resultTXT);
     input.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QTextStream stream(&input);
-    stream << "$GENERAL\n" << "WPlane=XY\n" << "ScaleFac=0.13926210182025\n";
-    stream << "DMovX=1.57995\n" << "DMovY=-0.8466\n" << "ShowAxis=1\n" << "AutoAxis=1\n";
+    stream << "$GENERAL\n" << "WPlane=XY\n";
+    stream << "ScaleFac=" << project->scaleFactor() << "\n";
+    stream << "DMovX=" << project->centerPoint()->x << "\n";
+    stream << "DMovY=" << project->centerPoint()->y << "\n";
+    stream << "ShowAxis=1\n" << "AutoAxis=1\n";
     stream << "ShowGrid=0\n" << "AxisXOri=0\n" << "AxisYOri=0\n";
     stream << "AxisXDiv=10\n" << "AxisYDiv=10\n" << "YAmp=1\n" << "XFac=1\n";
     stream << "PartName=\n" << "Drawing=\n" << "Order=\n" << "PartNumber=\n";
@@ -140,11 +217,14 @@ void FileSystem::saveProject(Project *project, QString dir, QString projectName,
         QString command;
         QTextStream commandStream(&command);
         commandStream << "powershell.exe -Command " << "\"$file_text = Get-Content '" << resultTXT << "';"
-            << "copy C:/temp/ca/project/template.crv '" << dir << "';"
-            << "Set-Content -Path '" << dir + "/template" + ".crv" << "' -Value $file_text;" 
-            << "Rename-Item -Path '" << dir + "/template" + ".crv' '" << projectName + ".crv'" << "\"";
+            << "Set-Content -Path '" << dir + "/" + projectName + ".crv" << "' -Value $file_text;\"";
         system(command.toStdString().c_str());
     }
+    MacrosManager::log(MacrosManager::SaveProject, {
+        { "dirName", dir },
+        { "ProjectName", projectName },
+        { "createCRV", createCRV ? "true" : "false" }
+    });
 }
 
 void FileSystem::inputFigure(QTextStream &stream, FigureSettings *set) {
@@ -202,15 +282,35 @@ void FileSystem::fillFileWithPoints(QTextStream &stream, const QVector<CurvePoin
     }
 }
 
-void FileSystem::loadProject(Project *project) {
-    auto filePath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt *.crv)");
+void FileSystem::loadProject(Project *project, const QString &filePath) {
     if(!filePath.isEmpty()) {
+        QMap<QString, QString> generalData;
         auto parts = readFile(filePath).split("$END GENERAL");
+        if(parts.length() != 2) {
+            QMessageBox::critical(nullptr, "Error", "Wrong file format");
+            return;
+        }
+
+        auto generalPart = parts[0].split('\n');
+
+        for(const auto &part : generalPart) {
+            auto pairs = part.split('=');
+            if(pairs.size() == 2) {
+                auto key = pairs[0].trimmed();
+                auto value = pairs[1].trimmed();
+                generalData[key] = value;
+            }
+        }
+
+        auto scaleFactor = generalData["ScaleFac"].toDouble();
+        auto offsetPoint = Point(generalData["DMovX"].toDouble(), generalData["DMovY"].toDouble());
+
         auto figures = parts[1].split("$END POINTS");
         figures.removeLast();
-        for(auto figure : figures) {
+        auto postponedCases = 0;
+        for(auto i = 0; i < figures.length(); i++) {
             QMap<QString, QString> data;
-            auto parsedFigure = figure.trimmed().split('\n');
+            auto parsedFigure = figures[i].trimmed().split('\n');
             for(auto i = 1; i < 36; i++) {
                 auto pairs = parsedFigure[i].split('=');
                 if(pairs.size() == 2) {
@@ -219,8 +319,19 @@ void FileSystem::loadProject(Project *project) {
                     data[key] = value;
                 }
             }
-            auto points = parsePointsFromElement(parsedFigure, ",", 37, 0, Order::Default);
             auto type = data["EleType"];
+            if(type == "DIM" && (data["Rif"] != "" && !project->containsFigure(data["Rif"]) ||
+                data["Rif1"] != "" && !project->containsFigure(data["Rif1"]))) {
+                if(postponedCases + i > figures.length()) {
+                    QMessageBox::critical(nullptr, "Error", "Postpone queue error. Check DIM`s references");
+                } else {
+                    figures.push_back(figures.takeAt(i));
+                    postponedCases++;
+                    i--;
+                    continue;
+                }
+            }
+            auto points = parsePointsFromElement(parsedFigure, ",", 37, 0, Order::Default);
             if(type == "CRV") {
                 auto curve = new CurveFigure(data["Name"], points);
                 curve->setVisible(data["Visible"] == "1");
@@ -231,32 +342,153 @@ void FileSystem::loadProject(Project *project) {
                 curve->setNumberingInterval(data["PointNumberingShowEach"].toInt());
                 curve->setClosed(data["Closed"] == "1");
                 curve->computeToleranceClouds(); //needs refactoring
+                curve->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
                 project->safeInsert(curve->name(), curve);
             } else if(type == "LIN") {
                 auto position = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
                 auto direction = Point(data["U"].toDouble(), data["V"].toDouble(), data["W"].toDouble());
                 auto line = new LineFigure(data["Name"], position, direction);
+                line->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
                 line->setVisible(data["Visible"] == "1");
                 project->safeInsert(line->name(), line);
             } else if(type == "PNT") {
                 auto point = new PointFigure(data["Name"], CurvePoint(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble()));
+                point->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
                 point->setVisible(data["Visible"] == "1");
                 project->safeInsert(point->name(), point);
             } else if(type == "CIR") {
                 auto center = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
                 auto normal = Point(data["U"].toDouble(), data["V"].toDouble(), data["W"].toDouble());
                 auto circle = new CircleFigure(data["Name"], center, normal, data["A"].toDouble() / 2);
+                circle->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
                 circle->setVisible(data["Visible"] == "1");
                 project->safeInsert(circle->name(), circle);
             } else if(type == "DIM") {
-                auto start = const_cast<PointFigure*>(dynamic_cast<const PointFigure*>(project->findFigure(data["Rif"])));
-                auto end = const_cast<PointFigure*>(dynamic_cast<const PointFigure*>(project->findFigure(data["Rif1"])));
-                auto dim = CurveMachine::getLineSegment(data["Name"], start, end);
+                auto labelPoint = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
+                auto dim = createDim(data["Name"], data["A"].toInt(), labelPoint, project->findFigure(data["Rif"]),
+                    project->findFigure(data["Rif1"]), points);
+                dim->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
                 dim->setVisible(data["Visible"] == "1");
                 project->safeInsert(dim->name(), dim);
             } else {
                 QMessageBox::critical(nullptr, "Error", "Unknown element type");
             }
         }
+        project->changeScale(scaleFactor, offsetPoint);
+        MacrosManager::log(MacrosManager::LoadProject, { { "filepath", filePath } });
     }
+}
+
+DimFigure* FileSystem::createDim(QString name, int A, Point labelPoint, const Figure *rif,
+    const Figure *rif1, QList<CurvePoint> points) {
+        QList<DimFigure::Value> values;
+        DimFigure::DimType type;
+        switch(A) {
+            case 1:
+                type = DimFigure::DimType::Position;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::X),
+                    DimFigure::Value(DimFigure::ValueType::Y),
+                    DimFigure::Value(DimFigure::ValueType::Z),
+                    DimFigure::Value(DimFigure::ValueType::PolarRad),
+                    DimFigure::Value(DimFigure::ValueType::PolarAngle),
+                    DimFigure::Value(DimFigure::ValueType::Diameter),
+                    DimFigure::Value(DimFigure::ValueType::Radius)
+                    });
+                break;
+            case 2:
+                type = DimFigure::DimType::Radius;
+                values.append(DimFigure::Value(DimFigure::ValueType::Radius));
+                break;
+            case 3:
+                type = DimFigure::DimType::Diameter;
+                values.append(DimFigure::Value(DimFigure::ValueType::Diameter));
+                break;
+            case 6:
+            case 10:
+                type = DimFigure::DimType::Distance;
+                values.append(DimFigure::Value(DimFigure::ValueType::Length));
+                break;
+            case 8:
+                type = DimFigure::DimType::AngleTo;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::Angle0),
+                    DimFigure::Value(DimFigure::ValueType::Angle90),
+                    DimFigure::Value(DimFigure::ValueType::Angle180),
+                    DimFigure::Value(DimFigure::ValueType::Angle270)
+                    });
+                break;
+            case 11:
+                type = DimFigure::DimType::AngleBetween;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::AngleTo),
+                    DimFigure::Value(DimFigure::ValueType::AngleFrom)
+                    });
+                break;
+            case 12:
+                type = DimFigure::DimType::MinMax;
+                values.append(DimFigure::Value(DimFigure::ValueType::MinMax));
+                break;
+            case 13:
+                type = DimFigure::DimType::Min;
+                values.append(DimFigure::Value(DimFigure::ValueType::Min));
+                break;
+            case 16:
+                type = DimFigure::DimType::Perimeter;
+                values.append(DimFigure::Value(DimFigure::ValueType::Length));
+                break;
+            case 17:
+                type = DimFigure::DimType::Mean;
+                values.append(DimFigure::Value(DimFigure::ValueType::Mean));
+                break;
+            case 18:
+                type = DimFigure::DimType::Sigma;
+                values.append(DimFigure::Value(DimFigure::ValueType::Sigma));
+                break;
+            case 19:
+                type = DimFigure::DimType::BestFitData;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::dX),
+                    DimFigure::Value(DimFigure::ValueType::dY),
+                    DimFigure::Value(DimFigure::ValueType::Rotation)
+                    });
+                break;
+            case 20:
+                type = DimFigure::DimType::Form;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::MinMax),
+                    DimFigure::Value(DimFigure::ValueType::Form),
+                    DimFigure::Value(DimFigure::ValueType::Min),
+                    DimFigure::Value(DimFigure::ValueType::Max),
+                    DimFigure::Value(DimFigure::ValueType::MaxAbs),
+                    DimFigure::Value(DimFigure::ValueType::SupUT),
+                    DimFigure::Value(DimFigure::ValueType::InfLT)
+                    });
+                break;
+            case 21:
+                type = DimFigure::DimType::TruePosition;
+                values.append({
+                    DimFigure::Value(DimFigure::ValueType::X),
+                    DimFigure::Value(DimFigure::ValueType::Y),
+                    DimFigure::Value(DimFigure::ValueType::TruePosition)
+                    });
+                break;
+            case 22:
+                type = DimFigure::DimType::RMS;
+                values.append(DimFigure::Value(DimFigure::ValueType::RMS));
+                break;
+            default:
+                QMessageBox::critical(nullptr, "Error", "Unknown DIM type");
+                break;
+        }
+        auto *dim = new DimFigure(name, type, labelPoint, rif, rif1);
+        for(auto i = 0; i < points.length(); i++) {
+            values[i].isShow = std::fabs(points[i].x - 1) < 1e-6;
+            values[i].nominal = points[i].y;
+            values[i].measurement = points[i].k;
+            values[i].lowerTolerance = points[i].lt;
+            values[i].upperTolerance = points[i].ut;
+            dim->addValue(values.at(i));
+        }
+        return dim;
 }

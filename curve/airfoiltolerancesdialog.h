@@ -1,9 +1,8 @@
 #pragma once
 
-#include <QDialog>
 #include "project.h"
 #include "curvelibrary.h"
-#include "curvegraphics.h"
+#include "curvegraphicswidget.h"
 #include "ui_airfoiltolerancesdialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -31,7 +30,8 @@ private:
     Ui::AirfoilTolerancesDialogClass *_ui;
 
     Project* _project;
-    CurveGraphics* _curveGraphics;
+    CurveGraphicsWidget* _curveGraphics;
+    QGridLayout* _containerLayout;
 
     QStackedLayout* _stackedLayoutModes;
 

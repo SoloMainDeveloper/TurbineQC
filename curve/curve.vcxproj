@@ -121,31 +121,45 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="curvegraphics.cpp" />
+    <ClCompile Include="bestfitdialog.cpp" />
+    <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
+    <ClCompile Include="curvegraphicswidget.cpp" />
+    <ClCompile Include="dimensionrender.cpp" />
     <ClCompile Include="figureeditdialog.cpp" />
     <ClCompile Include="loadingcloudwindow.cpp" />
     <ClCompile Include="airfoiltolerancesdialog.cpp" />
+    <ClCompile Include="macrosmanager.cpp" />
+    <ClCompile Include="macroswindow.cpp" />
     <ClCompile Include="mergepointcloudswindow.cpp" />
     <ClCompile Include="plot.cpp" />
     <ClCompile Include="curvelibrary.cpp" />
     <ClCompile Include="functionresults.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="radiuscorrectiondialog.cpp" />
+    <ClCompile Include="reportdata.cpp" />
+    <ClCompile Include="reportgenerator.cpp" />
     <ClCompile Include="sashasecretwindow.cpp" />
     <ClCompile Include="saveprojectwindow.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="turbinewindow.cpp" />
     <ClCompile Include="widthedgewindow.cpp" />
+    <QtMoc Include="macrosmanager.h" />
+    <QtMoc Include="macroswindow.h" />
+    <ClInclude Include="reportdata.h" />
+    <ClInclude Include="reportgenerator.h" />
     <QtMoc Include="saveprojectwindow.h" />
     <QtMoc Include="radiuscorrectiondialog.h" />
     <QtMoc Include="widthedgewindow.h" />
     <QtMoc Include="turbinewindow.h" />
     <QtMoc Include="airfoiltolerancesdialog.h" />
     <QtMoc Include="calculatedeviationsdialog.h" />
+    <ClInclude Include="colortranslator.h" />
+    <QtMoc Include="curvegraphicswidget.h" />
+    <QtMoc Include="bestfitdialog.h" />
     <ClInclude Include="curvelibrary.h" />
     <QtMoc Include="figureeditdialog.h" />
-    <ClInclude Include="curvegraphics.h" />
+    <QtMoc Include="dimensionrender.h" />
     <ClInclude Include="functionresults.h" />
     <QtMoc Include="plot.h" />
     <QtMoc Include="sashasecretwindow.h" />
@@ -155,7 +169,9 @@
     <QtMoc Include="tree.h" />
     <QtRcc Include="curvewindow.qrc" />
     <QtUic Include="airfoiltolerancesdialog.ui" />
+    <QtUic Include="bestfitdialog.ui" />
     <QtUic Include="calculatedeviationsdialog.ui" />
+    <QtUic Include="curvegraphicswidget.ui" />
     <QtUic Include="curvewindow.ui" />
     <QtMoc Include="curvewindow.h" />
     <ClCompile Include="algorithms.cpp" />
@@ -179,6 +195,7 @@
     </ClCompile>
     <QtUic Include="figureeditdialog.ui" />
     <QtUic Include="loadingcloudwindow.ui" />
+    <QtUic Include="macroswindow.ui" />
     <QtUic Include="radiuscorrectiondialog.ui" />
     <QtUic Include="mergepointcloudswindow.ui" />
     <QtUic Include="sashasecretwindow.ui" />

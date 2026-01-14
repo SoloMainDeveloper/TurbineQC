@@ -1,10 +1,5 @@
 #pragma once
 
-#include <QPushButton>
-#include <QLayout>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QIntValidator>
 #include "figure.h"
 #include "project.h"
 #include "tree.h"
@@ -25,13 +20,15 @@ public slots:
     void changeCurrentItem(const QString &currentFigureName);
     void changeFigureVisibility(const QString figureName, bool visible);
     void changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
-        bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+        bool showVectors, bool closed, bool showNumbering, int numberingInterval, 
+        double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut);
 
 signals:
 
     void figureChangeVisibilityRequested(const QString figureName, bool visible);
     void curveChangeParametersRequested(const QString curveName, bool showPoints, bool connectPoints,
-        bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+        bool showVectors, bool closed, bool showNumbering, int numberingInterval,
+        double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut);
 
 private:
 
@@ -44,6 +41,9 @@ private:
     QList<QCheckBox*> curveControls;
     QCheckBox *parameter;
     QLineEdit *numbers;
+
+    QLabel *labelAmplification;
+    QLineEdit *lineEditAmplification;
 
     const Figure *currentFigure = nullptr;
 

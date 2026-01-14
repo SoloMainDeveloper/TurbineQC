@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDialog>
 #include "ui_calculatedeviationsdialog.h"
 #include "project.h"
 #include "algorithms.h"

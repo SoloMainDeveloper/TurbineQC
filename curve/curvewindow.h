@@ -17,6 +17,9 @@
 #include "mergepointcloudswindow.h"
 #include "saveprojectwindow.h"
 #include "calculatedeviationsdialog.h"
+#include "bestfitdialog.h"
+#include "dimensionrender.h"
+#include "macroswindow.h"
 
 namespace Ui {
     class CurveWindow;
@@ -29,6 +32,8 @@ class CurveWindow : public QMainWindow {
 
 public:
     explicit CurveWindow(QWidget *parent = nullptr);
+    void dimensionMenuInit();
+    void disableDimensionMenu();
     virtual ~CurveWindow();
 
 private:
@@ -49,4 +54,11 @@ private:
     RadiusCorrectionDialog *_radiusCorrectionDialog;
     SaveProjectWindow *_saveProjectWindow;
     CalculateDeviationsDialog *_calculateDeviationsDialog;
+    BestFitDialog *_bestFitDialog;
+    MacrosWindow *_macrosWindow;
+
+    QString _windowTitle;
+
+    void changeWindowTitle(const QString &projectPath);
+    void setDefualtWindowTitle();
 };

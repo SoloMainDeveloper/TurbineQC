@@ -120,11 +120,74 @@
     <addaction name="actionMergeClouds"/>
     <addaction name="actionRadiusCorrection"/>
     <addaction name="actionCalculateDeviations"/>
+    <addaction name="actionBestFit"/>
+   </widget>
+   <widget class="QMenu" name="menuDimensions">
+    <property name="title">
+     <string>Dimensions</string>
+    </property>
+    <widget class="QMenu" name="menuAngle">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Angle</string>
+     </property>
+     <addaction name="actionAngle"/>
+     <addaction name="actionAngle_To_Main_Axes"/>
+     <addaction name="actionAngle_to_Sec_Axis"/>
+     <addaction name="actionAngle_betw_2_lines"/>
+    </widget>
+    <widget class="QMenu" name="menuForm">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Form</string>
+     </property>
+     <addaction name="actionForm_Max_Min"/>
+     <addaction name="actionMin_Dev"/>
+     <addaction name="actionMax_Dev"/>
+     <addaction name="actionMax_Dev_Absolute"/>
+     <addaction name="actionForm_All"/>
+     <addaction name="separator"/>
+     <addaction name="actionAverage_Dev"/>
+     <addaction name="actionRMS"/>
+     <addaction name="actionSigma"/>
+    </widget>
+    <addaction name="actionPosition"/>
+    <addaction name="actionTruePosition"/>
+    <addaction name="actionDistance"/>
+    <addaction name="actionRadius"/>
+    <addaction name="actionDiameter"/>
+    <addaction name="menuAngle"/>
+    <addaction name="menuForm"/>
+    <addaction name="actionPerimeter"/>
+    <addaction name="actionBestFitData"/>
+    <addaction name="separator"/>
+    <addaction name="actionMeasureOnScreen"/>
+   </widget>
+   <widget class="QMenu" name="menuScreen">
+    <property name="title">
+     <string>Screen</string>
+    </property>
+    <addaction name="actionZoomExtents"/>
+    <addaction name="actionZoomPlus"/>
+    <addaction name="actionZoomMinus"/>
+   </widget>
+   <widget class="QMenu" name="menuMacros">
+    <property name="title">
+     <string>Macros</string>
+    </property>
+    <addaction name="actionShowMacrosWindow"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAirfoil"/>
    <addaction name="menuCurve"/>
    <addaction name="menuCalculate"/>
+   <addaction name="menuDimensions"/>
+   <addaction name="menuScreen"/>
+   <addaction name="menuMacros"/>
   </widget>
   <action name="actionAssignTolerancesToNominal">
    <property name="text">
@@ -148,7 +211,7 @@
   </action>
   <action name="actionMergeClouds">
    <property name="text">
-    <string>Объединить сканы турбинной лопатки</string>
+    <string>Merge scans</string>
    </property>
   </action>
   <action name="actionRadiusCorrection">
@@ -179,6 +242,186 @@
   <action name="actionClearProject">
    <property name="text">
     <string>Clear Project</string>
+   </property>
+  </action>
+  <action name="actionBestFit">
+   <property name="text">
+    <string>Best-fit</string>
+   </property>
+  </action>
+  <action name="actionPosition">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Position</string>
+   </property>
+  </action>
+  <action name="actionTruePosition">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>True Position</string>
+   </property>
+  </action>
+  <action name="actionDistance">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Distance</string>
+   </property>
+  </action>
+  <action name="actionRadius">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Radius</string>
+   </property>
+  </action>
+  <action name="actionDiameter">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Diameter</string>
+   </property>
+  </action>
+  <action name="actionAngle">
+   <property name="text">
+    <string>Angle</string>
+   </property>
+  </action>
+  <action name="actionAngle_To_Main_Axes">
+   <property name="text">
+    <string>Angle to Main Axis</string>
+   </property>
+  </action>
+  <action name="actionAngle_to_Sec_Axis">
+   <property name="text">
+    <string>Angle to Sec. Axis</string>
+   </property>
+  </action>
+  <action name="actionAngle_betw_2_lines">
+   <property name="text">
+    <string>Angle betw. 2 lines</string>
+   </property>
+  </action>
+  <action name="actionPerimeter">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Perimeter</string>
+   </property>
+  </action>
+  <action name="actionBestFitData">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Best-fit data</string>
+   </property>
+  </action>
+  <action name="actionMeasureOnScreen">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Measure on screen</string>
+   </property>
+  </action>
+  <action name="actionForm_Max_Min">
+   <property name="text">
+    <string>Form (Max - Min)</string>
+   </property>
+  </action>
+  <action name="actionMin_Dev">
+   <property name="text">
+    <string>Min. Dev.</string>
+   </property>
+  </action>
+  <action name="actionMax_Dev">
+   <property name="text">
+    <string>Max. Dev.</string>
+   </property>
+  </action>
+  <action name="actionMax_Dev_Absolute">
+   <property name="text">
+    <string>Max. Dev. (Absolute)</string>
+   </property>
+  </action>
+  <action name="actionForm_All">
+   <property name="text">
+    <string>Form (All)</string>
+   </property>
+  </action>
+  <action name="actionAverage_Dev">
+   <property name="text">
+    <string>Average Dev</string>
+   </property>
+  </action>
+  <action name="actionRMS">
+   <property name="text">
+    <string>RMS</string>
+   </property>
+  </action>
+  <action name="actionSigma">
+   <property name="text">
+    <string>Sigma</string>
+   </property>
+  </action>
+  <action name="actionZoomExtents">
+   <property name="text">
+    <string>Zoom extents</string>
+   </property>
+  </action>
+  <action name="actionZoomPlus">
+   <property name="text">
+    <string>Zoom +</string>
+   </property>
+  </action>
+  <action name="actionZoomMinus">
+   <property name="text">
+    <string>Zoom -</string>
+   </property>
+  </action>
+  <action name="actionZoomToCurrent">
+   <property name="text">
+    <string>Zoom to current</string>
+   </property>
+  </action>
+  <action name="actionStartRecord">
+   <property name="text">
+    <string>Start Record</string>
+   </property>
+  </action>
+  <action name="actionSaveMacros">
+   <property name="text">
+    <string>Save Macros As</string>
+   </property>
+  </action>
+  <action name="actionLoadMacros">
+   <property name="text">
+    <string>Load Macros</string>
+   </property>
+  </action>
+  <action name="actionStopRecord">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Stop Record</string>
+   </property>
+  </action>
+  <action name="actionShowMacrosWindow">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Macros Window</string>
    </property>
   </action>
  </widget>

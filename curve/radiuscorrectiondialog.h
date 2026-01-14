@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDialog>
 #include "ui_radiuscorrectiondialog.h"
 #include "project.h"
 #include "algorithms.h"

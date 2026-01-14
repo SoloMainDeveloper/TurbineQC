@@ -31,12 +31,12 @@ private slots:
 
 private:
     Ui::LoadingCloudWindow *_ui;
-
-    QStringList _fileData;
-    QString _name;
-
     Project *_project;
     QGroupBox *_groupOfBtnWidgets;
     QHBoxLayout *_btnWidgetsLayout;
     QPushButton *_pasteDataBtn;
+    QMessageBox *_message;
+
+    QStringList _fileData;
+    QString _name;
 };
