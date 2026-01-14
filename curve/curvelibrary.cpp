@@ -109,6 +109,30 @@ Function18Result CurveLibrary::function18(QVector<CurvePoint> points, Function18
     return Function18Result(splittedElements);
 }
 
+Function19Result CurveLibrary::function19(QVector<CurvePoint> points, Function19Params params) {
+    makeCurveCalculations(QList<QVector<CurvePoint>> { points }, &params);
+    auto splittedPoints = FileSystem::readOutput().split('\n');
+    auto parsedPoints = FileSystem::parsePointsFromElement(splittedPoints, ",", 1, 1);
+    return Function19Result(CurveFigure(QString(), parsedPoints));
+}
+
+Function21Result CurveLibrary::function21(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, QVector<CurvePoint> curve3, Function21Params params) {
+    makeCurveCalculations(QList<QVector<CurvePoint>> { curve1, curve2, curve3 }, &params);
+    auto output = FileSystem::readOutput().split("\n\n");
+    auto points = FileSystem::parsePointsFromElement(output[0].split('\n'), ",", 1, 1);
+    auto bestfitStr = output[1].split('\n')[1].split(',');
+    return Function21Result(CurveFigure(QString(), points), bestfitStr[0].toDouble(), bestfitStr[1].toDouble(), bestfitStr[2].toDouble());
+}
+
+Function31Result CurveLibrary::function31(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, Function31Params params) {
+    makeCurveCalculations(QList<QVector<CurvePoint>> { curve1, curve2 }, &params);
+    auto output = FileSystem::readOutput().split("\n\n");
+    auto points = FileSystem::parsePointsFromElement(output[0].split('\n'), ",", 1, 1);
+    auto coeffLEStr = output[1].split('\n')[1].split(',')[7];
+    auto coeffTEStr = output[2].split('\n')[1].split(',')[7];
+    return Function31Result(CurveFigure(QString(), points), coeffLEStr.toDouble(), coeffTEStr.toDouble());
+}
+
 void CurveLibrary::runCurve() {
     QProcess* process = new QProcess();
     QStringList list;

@@ -136,6 +136,7 @@ public:
 struct Function18Result {
 public:
     Function18Result(QMap<QString, QStringList> elements);
+    Function18Result();
     ~Function18Result() = default;
 
     CurveFigure middleCurve; //MCL
@@ -151,4 +152,30 @@ public:
     CurveFigure curveHigh; //PART$CURVE_HI
     QVector<CurvePoint> contactEndPoints; //CONTACT$ENDPOINTS
     double chordLength = 0;
+};
+
+struct Function19Result {
+    Function19Result(CurveFigure curve);
+    ~Function19Result() = default;
+
+    CurveFigure curve;
+};
+
+struct Function21Result {
+    Function21Result(CurveFigure curve, double offsetX, double offsetY, double rotation);
+    ~Function21Result() = default;
+
+    CurveFigure curve;
+    double offsetX;
+    double offsetY;
+    double rotation;
+};
+
+struct Function31Result {
+    Function31Result(CurveFigure curve, double coeffLE, double coeffTE);
+    ~Function31Result() = default;
+
+    CurveFigure curve;
+    double coeffLE;
+    double coeffTE;
 };

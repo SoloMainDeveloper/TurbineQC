@@ -29,7 +29,7 @@ Function6Result::Function6Result(CurveFigure curve, double offsetX, double offse
 Function7Result::Function7Result(QStringList points) {
     contactPoints.clear();
 
-    for(auto point : FileSystem::parsePointsFromElement(points, ",", 1, 1)) {
+    for(auto &point : FileSystem::parsePointsFromElement(points, ",", 1, 1)) {
         contactPoints.append(point); // TODO: check if no extra data in result
     }
 }
@@ -108,4 +108,24 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
             this->chordLength = points.last().dev;
         }
     }
+}
+
+Function18Result::Function18Result() {
+}
+
+Function19Result::Function19Result(CurveFigure curve) {
+    this->curve = curve;
+}
+
+Function21Result::Function21Result(CurveFigure curve, double offsetX, double offsetY, double rotation) {
+    this->curve = curve;
+    this->offsetX = offsetX;
+    this->offsetY = offsetY;
+    this->rotation = rotation;
+}
+
+Function31Result::Function31Result(CurveFigure curve, double coeffLE, double coeffTE) {
+    this->curve = curve;
+    this->coeffLE = coeffLE;
+    this->coeffTE = coeffTE;
 }

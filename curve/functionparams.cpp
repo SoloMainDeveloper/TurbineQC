@@ -71,13 +71,23 @@ QString Function5Params::toQString() {
     return result.arg(_isClosed ? "Y" : "N").arg(_scale).arg(_magnification);
 }
 
-Function6Params::Function6Params(bool needMinimize, Algorithm method, bool isClosed, 
-    bool needXShift, bool needYShif, bool needRotation) {
+Function6Params::Function6Params(bool needMinimize, Algorithm method, bool isClosed, bool needXShift, bool needYShif, 
+    bool needRotation, bool needHConstraint, double xShiftFrom, double xShiftTo, bool needVConstraint, double yShiftFrom, 
+    double yShiftTo, bool needRConstraint, double rotationFrom, double rotationTo) {
+    _xShiftFrom = xShiftFrom;
+    _xShiftTo = xShiftTo;
+    _yShiftFrom = yShiftFrom;
+    _yShiftTo = yShiftTo;
+    _rotationFrom = rotationFrom;
+    _rotationTo = rotationTo;
     _isClosed = isClosed;
     //_isExternal = isExternal;
     _needXShift = needXShift;
     _needYShift = needYShif;
     _needRotation = needRotation;
+    _needVConstraint = needVConstraint;
+    _needHConstraint = needHConstraint;
+    _needRConstraint = needRConstraint;
     _needMinimize = needMinimize;
     //_evaluationPlace = evaluationPlace;
     //_evaluationDirection = EvaluationDirection;
@@ -88,10 +98,21 @@ Function6Params::Function6Params(bool needMinimize, Algorithm method, bool isClo
 QString Function6Params::toQString() {
     /*QString result = "function=6\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nxshift=%4\n\
         yshift=%5\nrotation=%6\nminimize=%7\nevaluationplace=%8\nevaluationdirection=%9\nmethod=%10";*/
-    QString result = "function=6\nplane=XY\nminimize=%1\nmethod=%2\nclosed=%3\nxshift=%4\nyshift=%5\nrotation=%6\nunits=inch";
-    return result.arg(_needMinimize ? "Y" : "N").arg(_method == Algorithm::Curve ? "Curve" : "Points").arg(_isClosed ? "Y" : "N")
+    QString result = "function=6\nplane=XY\nminimize=%1\nmethod=%2\nclosed=%3\nxshift=%4\nyshift=%5\nrotation=%6";
+
+    if(_needHConstraint) {
+        result += QString("\nxshiftfrom=%7\nxshiftto=%8").arg(QString::number(_xShiftFrom)).arg(QString::number(_xShiftTo));
+    }
+    if(_needVConstraint) {
+        result += QString("\nyshiftfrom=%7\nyshiftto=%8").arg(QString::number(_yShiftFrom)).arg(QString::number(_yShiftTo));
+    } 
+    if(_needRConstraint) {
+        result += QString("\nrotationfrom=%7\nrotationto=%8").arg(QString::number(_rotationFrom)).arg(QString::number(_rotationTo));
+    }
+    result += "\nunits=inch";
+
+    return result.arg(_needMinimize ? "Y" : "N").arg(_method == Algorithm::Curve ? "curve" : "point").arg(_isClosed ? "Y" : "N")
         .arg(_needXShift ? "Y" : "N").arg(_needYShift ? "Y" : "N").arg(_needRotation ? "Y" : "N");
-    //return "function=6\nplane=XY\nminimize=Y\nmethod=curve\nclosed=Y\nxshift=Y\nyshift=Y\nrotation=Y\nunits=inch";
 }
 
 Function7Params::Function7Params(double angle, double xLine, double yLine, double zLine, bool isClosed) {
@@ -251,4 +272,40 @@ Function18Params::Function18Params(int directionLE, int percentLE, int percentTE
 QString Function18Params::toQString() {
     QString result = "function=18\nplane=XY\nle_dir=%1\nle_perc=%2\nte_perc=%3\njoined_segments=%4";
     return result.arg(_leadingEdgeDirection).arg(_percentageLE).arg(_percentageTE).arg(_joinedSegmentsCount);
+}
+
+Function19Params::Function19Params(bool isClosed, bool isExternal, Direction material, int value) {
+    _isClosed = isClosed;
+    _isExternal = isExternal;
+    _value = value;
+    _material = material;
+}
+
+QString Function19Params::toQString() {
+    QString result = "function=19\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nmode=number\nvalue=%4";
+    return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N").arg(_material == Direction::Left ? "L" : "R").arg(_value);
+}
+
+Function21Params::Function21Params(int limInterpMethod, bool needXShift, bool needYShift, bool needRotation, bool isClosed) {
+    _limInterpMethod = limInterpMethod;
+    _needXShift = needXShift;
+    _needYShift = needYShift;
+    _needRotation = needRotation;
+    _isClosed = isClosed;
+}
+
+QString Function21Params::toQString() {
+    QString result = "function=21\nplane=XY\nclosed=%1\nlim_interp_method=%2\nxshift=%3\nyshift=%4\nrotation=%5\nunits=inch";
+    return result.arg(_isClosed ? "Y" : "N").arg(_limInterpMethod).arg(_needXShift ? "Y" : "N").arg(_needYShift ? "Y" : "N").arg(_needRotation ? "Y" : "N");
+}
+
+Function31Params::Function31Params(bool isLEStretch, bool isTEStretch, int leadingEdgeDirection) {
+    _leadingEdgeDirection = leadingEdgeDirection;
+    _isLEStretch = isLEStretch;
+    _isTEStretch = isTEStretch;
+}
+
+QString Function31Params::toQString() {
+    QString result = "function=31\nplane=XY\nle_dir=%1\nle_stretch=%2\nte_stretch=%3";
+    return result.arg(_leadingEdgeDirection).arg(_isLEStretch ? "Y" : "N").arg(_isTEStretch ? "Y" : "N");
 }

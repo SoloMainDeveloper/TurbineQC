@@ -80,19 +80,30 @@ private:
 class Function6Params : public FunctionParams {
 public:
     enum class Algorithm {
-        Curve, Points
+        Curve, Point
     };
 
-    Function6Params(bool needMinimize = true, Algorithm method  = Algorithm::Curve, bool isClosed = true, 
-        bool needXShift = true, bool needYShift = true, bool needRotation = true);
+    Function6Params(bool needMinimize = true, Algorithm method  = Algorithm::Curve, bool isClosed = true, bool needXShift = true, 
+        bool needYShift = true, bool needRotation = true, bool needHConstraint = false, double xShiftFrom = 0, double xShiftTo = 0, 
+        bool needVConstraint = false, double yShiftFrom = 0, double yShiftTo = 0, bool needRConstraint = false, double rotationFrom = 0, 
+        double rotationTo = 0);
     QString toQString() override;
 
 private:
+    double _xShiftFrom;
+    double _xShiftTo;
+    double _yShiftFrom;
+    double _yShiftTo;
+    double _rotationFrom;
+    double _rotationTo;
     bool _isClosed;
     //bool _isExternal; defualt Y
     bool _needXShift;
     bool _needYShift;
     bool _needRotation;
+    bool _needHConstraint;
+    bool _needVConstraint;
+    bool _needRConstraint;
     bool _needMinimize;
     //int _evaluationPlace; //defualt 1
     //int _evaluationDirection; // defualt 2
@@ -242,4 +253,40 @@ private:
     int _percentageLE;
     int _percentageTE;
     int _joinedSegmentsCount;
+};
+
+class Function19Params : public FunctionParams {
+public:
+    Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, int value = 500);
+    QString toQString() override;
+
+private:
+    bool _isClosed;
+    bool _isExternal;
+    int _value;
+    Direction _material;
+};
+
+class Function21Params : public FunctionParams {
+public:
+    Function21Params(int limInterpMethod = 0, bool needXSift = true, bool needYShift = true, bool needRotation = true, bool isClosed = false);
+    QString toQString();
+
+private:
+    bool _isClosed;
+    bool _needXShift;
+    bool _needYShift;
+    bool _needRotation;
+    int _limInterpMethod;
+};
+
+class Function31Params : public FunctionParams {
+public:
+    Function31Params(bool isLEStretch, bool isTEStretch, int leadingEdgeDirection = 0);
+    QString toQString() override;
+
+private:
+    int _leadingEdgeDirection;
+    bool _isLEStretch;
+    bool _isTEStretch;
 };

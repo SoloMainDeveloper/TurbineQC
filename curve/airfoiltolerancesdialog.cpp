@@ -17,7 +17,10 @@ AirfoilTolerancesDialog::AirfoilTolerancesDialog(Project* mainProject, QWidget *
     _ui->listWidgetCurves->setFixedWidth(150);
     connect(_ui->listWidgetCurves, &QListWidget::currentItemChanged, this, &AirfoilTolerancesDialog::changeCurrentMode);
 
-    _ui->graphicsView->setFixedWidth(250);
+    _curveGraphics = new CurveGraphicsWidget();
+    _containerLayout = new QGridLayout(_ui->container);
+    _containerLayout->setContentsMargins(0, 0, 0, 0);
+    _containerLayout->addWidget(_curveGraphics, 0, 0);
     connect(_ui->listWidgetCurves, &QListWidget::itemClicked, this, &AirfoilTolerancesDialog::changeItemOfList);
 
     _ui->comboBoxMode->addItem("Constant tolerance");
@@ -72,7 +75,7 @@ void AirfoilTolerancesDialog::dialogInitialization() {
 
     auto projectCurrentCurveName = _project->currentFigureName();
     auto figures = _project->figures();
-    _curveGraphics = new CurveGraphics(_project, _ui->graphicsView);
+    _curveGraphics->initialization();
 
     for(auto item : figures) {
         if(dynamic_cast<CurveFigure*>(item)) {
@@ -129,7 +132,7 @@ void AirfoilTolerancesDialog::changeCurrentMode() {
 void AirfoilTolerancesDialog::changeItemOfList() {
     auto selectedItemsOfCurves = _ui->listWidgetCurves->selectedItems();
     auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
-    _curveGraphics->drawCurve(currFigure, Qt::blue, 0.1);
+    _curveGraphics->drawCurve(_project, currFigure, Qt::blue, 0.1);
 }
 
 void AirfoilTolerancesDialog::assignTolerances() {
