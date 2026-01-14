@@ -4,7 +4,10 @@
 WidthEdgeWindow::WidthEdgeWindow(Project *project, QWidget *parent) : QDialog(parent), _ui(new Ui::WidthEdgeWindow()) {
     _ui->setupUi(this);
     _project = project;
-    _curveGraphics = new CurveGraphics(_project, _ui->graphicsView);
+    _curveGraphics = new CurveGraphicsWidget();
+    _containerLayout = new QGridLayout(_ui->container);
+    _containerLayout->setContentsMargins(0, 0, 0, 0);
+    _containerLayout->addWidget(_curveGraphics, 0, 0);
     setupWindow();
     connect(_ui->closeButton, &QPushButton::clicked, this, &WidthEdgeWindow::closeWindow);
     connect(_ui->calculateButton, &QPushButton::clicked, this, &WidthEdgeWindow::calculateWidthEdge);
@@ -15,7 +18,7 @@ WidthEdgeWindow::WidthEdgeWindow(Project *project, QWidget *parent) : QDialog(pa
 
 void WidthEdgeWindow::initialization() {
     auto figures = _project->figures();
-    _curveGraphics = new CurveGraphics(_project, _ui->graphicsView);
+    _curveGraphics->initialization();
 
     for(auto item : figures) {
         if(dynamic_cast<CurveFigure*>(item)) {
@@ -67,7 +70,8 @@ void WidthEdgeWindow::closeWindow() {
 }
 
 void WidthEdgeWindow::calculateWidthEdge() {
-    auto currFigure = curves->currentItem();
+    auto selectedItemsOfCurves = curves->selectedItems();
+    auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
     if (currFigure != nullptr) {
         auto distanceLEValue = distanceLE->text().toDouble() ? distanceLE->text().toDouble() : 1;
         auto distanceTEValue = distanceTE->text().toDouble() ? distanceTE->text().toDouble() : 1;
@@ -81,7 +85,7 @@ void WidthEdgeWindow::calculateWidthEdge() {
 void WidthEdgeWindow::updateAnswerView() {
     auto selectedItemsOfCurves = curves->selectedItems();
     auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
-    _curveGraphics->drawCurve(currFigure, Qt::blue, 0.1);
+    _curveGraphics->drawCurve(_project, currFigure, Qt::blue, 0.1);
      if(currFigure != nullptr  && _widths.contains(currFigure->text())) {
         auto figureName = currFigure->text();
         answerLE->setText(QString::number(_widths[figureName]->widthLE));

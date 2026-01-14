@@ -5,8 +5,10 @@ LoadingCloudWindow::LoadingCloudWindow(Project *project, QWidget *parent) : QDia
     _ui->setupUi(this);
 
     _project = project;
+    _message = new QMessageBox(this);
+    _message->setWindowTitle("Error");
 
-    this->setWindowTitle("Load cloud");
+    this->setWindowTitle("Load file");
     this->setFixedSize(750, 500);
 
     _groupOfBtnWidgets = new QGroupBox("From clipboard", this);
@@ -24,25 +26,29 @@ LoadingCloudWindow::LoadingCloudWindow(Project *project, QWidget *parent) : QDia
     _ui->columnNumbersBox->addItem("1,2");
     _ui->columnNumbersBox->addItem("1,2,3");
     _ui->columnNumbersBox->addItem("1,2,3,4,5,6");
-    _ui->columnNumbersBox->setCurrentIndex(2);
-    _ui->columnNumbersBox->setFixedSize(QSize(77, 22));
+    _ui->columnNumbersBox->addItem("1,2,3,4,5,6,7");
+    _ui->columnNumbersBox->addItem("1,2,3,4,5,6,7,8,9");
+    _ui->columnNumbersBox->setCurrentIndex(0);
+    _ui->columnNumbersBox->setFixedSize(QSize(120, 22));
 
     _ui->columnNamesBox->addItem("X,Y");
     _ui->columnNamesBox->addItem("X,Y,Z");
     _ui->columnNamesBox->addItem("X,Y,Z,I,J,K");
-    _ui->columnNamesBox->setCurrentIndex(2);
-    _ui->columnNamesBox->setFixedSize(QSize(77, 22));
+    _ui->columnNamesBox->addItem("X,Y,Z,I,J,K,D");
+    _ui->columnNamesBox->addItem("X,Y,Z,I,J,K,D,UT,LT");
+    _ui->columnNamesBox->setCurrentIndex(0);
+    _ui->columnNamesBox->setFixedSize(QSize(120, 22));
 
     _ui->decimalBox->addItem(".");
     _ui->decimalBox->addItem(",");
     _ui->decimalBox->setCurrentIndex(0);
-    _ui->decimalBox->setFixedSize(QSize(77, 22));
+    _ui->decimalBox->setFixedSize(QSize(80, 22));
 
     _ui->separatorBox->addItem(";");
     _ui->separatorBox->addItem(",");
     _ui->separatorBox->addItem(" ");
     _ui->separatorBox->setCurrentIndex(2);
-    _ui->separatorBox->setFixedSize(QSize(77, 22));
+    _ui->separatorBox->setFixedSize(QSize(80, 22));
 
     connect(_ui->fileBtn, &QRadioButton::clicked, this, &LoadingCloudWindow::selectFile);
     connect(_ui->clipboardBtn, &QRadioButton::clicked, this, &LoadingCloudWindow::selectClipboard);
@@ -94,11 +100,13 @@ void LoadingCloudWindow::openFile() {
         _ui->notifyLabel->clear();
         _ui->nameFigureLineEdit->setText(_name);
         if(_fileData.length() > 0) {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
             for(auto i = 0; i < _fileData.length(); i++) {
                 _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
             }
             _ui->startLineEdit->setText("1");
             _ui->finishLineEdit->setText(QString::number(_fileData.length()));
+            QApplication::restoreOverrideCursor();
         }
     }
 }
@@ -123,26 +131,30 @@ void LoadingCloudWindow::loadCloud() {
     _name = _ui->nameFigureLineEdit->text();
 
     if(_name != "" && _ui->inputData->toPlainText() != "") {
+        auto columnNames = _ui->columnNamesBox->currentText();
+        auto columnNumbers = _ui->columnNumbersBox->currentText();
+        auto decimal = _ui->decimalBox->currentText();
         auto separator = _ui->separatorBox->currentText();
-        auto startLineToSkip = _ui->startLineEdit->text().toInt() - 1;
-        auto finishLineToSkip = _fileData.length() - _ui->finishLineEdit->text().toInt();
-        auto points = FileSystem::parsePointsFromElement(_fileData, separator, startLineToSkip, finishLineToSkip, Order::Default);
+        auto skipStart = _ui->startLineEdit->text().toInt() - 1;
+        auto skipAfter = _fileData.length() - _ui->finishLineEdit->text().toInt();
         if(!_project->containsFigure(_name)) {
-            if(points.length() > 0) {
-                _ui->notifyLabel->setText(QString("Interpreted lines %1!").arg(points.length()));
-                auto curve = new CurveFigure(_name, points, 1);
-                _project->insertFigure(curve);
+            auto status = FileSystem::loadCloud(_project, _ui->filePathLineEdit->text(), _name, separator, skipStart,
+                skipAfter, columnNames, columnNumbers, decimal);
+            if(status) {
+                _ui->notifyLabel->setText(QString("Interpreted completed!"));
             } else {
-                _ui->notifyLabel->setText("Error in interpretation settings!");
+                _message->setText("Error in interpretation settings!");
+                _message->exec();
             }
         } else {
-            _ui->notifyLabel->setText("This name already exists!");
+            _message->setText("This name already exists!");
+            _message->exec();
         }
     }
 }
 
 void LoadingCloudWindow::closeEvent(QCloseEvent *event) {
-    closeWindow();
+        closeWindow();
 }
 
 // For the CURVE-56 test
@@ -155,15 +167,23 @@ void LoadingCloudWindow::closeWindow() {
     _ui->fileBtn->setChecked(true);
     _ui->groupOfFileWidgets->show();
     _groupOfBtnWidgets->hide();
+    _ui->filePathLineEdit->clearFocus();
     _ui->filePathLineEdit->clear();
     _ui->inputData->clear();
+    _ui->startLineEdit->clearFocus();
     _ui->startLineEdit->clear();
+    _ui->finishLineEdit->clearFocus();
     _ui->finishLineEdit->clear();
+    _ui->columnNumbersBox->clearFocus();
     _ui->columnNumbersBox->setCurrentIndex(2);
+    _ui->columnNamesBox->clearFocus();
     _ui->columnNamesBox->setCurrentIndex(2);
+    _ui->decimalBox->clearFocus();
     _ui->decimalBox->setCurrentIndex(0);
+    _ui->separatorBox->clearFocus();
     _ui->separatorBox->setCurrentIndex(2);
     _ui->notifyLabel->clear();
+    _ui->nameFigureLineEdit->clearFocus();
     _ui->nameFigureLineEdit->clear();
 }
 

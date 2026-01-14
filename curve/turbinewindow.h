@@ -1,10 +1,13 @@
 #pragma once
 
-#include <QDialog>
 #include "ui_turbinewindow.h"
 #include "project.h"
 #include "algorithms.h"
-#include "curvegraphics.h"
+#include "curvegraphicswidget.h"
+#include "reportdata.h"
+#include "reportgenerator.h"
+
+class ReporData;
 
 struct TurbineParams {
 public:
@@ -17,7 +20,18 @@ public:
     double atWidth;
 };
 
-enum Operation {
+namespace Ui {
+    class TurbineWindow;
+}
+
+class TurbineWindow : public QDialog {
+    Q_OBJECT
+
+public:
+    explicit TurbineWindow(Project *project, Plot *plot);
+    virtual ~TurbineWindow();
+
+    enum Operation {
     MaxWidth,
     MaxWidthX,
     MaxWidthY,
@@ -29,17 +43,6 @@ enum Operation {
     OperationsCount
 };
 
-namespace Ui {
-    class TurbineWindow;
-}
-
-class TurbineWindow : public QDialog {
-    Q_OBJECT
-
-public:
-    explicit TurbineWindow(Project *project, QWidget *parent = nullptr);
-    virtual ~TurbineWindow();
-
 public slots:
     void initialization();
 
@@ -50,8 +53,13 @@ private:
 
     Ui::TurbineWindow *_ui;
     Project *_project;
-    CurveGraphics *_curveGraphics;
+    Plot *_plot;
+    ReportData *_reportData;
+    CurveGraphicsWidget *_curveGraphics;
+    QGridLayout *_containerLayout;
     QDoubleValidator *_doubleValidator;
+    QIntValidator *_intValidator;
+    QMessageBox *_message;
 
     //profiles
     QListWidget *nominals;
@@ -59,7 +67,7 @@ private:
     QComboBox *directionLE;
     QLineEdit *zoneScaleLE;
     QLineEdit *zoneScaleTE;
-    QComboBox *dimensionType;
+    QComboBox *dimension;
 
     //prepare points
     QCheckBox *needPreparePoints;
@@ -120,6 +128,10 @@ private:
     QListWidget *paramList;
     QVBoxLayout *labelLayout;
     QVBoxLayout *lineEditLayout;
+    QLineEdit *editToleranceTop;
+    double toleranceTopValue;
+    QLineEdit *editToleranceBottom;
+    double toleranceBottomValue;
     QLineEdit *atEditLE;
     double atLEValue;
     QLineEdit *atEditTE;
@@ -134,10 +146,20 @@ private:
 
 private slots:
     void run();
+    void setSettings(const QString &fileName);
     void closeWindow();
     void calculateNominals();
     void onPreparePointsClick();
+    void onDeleteSimilarClick();
+    void onRadiusCorrectionClick();
+    void onShowNumLEClick();
+    void onShowNumTEClick();
+    void onWriteWithTemplateClick();
     void showTurbineParams(QListWidgetItem* curr);
     void changeItemOfList();
     void closeEvent(QCloseEvent *event);
+
+private:
+    void calculateMeasured();
+    void setTolerances(Operation operation, double toleranceTopValue, double toleranceBottomValue);
 };

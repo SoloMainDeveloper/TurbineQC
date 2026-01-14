@@ -83,13 +83,13 @@
      </property>
     </item>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="QWidget" name="container" native="true">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>20</y>
-      <width>241</width>
-      <height>181</height>
+      <x>279</x>
+      <y>19</y>
+      <width>242</width>
+      <height>183</height>
      </rect>
     </property>
    </widget>

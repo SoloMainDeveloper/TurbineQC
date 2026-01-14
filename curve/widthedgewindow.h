@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QDialog>
 #include "ui_widthedgewindow.h"
 #include "project.h"
 #include "algorithms.h"
-#include "curvegraphics.h"
+#include "curvegraphicswidget.h"
 
 struct EdgeWidth {
 public:
@@ -43,7 +42,8 @@ private:
 
     Ui::WidthEdgeWindow *_ui;
     Project *_project;
-    CurveGraphics *_curveGraphics;
+    CurveGraphicsWidget *_curveGraphics;
+    QGridLayout *_containerLayout;
     QMap<QString, EdgeWidth*> _widths;
     QDoubleValidator *_doubleValidator;
 

@@ -3,15 +3,14 @@
 
 MergePointCloudsWindow::MergePointCloudsWindow(Project *project, QWidget *parent) : _project(project), QDialog(parent), _ui(new Ui::MergePointCloudsWindow()) {
     _ui->setupUi(this);
-
-    _curveGraphics = new CurveGraphics(_project, _ui->graphicsView);
+    _curveGraphics = new CurveGraphicsWidget();
+    _containerLayout = new QGridLayout(_ui->container);
+    _containerLayout->setContentsMargins(0, 0, 0, 0);
+    _containerLayout->addWidget(_curveGraphics, 0, 0);
     _message = new QMessageBox(this);
     _message->setWindowTitle("Error");
-
     this->setFixedSize(650, 440);
-    _ui->graphicsView->setFixedSize(200, 240);
     _ui->groupBoxOptions->setMinimumHeight(67);
-
     connect(_ui->firstListWidgetOfCurves, &QListWidget::itemClicked, this, &MergePointCloudsWindow::changeItemOfList);
     connect(_ui->secondListWidgetOfCurves, &QListWidget::itemClicked, this, &MergePointCloudsWindow::changeItemOfList);
     connect(_ui->needSortedCheckBox, &QCheckBox::clicked, this, &MergePointCloudsWindow::sort);
@@ -21,7 +20,7 @@ MergePointCloudsWindow::MergePointCloudsWindow(Project *project, QWidget *parent
 
 void MergePointCloudsWindow::windowInitialization() {
     auto figures = _project->figures();
-    _curveGraphics = new CurveGraphics(_project, _ui->graphicsView);
+    _curveGraphics->initialization();
 
     if(figures.length() != 0) {
         for(auto figure : figures) {
@@ -39,7 +38,7 @@ void MergePointCloudsWindow::changeItemOfList() {
     auto selectedItemsOfSecondList = _ui->secondListWidgetOfCurves->selectedItems();
     auto currentItemOfFirstList = selectedItemsOfFirstList.length() == 1 ? selectedItemsOfFirstList[0] : nullptr;
     auto currentItemOfSecondList = selectedItemsOfSecondList.length() == 1 ? selectedItemsOfSecondList[0] : nullptr;
-    _curveGraphics->drawCurve(currentItemOfFirstList, Qt::green, 0.1, currentItemOfSecondList, Qt::blue, 0.1);
+    _curveGraphics->drawCurve(_project, currentItemOfFirstList, Qt::green, 0.1, currentItemOfSecondList, Qt::blue, 0.1);
 }
 
 void MergePointCloudsWindow::sort() {
@@ -62,17 +61,10 @@ void MergePointCloudsWindow::merge() {
             auto nameOfSecondCurve = currentItemOfSecondList->text();
             auto needSorted = _ui->needSortedCheckBox->checkState() == Qt::Checked;
             auto threshold = _ui->threshold->text().toDouble();
-            auto result = Algorithms::mergePointClouds(nameOfFirstCurve, nameOfSecondCurve, threshold, needSorted, _project);
-
-            if(result.length() != 0) {
-                auto newName = _ui->resultName->text();
-                auto curve = new CurveFigure(newName, result);
-                if(_project->containsFigure(newName)) {
-                    _project->removeFigure(newName);
-                }
-                _project->insertFigure(curve);
-                auto firstFigure = _project->findFigure(nameOfFirstCurve);
-            } else {
+            auto resultName = _ui->resultName->text();
+            auto status = Algorithms::tryMergePointClouds(nameOfFirstCurve, nameOfSecondCurve, resultName,
+                threshold, needSorted, _project);
+            if(!status) {
                 _message->setText("No intersection points found. Check selected curves!");
                 _message->exec();
             }
