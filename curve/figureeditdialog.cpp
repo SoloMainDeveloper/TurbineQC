@@ -13,9 +13,11 @@ FigureEditDialog::FigureEditDialog(Project* mainProject, QWidget *parent)
     layout()->addWidget(_curveTable);
 
     connect(_project, &Project::figureEditDialogRequested, this, &FigureEditDialog::dialogInitialization);
+    connect(_ui->colorPB, &QPushButton::clicked, this, &FigureEditDialog::chooseColor);
 }
 
 void FigureEditDialog::dialogInitialization(const QString figureName) {
+    _figureName = figureName;
     _curveTable->clear();
     while(QLayoutItem* item = _ui->dynamicGLayout->takeAt(0)) {
         auto widget = item->widget();
@@ -134,4 +136,13 @@ FigureEditDialog::~FigureEditDialog()
 {
     delete _curveTable;
     delete _ui;
+}
+
+void FigureEditDialog::chooseColor() {
+    auto color = QColorDialog::getColor(Qt::black, this, tr("Choose Color"));
+    if(color.spec() == QColor::Invalid) {
+        return;
+    }
+    _project->changeFigureColor(_figureName, color);
+    _ui->colorPB->setStyleSheet("background-color: " + color.name() + ";");
 }

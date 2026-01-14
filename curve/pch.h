@@ -3,7 +3,23 @@
 
 #include <cmath> // before Qt
 
+#include <QAction>
 #include <QApplication>
-#include <QMainWindow>
+#include <QCheckBox>
+#include <QContextMenuEvent>
+#include <QDialog>
 #include <QDir>
+#include <QDoubleValidator>
+#include <QInputDialog>
+#include <QIntValidator>
+#include <QLayout>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMessageBox>
+#include <QObject>
+#include <QPushButton>
+#include <QTreeWidgetItem>
+#include <QWidget>
 #include "qcustomplot.h"
+#include "macrosmanager.h"

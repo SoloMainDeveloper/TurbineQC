@@ -12,7 +12,13 @@ public:
     const QList<Figure*>& figures() const;
     const Figure* findFigure(const QString &name) const;
     const QString currentFigureName() const;
-    bool containsFigure(const QString &name) const;
+    const bool containsFigure(const QString &name) const;
+    void setVisibility(const QStringList &figureNames);
+    void resetVisibilityForAllFigures();
+    void setCurrentFigure(const QString &currentFigureName);
+
+    double scaleFactor() const;
+    const Point* centerPoint() const;
 
 public slots:
     void insertFigure(Figure* figure);
@@ -23,10 +29,13 @@ public slots:
     void changeFigureVisibility(const QString figureName, bool visible);
     void toggleFigureVisibility(const QString figureName);
     void changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
-        bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+        bool showVectors, bool closed, bool showNumbering, int numberingInterval,
+        double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut);
     void changeCurveTolerance(const QString curveName, QVector<CurvePoint> curveWithTolerances);
     void requestFigureEditDialog(const QString figureName);
     void changeCurvePoints(const QString curveName, QVector<CurvePoint> newPoints);
+    void changeFigureColor(const QString figureName, QColor color);
+    void changeScale(double scaleFactor, const Point &center);
     void clear();
 
 signals:
@@ -36,14 +45,20 @@ signals:
     void currentFigureChanged(const QString currentFigureName, const QString previousFigureName);
     void figureVisibilityChanged(const QString figureName, bool visible);
     void curveParametersChanged(const QString curveName, bool showPoints, bool connectPoints,
-        bool showVectors, bool closed, bool showNumbering, int numberingInterval);
+        bool showVectors, bool closed, bool showNumbering, int numberingInterval,
+        double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut);
     void curveToleranceChanged(const QString curveName);
     void figureEditDialogRequested(const QString figureName);
     void curvePointsChanged(const QString curveName);
+    void figureColorChanged(const QString figureName);
+    void scaleChanged(double scaleFactor, const Point &center);
+    void cleared();
 
 private:
     Figure* findFigureMutable(const QString &name);
 
     QList<Figure*> _figures;
     QString _currentFigureName = nullptr;
+    double _scaleFactor = 1.0;
+    const Point *_centerPoint;
 };

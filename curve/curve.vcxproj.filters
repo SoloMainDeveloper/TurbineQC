@@ -103,10 +103,40 @@
     <ClCompile Include="mergepointcloudswindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="curvegraphics.cpp">
+    <ClCompile Include="saveprojectwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="saveprojectwindow.cpp">
+    <ClCompile Include="calculatedeviationsdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="curvegraphicswidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bestfitdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="reportgenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="reportdata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="calculatedeviationsdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dimensionrender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="calculatedeviationsdialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colortranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="macrosmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="macroswindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -132,7 +162,13 @@
     <ClInclude Include="functionresults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="curvegraphics.h">
+    <ClInclude Include="reportgenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reportdata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="colortranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -176,6 +212,24 @@
     <QtMoc Include="saveprojectwindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="calculatedeviationsdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="curvegraphicswidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="bestfitdialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="dimensionrender.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="macrosmanager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="macroswindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="sashasecretwindow.ui">
@@ -203,6 +257,18 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="saveprojectwindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="bestfitdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="calculatedeviationsdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="curvegraphicswidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="macroswindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

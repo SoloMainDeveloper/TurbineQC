@@ -1,4 +1,5 @@
 #pragma once
+#include "colortranslator.h"
 
 class Point {
 public:
@@ -48,7 +49,7 @@ public:
 private:
 	QString _name;
 	bool _isVisible;
-	QColor _color;
+	QColor _color = QColorConstants::Black;
 };
 
 class CurveFigure : public Figure {
@@ -77,6 +78,20 @@ public:
 	void toggleShowNumbering();
 	int numberingInterval() const;
 	void setNumberingInterval(int numberingInterval);
+	bool isShowTolerances() const;
+	void setShowTolerances(bool showTolerances);
+	bool isShowDeviations() const;
+	void setShowDeviations(bool showDeviations);
+	bool isShowNumericalDeviations() const;
+	void setShowNumericalDeviations(bool isShowNumericalDeviations);
+	int numericalInterval() const;
+	void setNumericalInterval(int numericalInterval);
+	bool isConnectDeviations() const;
+	void setConnectDeviations(bool connectDeviations);
+	void setHighLightOut(bool highLightOut);
+	bool isHighLightOut() const;
+	void setAmplification(double amplification);
+	double amplification() const;
 
 	void changePoints(QVector<CurvePoint> updatePoints);
 	void assignToleranceToSegment(double upperTolerance, double lowerTolerance);
@@ -95,6 +110,15 @@ private:
 	bool _isClosed = false;
 	bool _isShowNumbering = false;
 	int _numberingInterval = 5;
+	double _amplification = 1.0;
+	bool _isShowTolerances = false;
+	bool _isShowDeviations = false;
+	bool _isShowNumericalDeviations = false;
+	int _numericalInterval = 1;
+	bool _isConnectDeviations = false;
+	bool _isHighLightOut = false;
+	double _perimeter = 0;
+	double _square = 0;
 };
 
 class LineFigure : public Figure {
@@ -109,10 +133,17 @@ public:
 	Point direction() const;
 	double length() const;
 
+    void setHead(const QCPLineEnding &head);
+    void setTail(const QCPLineEnding &tail);
+	const QCPLineEnding& head() const;
+    const QCPLineEnding& tail() const;
+
 private:
 	Point _origin;
 	Point _direction;
 	double _length;
+	QCPLineEnding _head = QCPLineEnding::esNone;
+    QCPLineEnding _tail = QCPLineEnding::esNone;
 };
 
 class PointFigure : public Figure {
@@ -141,14 +172,61 @@ private:
 	double _radius;
 };
 
-class DimFigure : public LineFigure {
+class DimFigure : public Figure {
 public:
-	DimFigure(QString name, PointFigure *start, PointFigure *end);
+	enum struct ValueType {
+		Length,
+		Angle0, Angle90, Angle180, Angle270,
+		AngleTo, AngleFrom,
+		X, Y, Z, PolarRad, PolarAngle,
+		Radius, Diameter,
+		TruePosition,
+		dX, dY, Rotation,
+		MinMax, Form, Min, Max, MaxAbs, SupUT, InfLT, Sigma, Mean, RMS
+	};
+
+	enum struct DimType {
+		Radius,
+		Diameter,
+		Distance,
+		Perimeter,
+		Position, TruePosition,
+		AngleTo, AngleBetween,
+		Form,
+		BestFitData,
+		Mean, Min, MinMax, RMS, Sigma
+	};
+
+	struct Value {
+		Value(ValueType valueType);
+
+		ValueType type;
+		bool isShow = true;
+		double measurement = 0.0;
+		double nominal = 0.0;
+		double upperTolerance = 0.0;
+		double lowerTolerance = 0.0;
+	};
+
+	DimFigure(const QString &name, const DimType type, const Point &labelPoint, const Figure *firstReference = nullptr,
+		const Figure *secondReference = nullptr);
 	virtual FigureSettings* settings();
-	PointFigure* start() const;
-	PointFigure* end() const;
+	const Point& labelPoint() const;
+	const Figure* firstReference() const;
+	const Figure* secondReference() const;
+
+	void addValue(const Value &value);
+	const QVector<Value>& values() const;
+	const DimType dimType() const;
 
 private:
-	PointFigure *_start;
-	PointFigure *_end;
+	const QVector<CurvePoint> convertDimValueToPoints(const QVector<Value> &values);
+
+	DimType _dimType;
+	QVector<Value> _values;
+	const Figure *_firstReference;
+	const Figure *_secondReference;
+	Point _labelPoint;
+	int _a;
 };
+	

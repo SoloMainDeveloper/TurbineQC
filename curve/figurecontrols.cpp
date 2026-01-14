@@ -37,24 +37,62 @@ FigureControls::FigureControls(Project* mainProject, QWidget *parent) {
     connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     curveControls.append(parameter);
 
-    parameter = new QCheckBox("Numbers");
-    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
-    curveControls.append(parameter);
-
     for(auto parameter : curveControls) {
         layout->addWidget(parameter);
     }
 
+    auto layoutNumber = new QHBoxLayout;
+    parameter = new QCheckBox("Numbers");
+    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
+    curveControls.append(parameter);
+    layoutNumber->addWidget(parameter);
+    
     numbers = new QLineEdit;
     numbers->setValidator(new QIntValidator);
     connect(numbers, &QLineEdit::editingFinished, this, &FigureControls::curveParametersSwitched);
-    layout->addWidget(numbers);
+    connect(numbers, &QLineEdit::textEdited, this, &FigureControls::curveParametersSwitched);
+    layoutNumber->addWidget(numbers);
+
+    layout->addLayout(layoutNumber);
+
+    // Dev & Tols
+    auto layoutAmplification = new QHBoxLayout;
+    labelAmplification = new QLabel("Amplification");
+    lineEditAmplification = new QLineEdit;
+    lineEditAmplification->setValidator(new QDoubleValidator);
+    connect(lineEditAmplification, &QLineEdit::editingFinished, this, &FigureControls::curveParametersSwitched);
+    connect(lineEditAmplification, &QLineEdit::textEdited, this, &FigureControls::curveParametersSwitched);
+    layoutAmplification->addWidget(labelAmplification);
+    layoutAmplification->addWidget(lineEditAmplification);
+    layout->addLayout(layoutAmplification);
+
+    parameter = new QCheckBox("Show tols");
+    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
+    curveControls.append(parameter);
+    layout->addWidget(parameter);
+
+    parameter = new QCheckBox("Show devs");
+    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
+    curveControls.append(parameter);
+    layout->addWidget(parameter);
+
+    parameter = new QCheckBox("Connect devs");
+    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
+    curveControls.append(parameter);
+    layout->addWidget(parameter);
+
+    parameter = new QCheckBox("Highlight out");
+    connect(parameter, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
+    curveControls.append(parameter);
+    layout->addWidget(parameter);
 
     visibility->hide();
     for(auto item : curveControls) {
         item->hide();
     }
     numbers->hide();
+    lineEditAmplification->hide();
+    labelAmplification->hide();
 }
 
 //slots
@@ -66,6 +104,8 @@ void FigureControls::changeCurrentItem(const QString &currentFigureName) {
         item->hide();
     }
     numbers->hide();
+    lineEditAmplification->hide();
+    labelAmplification->hide();
 
     currentFigure = project->findFigure(currentFigureName);
 
@@ -81,6 +121,8 @@ void FigureControls::changeCurrentItem(const QString &currentFigureName) {
             parameter->show();
         }
         numbers->show();
+        lineEditAmplification->show();
+        labelAmplification->show();
 
         curveControls[0]->setChecked(currentCurve->isShowPoints());
         curveControls[1]->setChecked(currentCurve->isConnectPoints());
@@ -88,18 +130,24 @@ void FigureControls::changeCurrentItem(const QString &currentFigureName) {
         curveControls[3]->setChecked(currentCurve->isClosed());
         curveControls[4]->setChecked(currentCurve->isShowNumbering());
         numbers->setText(QString::number(currentCurve->numberingInterval()));
+        
+        lineEditAmplification->setText(QString::number(currentCurve->amplification()));
+        curveControls[5]->setChecked(currentCurve->isShowTolerances());
+        curveControls[6]->setChecked(currentCurve->isShowDeviations());
+        curveControls[7]->setChecked(currentCurve->isConnectDeviations());
+        curveControls[8]->setChecked(currentCurve->isHighLightOut());
     }
 }
 
 void FigureControls::changeFigureVisibility(const QString figureName, bool visible) {
-    auto current = currentFigure->name();
-    if(current == figureName) {
+    if(currentFigure && currentFigure->name() == figureName) {
         visibility->setChecked(visible);
     }
 }
 
 void FigureControls::changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
-    bool showVectors, bool closed, bool showNumbering, int numberingInterval) {
+    bool showVectors, bool closed, bool showNumbering, int numberingInterval,
+    double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut) {
 
     if(currentFigure && currentFigure->name() == curveName) {
         curveControls[0]->setChecked(showPoints);
@@ -108,6 +156,12 @@ void FigureControls::changeCurveParameters(const QString curveName, bool showPoi
         curveControls[3]->setChecked(closed);
         curveControls[4]->setChecked(showNumbering);
         numbers->setText(QString::number(numberingInterval));
+
+        lineEditAmplification->setText(QString::number(amplification));
+        curveControls[5]->setChecked(showTolerances);
+        curveControls[6]->setChecked(showDeviations);
+        curveControls[7]->setChecked(connectDeviations);
+        curveControls[8]->setChecked(highLightOut);
     }
 }
 
@@ -129,6 +183,13 @@ void FigureControls::curveParametersSwitched() {
     auto showNumbering = curveControls[4]->isChecked();
     auto numberingInterval = numbers->text().toInt();
 
+    auto amplification = lineEditAmplification->text().toDouble();
+    auto showTolerances = curveControls[5]->isChecked();
+    auto showDeviations = curveControls[6]->isChecked();
+    auto connectDeviations = curveControls[7]->isChecked();
+    auto highLightOut = curveControls[8]->isChecked();
+
     emit curveChangeParametersRequested(current, showPoints, connectPoints, showVectors,
-        closed, showNumbering, numberingInterval);
+        closed, showNumbering, numberingInterval, 
+        amplification, showTolerances, showDeviations, connectDeviations, highLightOut);
 }

@@ -1,13 +1,5 @@
 #pragma once
 
-#include <QAction>
-#include <QContextMenuEvent>
-#include <QWidget>
-#include <QTreeWidgetItem>
-#include <QMenu>
-#include <QInputDialog>
-#include <QObject>
-#include <QMessageBox>
 #include "figure.h"
 #include "project.h"
 
@@ -21,6 +13,7 @@ public:
     ~Tree();
 
     void updateTree(const QList<Figure*> figures);
+    QTreeWidgetItem* findChild(const QString &name);
     void setProject(Project* mainProject);
 
 private:
@@ -28,6 +21,7 @@ private:
     QTreeWidgetItem* treeCircles;
     QTreeWidgetItem* treeLines;
     QTreeWidgetItem* treePoints;
+    QTreeWidgetItem* treeDimensions;
 
     QAction* renameItem;
     QAction* editItem;

@@ -44,6 +44,12 @@ Tree::Tree(QWidget *parent) {
     addTopLevelItem(treePoints);
     treePoints->setExpanded(true);
 
+    treeDimensions = new QTreeWidgetItem;
+    treeDimensions->setText(0, "Dimensions");
+    treeDimensions->setIcon(0, QIcon("icons/dimension.png"));
+    treeDimensions->setBackground(0, QBrush("#f7f7f7"));
+    addTopLevelItem(treeDimensions);
+    treeDimensions->setExpanded(true);
 }
 
 void Tree::setProject(Project* mainProject) {
@@ -72,85 +78,34 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 void Tree::addFigure(Figure* figure) {
+    QTreeWidgetItem *child = new QTreeWidgetItem;
+    child->setText(0, figure->name());
     if(dynamic_cast<CurveFigure*>(figure)) {
-        QTreeWidgetItem *child = new QTreeWidgetItem;
-        child->setText(0, figure->name());
         treeCurves->addChild(child);
     } else if(dynamic_cast<CircleFigure*>(figure)) {
-        QTreeWidgetItem *child = new QTreeWidgetItem;
-        child->setText(0, figure->name());
         treeCircles->addChild(child);
     } else if(dynamic_cast<LineFigure*>(figure)) {
-        QTreeWidgetItem *child = new QTreeWidgetItem;
-        child->setText(0, figure->name());
         treeLines->addChild(child);
     } else if(dynamic_cast<PointFigure*>(figure)) {
-        QTreeWidgetItem *child = new QTreeWidgetItem;
-        child->setText(0, figure->name());
         treePoints->addChild(child);
+    } else if(dynamic_cast<DimFigure*>(figure)) {
+        treeDimensions->addChild(child);
+    } else {
+        delete child;
     }
 }
 
 void Tree::removeFigure(const QString &name) {
-    for(int i = 0; i < treeCurves->childCount(); i++) {
-        auto child = treeCurves->child(i);
-        if(child->text(0) == name) {
-            treeCurves->takeChild(i);
-            return;
-        }
-    }
-    for(int i = 0; i < treeCircles->childCount(); i++) {
-        auto child = treeCircles->child(i);
-        if(child->text(0) == name) {
-            treeCircles->takeChild(i);
-            return;
-        }
-    }
-    for(int i = 0; i < treeLines->childCount(); i++) {
-        auto child = treeLines->child(i);
-        if(child->text(0) == name) {
-            treeLines->takeChild(i);
-            return;
-        }
-    }
-    for(int i = 0; i < treePoints->childCount(); i++) {
-        auto child = treePoints->child(i);
-        if(child->text(0) == name) {
-            treePoints->takeChild(i);
-            return;
-        }
-    }
+    QTreeWidgetItem *child = findChild(name);
+    QTreeWidgetItem *tree = child->parent();
+    int index = tree->indexOfChild(child);
+    tree->takeChild(index);
+    delete child;
 }
 
 void Tree::renameFigure(const QString &name, const QString &newName) {
-    for(int i = 0; i < treeCurves->childCount(); i++) {
-        auto child = treeCurves->child(i);
-        if(child->text(0) == name) {
-            child->setText(0, newName);
-            return;
-        }
-    }
-    for(int i = 0; i < treeCircles->childCount(); i++) {
-        auto child = treeCircles->child(i);
-        if(child->text(0) == name) {
-            child->setText(0, newName);
-            return;
-        }
-    }
-    for(int i = 0; i < treeLines->childCount(); i++) {
-        auto child = treeLines->child(i);
-        if(child->text(0) == name) {
-            child->setText(0, newName);
-            return;
-        }
-    }
-    for(int i = 0; i < treePoints->childCount(); i++) {
-        auto child = treePoints->child(i);
-        if(child->text(0) == name) {
-            child->setText(0, newName);
-            return;
-        }
-    }
+    QTreeWidgetItem *child = findChild(name);
+    child->setText(0, newName);
 }
 
 void Tree::updateTree(QList<Figure*> figures) {
@@ -160,24 +115,14 @@ void Tree::updateTree(QList<Figure*> figures) {
     }
 
     for(auto figure : figures) {
-        if(dynamic_cast<CurveFigure*>(figure)) {
-            QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, figure->name());
-            treeCurves->addChild(child);
-        } else if(dynamic_cast<CircleFigure*>(figure)) {
-            QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, figure->name());
-            treeCircles->addChild(child);
-        } else if(dynamic_cast<LineFigure*>(figure)) {
-            QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, figure->name());
-            treeLines->addChild(child);
-        } else if(dynamic_cast<PointFigure*>(figure)) {
-            QTreeWidgetItem *child = new QTreeWidgetItem;
-            child->setText(0, figure->name());
-            treePoints->addChild(child);
-        }
+        addFigure(figure);
     }
+}
+
+QTreeWidgetItem* Tree::findChild(const QString &name) {
+    auto items = findItems(name, Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive | Qt::MatchFlag::MatchRecursive);
+    assert(items.size() == 1);
+    return items[0];
 }
 
 void Tree::onRenameItemTriggered() {
@@ -220,39 +165,10 @@ void Tree::changeCurrentFigureByName(const QString currentFigureName) {
     if(currentItem()) {
         oldCurrentFigureName = currentItem()->text(0);
     }
-    if(oldCurrentFigureName == currentFigureName || currentFigureName == QString()) {
-        return;
-    } else {
-        QTreeWidgetItem* newItem;
+    if(oldCurrentFigureName != currentFigureName && currentFigureName != QString()) {
+        QTreeWidgetItem *newItem = findChild(currentFigureName);
 
-        for(int i = 0; i < treeCurves->childCount(); i++) {
-            auto child = treeCurves->child(i);
-            if(child->text(0) == currentFigureName) {
-                newItem = child;
-            }
-        }
-        for(int i = 0; i < treeCircles->childCount(); i++) {
-            auto child = treeCircles->child(i);
-            if(child->text(0) == currentFigureName) {
-                newItem = child;
-            }
-        }
-        for(int i = 0; i < treeLines->childCount(); i++) {
-            auto child = treeLines->child(i);
-            if(child->text(0) == currentFigureName) {
-                newItem = child;
-            }
-        }
-        for(int i = 0; i < treePoints->childCount(); i++) {
-            auto child = treePoints->child(i);
-            if(child->text(0) == currentFigureName) {
-                newItem = child;
-            }
-        }
-
-        if(!newItem) {
-            return;
-        } else {
+        if(newItem != nullptr) {
             blockSignals(true);
             setCurrentItem(newItem);
             blockSignals(false);
