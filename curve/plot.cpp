@@ -2,11 +2,9 @@
 #include "curve/plot.h"
 
 Plot::Plot(QWidget *parent) : QCustomPlot(parent), _project(nullptr) {
-	const int axisSize = 100;
+	xAxis->setUpperEnding(QCPLineEnding::esLineArrow);
+	yAxis->setUpperEnding(QCPLineEnding::esLineArrow);
 
-	xAxis->setRange(-axisSize, axisSize);
-	yAxis->setRange(-axisSize, axisSize);
-	
 	setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectItems);
 }
 
@@ -20,13 +18,25 @@ void Plot::setProject(Project *project) {
 	connect(project, &Project::curveParametersChanged, this, &Plot::changeCurveParameters);
 	connect(project, &Project::currentFigureChanged, this, &Plot::changeCurrentFigure);
 	connect(project, &Project::curveToleranceChanged, this, &Plot::changeCurveTolerance);
+	
 	connect(this, &Plot::plottableClick, this, &Plot::onPlottableClicked);
+	connect(this, &Plot::plottableDoubleClick, this, &Plot::onPlottableDoubleClicked);
 	connect(this, &Plot::itemClick, this, &Plot::onItemClicked);
+	connect(this, &Plot::itemDoubleClick, this, &Plot::onItemDoubleClicked);
 	connect(this, &Plot::currentFigureChanged, project, &Project::changeCurrentFigure);
+	connect(this, &Plot::figureEditDialogRequested, project, &Project::requestFigureEditDialog);
 }
 
 void Plot::addFigure(Figure *figure) {
+	if(_isFirstFigure) { // added first curve
+		if(auto curve = dynamic_cast<CurveFigure*>(figure)) {
+			rescaleToCurve(curve);
+			_isFirstFigure = false;
+		}
+	}
+	
 	createFigure(figure);
+	layer(figure->name())->replot();
 };
 
 void Plot::renameFigure(const QString figureName, const QString newName) {
@@ -40,12 +50,14 @@ void Plot::removeFigure(const QString figureName) {
 	deleteFigure(figureName);
 }
 
-void Plot::changeCurrentFigure(const QString &currentFigureName) {
-	if(currentFigureName == "") return;
-
-	updateFigure(currentFigureName);
-	updateFigure(_currentFigureName);
-	_currentFigureName = _project->currentFigureName();
+void Plot::changeCurrentFigure(const QString &currentFigureName, const QString &previousFigureName) {
+	if(!previousFigureName.isNull()) {
+		updateFigure(previousFigureName);
+	}
+	
+	if(!currentFigureName.isNull()) {
+		updateFigure(currentFigureName);
+	}
 }
 
 void Plot::changeFigureVisibility(const QString figureName, bool visible) {
@@ -58,7 +70,7 @@ void Plot::changeCurveParameters(const QString curveName,
 	updateFigure(curveName);
 }
 
-void Plot::changeCurveTolerance(const QString curveName, double upperTolerance, double lowerTolerance) {
+void Plot::changeCurveTolerance(const QString curveName) {
 	updateFigure(curveName);
 }
 
@@ -92,6 +104,7 @@ void Plot::updateFigure(const QString &figureName) {
 
 	clearFiguresFromLayer(figureName);
 	createFigure(figure);
+	layer(figureName)->replot();
 }
 
 void Plot::deleteFigure(const QString &figureName) {
@@ -105,7 +118,7 @@ void Plot::deleteFigure(const QString &figureName) {
 }
 
 void Plot::addCurveLayer(const CurveFigure &curveFigure) {
-	auto curve = new Curve(xAxis, yAxis);
+	auto curve = new Curve(this, &curveFigure, xAxis, yAxis);
 
 	double penWidth;
 	if(_project->currentFigureName() == curveFigure.name()) {
@@ -117,8 +130,9 @@ void Plot::addCurveLayer(const CurveFigure &curveFigure) {
 	auto brush = QBrush(curveFigure.color());
 	auto pen = QPen(brush, penWidth);
 	curve->setPen(pen);
-	
-	for(const auto &point : curveFigure.points()) {
+	const auto curvePoints = curveFigure.points();
+
+	for(const auto &point : curvePoints) {
 		curve->addData(point.x, point.y);
 	}
 	
@@ -129,14 +143,26 @@ void Plot::addCurveLayer(const CurveFigure &curveFigure) {
 	if(curveFigure.isShowPoints()) {
 		curve->showPoints();
 	}
-	
-	addGraph(curve->keyAxis(), curve->valueAxis());
 
-	layer(curveFigure.name())->replot();
+	if(curveFigure.isShowVectors()) {
+		curve->showVectors();
+	}
+
+	if(curveFigure.isClosed()) {
+		curve->addData(curvePoints[0].x, curvePoints[0].y);
+	}
+
+	if(curveFigure.isShowNumbering()) {
+		curve->showNumbering();
+	}
+	
+	curve->showTolerances();
+
+	addGraph(curve->keyAxis(), curve->valueAxis());
 }
 
 void Plot::addPointLayer(const PointFigure &pointFigure) {
-	auto circleFigure = CircleFigure(pointFigure.name(), pointFigure.point(), _pointRadius);
+	auto circleFigure = CircleFigure(pointFigure.name(), Point(pointFigure.point()), Point(0, 0, 1), _pointRadius);
 
 	auto pointColor = pointFigure.color();
 	circleFigure.setColor(pointColor);
@@ -145,7 +171,7 @@ void Plot::addPointLayer(const PointFigure &pointFigure) {
 }
 
 void Plot::addLineLayer(const LineFigure &lineFigure) {
-	auto line = new QCPItemLine(this);
+	auto length = lineFigure.length();
 
 	double penWidth;
 	if(_project->currentFigureName() == lineFigure.name()) {
@@ -156,15 +182,31 @@ void Plot::addLineLayer(const LineFigure &lineFigure) {
 
 	auto brush = QBrush(lineFigure.color());
 	auto pen = QPen(brush, penWidth);
-	line->setPen(pen);
 
-	auto startPoint = lineFigure.start();
-	auto endPoint = lineFigure.end();
+	if(length == qInf()) {
+		auto line = new QCPItemStraightLine(this);
+		line->setPen(pen);
 
-	line->start->setCoords(startPoint.x, startPoint.y);
-	line->end->setCoords(endPoint.x, endPoint.y);
+		auto origin = lineFigure.origin();
+		auto direction = lineFigure.direction();
 
-	layer(lineFigure.name())->replot();
+		line->point1->setCoords(origin.x, origin.y);
+		line->point2->setCoords(origin.x + direction.x, origin.y + direction.y);
+	} else {
+		auto line = new QCPItemLine(this);
+		line->setPen(pen);
+
+		auto origin = lineFigure.origin();
+		auto direction = lineFigure.direction();
+		double halfLength = 0.5 * length;
+
+		auto startPoint = Point(origin.x - halfLength * direction.x, origin.y - halfLength * direction.y);
+		auto endPoint = Point(origin.x + halfLength * direction.x, origin.y + halfLength * direction.y);
+
+		line->start->setCoords(startPoint.x, startPoint.y);
+		line->end->setCoords(endPoint.x, endPoint.y);
+
+	}
 }
 
 void Plot::addCircleLayer(const CircleFigure &circleFigure) {
@@ -182,12 +224,10 @@ void Plot::addCircleLayer(const CircleFigure &circleFigure) {
 	circle->setPen(pen);
 
 	calculateCircleBox(circleFigure, circle);
- 
-	layer(circleFigure.name())->replot();
 }
 
 void Plot::calculateCircleBox(const CircleFigure &circleFigure, QCPItemEllipse *circle) {
-	auto center = circleFigure.centre();
+	auto center = circleFigure.center();
 	auto radius = circleFigure.radius();
 
 	auto topLeftAnchor = QPointF(center.x - radius, center.y + radius);
@@ -210,13 +250,43 @@ void Plot::clearFiguresFromLayer(const QString &layerName) {
 	}
 }
 
-Plot::Curve::Curve(QCPAxis *keyAxis, QCPAxis *valueAxis) : QCPCurve(keyAxis, valueAxis) {
+void Plot::rescaleToCurve(const CurveFigure *curveFigure) {
+	auto curvePoints = curveFigure->points();
+	double minX = curvePoints[0].x, maxX = curvePoints[0].x;
+	double minY = curvePoints[0].y, maxY = curvePoints[0].y;
+
+	for(auto &point : curvePoints) {
+		if(point.x < minX) minX = point.x;
+		if(point.y < minY) minY = point.y;
+		if(point.x > maxX) maxX = point.x;
+		if(point.y > maxY) maxY = point.y;
+	}
+
+	const double reductionWidthFactor = 1 - ((_rightMarginCurve + _leftMarginCurve) / 100);
+	const double reductionHeightFactor = 1 - ((_topMarginCurve + _bottomMarginCurve) / 100);
+
+	double width = (maxX - minX) / reductionWidthFactor;
+	double height = (maxY - minY) / reductionHeightFactor;
+
+	double leftMargin = width * _leftMarginCurve / 100;
+	double rightMargin = width * _rightMarginCurve / 100;
+	double topMargin = height * _topMarginCurve / 100;
+	double bottomMargin = height * _bottomMarginCurve / 100;
+
+	xAxis->setRange(minX - leftMargin, maxX + rightMargin);
+	yAxis->setRange(minY - bottomMargin, maxY + topMargin);
+}
+
+Plot::Curve::Curve(Plot *plot, const CurveFigure *curveFigure, QCPAxis *keyAxis, QCPAxis *valueAxis) : QCPCurve(keyAxis, valueAxis) {
 	setLineStyle(LineStyle::lsNone);
 
 	const auto scatterShape = QCPScatterStyle::ScatterShape::ssNone;
 	const auto scatterStyle = QCPScatterStyle(scatterShape, _scatterSize);
 	setScatterStyle(scatterStyle);
 	setScatterSkip(_scatterSkip);
+	
+	_plot = plot;
+	_curveFigure = curveFigure;
 }
 
 void Plot::Curve::connectPoints() {
@@ -229,16 +299,71 @@ void Plot::Curve::showPoints() {
 	setScatterStyle(scatterStyle);
 }
 
+void Plot::Curve::showTolerances() {
+	auto curveName = _curveFigure->name();
+	
+	auto upperTolerancePoints = _curveFigure->upperTolerance();
+	auto lowerTolerancePoints = _curveFigure->lowerTolerance();
+	auto color = QColorConstants::DarkGreen;
+
+	if(upperTolerancePoints.isEmpty() == false) {
+		auto upperCurveFigure = new CurveFigure(curveName, upperTolerancePoints);
+		upperCurveFigure->setColor(color);
+		upperCurveFigure->setClosed(_curveFigure->isClosed());
+		_plot->createFigure(upperCurveFigure);
+	}
+
+	if(lowerTolerancePoints.isEmpty() == false) {
+		auto lowerCurveFigure = new CurveFigure(curveName, lowerTolerancePoints);
+		lowerCurveFigure->setColor(color);
+		lowerCurveFigure->setClosed(_curveFigure->isClosed());
+		_plot->createFigure(lowerCurveFigure);
+	}
+}
+
+void Plot::Curve::showVectors() {
+	auto pen = QPen(QColorConstants::Red);
+	for(auto &point : _curveFigure->points()) {
+		auto line = new QCPItemLine(parentPlot());
+		
+		line->setPen(pen);
+		line->setHead(QCPLineEnding::esLineArrow);
+		line->start->setCoords(point.x, point.y);
+		line->end->setCoords(point.x + point.i, point.y + point.j);
+	}
+}
+
+void Plot::Curve::showNumbering() {
+	auto points = _curveFigure->points();
+	auto numberingInterval = _curveFigure->numberingInterval();
+	const double offsetX = 0, offsetY = -0.05;
+
+	for(int i = 0; i < points.size(); i += numberingInterval) {
+		auto point = points[i];
+		auto label = new QCPItemText(parentPlot());
+		label->setText(QString::number(i + 1));
+		label->position->setCoords(point.x + offsetX, point.y + offsetY);
+	}
+}
+
 void Plot::onItemClicked(QCPAbstractItem *item, QMouseEvent *event) {
 	auto figureName = item->layer()->name();
 	emit currentFigureChanged(figureName);
 	updateFigure(figureName);
-	_currentFigureName = figureName;
+}
+
+void Plot::onItemDoubleClicked(QCPAbstractItem* item, QMouseEvent* event) {
+	auto figureName = item->layer()->name();
+	emit figureEditDialogRequested(figureName);
 }
 
 void Plot::onPlottableClicked(QCPAbstractPlottable *plottable, int dataIndex, QMouseEvent *event) {
 	auto figureName = plottable->layer()->name();
 	emit currentFigureChanged(figureName);
 	updateFigure(figureName);
-	_currentFigureName = figureName;
+}
+
+void Plot::onPlottableDoubleClicked(QCPAbstractPlottable* plottable, int dataIndex, QMouseEvent* event) {
+	auto figureName = plottable->layer()->name();
+	emit figureEditDialogRequested(figureName);
 }

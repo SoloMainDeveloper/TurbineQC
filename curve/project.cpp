@@ -1,6 +1,12 @@
 #include "curve/pch.h"
 #include "project.h"
 
+Project::~Project() {
+    for(auto item : _figures) {
+        delete item;
+    }
+}
+
 const QList<Figure*>& Project::figures() const {
     return _figures;
 }
@@ -30,7 +36,7 @@ void Project::renameFigure(const QString &name, const QString &newName) {
 
     if(name == _currentFigureName) {
         _currentFigureName = newName;
-        currentFigureChanged(newName);
+        currentFigureChanged(newName, name);
     }
 }
 
@@ -44,8 +50,9 @@ void Project::removeFigure(const QString &name) {
 }
 
 void Project::changeCurrentFigure(const QString &currentFigureName) {
+    auto previousFigureName = _currentFigureName;
     _currentFigureName = currentFigureName;
-    emit currentFigureChanged(currentFigureName);
+    emit currentFigureChanged(currentFigureName, previousFigureName);
 }
 
 void Project::changeFigureVisibility(const QString figureName, bool visible) {
@@ -75,11 +82,14 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
         showVectors, closed, showNumbering, numberingInterval);
 }
 
-void Project::changeCurveTolerance(const QString curveName, double upperTolerance, double lowerTolerance) {
+void Project::changeCurveTolerance(const QString curveName, QVector<CurvePoint> curveWithTolerances) {
     auto figure = findFigureMutable(curveName);
     if(auto curve = dynamic_cast<CurveFigure*>(figure)) {
-        curve->setTolerance(upperTolerance, lowerTolerance);
-        emit curveToleranceChanged(curveName, upperTolerance, lowerTolerance);
+        curve->changePoints(curveWithTolerances);
+        curve->setClosed(true);
+        curve->computeToleranceClouds();
+        emit curveParametersChanged(curveName, curve->isShowPoints(), curve->isConnectPoints(), curve->isShowVectors(), curve->isClosed(), curve->isShowNumbering(), curve->numberingInterval());
+        emit curveToleranceChanged(curveName);
     }
 }
 
@@ -89,4 +99,35 @@ Figure* Project::findFigureMutable(const QString &name) {
 
 const QString Project::currentFigureName() const {
     return _currentFigureName;
+}
+
+void Project::requestFigureEditDialog(const QString figureName) {
+    emit figureEditDialogRequested(figureName);
+}
+
+void Project::safeInsert(QString figureName, Figure *figure) {
+    if(_currentFigureName == figureName) {
+        removeFigure(figureName);
+        insertFigure(figure);
+        changeCurrentFigure(figureName);
+        return;
+    } else if (containsFigure(figureName)) {
+        removeFigure(figureName);
+    }
+    insertFigure(figure);
+}
+
+void Project::changeCurvePoints(QString curveName, QVector<CurvePoint> newPoints) {
+    auto figure = findFigureMutable(curveName);
+    if(auto curve = dynamic_cast<CurveFigure*>(figure)) {
+        curve->changePoints(newPoints);
+        emit curvePointsChanged(curveName);
+    }
+}
+
+void Project::clear() {
+    auto length = _figures.length();
+    for(auto i = length - 1; i >= 0; i--) {
+        removeFigure(_figures[i]->name());
+    }
 }

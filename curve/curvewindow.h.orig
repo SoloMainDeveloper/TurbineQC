@@ -15,8 +15,11 @@
 #include "widthedgewindow.h"
 #include "radiuscorrectiondialog.h"
 #include "mergepointcloudswindow.h"
+<<<<<<< HEAD
 #include "saveprojectwindow.h"
+=======
 #include "calculatedeviationsdialog.h"
+>>>>>>> origin/CURVE-6
 
 namespace Ui {
     class CurveWindow;
@@ -47,6 +50,9 @@ private:
     WidthEdgeWindow *_widthEdgeWindow;
     MergePointCloudsWindow *_mergeCloudsWindow;
     RadiusCorrectionDialog *_radiusCorrectionDialog;
+<<<<<<< HEAD
     SaveProjectWindow *_saveProjectWindow;
+=======
     CalculateDeviationsDialog *_calculateDeviationsDialog;
+>>>>>>> origin/CURVE-6
 };

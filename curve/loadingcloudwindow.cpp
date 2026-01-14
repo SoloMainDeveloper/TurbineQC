@@ -126,7 +126,7 @@ void LoadingCloudWindow::loadCloud() {
         auto separator = _ui->separatorBox->currentText();
         auto startLineToSkip = _ui->startLineEdit->text().toInt() - 1;
         auto finishLineToSkip = _fileData.length() - _ui->finishLineEdit->text().toInt();
-        auto points = FileSystem::parsePointsFromElement(_fileData, separator, startLineToSkip, finishLineToSkip);
+        auto points = FileSystem::parsePointsFromElement(_fileData, separator, startLineToSkip, finishLineToSkip, Order::Default);
         if(!_project->containsFigure(_name)) {
             if(points.length() > 0) {
                 _ui->notifyLabel->setText(QString("Interpreted lines %1!").arg(points.length()));
@@ -143,6 +143,11 @@ void LoadingCloudWindow::loadCloud() {
 
 void LoadingCloudWindow::closeEvent(QCloseEvent *event) {
     closeWindow();
+}
+
+// For the CURVE-56 test
+QString LoadingCloudWindow::name() {
+    return _name;
 }
 
 void LoadingCloudWindow::closeWindow() {

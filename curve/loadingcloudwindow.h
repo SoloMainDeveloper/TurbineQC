@@ -17,6 +17,8 @@ public:
     explicit LoadingCloudWindow(Project *project, QWidget *parent = nullptr);
     virtual ~LoadingCloudWindow();
 
+    QString name(); // For the CURVE-56 test
+
 private slots:
     void selectFile();
     void selectClipboard();

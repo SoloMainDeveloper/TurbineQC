@@ -54,7 +54,7 @@ public:
     Function7Result(QStringList points);
     ~Function7Result() = default;
 
-    QVector<Point> contactPoints;
+    QVector<CurvePoint> contactPoints;
 };
 
 struct Function8Result {
@@ -83,7 +83,7 @@ public:
     ~Function11Result() = default;
 
     LineFigure line;
-    QVector<Point> points;
+    QVector<CurvePoint> points;
 };
 
 struct Function12Result {
@@ -92,15 +92,15 @@ public:
     ~Function12Result() = default;
 
     CircleFigure circle;
-    QVector<Point> points;
+    QVector<CurvePoint> points;
 };
 
 struct Function13Result {
 public:
-    Function13Result(QVector<Point> points);
+    Function13Result(QVector<CurvePoint> points);
     ~Function13Result() = default;
 
-    QVector<Point> points;
+    QVector<CurvePoint> points;
 };
 
 struct Function14Result {
@@ -118,7 +118,7 @@ public:
 
     double perimeter;
     double square;
-    Point massCentre;
+    CurvePoint massCentre;
 };
 
 struct Function16Result {
@@ -149,6 +149,6 @@ public:
     CurveFigure curveLE; //PART$CURVE_LE
     CurveFigure curveLow; //PART$CURVE_LO
     CurveFigure curveHigh; //PART$CURVE_HI
-    QVector<Point> contactEndPoints; //CONTACT$ENDPOINTS
+    QVector<CurvePoint> contactEndPoints; //CONTACT$ENDPOINTS
     double chordLength = 0;
 };

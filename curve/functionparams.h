@@ -115,7 +115,7 @@ private:
 
 class Function8Params : public FunctionParams {
 public:
-    Function8Params(int diameter, double xCircle, double yCircle, double zCircle = 0, bool isClosed = false);
+    Function8Params(double diameter, double xCircle, double yCircle, double zCircle = 0, bool isClosed = false);
     QString toQString() override;
 
 private:
@@ -123,7 +123,7 @@ private:
     double _xCircle;
     double _yCircle;
     double _zCircle;
-    int _diameter;
+    double _diameter;
 };
 
 class Function9Params : public FunctionParams {

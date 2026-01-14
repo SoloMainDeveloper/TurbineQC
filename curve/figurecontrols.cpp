@@ -49,6 +49,12 @@ FigureControls::FigureControls(Project* mainProject, QWidget *parent) {
     numbers->setValidator(new QIntValidator);
     connect(numbers, &QLineEdit::editingFinished, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(numbers);
+
+    visibility->hide();
+    for(auto item : curveControls) {
+        item->hide();
+    }
+    numbers->hide();
 }
 
 //slots
@@ -95,8 +101,7 @@ void FigureControls::changeFigureVisibility(const QString figureName, bool visib
 void FigureControls::changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
     bool showVectors, bool closed, bool showNumbering, int numberingInterval) {
 
-    auto current = currentFigure->name();
-    if(current == curveName) {
+    if(currentFigure && currentFigure->name() == curveName) {
         curveControls[0]->setChecked(showPoints);
         curveControls[1]->setChecked(connectPoints);
         curveControls[2]->setChecked(showVectors);

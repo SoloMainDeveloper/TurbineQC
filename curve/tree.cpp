@@ -7,9 +7,11 @@ Tree::Tree(QWidget *parent) {
 
     renameItem = new QAction(QIcon("icons/rename.png"), "Rename");
     removeItem = new QAction(QIcon("icons/delete.png"), "Remove");
+    editItem = new QAction("Edit");
 
     connect(renameItem, &QAction::triggered, this, &Tree::onRenameItemTriggered);
     connect(removeItem, &QAction::triggered, this, &Tree::onRemoveItemTriggered);
+    connect(editItem, &QAction::triggered, this, &Tree::onEditItemTriggered);
 
     connect(this, &QTreeWidget::currentItemChanged, this, &Tree::changeCurrentFigure);
     connect(this, &QTreeWidget::itemDoubleClicked, this, &Tree::onItemDoubleClicked);
@@ -17,24 +19,28 @@ Tree::Tree(QWidget *parent) {
     treeCurves = new QTreeWidgetItem;
     treeCurves->setText(0, "Curves");
     treeCurves->setIcon(0, QIcon("icons/curve.png"));
+    treeCurves->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCurves);
     treeCurves->setExpanded(true);
 
     treeCircles = new QTreeWidgetItem;
     treeCircles->setText(0, "Circles");
     treeCircles->setIcon(0, QIcon("icons/circle.png"));
+    treeCircles->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCircles);
     treeCircles->setExpanded(true);
 
     treeLines = new QTreeWidgetItem;
     treeLines->setText(0, "Lines");
     treeLines->setIcon(0, QIcon("icons/line.png"));
+    treeLines->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeLines);
     treeLines->setExpanded(true);
 
     treePoints = new QTreeWidgetItem;
     treePoints->setText(0, "Points");
     treePoints->setIcon(0, QIcon("icons/point.png"));
+    treePoints->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treePoints);
     treePoints->setExpanded(true);
 
@@ -42,10 +48,12 @@ Tree::Tree(QWidget *parent) {
 
 void Tree::setProject(Project* mainProject) {
     project = mainProject;
+
     connect(this, &Tree::figureRenameRequested, project, &Project::renameFigure);
     connect(this, &Tree::figureRemoveRequested, project, &Project::removeFigure);
     connect(this, &Tree::currentFigureChanged, project, &Project::changeCurrentFigure);
     connect(this, &Tree::figureToggleVisibilityRequested, project, &Project::toggleFigureVisibility);
+    connect(this, &Tree::figureEditRequested, project, &Project::requestFigureEditDialog);
 
     connect(project, &Project::figureAdded, this, &Tree::addFigure);
     connect(project, &Project::figureAboutToBeRemoved, this, &Tree::removeFigure);
@@ -57,6 +65,7 @@ void Tree::contextMenuEvent(QContextMenuEvent *event) {
     if(currentItem()->parent()) {
         QMenu menu;
         menu.addAction(renameItem);
+        menu.addAction(editItem);
         menu.addAction(removeItem);
         menu.exec(event->globalPos());
     }
@@ -193,6 +202,10 @@ void Tree::onRemoveItemTriggered() {
     }
 }
 
+void Tree::onEditItemTriggered() {
+    emit figureEditRequested(currentItem()->text(0));
+}
+
 void Tree::changeCurrentFigure(const QTreeWidgetItem *item) {
     if(item->parent()) {
         auto name = item->text(0);
@@ -203,7 +216,10 @@ void Tree::changeCurrentFigure(const QTreeWidgetItem *item) {
 }
 
 void Tree::changeCurrentFigureByName(const QString currentFigureName) {
-    auto oldCurrentFigureName = currentItem()->text(0);
+    QString oldCurrentFigureName;
+    if(currentItem()) {
+        oldCurrentFigureName = currentItem()->text(0);
+    }
     if(oldCurrentFigureName == currentFigureName || currentFigureName == QString()) {
         return;
     } else {
@@ -255,4 +271,5 @@ void Tree::onItemDoubleClicked(const QTreeWidgetItem *item) {
 Tree::~Tree() {
     delete renameItem;
     delete removeItem;
+    delete editItem;
 }

@@ -109,9 +109,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoadFile"/>
-    <addaction name="actionLoadProject"/>
     <addaction name="actionSaveProject"/>
-    <addaction name="actionClearProject"/>
    </widget>
    <widget class="QMenu" name="menuCurve">
     <property name="title">
@@ -156,6 +154,7 @@
     <string>Radius correction</string>
    </property>
   </action>
+<<<<<<< HEAD
   <action name="actionSaveProject">
    <property name="text">
     <string>Save Project</string>
@@ -164,21 +163,11 @@
   <action name="actionNotepad">
    <property name="text">
     <string>Запустить блокнот</string>
-   </property>
-  </action>
+=======
   <action name="actionCalculateDeviations">
    <property name="text">
     <string>Calculate deviations</string>
-   </property>
-  </action>
-  <action name="actionLoadProject">
-   <property name="text">
-    <string>Load Project</string>
-   </property>
-  </action>
-  <action name="actionClearProject">
-   <property name="text">
-    <string>Clear Project</string>
+>>>>>>> origin/CURVE-6
    </property>
   </action>
  </widget>
