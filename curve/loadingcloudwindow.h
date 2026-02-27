@@ -17,8 +17,6 @@ public:
     explicit LoadingCloudWindow(Project *project, QWidget *parent = nullptr);
     virtual ~LoadingCloudWindow();
 
-    QString name(); // For the CURVE-56 test
-
 private slots:
     void selectFile();
     void selectClipboard();
@@ -38,5 +36,6 @@ private:
     QMessageBox *_message;
 
     QStringList _fileData;
-    QString _name;
+
+    bool isCorrectFileExtension(const QString &filePath);
 };
