@@ -5,9 +5,9 @@ Tree::Tree(QWidget *parent) {
 
     setHeaderHidden(true);
 
-    renameItem = new QAction(QIcon("icons/rename.png"), "Rename");
-    removeItem = new QAction(QIcon("icons/delete.png"), "Remove");
-    editItem = new QAction("Edit");
+    renameItem = new QAction(QIcon("icons/rename.ico"), "Rename");
+    removeItem = new QAction(QIcon("icons/delete.ico"), "Remove");
+    editItem = new QAction(QIcon("icons/edit.ico"), "Edit");
 
     connect(renameItem, &QAction::triggered, this, &Tree::onRenameItemTriggered);
     connect(removeItem, &QAction::triggered, this, &Tree::onRemoveItemTriggered);
@@ -18,44 +18,55 @@ Tree::Tree(QWidget *parent) {
 
     treeCurves = new QTreeWidgetItem;
     treeCurves->setText(0, "Curves");
-    treeCurves->setIcon(0, QIcon("icons/curve.png"));
+    treeCurves->setIcon(0, QIcon("icons/curve.ico"));
     treeCurves->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCurves);
     treeCurves->setExpanded(true);
 
     treeCircles = new QTreeWidgetItem;
     treeCircles->setText(0, "Circles");
-    treeCircles->setIcon(0, QIcon("icons/circle.png"));
+    treeCircles->setIcon(0, QIcon("icons/circle.ico"));
     treeCircles->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCircles);
     treeCircles->setExpanded(true);
 
     treeLines = new QTreeWidgetItem;
     treeLines->setText(0, "Lines");
-    treeLines->setIcon(0, QIcon("icons/line.png"));
+    treeLines->setIcon(0, QIcon("icons/line.ico"));
     treeLines->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeLines);
     treeLines->setExpanded(true);
 
     treePoints = new QTreeWidgetItem;
     treePoints->setText(0, "Points");
-    treePoints->setIcon(0, QIcon("icons/point.png"));
+    treePoints->setIcon(0, QIcon("icons/point.ico"));
     treePoints->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treePoints);
     treePoints->setExpanded(true);
 
     treeDimensions = new QTreeWidgetItem;
     treeDimensions->setText(0, "Dimensions");
-    treeDimensions->setIcon(0, QIcon("icons/dimension.png"));
+    treeDimensions->setIcon(0, QIcon("icons/dimension.ico"));
     treeDimensions->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeDimensions);
     treeDimensions->setExpanded(true);
+
+    treeTexts = new QTreeWidgetItem;
+    treeTexts->setText(0, "Texts");
+    treeTexts->setIcon(0, QIcon("icons/text.ico"));
+    treeTexts->setBackground(0, QBrush("#f7f7f7"));
+    addTopLevelItem(treeTexts);
+    treeTexts->setExpanded(true);
 }
 
 void Tree::setProject(Project* mainProject) {
     project = mainProject;
 
-    connect(this, &Tree::figureRenameRequested, project, &Project::renameFigure);
+    connect(this, &Tree::figureRenameRequested, project, [&](const QString& name, const QString& newName) {
+        try {
+            project->renameFigure(name, newName);   
+        } catch(...){ }
+    });
     connect(this, &Tree::figureRemoveRequested, project, &Project::removeFigure);
     connect(this, &Tree::currentFigureChanged, project, &Project::changeCurrentFigure);
     connect(this, &Tree::figureToggleVisibilityRequested, project, &Project::toggleFigureVisibility);
@@ -90,6 +101,8 @@ void Tree::addFigure(Figure* figure) {
         treePoints->addChild(child);
     } else if(dynamic_cast<DimFigure*>(figure)) {
         treeDimensions->addChild(child);
+    } else if(dynamic_cast<TextFigure*>(figure)) {
+        treeTexts->addChild(child);
     } else {
         delete child;
     }
@@ -126,7 +139,7 @@ QTreeWidgetItem* Tree::findChild(const QString &name) {
 }
 
 void Tree::onRenameItemTriggered() {
-    auto text = QInputDialog::getText(this, "Rename element", "Input new name");
+    auto text = QInputDialog::getText(this, "Rename element", "Input new name", QLineEdit::Normal, currentItem()->text(0));
     if(text == "") {
         return;
     }
@@ -134,16 +147,10 @@ void Tree::onRenameItemTriggered() {
 }
 
 void Tree::onRemoveItemTriggered() {
-    QMessageBox mBox;
-    mBox.setText("Delete current item?");
-    mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    auto dialogWindow = mBox.exec();
-    switch(dialogWindow) {
-        case QMessageBox::Ok:
-            emit figureRemoveRequested(currentItem()->text(0));
-            break;
-        case QMessageBox::Cancel:
-            break;
+    auto figureName = currentItem()->text(0);
+    
+    if(project->confirmRemoveFigure(figureName)) {
+         emit figureRemoveRequested(figureName);
     }
 }
 

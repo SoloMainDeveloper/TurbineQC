@@ -22,6 +22,7 @@ private:
     QTreeWidgetItem* treeLines;
     QTreeWidgetItem* treePoints;
     QTreeWidgetItem* treeDimensions;
+    QTreeWidgetItem* treeTexts;
 
     QAction* renameItem;
     QAction* editItem;
