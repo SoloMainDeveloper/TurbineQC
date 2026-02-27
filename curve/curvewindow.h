@@ -18,8 +18,14 @@
 #include "saveprojectwindow.h"
 #include "calculatedeviationsdialog.h"
 #include "bestfitdialog.h"
-#include "dimensionrender.h"
 #include "macroswindow.h"
+#include "exporttoFLRdialog.h"
+#include "shiftdialog.h"
+#include "rotatedialog.h"
+#include "alignmentdialog.h"
+#include "calculatecurvedialog.h"
+#include "partdatadialog.h"
+#include "inserttextdialog.h"
 
 namespace Ui {
     class CurveWindow;
@@ -56,9 +62,18 @@ private:
     CalculateDeviationsDialog *_calculateDeviationsDialog;
     BestFitDialog *_bestFitDialog;
     MacrosWindow *_macrosWindow;
+    ExportToFLRDialog *_exportToFLRDialog;
+    ShiftDialog *_shiftDialog;
+    RotateDialog *_rotateDialog;
+    AlignmentDialog *_alignmentDialog;
+    CalculateCurveDialog *_calculatecurvedialog;
+    PartDataDialog *_partDataDialog;
+    InsertTextDialog *_insertTextDialog;
+
 
     QString _windowTitle;
 
     void changeWindowTitle(const QString &projectPath);
     void setDefualtWindowTitle();
+    void keyPressEvent(QKeyEvent *event);
 };

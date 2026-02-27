@@ -21,255 +21,387 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{b78ca476-aa92-4e07-96e4-0898481b08c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Curve Library">
+      <UniqueIdentifier>{439ddb14-c227-41bf-bfdc-8aa72725cbe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interface">
+      <UniqueIdentifier>{13c2d2fd-a6b2-42a5-af17-c0598e0fa9f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{0db87208-2803-449f-a0cb-846779f0aa29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{edd8efc1-47bf-4959-8cc2-e73d49245da7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Report">
+      <UniqueIdentifier>{17eb4d15-1e5d-4a5c-8427-2237e58ffe9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Macros">
+      <UniqueIdentifier>{de9e1bb8-03e8-415a-ac13-307f5e91a632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{7f4e30d6-e464-4103-9ba3-b63f740385e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interface">
+      <UniqueIdentifier>{306d9e28-4dd6-4c0c-9d34-a5d16767e5e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{092d2dfb-43c4-4f72-bfe6-d3707b0233b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{815740b4-48c8-43d0-9bde-b388300b5928}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Macros">
+      <UniqueIdentifier>{8efbc166-ffdb-4e7c-a6bb-ea2b32414957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Other">
+      <UniqueIdentifier>{9a275b40-2484-47a6-bb73-e2b3365b41aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Report">
+      <UniqueIdentifier>{f988b672-3bf5-4b1a-91fc-d98b806e25ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\Dialogs">
+      <UniqueIdentifier>{02eacbdc-cabd-4be0-ac89-f512df73e238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files\Other">
+      <UniqueIdentifier>{52b3d3e5-870a-4c8d-b52a-5bfba0c28c30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curve Library">
+      <UniqueIdentifier>{2cd7b3b0-7e96-4fcb-a135-9a9becc4437f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Other">
+      <UniqueIdentifier>{c8fd8eea-40f0-4237-bd86-e347f5a9829c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="curvewindow.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="curvewindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtMoc Include="curvewindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClCompile Include="curvewindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="figure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="functionparams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="filesystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="curvemachine.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="airfoiltolerancesdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="algorithms.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="project.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="curvelibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="functionresults.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sashasecretwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="figurecontrols.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="airfoiltolerancesdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="loadingcloudwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="figureeditdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="turbinewindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="widthedgewindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="radiuscorrectiondialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mergepointcloudswindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="saveprojectwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="calculatedeviationsdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="curvegraphicswidget.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="alignmentdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="bestfitdialog.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="reportgenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="reportdata.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="calculatecurvedialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="calculatedeviationsdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dimensionrender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="calculatedeviationsdialog.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="colortranslator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="creatingmarkup.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="curvegraphicswidget.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="curvelibrary.cpp">
+      <Filter>Source Files\Curve Library</Filter>
+    </ClCompile>
+    <ClCompile Include="curvemachine.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="curvewindow.cpp">
+      <Filter>Source Files\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="figure.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="figurecontrols.cpp">
+      <Filter>Source Files\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="figureeditdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="filesystem.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="functionparams.cpp">
+      <Filter>Source Files\Curve Library</Filter>
+    </ClCompile>
+    <ClCompile Include="functionresults.cpp">
+      <Filter>Source Files\Curve Library</Filter>
+    </ClCompile>
+    <ClCompile Include="loadingcloudwindow.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="macrosmanager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Macros</Filter>
     </ClCompile>
     <ClCompile Include="macroswindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Macros</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="mergepointcloudswindow.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="plot.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="project.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="radiuscorrectiondialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="reportgenerator.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="reportsettings.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="rotatedialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="saveprojectwindow.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shiftdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="tree.cpp">
+      <Filter>Source Files\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="turbinewindow.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="widthedgewindow.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="partdatadialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="continuableexception.cpp">
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="exporttoFLRdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="inserttextdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="inserttextdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="figure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="functionparams.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="curvemachine.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="filesystem.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="curvemachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="algorithms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="curvelibrary.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="functionparams.h">
+      <Filter>Header Files\Curve Library</Filter>
     </ClInclude>
     <ClInclude Include="functionresults.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Curve Library</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files\Other</Filter>
     </ClInclude>
     <ClInclude Include="reportgenerator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Report</Filter>
     </ClInclude>
-    <ClInclude Include="reportdata.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="reportsettings.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="continuableexception.h">
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="algorithms.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="colortranslator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="curvelibrary.h">
+      <Filter>Header Files\Curve Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="tree.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="plot.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="sashasecretwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="figurecontrols.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="project.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="airfoiltolerancesdialog.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="loadingcloudwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="figureeditdialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="turbinewindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="widthedgewindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="radiuscorrectiondialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="mergepointcloudswindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="saveprojectwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="calculatedeviationsdialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="curvegraphicswidget.h">
-      <Filter>Header Files</Filter>
+    <QtMoc Include="alignmentdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
     <QtMoc Include="bestfitdialog.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="dimensionrender.h">
-      <Filter>Header Files</Filter>
+    <QtMoc Include="calculatecurvedialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="calculatedeviationsdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="creatingmarkup.h">
+      <Filter>Header Files\Report</Filter>
+    </QtMoc>
+    <QtMoc Include="curvegraphicswidget.h">
+      <Filter>Header Files\Graphics</Filter>
+    </QtMoc>
+    <QtMoc Include="curvewindow.h">
+      <Filter>Header Files\Interface</Filter>
+    </QtMoc>
+    <QtMoc Include="figurecontrols.h">
+      <Filter>Header Files\Interface</Filter>
+    </QtMoc>
+    <QtMoc Include="figureeditdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="loadingcloudwindow.h">
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
     <QtMoc Include="macrosmanager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Macros</Filter>
     </QtMoc>
     <QtMoc Include="macroswindow.h">
+      <Filter>Header Files\Macros</Filter>
+    </QtMoc>
+    <QtMoc Include="mergepointcloudswindow.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="plot.h">
+      <Filter>Header Files\Graphics</Filter>
+    </QtMoc>
+    <QtMoc Include="project.h">
+      <Filter>Header Files\Core</Filter>
+    </QtMoc>
+    <QtMoc Include="radiuscorrectiondialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="rotatedialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="shiftdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="tree.h">
+      <Filter>Header Files\Interface</Filter>
+    </QtMoc>
+    <QtMoc Include="saveprojectwindow.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="turbinewindow.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="widthedgewindow.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="partdatadialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="exporttoFLRdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="creatingmarkup.h">
+      <Filter>Header Files\Report</Filter>
+    </QtMoc>
+    <QtMoc Include="figure.h">
+      <Filter>Header Files\Core</Filter>
+    </QtMoc>
+    <QtMoc Include="creatingmarkup.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="inserttextdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="sashasecretwindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="airfoiltolerancesdialog.ui">
-      <Filter>Form Files</Filter>
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="loadingcloudwindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="figureeditdialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="turbinewindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="widthedgewindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="radiuscorrectiondialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="mergepointcloudswindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="saveprojectwindow.ui">
-      <Filter>Form Files</Filter>
+    <QtUic Include="alignmentdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="bestfitdialog.ui">
-      <Filter>Form Files</Filter>
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="calculatecurvedialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="calculatedeviationsdialog.ui">
-      <Filter>Form Files</Filter>
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="figureeditdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="loadingcloudwindow.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="mergepointcloudswindow.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="rotatedialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="turbinewindow.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="widthedgewindow.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="shiftdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="saveprojectwindow.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="radiuscorrectiondialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="curvegraphicswidget.ui">
-      <Filter>Form Files</Filter>
+      <Filter>Form Files\Other</Filter>
+    </QtUic>
+    <QtUic Include="curvewindow.ui">
+      <Filter>Form Files\Other</Filter>
     </QtUic>
     <QtUic Include="macroswindow.ui">
+      <Filter>Form Files\Other</Filter>
+    </QtUic>
+    <QtUic Include="shiftdialog.ui">
       <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="rotatedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="alignmentdialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="calculatecurvedialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="exporttoFLRdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="partdatadialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="inserttextdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="inserttextdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
   </ItemGroup>
 </Project>

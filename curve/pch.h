@@ -23,3 +23,5 @@
 #include <QWidget>
 #include "qcustomplot.h"
 #include "macrosmanager.h"
+#include <Eigen/Dense>
+#include "continuableexception.h"

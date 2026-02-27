@@ -8,7 +8,7 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
     _windowTitle = "Curve 1.0";
     this->setWindowIcon(QIcon("icons/curveWindow.png"));
     setDefualtWindowTitle();
-
+    
     _loadingCloudWindow = new LoadingCloudWindow(&_project);
     connect(_ui->actionLoadFile, &QAction::triggered, _loadingCloudWindow, &LoadingCloudWindow::exec);
 
@@ -30,10 +30,15 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
     _saveProjectWindow = new SaveProjectWindow(&_project);
     connect(_ui->actionSaveProject, &QAction::triggered, _saveProjectWindow, &SaveProjectWindow::initialization);
 
+    _exportToFLRDialog = new ExportToFLRDialog(&_project);
+    connect(_ui->actionExportToFLR, &QAction::triggered, _exportToFLRDialog, &ExportToFLRDialog::initialization);
+
     connect(_ui->actionLoadProject, &QAction::triggered, this, [&]() {
         auto projectPath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt *.crv)");
-        changeWindowTitle(projectPath);
-        FileSystem::loadProject(&_project, projectPath);
+        try {
+            FileSystem::loadProject(&_project, projectPath);
+            changeWindowTitle(projectPath);
+        } catch(...) { }
     });
 
     connect(_ui->actionClearProject, &QAction::triggered, &_project, [&]() {
@@ -57,20 +62,44 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
 
     _calculateDeviationsDialog = new CalculateDeviationsDialog(&_project);
     connect(_ui->actionCalculateDeviations, &QAction::triggered, _calculateDeviationsDialog, &CalculateDeviationsDialog::initialization);
-    
-    auto dimensionRender = new DimensionRender(_plot);
+
     connect(_ui->menuDimensions, &QMenu::aboutToShow, this, &CurveWindow::dimensionMenuInit);
-    connect(_ui->actionRadius, &QAction::triggered, dimensionRender, &DimensionRender::addRadius);
-    connect(_ui->actionDiameter, &QAction::triggered, dimensionRender, &DimensionRender::addDiameter);
-    connect(_ui->actionPerimeter, &QAction::triggered, dimensionRender, &DimensionRender::addPerimeter);
+    connect(_ui->actionRadius, &QAction::triggered, _plot, &Plot::createRadiusDimension);
+    connect(_ui->actionDiameter, &QAction::triggered, _plot, &Plot::createDiameterDimension);
+    connect(_ui->actionPerimeter, &QAction::triggered, [&] {
+        auto currentCurve = dynamic_cast<const CurveFigure*>(_project.findFigure(_project.currentFigureName()));
+        double perimeter = CurveLibrary::function15(currentCurve->points(), Function15Params(currentCurve->isClosed())).perimeter;
+        _plot->createPerimeterDimension(perimeter);
+    });
     
     connect(_ui->actionZoomExtents, &QAction::triggered, _plot, &Plot::zoomExtents);
     connect(_ui->actionZoomPlus, &QAction::triggered, _plot, &Plot::zoomPlus);
     connect(_ui->actionZoomMinus, &QAction::triggered, _plot, &Plot::zoomMinus);
 
-    _macrosWindow = new MacrosWindow(this, &_project);
+    _macrosWindow = new MacrosWindow(this, &_project, _plot);
     connect(_ui->actionShowMacrosWindow, &QAction::triggered, _macrosWindow, &MacrosWindow::initialization);
     connect(_macrosWindow, &MacrosWindow::needShow, _ui->actionShowMacrosWindow, &QAction::setEnabled);    
+
+    _shiftDialog = new ShiftDialog(&_project);
+    connect(_ui->actionShift, &QAction::triggered, _shiftDialog, &ShiftDialog::initialization);
+
+    _rotateDialog = new RotateDialog(&_project);
+    connect(_ui->actionRotate, &QAction::triggered, _rotateDialog, &RotateDialog::initialization);
+
+    _alignmentDialog = new AlignmentDialog(&_project);
+    connect(_ui->actionAlignment, &QAction::triggered, _alignmentDialog, &AlignmentDialog::initialization);
+
+    _calculatecurvedialog = new CalculateCurveDialog(&_project);
+    connect(_ui->actionCurve_2D_calculation, &QAction::triggered, _calculatecurvedialog, &CalculateCurveDialog::initialization);
+
+    _partDataDialog = new PartDataDialog(&_project);
+    connect(_ui->actionEdit_Part_Data, &QAction::triggered, _partDataDialog, &PartDataDialog::initialization);
+    connect(&_project, &Project::showPartDataDialogRequested, _partDataDialog, &PartDataDialog::initializationByMacros);
+
+    _insertTextDialog = new InsertTextDialog(&_project);
+    connect(_ui->actionText, &QAction::triggered, _insertTextDialog, &InsertTextDialog::initialization);
+
+    connect(&_project, &Project::raiseMainWindow, this, [&]() { raise(); activateWindow(); showMaximized(); });
 }
 
 void CurveWindow::dimensionMenuInit() {
@@ -105,6 +134,31 @@ void CurveWindow::changeWindowTitle(const QString &projectPath) {
 
 void CurveWindow::setDefualtWindowTitle() {
     this->setWindowTitle(_windowTitle);
+}
+
+void CurveWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Delete && !_project.currentFigureName().isEmpty()) {
+        QMessageBox mBox;
+        QString name = _project.currentFigureName();
+        auto childs = _project.findFigureChildren(name);
+
+        if(childs.isEmpty()) {
+            mBox.setText(QString("Delete %1 ?").arg(name));
+            mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        } else {
+            auto text = QString("%1 was deleted with children. Continue deleting?\n").arg(name);
+            for(auto &child : childs) {
+                text += QString("%1\n").arg(child);
+            }
+            mBox.setText(text);
+            mBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        }
+
+        int dialogResponse = mBox.exec();
+        if(dialogResponse == QMessageBox::Yes || dialogResponse == QMessageBox::Ok) {
+            _project.removeFigure(name);
+        }
+    }
 }
 
 CurveWindow::~CurveWindow() {

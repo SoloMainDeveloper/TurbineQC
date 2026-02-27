@@ -121,32 +121,48 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="alignmentdialog.cpp" />
     <ClCompile Include="bestfitdialog.cpp" />
+    <ClCompile Include="calculatecurvedialog.cpp" />
     <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
+    <ClCompile Include="continuableexception.cpp" />
+    <ClCompile Include="creatingmarkup.cpp" />
     <ClCompile Include="curvegraphicswidget.cpp" />
-    <ClCompile Include="dimensionrender.cpp" />
+    <ClCompile Include="exporttoFLRdialog.cpp" />
     <ClCompile Include="figureeditdialog.cpp" />
+    <ClCompile Include="inserttextdialog.cpp" />
     <ClCompile Include="loadingcloudwindow.cpp" />
     <ClCompile Include="airfoiltolerancesdialog.cpp" />
     <ClCompile Include="macrosmanager.cpp" />
     <ClCompile Include="macroswindow.cpp" />
     <ClCompile Include="mergepointcloudswindow.cpp" />
+    <ClCompile Include="partdatadialog.cpp" />
     <ClCompile Include="plot.cpp" />
     <ClCompile Include="curvelibrary.cpp" />
     <ClCompile Include="functionresults.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="radiuscorrectiondialog.cpp" />
-    <ClCompile Include="reportdata.cpp" />
+    <ClCompile Include="reportsettings.cpp" />
     <ClCompile Include="reportgenerator.cpp" />
-    <ClCompile Include="sashasecretwindow.cpp" />
+    <ClCompile Include="rotatedialog.cpp" />
     <ClCompile Include="saveprojectwindow.cpp" />
+    <ClCompile Include="shiftdialog.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="turbinewindow.cpp" />
     <ClCompile Include="widthedgewindow.cpp" />
+    <QtMoc Include="rotatedialog.h" />
+    <QtMoc Include="shiftdialog.h" />
     <QtMoc Include="macrosmanager.h" />
     <QtMoc Include="macroswindow.h" />
-    <ClInclude Include="reportdata.h" />
+    <QtMoc Include="alignmentdialog.h" />
+    <QtMoc Include="calculatecurvedialog.h" />
+    <QtMoc Include="creatingmarkup.h" />
+    <QtMoc Include="partdatadialog.h" />
+    <ClInclude Include="continuableexception.h" />
+    <QtMoc Include="inserttextdialog.h" />
+    <ClInclude Include="reportsettings.h" />
+    <QtMoc Include="exporttoFLRdialog.h" />
     <ClInclude Include="reportgenerator.h" />
     <QtMoc Include="saveprojectwindow.h" />
     <QtMoc Include="radiuscorrectiondialog.h" />
@@ -159,17 +175,17 @@
     <QtMoc Include="bestfitdialog.h" />
     <ClInclude Include="curvelibrary.h" />
     <QtMoc Include="figureeditdialog.h" />
-    <QtMoc Include="dimensionrender.h" />
     <ClInclude Include="functionresults.h" />
     <QtMoc Include="plot.h" />
-    <QtMoc Include="sashasecretwindow.h" />
     <ClCompile Include="figurecontrols.cpp" />
     <QtMoc Include="figurecontrols.h" />
     <QtMoc Include="project.h" />
     <QtMoc Include="tree.h" />
     <QtRcc Include="curvewindow.qrc" />
     <QtUic Include="airfoiltolerancesdialog.ui" />
+    <QtUic Include="alignmentdialog.ui" />
     <QtUic Include="bestfitdialog.ui" />
+    <QtUic Include="calculatecurvedialog.ui" />
     <QtUic Include="calculatedeviationsdialog.ui" />
     <QtUic Include="curvegraphicswidget.ui" />
     <QtUic Include="curvewindow.ui" />
@@ -183,7 +199,7 @@
     <ClCompile Include="main.cpp" />
     <ClInclude Include="algorithms.h" />
     <ClInclude Include="curvemachine.h" />
-    <ClInclude Include="figure.h" />
+    <QtMoc Include="figure.h" />
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="functionparams.h" />
     <QtMoc Include="loadingcloudwindow.h" />
@@ -193,13 +209,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <QtUic Include="exporttoFLRdialog.ui" />
     <QtUic Include="figureeditdialog.ui" />
+    <QtUic Include="inserttextdialog.ui" />
     <QtUic Include="loadingcloudwindow.ui" />
     <QtUic Include="macroswindow.ui" />
+    <QtUic Include="partdatadialog.ui" />
     <QtUic Include="radiuscorrectiondialog.ui" />
     <QtUic Include="mergepointcloudswindow.ui" />
-    <QtUic Include="sashasecretwindow.ui" />
+    <QtUic Include="rotatedialog.ui" />
     <QtUic Include="saveprojectwindow.ui" />
+    <QtUic Include="shiftdialog.ui" />
     <QtUic Include="turbinewindow.ui" />
     <QtUic Include="widthedgewindow.ui" />
   </ItemGroup>
