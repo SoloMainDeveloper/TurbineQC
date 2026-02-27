@@ -38,7 +38,24 @@ void MergePointCloudsWindow::changeItemOfList() {
     auto selectedItemsOfSecondList = _ui->secondListWidgetOfCurves->selectedItems();
     auto currentItemOfFirstList = selectedItemsOfFirstList.length() == 1 ? selectedItemsOfFirstList[0] : nullptr;
     auto currentItemOfSecondList = selectedItemsOfSecondList.length() == 1 ? selectedItemsOfSecondList[0] : nullptr;
-    _curveGraphics->drawCurve(_project, currentItemOfFirstList, Qt::green, 0.1, currentItemOfSecondList, Qt::blue, 0.1);
+    if(currentItemOfFirstList && !currentItemOfSecondList) {
+        auto figure = _project->findFigure(currentItemOfFirstList->text());
+        auto curve = dynamic_cast<const CurveFigure*>(figure);
+        assert(curve);
+        _curveGraphics->drawCurve(curve, Qt::green, 0.1);
+    } else if(!currentItemOfFirstList && currentItemOfSecondList) {
+        auto figure = _project->findFigure(currentItemOfSecondList->text());
+        auto curve = dynamic_cast<const CurveFigure*>(figure);
+        assert(curve);
+        _curveGraphics->drawCurve(curve, Qt::blue, 0.1);
+    } else if(currentItemOfFirstList && currentItemOfSecondList) {
+        auto firstFigure = _project->findFigure(currentItemOfFirstList->text());
+        auto firstCurve = dynamic_cast<const CurveFigure*>(firstFigure);
+        auto secondFigure = _project->findFigure(currentItemOfSecondList->text());
+        auto secondCurve = dynamic_cast<const CurveFigure*>(secondFigure);
+        assert(firstCurve && secondCurve);
+        _curveGraphics->drawCurve(firstCurve, Qt::green, 0.1, secondCurve, Qt::blue, 0.1);
+    }
 }
 
 void MergePointCloudsWindow::sort() {

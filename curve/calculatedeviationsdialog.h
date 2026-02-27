@@ -23,7 +23,7 @@ public:
     void resetDialog();
     void closeEvent(QCloseEvent *event);
     void calculateDeviations();
-    void changeResultName();
+    void updateResultNameAndClosed(QString curveName);
 
 private:
     Ui::CalculateDeviationsDialogClass *_ui;
