@@ -13,8 +13,7 @@ public:
 
     void initialization();
     void setMargin(int margin);
-    void drawCurve(const Project *project, QListWidgetItem *currentItemOfFirstList, Qt::GlobalColor colorOfItemFromFisrtList = Qt::black, double widthOfItemFromFirstList = 0.1,
-        QListWidgetItem *currentItemOfSecondList = nullptr, Qt::GlobalColor colorOfItemFromSecondList = Qt::black, double widthOfItemFromSecondList = 0.1);
+    void drawCurve(const CurveFigure *firstCurve, Qt::GlobalColor firstColor = Qt::black, double firstWidth = 0.1, const CurveFigure *secondCurve = nullptr, Qt::GlobalColor secondColor = Qt::black, double secondWidth = 0.1);
 
 private:
     Ui::CurveGraphicsWidget *_ui;
@@ -23,6 +22,6 @@ private:
 
     int _margin;
 
-    void drawLines(const CurveFigure *curve, const QVector<CurvePoint> &points, QRectF &boundingRect, Qt::GlobalColor color, double width);
+    void drawLines(const CurveFigure *curve, QRectF &boundingRect, Qt::GlobalColor color, double width);
     void clearScene();
 };

@@ -2,23 +2,23 @@
 
 #include "functionparams.h"
 #include "filesystem.h"
-#include "ui_curvewindow.h"
 #include "figure.h"
-#include "reportdata.h"
 
 class CurveMachine {
 public:
     static CurveFigure enlargeCurveWithIntermediatePoints(const QVector<CurvePoint> points, const Function1Params params);
     static CurveFigure getMiddleCurve(const QVector<CurvePoint> points, const Function18Params params);
-    static double getChordLength(const QVector<CurvePoint> points, const Function18Params params);
-    static CircleFigure getMaxWidthCircle(const QVector<CurvePoint> points, const Function18Params params);
+    static LineFigure getContactLine(const QVector<CurvePoint> points, const Function18Params params);
+    static double getContactLineLength(const QVector<CurvePoint> points, const Function18Params params);
+    static CircleFigure getMaxCircle(const QVector<CurvePoint> points, const Function18Params params);
     static QVector<std::pair<CurvePoint, CurvePoint>> getWidthOfEdges(const QVector<CurvePoint> points, double distanceFromLeadingEdge, double distanceFromTrailingEgde);
     static double getDistanceBetweenPoints(CurvePoint firstPoint, CurvePoint secondPoint);
     static std::array<double, 2> getRadiusOfEdges(const QVector<CurvePoint> points, const Function18Params params);
     static QVector<CurvePoint> mergePointClouds(const QVector<CurvePoint> &firstCloud, const QVector<CurvePoint> &secondCloud, double threshold = 0.02, bool needSort = true);
     static CurveFigure offsetCurve(const QVector<CurvePoint> curve, const Function3Params params);
     static CurveFigure calculateDeviations(const QVector<CurvePoint> nomCurve, const QVector<CurvePoint> measCurve, const Function4Params params);
-    static CurveFigure calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params, ReportData *reportData = nullptr);
+    static CurveFigure calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params);
+    static CurveFigure regenerateCurve(const QVector<CurvePoint> curve, const Function19Params params);
 
 private:
     static Point normalizeVector(Point vector);
