@@ -7,6 +7,7 @@ public:
     };
 
     virtual QString toQString() = 0;
+    QMap<QString, QString> toQMap();
 };
 
 class Function1Params : public FunctionParams {
@@ -257,13 +258,14 @@ private:
 
 class Function19Params : public FunctionParams {
 public:
-    Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, int value = 500);
+    Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, QString mode = "number", int value = 500);
     QString toQString() override;
 
 private:
     bool _isClosed;
     bool _isExternal;
     int _value;
+    QString _mode;
     Direction _material;
 };
 

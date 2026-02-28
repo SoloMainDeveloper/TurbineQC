@@ -1,339 +1,349 @@
 #include "curve/pch.h"
 #include "reportgenerator.h"
 
-ReportGenerator::ReportGenerator(Project *project, Plot *plot, ReportData *reportData, const QString &filePath) {
+Project* ReportGenerator::_project = new Project();
+std::shared_ptr<ReportSettings> ReportGenerator::_reportSettings = std::make_shared<ReportSettings>();
+CurveParts ReportGenerator::_curveParts = CurveParts();
+QVector<QString> ReportGenerator::_curvesToDelete = QVector<QString>();
+
+QString ReportGenerator::_nominalCurveName = "";
+QString ReportGenerator::_measuredCurveName = "";
+QString ReportGenerator::_globalCurveName = "global_%1";
+QString ReportGenerator::_globalCVName = "globalCV_%1";
+QString ReportGenerator::_globalCCName = "globalCC_%1";
+QString ReportGenerator::_nominalMaxDiaName = "%1_MaxDia";
+QString ReportGenerator::_measuredMaxDiaName = "%1_MaxDia";
+QString ReportGenerator::_nominalMCLName = "%1_MCL";
+QString ReportGenerator::_measuredMCLName = "%1_MCL";
+QString ReportGenerator::_nominalContactLineName = "%1_CntctLine";
+QString ReportGenerator::_measuredContactLineName = "%1_CntctLine";
+
+void ReportGenerator::createReport(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings) {
+    initialization(project, plot, reportSettings);
+
+    auto nominalCurve = dynamic_cast<const CurveFigure*>(project->findFigure(reportSettings->nominalName()));
+    auto measuredCurve = dynamic_cast<const CurveFigure*>(project->findFigure(reportSettings->measuredName()));
+    auto nominalPoints = nominalCurve->points();
+    auto measuredPoints = measuredCurve->points();
+    analyzeProfile(plot, nominalPoints, measuredPoints);
+
+    if(reportSettings->needPrintWithTemplate()) {
+        auto creatingMarkup = CreatingMarkup(reportSettings, _curveParts);
+        creatingMarkup.run(project);
+    }
+}
+
+void ReportGenerator::initialization(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings) {
     _project = project;
-    _plot = plot;
-    _reportData = reportData;
-
-    _nomMaxDia = new CircleFigure();
-    _measMaxDia = new CircleFigure();
-    _nomMCL = new CurveFigure();
-    _measMCL = new CurveFigure();
-    _nomChord = new LineFigure();
-    _measChord = new LineFigure();
-
-    _index = "<!DOCTYPE html>\n \
-              <html lang=\"en\">\n \
-                  <head>\n \
-                      <meta charset=\"UTF-8\">\n \
-                      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n \
-                      <title>Document</title>\n \
-                  </head>\n \
-                  <body style=\"margin: 0; padding : 0;\">\n \
-                      %1\n \
-                      <div style=\"width: 90vw; height: 96vh; border: 1px solid; margin: auto; display: grid; grid-template-columns: 1fr 1fr 1.5fr; grid-template-rows: 2.5fr 1.5fr;\">\n \
-                          %2\n \
-                          %3\n \
-                          %4\n \
-                          %5\n \
-                          %6\n \
-                      </div>\n \
-                  </body>\n \
-              </html>";
-
-    _tableRowTemplate = "<tr>\n \
-                             <td style=\"font-size: 12px;\"><b>%1</b></td>\n \
-                         </tr>\n \
-                         <tr>\n \
-                             <td style=\"font-size: 12px; text-align: center;\"><b>%2</b></td>\n \
-                             <td style=\"font-size: 12px; text-align: center;\">%3</td>\n \
-                             <td style=\"font-size: 12px; text-align: center;\">%4</td>\n \
-                             <td style=\"font-size: 12px; text-align: center;\">%5</td>\n \
-                             <td style=\"font-size: 12px; text-align: center;\">%6</td>\n \
-                             <td style=\"font-size: 12px; text-align: center;\">%7</td>\n \
-                             %8\n \
-                         </tr>";
-
-    _reportPath = filePath;
-    _screenshotsDir = QFileInfo(filePath).absolutePath() + "/screenshots";
-    _updatedNomCurveName = "%1_forBestFit";
-    _updatedMeasCurveName = "%1_forBestFit";
-    _globalCurveName = "global_%1";
-    _globalCVName = "globalCV_%1"; //CV - convex
-    _globalCCName = "globalCC_%1"; //CC - concave
-    _nomCurveName = "";
-    _measCurveName = "";
-    _nomMaxDiaName = "%1_MaxDia";
-    _measMaxDiaName = "%1_MaxDia";
-    _nomMCLName = "%1_MCL";
-    _measMCLName = "%1_MCL";
-    _nomChordName = "%1_CntctLine";
-    _measChordName = "%1_CntctLine";
-
-    _isCreateMaxDia = false;
-    _isCreateMCL = false;
-    _isCreateChord = false;
-
-    makeDirectories();
+    _reportSettings = reportSettings;
+    _nominalCurveName = reportSettings->nominalName();
+    _measuredCurveName = reportSettings->measuredName();
+    if(_nominalCurveName == _measuredCurveName) {
+        _measuredCurveName = "_" + _measuredCurveName;
+    }
+    _globalCurveName = _globalCurveName.arg(_nominalCurveName);
+    _globalCVName = _globalCVName.arg(_nominalCurveName);
+    _globalCCName = _globalCCName.arg(_nominalCurveName);
+    _nominalMaxDiaName = _nominalMaxDiaName.arg(_nominalCurveName);
+    _measuredMaxDiaName = _measuredMaxDiaName.arg(_measuredCurveName);
+    _nominalMCLName = _nominalMCLName.arg(_nominalCurveName);
+    _measuredMCLName = _measuredMCLName.arg(_measuredCurveName);
+    _nominalContactLineName = _nominalContactLineName.arg(_nominalCurveName);
+    _measuredContactLineName = _measuredContactLineName.arg(_measuredCurveName);
 }
 
-void ReportGenerator::makeDirectories() {
-    if(!QDir(_screenshotsDir).exists()) {
-        QDir().mkdir(_screenshotsDir);
+void ReportGenerator::analyzeProfile(Plot *plot, const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
+    auto params18 = getParams18();
+    auto nominalRes18 = getResult18(nominalPoints, params18);
+    auto updatedNomPoints = getReassembledPoints(nominalRes18);
+    auto updatedMeasPoints = getUpdatedMeasuredPoints(updatedNomPoints, measuredPoints, params18);
+    auto updatedMeasRes18 = getResult18(updatedMeasPoints, params18);
+
+    auto globalPointsAfterBf = getPointsAfterBestFit(nominalPoints, updatedMeasPoints);
+    auto globalCurveNameAfterBf = QString("%1_AfterBf").arg(_measuredCurveName);
+    auto globalCurveAfterBf = new CurveFigure(globalCurveNameAfterBf, globalPointsAfterBf);
+    _project->safeInsert(globalCurveNameAfterBf, globalCurveAfterBf, false);
+    createAditionalFigures(_nominalCurveName, globalCurveNameAfterBf);
+
+    auto globalRes18 = getResult18WithDevs(nominalPoints, globalPointsAfterBf, params18);
+    auto profileType = _reportSettings->profileType();
+    if(profileType == ReportSettings::Profile::Whole) {
+        analyzeWholeProfile(plot, updatedNomPoints, globalPointsAfterBf, globalRes18);
+    } else if(profileType == ReportSettings::Profile::WithoutTE) {
+        analyzeProfileWithoutTE(plot, nominalPoints, globalPointsAfterBf, globalRes18);
+    } else if(profileType == ReportSettings::Profile::WithoutEdges) {
+        analyzeProfileWithoutEdges(plot, globalRes18);
+    } else if(profileType == ReportSettings::Profile::WithoutEdgesLSQ) {
+        analyzeProfileWithoutEdgesLSQ(plot, nominalRes18, updatedMeasRes18, globalRes18);
+    } else if(profileType == ReportSettings::Profile::WithoutEdgesForm) {
+        analyzeProfileWithoutEdgesForm(plot, nominalRes18, updatedMeasRes18, globalRes18);
     }
 }
 
-void ReportGenerator::createReport(const CurveFigure *nominalCurve, const CurveFigure* measuredCurve) {
-    if(_reportData->reportTemplate() != ReportData::Template::AirfoilReport1) {
-        return;
+QVector<CurvePoint> ReportGenerator::getReassembledPoints(const Function18Result &res18) {
+    auto globalBestFit = _reportSettings->globalBestFit();
+
+    if(globalBestFit == ReportSettings::GlobalBestFit::Whole) {
+        return getReassembledPointsOfWholeCurve(res18);
+    } else if(globalBestFit == ReportSettings::GlobalBestFit::WithoutEdges) {
+        return getReassembledPointsWithoutEdges(res18);
     }
+    return QVector<CurvePoint>();
+}
 
-    initialization(nominalCurve->name(), measuredCurve->name());
+QVector<CurvePoint> ReportGenerator::getReassembledPointsOfWholeCurve(const Function18Result &res18) {
+    auto curvePointsOfLE = res18.curveLE.points();
+    auto curvePointsOfTE = res18.curveTE.points();
+    auto lowCurvePoints = res18.curveLow.points();
+    auto highCurvePoints = res18.curveHigh.points();
 
-    if(_reportData->profileType() == ReportData::Profile::WithoutEdges) {
-        showProfileWithoutEdges(nominalCurve->points(), measuredCurve->points());
-    } else if(_reportData->profileType() == ReportData::Profile::WithoutTE) {
-        showProfileWithoutTE(nominalCurve->points(), measuredCurve->points());
-    } else if(_reportData->profileType() == ReportData::Profile::WithoutEdgesLSQ) {
-        showProfileWithoutEdgesLSQ(nominalCurve->points(), measuredCurve->points());
-    } else if(_reportData->profileType() == ReportData::Profile::WithoutEdgesForm) {
-        showProfileWithoutEdgesForm(nominalCurve->points(), measuredCurve->points());
+    if(_reportSettings->directionOfLE() == ReportSettings::LEDirection::PlusX
+        || _reportSettings->directionOfLE() == ReportSettings::LEDirection::PlusY) {
+        curvePointsOfLE.removeFirst();
+        highCurvePoints.removeFirst();
+        curvePointsOfTE.removeFirst();
+        curvePointsOfTE.removeLast();
+        return lowCurvePoints + curvePointsOfLE + highCurvePoints + curvePointsOfTE;
     } else {
-        showWholeProfile(nominalCurve->points(), measuredCurve->points());
-    }
-
-    if(_reportData->needPrintWithTemplate()) {
-        createMarkup();
+        curvePointsOfLE.removeFirst();
+        lowCurvePoints.removeFirst();
+        curvePointsOfTE.removeFirst();
+        curvePointsOfTE.removeLast();
+        return highCurvePoints + curvePointsOfLE + lowCurvePoints + curvePointsOfTE;
     }
 }
 
-void ReportGenerator::initialization(const QString &nomCurveName, const QString &measCurveName) {
-    _nomCurveName = nomCurveName;
-    if(nomCurveName == measCurveName) {
-        _measCurveName = "_" + measCurveName;
+QVector<CurvePoint> ReportGenerator::getReassembledPointsWithoutTE(const Function18Result &res18) {
+    auto curvePointsOfLE = res18.curveLE.points();
+    auto lowCurvePoints = res18.curveLow.points();
+    auto highCurvePoints = res18.curveHigh.points();
+    auto directionOfLE = _reportSettings->directionOfLE();
+
+    if(directionOfLE == ReportSettings::LEDirection::PlusX || directionOfLE == ReportSettings::LEDirection::PlusY) {
+        curvePointsOfLE.removeFirst();
+        highCurvePoints.removeFirst();
+        return lowCurvePoints + curvePointsOfLE + highCurvePoints;
     } else {
-        _measCurveName = measCurveName;
-    }
-    _updatedNomCurveName = _updatedNomCurveName.arg(_nomCurveName);
-    _updatedMeasCurveName = _updatedMeasCurveName.arg(_measCurveName);
-    _globalCurveName = _globalCurveName.arg(_nomCurveName);
-    _globalCVName = _globalCVName.arg(_nomCurveName);
-    _globalCCName = _globalCCName.arg(_nomCurveName);
-    _nomMaxDiaName = _nomMaxDiaName.arg(_nomCurveName);
-    _measMaxDiaName = _measMaxDiaName.arg(_measCurveName);
-    _nomMCLName = _nomMCLName.arg(_nomCurveName);
-    _measMCLName = _measMCLName.arg(_measCurveName);
-    _nomChordName = _nomChordName.arg(_nomCurveName);
-    _measChordName = _measChordName.arg(_measCurveName);
-
-    if(_project->containsFigure(_globalCurveName)) {
-        _project->removeFigure(_globalCurveName);
-    }
-    if(_project->containsFigure(_globalCVName)) {
-        _project->removeFigure(_globalCVName);
-    }
-    if(_project->containsFigure(_globalCCName)) {
-        _project->removeFigure(_globalCCName);
-    }
-    if(_project->containsFigure(_nomMaxDiaName)) {
-        _project->removeFigure(_nomMaxDiaName);
-    }
-    if(_project->containsFigure(_measMaxDiaName)) {
-        _project->removeFigure(_measMaxDiaName);
-    }
-    if(_project->containsFigure(_nomMCLName)) {
-        _project->removeFigure(_nomMCLName);
-    }
-    if(_project->containsFigure(_measMCLName)) {
-        _project->removeFigure(_measMCLName);
-    }
-    if(_project->containsFigure(_nomChordName)) {
-        _project->removeFigure(_nomChordName);
-    }
-    if(_project->containsFigure(_measChordName)) {
-        _project->removeFigure(_measChordName);
+        curvePointsOfLE.removeFirst();
+        lowCurvePoints.removeFirst();
+        return highCurvePoints + curvePointsOfLE + lowCurvePoints;
     }
 }
 
-void ReportGenerator::showWholeProfile(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    auto updatedMeasPoints = createUpdatedMeasuredCurve(nominalPoints, measuredPoints);
+QVector<CurvePoint> ReportGenerator::getReassembledPointsWithoutEdges(const Function18Result &res18) {
+    auto lowCurvePoints = res18.curveLow.points();
+    auto highCurvePoints = res18.curveHigh.points();
 
+    return highCurvePoints + lowCurvePoints;
+}
+
+QVector<CurvePoint> ReportGenerator::getUpdatedMeasuredPoints(const QVector<CurvePoint> &updatedNomPoints, const QVector<CurvePoint> &measuredPoints, const Function18Params &params18) {
+    auto measuredPointsAfterPreProcess = getPointsAfterPreProcess(measuredPoints);
+    auto measuredRes18 = CurveLibrary::function18(measuredPointsAfterPreProcess, params18);
+    auto updatedMeasPoints = getReassembledPoints(measuredRes18);
+
+    if(_reportSettings->isLEStretch() || _reportSettings->isTEStretch()) {
+        updatedMeasPoints = getPointsAfterStretching(updatedNomPoints, updatedMeasPoints, params18);
+    }
+    if(_reportSettings->globalBestFit() == ReportSettings::GlobalBestFit::Whole) {
+        auto params19 = Function19Params();
+        auto res19 = CurveLibrary::function19(updatedMeasPoints, params19);
+        updatedMeasPoints = res19.curve.points();
+    }
+    return updatedMeasPoints;
+}
+
+QVector<CurvePoint> ReportGenerator::getPointsAfterStretching(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints, const Function18Params &params18) {
+    auto params31 = Function31Params(_reportSettings->isLEStretch(), _reportSettings->isTEStretch());
+    auto res31 = CurveLibrary::function31(nominalPoints, measuredPoints, params31);
+
+    auto params6 = Function6Params();
+    auto res6 = CurveLibrary::function6(res31.curve.points(), measuredPoints, params6);
+
+    auto res18 = CurveLibrary::function18(res6.curve.points(), params18);
+    auto updatedPoints = getReassembledPoints(res18);
+
+    return updatedPoints;
+}
+
+QVector<CurvePoint> ReportGenerator::getPointsAfterPreProcess(const QVector<CurvePoint> &points) {
+    if(_reportSettings->needSortPoints()) {
+        auto params1 = Function1Params(0, 0.02, 0, true, true, FunctionParams::Direction::Left, true);
+        auto res1 = CurveLibrary::function1(points, params1);
+        return res1.curve.points();
+    }
+    if(_reportSettings->needRemoveEqualPoints()) {
+        auto params1 = Function1Params(0, _reportSettings->limitForEqualPoints(), 0, true, true, FunctionParams::Direction::Left, true);
+        auto res1 = CurveLibrary::function1(points, params1);
+        return res1.curve.points();
+    }
+    if(_reportSettings->needRadiusCompensation()) {
+        auto params1 = Function1Params(0, 0.02, 0, true, true, FunctionParams::Direction::Left, true);
+        auto res1 = CurveLibrary::function1(points, params1);
+        auto params3 = Function3Params(_reportSettings->radiusCompensation(), true, false);
+        auto res3 = CurveLibrary::function3(res1.curve.points(), params3);
+        return res3.curve.points();
+    }
+    if(_reportSettings->needUse3DVectors()) {
+        //to do
+    }
+    return points;
+}
+
+QVector<CurvePoint> ReportGenerator::getPointsAfterBestFit(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &updatedMeasPoints) {
     auto params6 = getParams6();
     auto res6 = CurveLibrary::function6(updatedMeasPoints, nominalPoints, params6);
-    auto globalCurve = new CurveFigure(_globalCurveName, res6.curve.points());
-    _project->safeInsert(_globalCurveName, globalCurve);
-    _reportData->setBestFitValues(res6.offsetX, res6.offsetY, res6.rotation);
 
-    createAditionalFigures(nominalPoints);
+    _reportSettings->setBestFitValues(res6.offsetX, res6.offsetY, res6.rotation);
 
-    makeScreenshotOfEdges();
+    return res6.curve.points();
+}
+
+void ReportGenerator::analyzeWholeProfile(Plot *plot, const QVector<CurvePoint> &updatedNomPoints, const QVector<CurvePoint> &globalPointsAfterBestFit, const Function18Result &globalRes18) {
+    auto params4 = getParams4(true);
+    auto res4 = CurveLibrary::function4(updatedNomPoints, globalPointsAfterBestFit, params4);
+    auto globalPointsAfterCalcDevs = res4.curve.points();
+
+    _curveParts = CurveParts(
+        globalRes18.curveLE.points(),
+        globalRes18.curveTE.points(),
+        globalRes18.curveHigh.points(),
+        globalRes18.curveLow.points()
+    );
+    createEdgesAndMakeScreenshots(plot, _curveParts.pointsOfLE(), _curveParts.pointsOfTE());
+
+    createGlobalCurve(globalPointsAfterCalcDevs, true);
+    makeScreenshotOfGlobal(plot);
+
+    createPartsOfCurve(_curveParts);
+
+    deleteCurves();
+}
+
+void ReportGenerator::analyzeProfileWithoutTE(Plot *plot, const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &globalPointsAfterBestFit, const Function18Result &globalRes18) {
+    auto params18 = getParams18();
+    auto nominalRes18 = getResult18(nominalPoints, params18);
+
+    auto updatedNomPoints = getReassembledPointsWithoutTE(nominalRes18);
+    auto params4 = getParams4();
+    auto res4 = CurveLibrary::function4(updatedNomPoints, globalPointsAfterBestFit, params4);
+    auto globalPointsAfterCalcDevs = res4.curve.points();
+
+    _curveParts = CurveParts(
+        globalRes18.curveLE.points(),
+        globalRes18.curveTE.points(),
+        globalRes18.curveHigh.points(),
+        globalRes18.curveLow.points()
+    );
+    createEdgesAndMakeScreenshots(plot, _curveParts.pointsOfLE(), _curveParts.pointsOfTE());
+
+    createGlobalCurve(globalPointsAfterCalcDevs);
+    makeScreenshotOfGlobal(plot);
+
+    createPartsOfCurve(_curveParts);
+    deleteCurves();
+}
+
+void ReportGenerator::analyzeProfileWithoutEdges(Plot *plot, const Function18Result &globalRes18) {
+    _curveParts = CurveParts(
+        globalRes18.curveLE.points(),
+        globalRes18.curveTE.points(),
+        globalRes18.curveHigh.points(),
+        globalRes18.curveLow.points()
+    );
+    createEdgesAndMakeScreenshots(plot, _curveParts.pointsOfLE(), _curveParts.pointsOfTE());
+
+    createPartsOfCurve(_curveParts, true);
+    makeScreenshotOfGlobal(plot);
+
+    deleteCurves();
+}
+
+void ReportGenerator::analyzeProfileWithoutEdgesLSQ(Plot *plot, const Function18Result &nominalRes18, const Function18Result &updatedMeasRes18, const Function18Result &globalRes18) {
+    auto nominalCVPoints = nominalRes18.curveHigh.points();
+    auto nominalCCPoints = nominalRes18.curveLow.points();
+    auto measuredCVPoints = updatedMeasRes18.curveHigh.points();
+    auto measuredCCPoints = updatedMeasRes18.curveLow.points();
+
+    auto params6 = Function6Params(true, Function6Params::Algorithm::Curve, false, true, true, true);
+    auto res6CV = CurveLibrary::function6(measuredCVPoints, nominalCVPoints, params6);
+    auto globalCVPoints = res6CV.curve.points();
+    auto res6CC = CurveLibrary::function6(measuredCCPoints, nominalCCPoints, params6);
+    auto globalCCPoints = res6CC.curve.points();
+    _reportSettings->setBestFitValues(res6CV.offsetX, res6CV.offsetY, res6CV.rotation, res6CC.offsetX, res6CC.offsetY, res6CC.rotation);
 
     auto params4 = getParams4();
-    Algorithms::calculateDeviations(_updatedNomCurveName, _globalCurveName, _globalCurveName, &params4, _project);
+    auto res4CV = CurveLibrary::function4(nominalCVPoints, globalCVPoints, params4);
+    globalCVPoints = res4CV.curve.points();
+    auto res4CC = CurveLibrary::function4(nominalCCPoints, globalCCPoints, params4);
+    globalCCPoints = res4CC.curve.points();
 
-    auto globalCurveWithDevs = findCurve(_globalCurveName);
-    makeScreenshotOfGlobal(globalCurveWithDevs->points(), true);
+    _curveParts = CurveParts(
+        globalRes18.curveLE.points(),
+        globalRes18.curveTE.points(),
+        globalCVPoints,
+        globalCCPoints
+    );
+    createEdgesAndMakeScreenshots(plot, _curveParts.pointsOfLE(), _curveParts.pointsOfTE());
+
+    createPartsOfCurve(_curveParts, true);
+    makeScreenshotOfGlobal(plot);
+
     deleteCurves();
 }
 
-void ReportGenerator::showProfileWithoutEdges(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    auto updatedMeasPoints = createUpdatedMeasuredCurve(nominalPoints, measuredPoints);
+void ReportGenerator::analyzeProfileWithoutEdgesForm(Plot *plot, const Function18Result &nominalRes18, const Function18Result &updatedMeasRes18, const Function18Result &globalRes18) {
+    auto nominalCVPoints = nominalRes18.curveHigh.points();
+    auto nominalCCPoints = nominalRes18.curveLow.points();
+    auto measuredCVPoints = updatedMeasRes18.curveHigh.points();
+    auto measuredCCPoints = updatedMeasRes18.curveLow.points();
 
-    auto params6 = getParams6();
-    auto res6 = CurveLibrary::function6(updatedMeasPoints, nominalPoints, params6);
-    auto globalCurve = new CurveFigure(_globalCurveName, res6.curve.points());
-    _project->safeInsert(_globalCurveName, globalCurve);
-    _reportData->setBestFitValues(res6.offsetX, res6.offsetY, res6.rotation);
-    _curvesToDelete.append(_globalCurveName);
-
-    createAditionalFigures(nominalPoints);
-
-    makeScreenshotOfEdges();
-    makeScreenshotOfGlobal(_measuredRes18.curveHigh.points(), _measuredRes18.curveLow.points());
-    deleteCurves();
-}
-
-void ReportGenerator::showProfileWithoutTE(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    auto updatedMeasPoints = createUpdatedMeasuredCurve(nominalPoints, measuredPoints);
-
-    auto params6 = getParams6();
-    auto res6 = CurveLibrary::function6(updatedMeasPoints, nominalPoints, params6);
-    auto globalCurve = new CurveFigure(_globalCurveName, res6.curve.points());
-    _project->safeInsert(_globalCurveName, globalCurve);
-    _reportData->setBestFitValues(res6.offsetX, res6.offsetY, res6.rotation);
-
-    createAditionalFigures(nominalPoints);
-
-    makeScreenshotOfEdges();
-
-    auto updatedNomNameWithoutTE = QString("%1_withoutTE").arg(_nomCurveName);
-    auto updatedNomPointsWithoutTE = getUpdatedPoints(_nominalRes18, true);
-    insertCurveInProject(updatedNomNameWithoutTE, updatedNomPointsWithoutTE, true);
-
-    auto params4 = getParams4();
-    Algorithms::calculateDeviations(updatedNomNameWithoutTE, _globalCurveName, _globalCurveName, &params4, _project);
-
-    auto globalCurveWithDevs = findCurve(_globalCurveName);
-    makeScreenshotOfGlobal(globalCurveWithDevs->points());
-    deleteCurves();
-}
-
-void ReportGenerator::showProfileWithoutEdgesLSQ(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    auto updatedMeasPoints = createUpdatedMeasuredCurve(nominalPoints, measuredPoints);
-
-    auto params18 = getParams18();
-    auto res18AfterUpdated = CurveLibrary::function18(updatedMeasPoints, params18);
-
-    auto params6 = getParams6();
-    Algorithms::calculateBestFit(_nomCurveName, _updatedMeasCurveName, _globalCurveName, &params6, _project, _reportData);
-    _curvesToDelete.append(_globalCurveName);
-
-    createAditionalFigures(nominalPoints);
-
-    makeScreenshotOfEdges();
-
-    auto nominalCVName = QString("%1_nominalCV").arg(_nomCurveName);
-    auto nominalCVPoints = _nominalRes18.curveHigh.points();
-    insertCurveInProject(nominalCVName, nominalCVPoints, true);
-    auto measuredCVName = QString("%1_measuredCV").arg(_measCurveName);
-    auto measuredCVPoints = res18AfterUpdated.curveHigh.points();
-    insertCurveInProject(measuredCVName, measuredCVPoints, true);
-
-    auto params6ForPartOfGlobal = Function6Params(true, Function6Params::Algorithm::Curve, false, true, true, true);
-    auto res6CV = CurveLibrary::function6(measuredCVPoints, nominalCVPoints, params6ForPartOfGlobal);
-    auto globalCV = new CurveFigure(_globalCVName, res6CV.curve.points());
-    _project->safeInsert(_globalCVName, globalCV);
-    auto params4ForPartOfGlobal = getParams4();
-    Algorithms::calculateDeviations(nominalCVName, _globalCVName, _globalCVName, &params4ForPartOfGlobal, _project);
-
-    auto nominalCCName = QString("%1_nominalCC").arg(_nomCurveName);
-    auto nominalCCPoints = _nominalRes18.curveLow.points();
-    insertCurveInProject(nominalCCName, nominalCCPoints, true);
-    auto measuredCCName = QString("%1_measuredCC").arg(_measCurveName);
-    auto measuredCCPoints = res18AfterUpdated.curveLow.points();
-    insertCurveInProject(measuredCCName, measuredCCPoints, true);
-
-    auto res6CC = CurveLibrary::function6(measuredCCPoints, nominalCCPoints, params6ForPartOfGlobal);
-    auto globalCC = new CurveFigure(_globalCCName, res6CC.curve.points());
-    _project->safeInsert(_globalCCName, globalCC);
-    _reportData->setBestFitValues(res6CV.offsetX, res6CV.offsetY, res6CV.rotation, res6CC.offsetX, res6CC.offsetY, res6CC.rotation);
-    Algorithms::calculateDeviations(nominalCCName, _globalCCName, _globalCCName, &params4ForPartOfGlobal, _project);
-
-    auto globalCVWithDevs = findCurve(_globalCVName);
-    auto globalCCWithDevs = findCurve(_globalCCName);
-    makeScreenshotOfGlobal(globalCVWithDevs->points(), globalCCWithDevs->points());
-    deleteCurves();
-}
-
-void ReportGenerator::showProfileWithoutEdgesForm(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    createUpdatedMeasuredCurve(nominalPoints, measuredPoints);
-
-    auto params6 = getParams6();
-    Algorithms::calculateBestFit(_nomCurveName, _updatedMeasCurveName, _globalCurveName, &params6, _project, _reportData);
-    _curvesToDelete.append(_globalCurveName);
-
-    createAditionalFigures(nominalPoints);
-
-    auto globalCurve = findCurve(_globalCurveName);
-    auto params18 = getParams18();
-    auto res18AfterBestFit = CurveLibrary::function18(globalCurve->points(), params18);
-
-    makeScreenshotOfEdges();
-
-    auto nominalCVName = QString("%1_nominalCV").arg(_nomCurveName);
-    auto nominalCVPoints = _nominalRes18.curveHigh.points();
-    insertCurveInProject(nominalCVName, nominalCVPoints, true);
-    auto measuredCVName = QString("%1_measuredCV").arg(_measCurveName);
-    auto measuredCVPoints = res18AfterBestFit.curveHigh.points();
     auto params21 = getParams21();
     auto res21CV = CurveLibrary::function21(measuredCVPoints, nominalCVPoints, nominalCVPoints, params21);
-    insertCurveInProject(measuredCVName, res21CV.curve.points(), true);
-    auto params4ForPartOfGlobal = getParams4();
-    Algorithms::calculateDeviations(nominalCVName, measuredCVName, _globalCVName, &params4ForPartOfGlobal, _project);
-
-    auto nominalCCName = QString("%1_nominalCC").arg(_nomCurveName);
-    auto nominalCCPoints = _nominalRes18.curveLow.points();
-    insertCurveInProject(nominalCCName, nominalCCPoints, true);
-    auto measuredCCName = QString("%1_measuredCC").arg(_measCurveName);
-    auto measuredCCPoints = res18AfterBestFit.curveLow.points();
+    auto globalCVPoints = res21CV.curve.points();
     auto res21CC = CurveLibrary::function21(measuredCCPoints, nominalCCPoints, nominalCCPoints, params21);
-    insertCurveInProject(measuredCCName, res21CC.curve.points(), true);
-    _reportData->setBestFitValues(res21CV.offsetX, res21CV.offsetY, res21CV.rotation, res21CC.offsetX, res21CC.offsetY, res21CC.rotation);
-    Algorithms::calculateDeviations(nominalCCName, measuredCCName, _globalCCName, &params4ForPartOfGlobal, _project);
+    auto globalCCPoints = res21CC.curve.points();
+    _reportSettings->setBestFitValues(res21CV.offsetX, res21CV.offsetY, res21CV.rotation, res21CC.offsetX, res21CC.offsetY, res21CC.rotation);
 
-    auto globalCVWithDevs = findCurve(_globalCVName);
-    auto globalCCWithDevs = findCurve(_globalCCName);
-    makeScreenshotOfGlobal(globalCVWithDevs->points(), globalCCWithDevs->points());
+    auto params4 = getParams4();
+    auto res4CV = CurveLibrary::function4(nominalCVPoints, globalCVPoints, params4);
+    globalCVPoints = res4CV.curve.points();
+    auto res4CC = CurveLibrary::function4(nominalCCPoints, globalCCPoints, params4);
+    globalCCPoints = res4CC.curve.points();
+
+    _curveParts = CurveParts(
+        globalRes18.curveLE.points(),
+        globalRes18.curveTE.points(),
+        globalCVPoints,
+        globalCCPoints
+    );
+    createEdgesAndMakeScreenshots(plot, _curveParts.pointsOfLE(), _curveParts.pointsOfTE());
+
+    createPartsOfCurve(_curveParts, true);
+    makeScreenshotOfGlobal(plot);
+
     deleteCurves();
 }
 
-Function18Result ReportGenerator::getResult18WithDeviations() {
-    auto name = "globalCurveForEdges";
-    auto params4 = getParams4(true);
-    Algorithms::calculateDeviations(_nomCurveName, _globalCurveName, name, &params4, _project);
-    _curvesToDelete.append(name);
-
-    auto curve = findCurve(name);
-    auto params18 = getParams18();
-    auto res18 = CurveLibrary::function18(curve->points(), params18);
+Function18Result ReportGenerator::getResult18(const QVector<CurvePoint> &points, const Function18Params &params18) {
+    auto res18 = CurveLibrary::function18(points, params18);
 
     return res18;
 }
 
-QVector<CurvePoint> ReportGenerator::createUpdatedMeasuredCurve(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints) {
-    auto pointsAfterPreProcess = getPointsAfterPreProcess(measuredPoints);
-    auto params18 = getParams18();
-    _nominalRes18 = CurveLibrary::function18(nominalPoints, params18);
-    auto measRes18 = CurveLibrary::function18(pointsAfterPreProcess, params18);
+Function18Result ReportGenerator::getResult18WithDevs(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &globalPoints, const Function18Params &params18) {
+    auto params4 = getParams4(true);
+    auto res4 = CurveLibrary::function4(nominalPoints, globalPoints, params4);
 
-    auto updatedNomPoints = getUpdatedPoints(_nominalRes18);
-    insertCurveInProject(_updatedNomCurveName, updatedNomPoints, true);
+    auto points = res4.curve.points();
+    auto res18 = CurveLibrary::function18(points, params18);
 
-    auto updatedMeasPoints = getUpdatedPoints(measRes18);
-    if(_reportData->isLEStretch() || _reportData->isTEStretch()) {
-        updatedMeasPoints = getPointsAfterStretching(updatedNomPoints, updatedMeasPoints);
-    }
-    auto params19 = Function19Params();
-    auto res19 = CurveLibrary::function19(updatedMeasPoints, params19);
-    insertCurveInProject(_updatedMeasCurveName, res19.curve.points(), true);
-
-    return res19.curve.points();
+    return res18;
 }
 
 void ReportGenerator::insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needDelete) {
     auto curve = new CurveFigure(curveName, points);
-    _project->safeInsert(curveName, curve);
+    _project->safeInsert(curveName, curve, false);
 
     if(needDelete) {
         _curvesToDelete.append(curveName);
@@ -343,224 +353,117 @@ void ReportGenerator::insertCurveInProject(const QString &curveName, const QVect
 const CurveFigure* ReportGenerator::findCurve(const QString &curveName) {
     auto figure = _project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
+
     assert(curve);
 
     return curve;
 }
 
-QVector<CurvePoint> ReportGenerator::getPointsAfterPreProcess(const QVector<CurvePoint> &points) {
-    if(_reportData->needSortPoints()) {
-        auto param1 = Function1Params(0, 0.02, 0, true, true, FunctionParams::Direction::Left, true);
-        auto res1 = CurveLibrary::function1(points, param1);
-        return res1.curve.points();
-    } else if(_reportData->needRemoveEqualPoints()) {
-        auto param1 = Function1Params(0, _reportData->limitForEqualPoints(), 0, true, true, FunctionParams::Direction::Left, true);
-        auto res1 = CurveLibrary::function1(points, param1);
-        return res1.curve.points();
-    } else if(_reportData->needRadiusCompensation()) {
-
-    } else if(_reportData->needUse3DVectors()) {
-
-    } else {
-        QVector<CurvePoint> oldPoints = points;
-        return oldPoints;
-    }
-}
-
-QVector<CurvePoint> ReportGenerator::getUpdatedPoints(Function18Result &res18, bool needWithoutTE) {
-    auto curvePointsOfLE = res18.curveLE.points();
-    auto curvePointsOfTE = res18.curveTE.points();
-    auto lowCurvePoints = res18.curveLow.points();
-    auto highCurvePoints = res18.curveHigh.points();
-
-    if(_reportData->directionOfLE() == ReportData::LEDirection::PlusX
-        || _reportData->directionOfLE() == ReportData::LEDirection::PlusY) {
-        curvePointsOfLE.removeFirst();
-        highCurvePoints.removeFirst();
-        curvePointsOfTE.removeFirst();
-        curvePointsOfTE.removeLast();
-        if(needWithoutTE) {
-            return lowCurvePoints + curvePointsOfLE + highCurvePoints;
-        } else {
-            return lowCurvePoints + curvePointsOfLE + highCurvePoints + curvePointsOfTE;
-        }
-    } else {
-        curvePointsOfLE.removeFirst();
-        lowCurvePoints.removeFirst();
-        curvePointsOfTE.removeFirst();
-        curvePointsOfTE.removeLast();
-        if(needWithoutTE) {
-            return highCurvePoints + curvePointsOfLE + lowCurvePoints;
-        } else {
-            return highCurvePoints + curvePointsOfLE + lowCurvePoints + curvePointsOfTE;
-        }
-    }
-}
-
-QVector<CurvePoint> ReportGenerator::getPointsAfterStretching(const QVector<CurvePoint> &nomPoints, const QVector<CurvePoint> &measPoints) {
-    auto params31 = Function31Params(_reportData->isLEStretch(), _reportData->isTEStretch());
-    auto res31 = CurveLibrary::function31(nomPoints, measPoints, params31);
-
-    auto params6 = Function6Params();
-    auto res6 = CurveLibrary::function6(res31.curve.points(), measPoints, params6);
-
-    auto params18 = getParams18();
-    auto res18 = CurveLibrary::function18(res6.curve.points(), params18);
-    auto updatedPoints = getUpdatedPoints(res18);
-    return updatedPoints;
-}
-
-Function4Params ReportGenerator::getParams4(bool isClosed) {
-    auto evaluationPlace = 1;
-    auto evaluationDirection = 1;
-    if(_reportData->evaluationPlace() == ReportData::Evaluation::Measured) {
-        evaluationPlace = 2;
-    }
-    if(_reportData->evaluationDirection() == ReportData::Evaluation::Measured) {
-        evaluationDirection = 2;
-    }
-    isClosed = false;
-    if(_reportData->profileType() == ReportData::Profile::Whole) {
-        isClosed = true;
-    }
+const Function4Params ReportGenerator::getParams4(bool isClosed) {
+    auto evaluationPlace = _reportSettings->evaluationPlace() == ReportSettings::Evaluation::Nominal ? 1 : 2;
+    auto evaluationDirection = _reportSettings->evaluationDirection() == ReportSettings::Evaluation::Nominal ? 1 : 2;
     return Function4Params(0, evaluationPlace, evaluationDirection, isClosed);
 }
 
-Function6Params ReportGenerator::getParams6() {
-    auto bestFitType = _reportData->bestFitType();
-
-    if(bestFitType == ReportData::BestFitType::OnlyTranslation) {
+const Function6Params ReportGenerator::getParams6() {
+    auto bestFitType = _reportSettings->bestFitType();
+    if(bestFitType == ReportSettings::BestFitType::OnlyTranslation) {
         return Function6Params(true, Function6Params::Algorithm::Curve, true, true, true, false);
-    } else if(bestFitType == ReportData::BestFitType::OnlyRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyRotation) {
         return Function6Params(false, Function6Params::Algorithm::Curve, true, false, false, true);
-    } else if(bestFitType == ReportData::BestFitType::OnlyXTranslation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyXTranslation) {
         return Function6Params(false, Function6Params::Algorithm::Curve, true, true, false, false);
-    } else if(bestFitType == ReportData::BestFitType::OnlyYTranslation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyYTranslation) {
         return Function6Params(false, Function6Params::Algorithm::Curve, true, false, true, false);
-    } else if(bestFitType == ReportData::BestFitType::XTranslationAndRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::XTranslationAndRotation) {
         return Function6Params(true, Function6Params::Algorithm::Curve, true, true, false, true);
-    } else if(bestFitType == ReportData::BestFitType::YTranslationAndRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::YTranslationAndRotation) {
         return Function6Params(true, Function6Params::Algorithm::Curve, true, false, true, true);
     } else {
         return Function6Params();
     }
 }
 
-Function18Params ReportGenerator::getParams18() {
-    if(_reportData->dimension() == ReportData::Dimension::Length) {
+const Function18Params ReportGenerator::getParams18() {
+    if(_reportSettings->measureType() == ReportSettings::MeasureType::Length) {
         auto params18 = Function18Params(0, 1, 1);
-        auto chordLength = Algorithms::getChordLength(_nomCurveName, &params18, _project);
-        auto zoneLEInPercent = _reportData->zoneLE() / chordLength * 100;
-        auto zoneTEInPercent = _reportData->zoneTE() / chordLength * 100;
-        return Function18Params(static_cast<int>(_reportData->directionOfLE()), zoneLEInPercent, zoneTEInPercent);
+        auto contactLineLength = Algorithms::getContactLineLength(_nominalCurveName, &params18, _project);
+        auto zoneLEInPercent = _reportSettings->zoneLE() / contactLineLength * 100;
+        auto zoneTEInPercent = _reportSettings->zoneTE() / contactLineLength * 100;
+        return Function18Params(static_cast<int>(_reportSettings->directionOfLE()), zoneLEInPercent, zoneTEInPercent);
     } else {
-        return Function18Params(static_cast<int>(_reportData->directionOfLE()), _reportData->zoneLE(), _reportData->zoneTE());
+        return Function18Params(static_cast<int>(_reportSettings->directionOfLE()), _reportSettings->zoneLE(), _reportSettings->zoneTE());
     }
 }
 
-Function21Params ReportGenerator::getParams21() {
-    auto bestFitType = _reportData->bestFitType();
-
-    if(bestFitType == ReportData::BestFitType::OnlyTranslation) {
+const Function21Params ReportGenerator::getParams21() {
+    auto bestFitType = _reportSettings->bestFitType();
+    if(bestFitType == ReportSettings::BestFitType::OnlyTranslation) {
         return Function21Params(0, true, true, false);
-    } else if(bestFitType == ReportData::BestFitType::OnlyRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyRotation) {
         return Function21Params(0, false, false, true);
-    } else if(bestFitType == ReportData::BestFitType::OnlyXTranslation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyXTranslation) {
         return Function21Params(0, true, false, false);
-    } else if(bestFitType == ReportData::BestFitType::OnlyYTranslation) {
+    } else if(bestFitType == ReportSettings::BestFitType::OnlyYTranslation) {
         return Function21Params(0, false, true, false);
-    } else if(bestFitType == ReportData::BestFitType::XTranslationAndRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::XTranslationAndRotation) {
         return Function21Params(0, true, false, true);
-    } else if(bestFitType == ReportData::BestFitType::YTranslationAndRotation) {
+    } else if(bestFitType == ReportSettings::BestFitType::YTranslationAndRotation) {
         return Function21Params(0, false, true, true);
     } else {
         return Function21Params();
     }
 }
 
-void ReportGenerator::createAditionalFigures(const QVector<CurvePoint> &nominalPoints) {
-    if(_reportData->needMaxDiameter() || _reportData->needMCL() || _reportData->needChord()) {
-        auto globalCurve = findCurve(_globalCurveName);
-        auto params18 = Function18Params(0, 1, 1);
-        auto nomRes18 = CurveLibrary::function18(nominalPoints, params18);
-        auto measRes18 = CurveLibrary::function18(globalCurve->points(), params18);
+void ReportGenerator::createAditionalFigures(const QString &nominalCurveName, const QString &globalCurveNameAfterBf) {
+    auto params18 = getParams18();
 
-        if(_reportData->needMaxDiameter()) {
-            auto nomCircle = nomRes18.maxCircle;
-            auto measCircle = measRes18.maxCircle;
-            _nomMaxDia = new CircleFigure(_nomMaxDiaName, nomCircle.center(), nomCircle.normal(), nomCircle.radius());
-            _measMaxDia = new CircleFigure(_measMaxDiaName, measCircle.center(), measCircle.normal(), measCircle.radius());
-            _nomMaxDia->setColor(Qt::black);
-            _measMaxDia->setColor(Qt::blue);
-            _project->safeInsert(_nomMaxDia->name(), _nomMaxDia);
-            _project->safeInsert(_measMaxDia->name(), _measMaxDia);
-            _isCreateMaxDia = true;
+    if(_reportSettings->needMaxDiameter()) {
+        Algorithms::createMaxCircle(nominalCurveName, _measuredMaxDiaName, &params18, _project);
+        Algorithms::createMaxCircle(globalCurveNameAfterBf, _nominalMaxDiaName, &params18, _project, Qt::blue);
+    }
+    if(_reportSettings->needMCL()) {
+        Algorithms::createMiddleCurve(nominalCurveName, _measuredMCLName, &params18, _project);
+        Algorithms::createMiddleCurve(globalCurveNameAfterBf, _nominalMCLName, &params18, _project, Qt::blue);
+    }
+    if(_reportSettings->needContactLine()) {
+        Algorithms::createContactLine(nominalCurveName, _measuredContactLineName, &params18, _project);
+        Algorithms::createContactLine(globalCurveNameAfterBf, _nominalContactLineName, &params18, _project, Qt::blue);
+    }
+}
+
+void ReportGenerator::createEdgesAndMakeScreenshots(Plot *plot, const QVector<CurvePoint> &pointsOfLE, const QVector<CurvePoint> &pointsOfTE) {
+    if(_reportSettings->isLEVisible()) {
+        createEdge(pointsOfLE, _reportSettings->amplificationOfLE(), EdgeType::LE, _reportSettings->typeOfShowDevsLE());
+        if(_reportSettings->needPrintWithTemplate()) {
+            makeScreenshotOfEdge(plot, EdgeType::LE, _reportSettings->axisTypeOfLE(), Plot::Position::Right);
         }
-        if(_reportData->needMCL()) {
-            auto nomMCL = nomRes18.middleCurve;
-            auto measMCL = measRes18.middleCurve;
-            _nomMCL = new CurveFigure(_nomMCLName, nomMCL.points());
-            _measMCL = new CurveFigure(_measMCLName, measMCL.points());
-            _nomMCL->setColor(Qt::black);
-            _measMCL->setColor(Qt::blue);
-            _project->safeInsert(_nomMCL->name(), _nomMCL);
-            _project->safeInsert(_measMCL->name(), _measMCL);
-            _isCreateMCL = true;
-        }
-        if(_reportData->needChord()) {
-            auto nomLine = nomRes18.chordLine;
-            auto measLine = measRes18.chordLine;
-            _nomChord = new LineFigure(_nomChordName, nomLine.origin(), nomLine.direction());
-            _measChord = new LineFigure(_measChordName, measLine.origin(), measLine.direction());
-            _nomChord->setColor(Qt::black);
-            _measChord->setColor(Qt::blue);
-            _project->safeInsert(_nomChord->name(), _nomChord);
-            _project->safeInsert(_measChord->name(), _measChord);
-            _isCreateChord = true;
+    }
+    if(_reportSettings->isTEVisible()) {
+        createEdge(pointsOfTE, _reportSettings->amplificationOfTE(), EdgeType::TE, _reportSettings->typeOfShowDevsTE());
+        if(_reportSettings->needPrintWithTemplate()) {
+            makeScreenshotOfEdge(plot, EdgeType::TE, _reportSettings->axisTypeOfTE(), Plot::Position::Left);
         }
     }
 }
 
-void ReportGenerator::setVisibilityAditionalFigures() {
-    QStringList figureNames;
-    if(_isCreateMCL) {
-        figureNames.append(_nomMCL->name());
-        figureNames.append(_measMCL->name());
-    }
-    if(_isCreateMaxDia) {
-        figureNames.append(_nomMaxDia->name());
-        figureNames.append(_measMaxDia->name());
-    }
-    if(_isCreateChord) {
-        figureNames.append(_nomChord->name());
-        figureNames.append(_measChord->name());
-    }
-    _project->setVisibility(figureNames);
-}
-
-void ReportGenerator::makeScreenshotOfEdges() {
-    _measuredRes18 = getResult18WithDeviations();
-    if(_reportData->isLEVisible()) {
-        makeScreenshotOfEdge(_measuredRes18.curveLE.points(), "LE", _reportData->amplificationOfLE(),
-            _reportData->axisTypeOfLE(), _reportData->typeOfShowDevsLE(), Plot::Position::Right);
-    }
-    if(_reportData->isTEVisible()) {
-        makeScreenshotOfEdge(_measuredRes18.curveTE.points(), "TE", _reportData->amplificationOfTE(),
-            _reportData->axisTypeOfTE(), _reportData->typeOfShowDevsTE(), Plot::Position::Left);
-    }
-}
-
-void ReportGenerator::makeScreenshotOfEdge(const QVector<CurvePoint> &points, const QString &edgeName, double amplification,
-    ReportData::Axis axisType, ReportData::TypeOfShowDevs devsType, Plot::Position position) {
+void ReportGenerator::createEdge(const QVector<CurvePoint> &points, double amplification, EdgeType edgeType, ReportSettings::TypeOfShowDevs devsType) {
     _project->resetVisibilityForAllFigures();
 
-    auto curve = new CurveFigure(QString("%1_%2").arg(edgeName).arg(_nomCurveName), points);
+    auto edgeName = edgeType == EdgeType::LE ? "LE" : "TE";
+    auto curveName = QString("%1_%2").arg(edgeName).arg(_nominalCurveName);
+    auto curve = new CurveFigure(curveName, points);
     curve->setShowDeviations(true);
     curve->setConnectDeviations(true);
     curve->setAmplification(amplification);
+    createNumericalDeviations(points, devsType, edgeType);
+    _project->safeInsert(curveName, curve, false);
+    addTable(QString("%1_%2_Form").arg(edgeName).arg(_nominalCurveName), curve);
+}
 
+void ReportGenerator::createNumericalDeviations(const QVector<CurvePoint> &points, ReportSettings::TypeOfShowDevs devsType, EdgeType edgeType) {
     QVector<CurvePoint> pointsWithInterval;
-    if(devsType == ReportData::TypeOfShowDevs::Auto) {
+    if(devsType == ReportSettings::TypeOfShowDevs::Auto) {
         auto pointsInterval = 4;
         if(points.length() > 50) {
             pointsInterval = points.length() / 12;
@@ -568,534 +471,132 @@ void ReportGenerator::makeScreenshotOfEdge(const QVector<CurvePoint> &points, co
         for(auto i = 0; i < points.length(); i += pointsInterval) {
             pointsWithInterval.append(points[i]);
         }
-    } else if(devsType == ReportData::TypeOfShowDevs::Set) {
-        auto pointsInterval = 0;
-        if(edgeName == "LE") {
-            pointsInterval = _reportData->valueOfSetShowDevsLE() + 1;
-        } else {
-            pointsInterval = _reportData->valueOfSetShowDevsTE() + 1;
-        }
+    } else if(devsType == ReportSettings::TypeOfShowDevs::Set) {
+        auto pointsInterval = edgeType == EdgeType::LE ? _reportSettings->valueOfSetShowDevsLE() + 1 : _reportSettings->valueOfSetShowDevsTE() + 1;
         for(auto i = 0; i < points.length(); i += pointsInterval) {
             pointsWithInterval.append(points[i]);
         }
-    } else if(devsType == ReportData::TypeOfShowDevs::OnEdge) {
+    } else if(devsType == ReportSettings::TypeOfShowDevs::OnEdge) {
         pointsWithInterval.append(points[points.length() / 2]);
     }
-    auto curveWithInterval = new CurveFigure(QString("%1_with_interval_%2").arg(edgeName).arg(_nomCurveName), pointsWithInterval);
+    auto edgeName = edgeType == EdgeType::LE ? "LE" : "TE";
+    auto curveWithIntervalName = QString("%1_with_interval_%2").arg(edgeName).arg(_nominalCurveName);
+    auto curveWithInterval = new CurveFigure(curveWithIntervalName, pointsWithInterval);
     curveWithInterval->setConnectPoints(false);
     curveWithInterval->setShowPoints(true);
     curveWithInterval->setShowNumericalDeviations(true);
-    _project->insertFigure(curveWithInterval);
+    _project->safeInsert(curveWithIntervalName, curveWithInterval, false);
+    _curvesToDelete.append(curveWithIntervalName);
+}
 
-    _project->insertFigure(curve);
-
-    _plot->rescaleToCurve(position);
-    if(_isCreateMCL) {
-        _project->setVisibility({ _nomMCL->name(), _measMCL->name() });
+void ReportGenerator::makeScreenshotOfEdge(Plot *plot, EdgeType edgeType, ReportSettings::Axis axisType, Plot::Position position) {
+    plot->rescale(position);
+    if(_reportSettings->needMCL()) {
+        _project->setVisibility({ _nominalMCLName, _measuredMCLName });
     }
-    _plot->makeScreenshot(_screenshotsDir + QString("/%1_%2.png").arg(edgeName).arg(_reportData->reportName()), 320, 200, _reportData->axisTypeOfLE());
-    _project->removeFigure(curve->name());
-    if(devsType != ReportData::TypeOfShowDevs::FromNominal) {
-        _project->removeFigure(curveWithInterval->name());
+    auto screenshot = plot->getScreenshot(320, 200, axisType);
+    if(edgeType == EdgeType::LE) {
+        _reportSettings->setScreenshotOfLE(screenshot);
+    } else {
+        _reportSettings->setScreenshotOfTE(screenshot);
     }
 }
 
-void ReportGenerator::makeScreenshotOfGlobal(const QVector<CurvePoint> &resultPoints, bool needClosed) {
+void ReportGenerator::createGlobalCurve(const QVector<CurvePoint> &globalPoints, bool isClosed) {
     _project->resetVisibilityForAllFigures();
 
-    auto globalCurve = new CurveFigure(_globalCurveName, resultPoints);
-    globalCurve->setClosed(needClosed);
+    auto globalCurve = new CurveFigure(_globalCurveName, globalPoints);
+    globalCurve->setClosed(isClosed);
     globalCurve->setShowDeviations(true);
     globalCurve->setConnectDeviations(true);
-    globalCurve->setAmplification(_reportData->globalAmplification());
-
-    _project->safeInsert(_globalCurveName, globalCurve);
-
-    _plot->rescaleToCurve(Plot::Position::Center);
-    setVisibilityAditionalFigures();
-    _plot->makeScreenshot(_screenshotsDir + QString("/global_%1.png").arg(_reportData->reportName()), 600, 350, _reportData->globalAxisType());
-    _project->setVisibility({ _nomCurveName });
-    _project->setCurrentFigure(_nomCurveName);
+    globalCurve->setAmplification(_reportSettings->globalAmplification());
+    _project->safeInsert(_globalCurveName, globalCurve, false);
+    addTable(_nominalCurveName + "_Form", globalCurve);
 }
 
-void ReportGenerator::makeScreenshotOfGlobal(const QVector<CurvePoint> &resultCVPoints, const QVector<CurvePoint> &resultCCPoints) {
-    _project->resetVisibilityForAllFigures();
+void ReportGenerator::createPartsOfCurve(const CurveParts &curveParts, bool isResetVisibilityForAllFigures) {
+    if(isResetVisibilityForAllFigures) {
+        _project->resetVisibilityForAllFigures();
+    }
 
-    auto globalCV = new CurveFigure(_globalCVName, resultCVPoints);
+    auto globalCV = new CurveFigure(_globalCVName, curveParts.pointsOfHigh());
     globalCV->setShowDeviations(true);
     globalCV->setConnectDeviations(true);
-    globalCV->setAmplification(_reportData->globalAmplification());
+    globalCV->setAmplification(_reportSettings->globalAmplification());
+    _project->safeInsert(_globalCVName, globalCV, false);
+    addTable(_nominalCurveName + "_Convex_Form", globalCV);
 
-    auto globalCC = new CurveFigure(_globalCCName, resultCCPoints);
+    auto globalCC = new CurveFigure(_globalCCName, curveParts.pointsOfLow());
     globalCC->setShowDeviations(true);
     globalCC->setConnectDeviations(true);
-    globalCC->setAmplification(_reportData->globalAmplification());
+    globalCC->setAmplification(_reportSettings->globalAmplification());
+    _project->safeInsert(_globalCCName, globalCC, false);
+    addTable(_nominalCurveName + "_Concave_Form", globalCC);
+}
 
-    _project->safeInsert(_globalCVName, globalCV);
-    _project->safeInsert(_globalCCName, globalCC);
+void ReportGenerator::addTable(const QString &tableName, const CurveFigure *globalCurve, const Point &labelPoint) {
+    auto table = new DimFigure(tableName, labelPoint, globalCurve);
+    table->setDimType(DimFigure::DimType::Form);
+    table->setRenderType(DimFigure::RenderType::Table);
+    table->setVisible(false);
 
-    _plot->rescaleToCurve(Plot::Position::Center);
-    setVisibilityAditionalFigures();
-    _plot->makeScreenshot(_screenshotsDir + QString("/global_%1.png").arg(_reportData->reportName()), 600, 350, _reportData->globalAxisType());
-    _project->setVisibility({ _nomCurveName });
-    _project->setCurrentFigure(_nomCurveName);
+    auto &points = globalCurve->points();
+    auto minDeviation = points[0].dev;
+    auto maxDeviation = points[0].dev;
+    for(auto &point : points) {
+        if(point.dev < minDeviation) {
+            minDeviation = point.dev;
+        }
+        if(point.dev > maxDeviation) {
+            maxDeviation = point.dev;
+        }
+    }
+
+    table->addValues(QVector<DimFigure::Value> {
+        DimFigure::Value(DimFigure::ValueType::MinMax, true, abs(maxDeviation) + abs(minDeviation)),
+            DimFigure::Value(DimFigure::ValueType::Form, true, std::max(abs(maxDeviation), abs(minDeviation) * 2)),
+            DimFigure::Value(DimFigure::ValueType::Min, true, minDeviation),
+            DimFigure::Value(DimFigure::ValueType::Max, true, maxDeviation),
+            DimFigure::Value(DimFigure::ValueType::MaxAbs, false, abs(std::max(minDeviation, maxDeviation))),
+
+            // TODO: should be corrected with constant tolerance
+            DimFigure::Value(DimFigure::ValueType::SupUT, true, maxDeviation),
+            DimFigure::Value(DimFigure::ValueType::InfLT, true, minDeviation),
+    });
+    _project->safeInsert(tableName, table, false);
+}
+
+void ReportGenerator::makeScreenshotOfGlobal(Plot *plot) {
+    setVisibilityAdditionalFigures();
+    _project->setCurrentFigure(_nominalCurveName);
+    if(_reportSettings->needPrintWithTemplate()) {
+        plot->rescale(Plot::Position::Center);
+        auto screenshot = plot->getScreenshot(600, 350, _reportSettings->globalAxisType());
+        _reportSettings->setScreenshotOfGlobal(screenshot);
+    }
+    _project->setVisibility({ _nominalCurveName });
+}
+
+void ReportGenerator::setVisibilityAdditionalFigures() {
+    QStringList figureNames;
+    if(_reportSettings->needMCL()) {
+        figureNames.append(_nominalMCLName);
+        figureNames.append(_measuredMCLName);
+    }
+    if(_reportSettings->needMaxDiameter()) {
+        figureNames.append(_nominalMaxDiaName);
+        figureNames.append(_measuredMaxDiaName);
+    }
+    if(_reportSettings->needContactLine()) {
+        figureNames.append(_nominalContactLineName);
+        figureNames.append(_measuredContactLineName);
+    }
+    _project->setVisibility(figureNames);
 }
 
 void ReportGenerator::deleteCurves() {
     for(auto nameCurve : _curvesToDelete) {
         _project->removeFigure(nameCurve);
     }
-}
-
-void ReportGenerator::createMarkup() {
-    auto comment = getComment();
-    auto globalView = getGlobalView();
-    auto parameters = getParameters();
-    auto LEView = getLEView();
-    auto TEView = getTEView();
-    auto partData = getPartData();
-
-    QFile file(_reportPath);
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
-        out << _index.arg(comment).arg(globalView).arg(parameters).arg(LEView).arg(TEView).arg(partData);
-        file.close();
-    }
-}
-
-QString ReportGenerator::getComment() {
-    auto comment = _reportData->comment();
-    return QString("<p style=\"width: 90vw; margin: 0; margin:auto;\">%1</p>").arg(comment);
-}
-
-QString ReportGenerator::getGlobalView() {
-    auto xShift = _reportData->xShift();
-    auto yShift = _reportData->yShift();
-    auto rotation = _reportData->rotation();
-    auto xShiftCV = _reportData->xShiftCV();
-    auto yShiftCV = _reportData->yShiftCV();
-    auto rotationCV = _reportData->rotationCV();
-    auto xShiftCC = _reportData->xShiftCC();
-    auto yShiftCC = _reportData->yShiftCC();
-    auto rotationCC = _reportData->rotationCC();
-    auto profileType = _reportData->profileType();
-    auto title = QString("<b>Section %1 - global view</b> Fit: Whole profile (LSQ) / ").arg(_nomCurveName);
-    QString bestFitInfo = "";
-
-    if(_reportData->bestFitType() == ReportData::BestFitType::OnlyTranslation) {
-        title += "Translation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: X: %1, Y: %2")
-                .arg(QString::number(xShift, 'f', 3)).arg(QString::number(yShift, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - X: %1, Y: %2 / CC - X: %3, Y: %4")
-                .arg(QString::number(xShiftCV, 'f', 3)).arg(QString::number(yShiftCV, 'f', 3))
-                .arg(QString::number(xShiftCC, 'f', 3)).arg(QString::number(yShiftCC, 'f', 3));
-        }
-    } else if(_reportData->bestFitType() == ReportData::BestFitType::OnlyRotation) {
-        title += "Rotation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: Rotation: %1").arg(QString::number(rotation, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - Rotation: %1 / CC - Rotation: %2")
-                .arg(QString::number(rotationCV, 'f', 3)).arg(QString::number(rotationCC, 'f', 3));
-        }
-    } else if(_reportData->bestFitType() == ReportData::BestFitType::OnlyXTranslation) {
-        title += "X Translation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: X: %1").arg(QString::number(xShift, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - X: %1 / CC - X: %2").arg(QString::number(xShiftCV, 'f', 3)).arg(QString::number(xShiftCC, 'f', 3));
-        }
-    } else if(_reportData->bestFitType() == ReportData::BestFitType::OnlyYTranslation) {
-        title += "Y Translation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: Y: %1").arg(QString::number(yShift, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - Y: %1 / CC - Y: %2").arg(QString::number(yShiftCV, 'f', 3)).arg(QString::number(yShiftCC, 'f', 3));
-        }
-    } else if(_reportData->bestFitType() == ReportData::BestFitType::XTranslationAndRotation) {
-        title += "X Translation and Rotation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: X: %1, Rotation: %2").arg(QString::number(xShift, 'f', 3)).arg(QString::number(rotation, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - X: %1, Rotation: %2 / CC - X: %3, Rotation: %4")
-                .arg(QString::number(xShiftCV, 'f', 3)).arg(QString::number(rotationCV, 'f', 3))
-                .arg(QString::number(xShiftCC, 'f', 3)).arg(QString::number(rotationCC, 'f', 3));
-        }
-    } else if(_reportData->bestFitType() == ReportData::BestFitType::YTranslationAndRotation) {
-        title += "Y Translation and Rotation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: Y: %1, Rotation: %2").arg(QString::number(yShift, 'f', 3)).arg(QString::number(rotation, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - Y: %1, Rotation: %2 / CC - Y: %3, Rotation: %4")
-                .arg(QString::number(yShiftCV, 'f', 3)).arg(QString::number(rotationCV, 'f', 3))
-                .arg(QString::number(yShiftCC, 'f', 3)).arg(QString::number(rotationCC, 'f', 3));
-        }
-    } else {
-        title += "Translation and Rotation";
-        if(profileType == ReportData::Profile::Whole || profileType == ReportData::Profile::WithoutTE || profileType == ReportData::Profile::WithoutEdges) {
-            bestFitInfo = QString("Best-fit: X: %1, Y: %2, Rotation: %3")
-                .arg(QString::number(xShift, 'f', 3)).arg(QString::number(yShift, 'f', 3)).arg(QString::number(rotation, 'f', 3));
-        } else {
-            bestFitInfo = QString("Best-fit: CV - X: %1, Y: %2, Rotation: %3 / CC - X: %4, Y: %5, Rotation: %6")
-                .arg(QString::number(xShiftCV, 'f', 3)).arg(QString::number(yShiftCV, 'f', 3)).arg(QString::number(rotationCV, 'f', 3))
-                .arg(QString::number(xShiftCC, 'f', 3)).arg(QString::number(yShiftCC, 'f', 3)).arg(QString::number(rotationCC, 'f', 3));
-        }
-    }
-
-    title += QString(" / Error amp: %1x").arg(QString::number(_reportData->globalAmplification(), 'f', 0));
-    auto convexFormTable = getTable(_measuredRes18.curveHigh.points(), QString("Convex_%1").arg(_nomCurveName));
-    auto concaveFormTable = getTable(_measuredRes18.curveLow.points(), QString("Concave_%1").arg(_nomCurveName));
-
-    return QString("<div class = \"global-view\" id=\"rectangle\" style=\"border: 1px solid; grid-column: span 2; margin: 5px 2.5px 2.5px 5px;\">\n \
-                       <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; text-align: center;\">\n \
-                           <p style=\"margin: 0;\">%1</p>\n \
-                           <p style=\"margin: 0;\">%2</p>\n \
-                       </div>\n \
-                       <div style=\"position: absolute; display: flex; flex-direction: column; gap: 20px;\">\n \
-                           %3\n \
-                           %4\n \
-                       </div>\n \
-                       <img style=\"width: 100%; max-height: 340px; display: block;\" src=\"Screenshots/global_%5.png\">\n \
-                    </div>").arg(title).arg(bestFitInfo).arg(convexFormTable).arg(concaveFormTable).arg(_reportData->reportName());
-}
-
-QString ReportGenerator::getParameters() {
-    auto maxWidth = _reportData->onMaxWidth() ? getMaxWidth() : "";
-    auto xMaxWidth = _reportData->onXMaxWidth() ? getXMaxWidth() : "";
-    auto yMaxWidth = _reportData->onYMaxWidth() ? getYMaxWidth() : "";
-    auto chordLength = _reportData->onChordLength() ? getChordLength() : "";
-    auto LEWidth = _reportData->onLEWidth() ? getLEWidth() : "";
-    auto TEWidth = _reportData->onTEWidth() ? getTEWidth() : "";
-    auto LERadius = _reportData->onLERadius() ? getLERadius() : "";
-    auto TERadius = _reportData->onTERadius() ? getTERadius() : "";
-
-    return QString("<div class=\"parameters\" id=\"rectangle\" style=\"border: 1px solid; margin: 5px 5px 2.5px 2.5px;\">\n \
-                       <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; display: flex; align-items: center; justify-content: center;\">\n \
-                           <p style=\"margin: 0;\"><b>Airfoil parameters</b></p>\n \
-                       </div>\n \
-                       <div>\n \
-                           <table style=\"width: 100%;\">\n \
-                               <tr>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Axis</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Nominal</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Upper tol.</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Lower tol.</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Measured</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">Dev.</th>\n \
-                                   <th style=\"font-size: 14px; text-align: center;\">OOT</th>\n \
-                               </tr>\n \
-                                   %1\n \
-                                   %2\n \
-                                   %3\n \
-                                   %4\n \
-                                   %5\n \
-                                   %6\n \
-                                   %7\n \
-                                   %8\n \
-                           </table>\n \
-                         </div>\n \
-                     </div>").arg(maxWidth).arg(xMaxWidth).arg(yMaxWidth).arg(chordLength).arg(LEWidth).arg(TEWidth).arg(LERadius).arg(TERadius);
-}
-
-QString ReportGenerator::getMaxWidth() {
-    auto title = "Maximum diameter";
-    auto type = "Diameter";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalMaxWidth() == 0 && _reportData->upTolMaxWidth() == 0 && _reportData->downTolMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredMaxWidth(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolMaxWidth() == 0 && _reportData->downTolMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalMaxWidth(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationMaxWidth(), 'f', 3)).arg(oot);
-    } else {
-        oot = getOOT(_reportData->upTolMaxWidth(), _reportData->downTolMaxWidth(), _reportData->deviationMaxWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->upTolMaxWidth(), 'f', 3)).arg(QString::number(_reportData->downTolMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->measuredMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationMaxWidth(), 'f', 3)).arg(oot);
-    }
-
-}
-
-QString ReportGenerator::getXMaxWidth() {
-    auto title = "XDiameter";
-    auto type = "X";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalXMaxWidth() == 0 && _reportData->upTolXMaxWidth() == 0 && _reportData->downTolXMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredXMaxWidth(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolXMaxWidth() == 0 && _reportData->downTolXMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalXMaxWidth(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredXMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationXMaxWidth(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolXMaxWidth(), _reportData->downTolXMaxWidth(), _reportData->deviationXMaxWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalXMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->upTolXMaxWidth(), 'f', 3)).arg(QString::number(_reportData->downTolXMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->measuredXMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationXMaxWidth(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getYMaxWidth() {
-    auto title = "YDiameter";
-    auto type = "Y";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalYMaxWidth() == 0 && _reportData->upTolYMaxWidth() == 0 && _reportData->downTolYMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredYMaxWidth(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolYMaxWidth() == 0 && _reportData->downTolYMaxWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalYMaxWidth(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredYMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationYMaxWidth(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolYMaxWidth(), _reportData->downTolYMaxWidth(), _reportData->deviationYMaxWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalYMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->upTolYMaxWidth(), 'f', 3)).arg(QString::number(_reportData->downTolYMaxWidth(), 'f', 3))
-            .arg(QString::number(_reportData->measuredYMaxWidth(), 'f', 3)).arg(QString::number(_reportData->deviationYMaxWidth(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getChordLength() {
-    auto title = "Chord length";
-    auto type = "Distance 2D";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalChordLength() == 0 && _reportData->upTolChordLength() == 0 && _reportData->downTolChordLength() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredChordLength(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolChordLength() == 0 && _reportData->downTolChordLength() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalChordLength(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredChordLength(), 'f', 3)).arg(QString::number(_reportData->deviationMaxWidth(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolChordLength(), _reportData->downTolChordLength(), _reportData->deviationMaxWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalChordLength(), 'f', 3))
-            .arg(QString::number(_reportData->upTolChordLength(), 'f', 3)).arg(QString::number(_reportData->downTolChordLength(), 'f', 3))
-            .arg(QString::number(_reportData->measuredChordLength(), 'f', 3)).arg(QString::number(_reportData->deviationMaxWidth(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getLEWidth() {
-    auto title = "LE width";
-    auto type = "Distance 2D";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalLEWidth() == 0 && _reportData->upTolLEWidth() == 0 && _reportData->downTolLEWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredLEWidth(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolLEWidth() == 0 && _reportData->downTolLEWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalLEWidth(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredLEWidth(), 'f', 3)).arg(QString::number(_reportData->deviationLEWidth(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolLEWidth(), _reportData->downTolLEWidth(), _reportData->deviationLEWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalLEWidth(), 'f', 3))
-            .arg(QString::number(_reportData->upTolLEWidth(), 'f', 3)).arg(QString::number(_reportData->downTolLEWidth(), 'f', 3))
-            .arg(QString::number(_reportData->measuredLEWidth(), 'f', 3)).arg(QString::number(_reportData->deviationLEWidth(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getTEWidth() {
-    auto title = "TE width";
-    auto type = "Distance 2D";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalTEWidth() == 0 && _reportData->upTolTEWidth() == 0 && _reportData->downTolTEWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredTEWidth(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolTEWidth() == 0 && _reportData->downTolTEWidth() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalTEWidth(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredTEWidth(), 'f', 3)).arg(QString::number(_reportData->deviationTEWidth(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolTEWidth(), _reportData->downTolTEWidth(), _reportData->deviationTEWidth());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalTEWidth(), 'f', 3))
-            .arg(QString::number(_reportData->upTolTEWidth(), 'f', 3)).arg(QString::number(_reportData->downTolTEWidth(), 'f', 3))
-            .arg(QString::number(_reportData->measuredTEWidth(), 'f', 3)).arg(QString::number(_reportData->deviationTEWidth(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getLERadius() {
-    auto title = "LE radius";
-    auto type = "Radius";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalLERadius() == 0 && _reportData->upTolLERadius() == 0 && _reportData->downTolLERadius() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredLERadius(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolLERadius() == 0 && _reportData->downTolLERadius() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalLERadius(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredLERadius(), 'f', 3)).arg(QString::number(_reportData->deviationLERadius(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolLERadius(), _reportData->downTolLERadius(), _reportData->deviationLERadius());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalLERadius(), 'f', 3))
-            .arg(QString::number(_reportData->upTolLERadius(), 'f', 3)).arg(QString::number(_reportData->downTolLERadius(), 'f', 3))
-            .arg(QString::number(_reportData->measuredLERadius(), 'f', 3)).arg(QString::number(_reportData->deviationLERadius(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getTERadius() {
-    auto title = "TE radius";
-    auto type = "Radius";
-    QString oot = "<td></td>";
-
-    if(_reportData->nominalTERadius() == 0 && _reportData->upTolTERadius() == 0 && _reportData->downTolTERadius() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(_reportData->measuredTERadius(), 'f', 3)).arg("").arg(oot);
-    } else if(_reportData->upTolTERadius() == 0 && _reportData->downTolTERadius() == 0) {
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalTERadius(), 'f', 3)).arg("").arg("")
-            .arg(QString::number(_reportData->measuredTERadius(), 'f', 3)).arg(QString::number(_reportData->deviationTERadius(), 'f', 3)).arg(oot);
-    } else {
-        auto oot = getOOT(_reportData->upTolTERadius(), _reportData->downTolTERadius(), _reportData->deviationTERadius());
-        return _tableRowTemplate.arg(title).arg(type).arg(QString::number(_reportData->nominalTERadius(), 'f', 3))
-            .arg(QString::number(_reportData->upTolTERadius(), 'f', 3)).arg(QString::number(_reportData->downTolTERadius(), 'f', 3))
-            .arg(QString::number(_reportData->measuredTERadius(), 'f', 3)).arg(QString::number(_reportData->deviationTERadius(), 'f', 3)).arg(oot);
-    }
-}
-
-QString ReportGenerator::getOOT(double upperTolerance, double downTolerance, double deviation) {
-    auto difference = 0.0;
-    if(deviation >= downTolerance && deviation <= upperTolerance) {
-        auto step = (upperTolerance - downTolerance) / 10;
-        return QString("<td><input type=\"range\" min=\"%1\" max=\"%2\" step=\"%3\" value=\"%4\" \
-            style=\"width: 40px; height: 4px; accent-color: green; pointer-events: none; vertical-align:middle;\"></td>")
-            .arg(downTolerance).arg(upperTolerance).arg(step).arg(deviation);
-    } else {
-        if(deviation < downTolerance) {
-            difference = deviation - downTolerance;
-        } else {
-            difference = deviation - upperTolerance;
-        }
-        return QString("<td style=\"font-size: 14px; text-align: center; color: red;\">%1</td>\n")
-            .arg(QString::number(difference, 'f', 3));
-    }
-}
-
-QString ReportGenerator::getLEView() {
-    QString title = "<p style=\"margin: 0;\"><b>LE - local view</b> Fit: No fit / Error amp: %1x</p>";
-    title = title.arg(QString::number(_reportData->amplificationOfLE(), 'f', 0));
-    auto table = getTable(_measuredRes18.curveLE.points(), QString("LE_%1").arg(_nomCurveName));
-    auto img = QString("<img style=\"width: 100%; height: 90%; display: block;\" src=\"Screenshots/LE_%1.png\">").arg(_reportData->reportName());
-    auto result = QString("<div class=\"LE-view\" id=\"rectangle\" style=\"border: 1px solid; margin: 2.5px 2.5px 5px 5px;\">\n \
-                       <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; display: flex; align-items: center; justify-content: center;\">\n \
-                           %1\n \
-                       </div>\n \
-                       <div style=\"position: absolute;\">\n \
-                            %2\n \
-                        </div>\n \
-                       %3\n \
-                    </div>");
-    if(_reportData->isLEVisible()) {
-        return result.arg(title).arg(table).arg(img);
-    } else {
-        return result.arg("").arg("").arg("");
-    }
-}
-
-QString ReportGenerator::getTEView() {
-    QString title = "<p style=\"margin: 0;\"><b>TE - local view</b> Fit: No fit / Error amp: %1x</p>";
-    title = title.arg(QString::number(_reportData->amplificationOfTE(), 'f', 0));
-    auto table = getTable(_measuredRes18.curveTE.points(), QString("TE_%1").arg(_nomCurveName), "style=\"position: absolute\"");
-    auto img = QString("<img style=\"width: 100%; height: 90%; display: block;\" src=\"Screenshots/TE_%1.png\">").arg(_reportData->reportName());
-    auto result = QString("<div class=\"TE-view\" id=\"rectangle\" style=\"border: 1px solid; margin: 2.5px 2.5px 5px 2.5px;\">\n \
-                        <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; display: flex; align-items: center; justify-content: center;\">\n \
-                            %1\n \
-                        </div>\n \
-                        <div style=\"position: relative; display: flex; justify-content: right;\">\n \
-                            %2\n \
-                        </div>\n \
-                        %3\n \
-                    </div>");
-    if(_reportData->isTEVisible()) {
-        return result.arg(title).arg(table).arg(img);
-    } else {
-        return result.arg("").arg("").arg("");
-    }
-}
-
-QString ReportGenerator::getPartData() {
-    auto time = QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss");
-    return QString("<div class=\"part-data\" id=\"rectangle\" style=\"margin: 2.5px 5px 5px 2.5px; display: grid; grid-template-rows: 0.6fr 0.4fr; gap: 5px;\">\n \
-                        <div id=\"rectangle\" style=\"border: 1px solid;\">\n \
-                            <div class=\"header\" id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 18%; display: flex; align-items: center; justify-content: center;\">\n \
-                                <p style=\"margin: 0;\"><b>Part data</b></p>\n \
-                            </div>\n \
-                            <div class=\"body\" style=\"width: 100%; height: 82%; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;\">\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Description:</b></div>\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Part number:</b></div>\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Drawing:</b></div>\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Operator:</b></div>\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Order number:</b></div>\n \
-                                <div style=\"align-content: center; margin-left: 5%;\"><b>Note:</b></div>\n \
-                            </div>\n \
-                        </div>\n \
-                        <div id=\"rectangle\" style=\"border: 1px solid; display: flex; justify-content: center; align-items: center;\">\n \
-                            <p style=\"margin: 0;\"><b>Time: %1</b></p>\n \
-                        </div>\n \
-                    </div>").arg(time);
-}
-
-QString ReportGenerator::getTable(const QVector<CurvePoint> &points, const QString &caption, const QString &style) {
-    auto typesOfTableValue = _reportData->typesOfTableValue();
-    QVector<double> deviations;
-    for(auto &point : points) {
-        deviations.append(point.dev);
-    }
-    auto result = QString(
-        "<table %1>\n \
-            <caption style=\"font-size: 14px;\"><b>%2</b></caption>\n \
-            %3\n \
-            %4\n \
-            %5\n \
-            %6\n \
-            %7\n \
-            %8\n \
-            %9\n \
-        </table>");
-    auto tableRowTemplate = QString(
-        "<tr>\n \
-            <td style=\"text-align: center; font-size: 10px;\">%1:</td>\n \
-            <td style=\"text-align: center; font-size: 10px;\">%2</td>\n \
-        </tr>");
-    QString minMaxPart = "";
-    QString formPart = "";
-    QString minPart = "";
-    QString maxPart = "";
-    QString maxAbsPart = "";
-    QString supUTPart = "";
-    QString infLTPart = "";
-
-    for(auto [type, isNeed] : typesOfTableValue.asKeyValueRange()) {
-        if(type == ReportData::TypeOfTableValue::MinMax && isNeed) {
-            auto min = *std::min_element(deviations.begin(), deviations.end());
-            auto max = *std::max_element(deviations.begin(), deviations.end());
-            auto minMax = abs(min) + abs(max);
-            minMaxPart = tableRowTemplate.arg("MinMax").arg(QString::number(minMax, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::Form && isNeed) {
-            auto min = *std::min_element(deviations.begin(), deviations.end());
-            auto max = *std::max_element(deviations.begin(), deviations.end());
-            auto form = std::max(abs(min), abs(max)) * 2;
-            formPart = tableRowTemplate.arg("Form").arg(QString::number(form, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::Min && isNeed) {
-            auto min = *std::min_element(deviations.begin(), deviations.end());
-            minPart = tableRowTemplate.arg("Min").arg(QString::number(min, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::Max && isNeed) {
-            auto max = *std::max_element(deviations.begin(), deviations.end());
-            maxPart = tableRowTemplate.arg("Max").arg(QString::number(max, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::MaxAbs && isNeed) {
-            auto min = *std::min_element(deviations.begin(), deviations.end());
-            auto max = *std::max_element(deviations.begin(), deviations.end());
-            auto maxAbs = std::max(abs(min), abs(max));
-            maxAbsPart = tableRowTemplate.arg("MaxAbs").arg(QString::number(maxAbs, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::SupUT && isNeed) {
-            auto supUT = *std::max_element(deviations.begin(), deviations.end());
-            supUTPart = tableRowTemplate.arg("SupUT").arg(QString::number(supUT, 'f', 3));
-        } else if(type == ReportData::TypeOfTableValue::InfLT && isNeed) {
-            auto infLT = *std::min_element(deviations.begin(), deviations.end());
-            infLTPart = tableRowTemplate.arg("InfLT").arg(QString::number(infLT, 'f', 3));
-        }
-    }
-    return result.arg(style).arg(caption).arg(minMaxPart).arg(formPart).arg(minPart).arg(maxPart).arg(maxAbsPart).arg(supUTPart).arg(infLTPart);
-}
-
-ReportGenerator::~ReportGenerator() {
+    _curvesToDelete.clear();
 }

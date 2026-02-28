@@ -1,10 +1,13 @@
 <RCC>
     <qresource prefix="/CurveWindow">
-        <file>icons/circle.png</file>
-        <file>icons/curve.png</file>
-        <file>icons/delete.png</file>
-        <file>icons/line.png</file>
-        <file>icons/point.png</file>
-        <file>icons/rename.png</file>
+        <file>icons/circle.ico</file>
+        <file>icons/curve.ico</file>
+        <file>icons/delete.ico</file>
+        <file>icons/dimension.ico</file>
+        <file>icons/edit.ico</file>
+        <file>icons/line.ico</file>
+        <file>icons/point.ico</file>
+        <file>icons/rename.ico</file>
+        <file>icons/text.ico</file>
     </qresource>
 </RCC>

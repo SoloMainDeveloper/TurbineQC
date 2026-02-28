@@ -103,6 +103,7 @@
     </property>
     <addaction name="actionCalculateTurbineParameters"/>
     <addaction name="actionCalculateEdgeWidth"/>
+    <addaction name="actionCurve_2D_calculation"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -110,7 +111,10 @@
     </property>
     <addaction name="actionLoadFile"/>
     <addaction name="actionLoadProject"/>
+    <addaction name="separator"/>
     <addaction name="actionSaveProject"/>
+    <addaction name="actionExportToFLR"/>
+    <addaction name="separator"/>
     <addaction name="actionClearProject"/>
    </widget>
    <widget class="QMenu" name="menuCurve">
@@ -181,13 +185,36 @@
     </property>
     <addaction name="actionShowMacrosWindow"/>
    </widget>
+   <widget class="QMenu" name="menuTransform">
+    <property name="title">
+     <string>Transform</string>
+    </property>
+    <addaction name="actionShift"/>
+    <addaction name="actionRotate"/>
+    <addaction name="actionAlignment"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionEdit_Part_Data"/>
+   </widget>
+   <widget class="QMenu" name="menuConstruct">
+    <property name="title">
+     <string>Construct</string>
+    </property>
+    <addaction name="actionText"/>
+   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuAirfoil"/>
-   <addaction name="menuCurve"/>
-   <addaction name="menuCalculate"/>
-   <addaction name="menuDimensions"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuScreen"/>
+   <addaction name="menuDimensions"/>
+   <addaction name="menuCurve"/>
+   <addaction name="menuTransform"/>
+   <addaction name="menuAirfoil"/>
+   <addaction name="menuCalculate"/>
    <addaction name="menuMacros"/>
+   <addaction name="menuConstruct"/>
   </widget>
   <action name="actionAssignTolerancesToNominal">
    <property name="text">
@@ -393,6 +420,11 @@
     <string>Zoom to current</string>
    </property>
   </action>
+  <action name="actionTable">
+   <property name="text">
+    <string>Table</string>
+   </property>
+  </action>
   <action name="actionStartRecord">
    <property name="text">
     <string>Start Record</string>
@@ -422,6 +454,41 @@
    </property>
    <property name="text">
     <string>Show Macros Window</string>
+   </property>
+  </action>
+  <action name="actionExportToFLR">
+   <property name="text">
+    <string>Export to FLR</string>
+   </property>
+  </action>
+  <action name="actionShift">
+   <property name="text">
+    <string>Shift</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="text">
+    <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionAlignment">
+   <property name="text">
+    <string>Alignment</string>
+   </property>
+  </action>
+  <action name="actionCurve_2D_calculation">
+   <property name="text">
+    <string>Curve 2D calculation</string>
+   </property>
+  </action>
+  <action name="actionEdit_Part_Data">
+   <property name="text">
+    <string>Edit Part Data</string>
+   </property>
+  </action>
+  <action name="actionText">
+   <property name="text">
+    <string>Text/Image</string>
    </property>
   </action>
  </widget>

@@ -14,7 +14,7 @@ RadiusCorrectionDialog::RadiusCorrectionDialog(Project *project, QWidget *parent
     connect(_ui->equalPushButton, &QPushButton::clicked, this, &RadiusCorrectionDialog::equalizeResultToInitial);
     connect(_ui->divOffsetBy2PushButton, &QPushButton::clicked, this, &RadiusCorrectionDialog::devOffsetByTwo);
     connect(_ui->closedRadioButton, &QRadioButton::toggled, this, &RadiusCorrectionDialog::changeCurveType);
-    connect(_ui->curvesComboBox, &QComboBox::currentTextChanged, this, &RadiusCorrectionDialog::changeResultCurveName);
+    connect(_ui->curvesComboBox, &QComboBox::textActivated, this, &RadiusCorrectionDialog::updateResultNameAndClosed);
 
     _ui->offsetLineEdit->setValidator(new QDoubleValidator(0, INFINITY, -1));
 }
@@ -26,8 +26,13 @@ void RadiusCorrectionDialog::initialization() {
             _ui->curvesComboBox->addItem(figure->name());
         }
     }
-    _ui->curvesComboBox->setCurrentIndex(_ui->curvesComboBox->findText(_project->currentFigureName(), Qt::MatchExactly));
-   
+    if(_ui->curvesComboBox->findText(_project->currentFigureName(), Qt::MatchExactly) != -1) {
+        _ui->curvesComboBox->setCurrentIndex(_ui->curvesComboBox->findText(_project->currentFigureName(), Qt::MatchExactly));
+        updateResultNameAndClosed(_project->currentFigureName());
+    } else {
+        _ui->curvesComboBox->setCurrentIndex(-1);
+    }
+
     adjustSize();
     exec();
 }
@@ -42,8 +47,8 @@ void RadiusCorrectionDialog::devOffsetByTwo() {
 
 void RadiusCorrectionDialog::changeCurveType() {
     if (_ui->closedRadioButton->isChecked()) {
-        _ui->direction1RadioButton->setText("Internal");
-        _ui->direction2RadioButton->setText("External");
+        _ui->direction1RadioButton->setText("External");
+        _ui->direction2RadioButton->setText("Internal");
     } else {
         _ui->direction1RadioButton->setText("Right");
         _ui->direction2RadioButton->setText("Left");
@@ -53,32 +58,39 @@ void RadiusCorrectionDialog::changeCurveType() {
 void RadiusCorrectionDialog::calculateOffsetCurve() {
     if(_ui->curvesComboBox->currentText().isEmpty()) {
         auto text = QMessageBox::warning(this, "No initial curve selected", "Select initial curve", "Ok");
-    } else {
-        auto curveName = _ui->curvesComboBox->currentText();
-        auto newCurveName = _ui->resultCurveLineEdit->text();
-        if(newCurveName.isEmpty()) {
-            newCurveName = curveName + "_Radius_Corrected";
-        }
-        auto offset = _ui->offsetLineEdit->text().toDouble();
-        auto isClosed = _ui->closedRadioButton->isChecked();
-        auto isExternal = _ui->direction2RadioButton->isChecked();
-        auto needSort = _ui->sortCheckBox->isChecked();
-        FunctionParams::Direction direction = FunctionParams::Direction::Right;
-        if(_ui->direction2RadioButton->isChecked()) {
-            direction = FunctionParams::Direction::Left;
-        }
+        return;
+    }
+    auto curveName = _ui->curvesComboBox->currentText();
+    auto newCurveName = _ui->resultCurveLineEdit->text();
+    if(newCurveName.isEmpty()) {
+        newCurveName = curveName + "_Radius_Corrected";
+    }
+    auto offset = _ui->offsetLineEdit->text().toDouble();
+    auto isClosed = _ui->closedRadioButton->isChecked();
+    auto isExternal = _ui->direction1RadioButton->isChecked();
+    auto needSort = _ui->sortCheckBox->isChecked();
+    FunctionParams::Direction direction = FunctionParams::Direction::Right;
+    if(_ui->direction2RadioButton->isChecked()) {
+        direction = FunctionParams::Direction::Left;
+    }
 
-        const Function3Params *params = new Function3Params(offset, isClosed, isExternal, direction, needSort);
-        Algorithms::makeRadiusCorrection(curveName, newCurveName, params, _project);
+    const Function3Params *params = new Function3Params(offset, isClosed, isExternal, direction, needSort);
+    Algorithms::makeRadiusCorrection(curveName, newCurveName, params, _project);
 
-        resetDialog();
-        accept();
-    }  
+    resetDialog();
+    accept();
+
 }
 
-void RadiusCorrectionDialog::changeResultCurveName(QString curveName) {
+void RadiusCorrectionDialog::updateResultNameAndClosed(QString curveName) {
     if(!curveName.isEmpty()) {
         _ui->resultCurveLineEdit->setText(curveName + "_Radius_Corrected");
+        auto isClosed = dynamic_cast<const CurveFigure*>(_project->findFigure(curveName))->isClosed();
+        if(isClosed) {
+            _ui->closedRadioButton->setChecked(true);
+        } else {
+            _ui->openedRadioButton->setChecked(true);
+        }
     } else {
         _ui->resultCurveLineEdit->clear();
     }

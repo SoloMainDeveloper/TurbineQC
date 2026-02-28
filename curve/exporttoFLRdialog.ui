@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExportToFLRDialog</class>
+ <widget class="QDialog" name="ExportToFLRDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>348</width>
+    <height>418</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>ExportToFLRDialog</string>
+  </property>
+  <widget class="QPushButton" name="choosePathButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>20</y>
+     <width>61</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Choose</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelButton">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>380</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="exportButton">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>380</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="mergeModeCheckbox">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>340</y>
+     <width>101</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Merge mode</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fileLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>23</y>
+     <width>49</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>File</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="filePathLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="curveList">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>321</width>
+     <height>271</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chooseAllCheckbox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>340</y>
+     <width>101</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Choose all</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

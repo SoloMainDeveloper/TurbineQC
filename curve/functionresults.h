@@ -40,6 +40,7 @@ public:
 
 struct Function6Result {
 public:
+    Function6Result() : Function6Result(CurveFigure(), 0, 0, 0) {};
     Function6Result(CurveFigure curve, double offsetX, double offsetY, double rotation);
     ~Function6Result() = default;
 
@@ -135,15 +136,15 @@ public:
 
 struct Function18Result {
 public:
+    Function18Result() : Function18Result(QMap<QString, QStringList>()) {};
     Function18Result(QMap<QString, QStringList> elements);
-    Function18Result();
     ~Function18Result() = default;
 
     CurveFigure middleCurve; //MCL
     PointFigure leadingEdgePoint; //LE
     PointFigure trailingEdgePoint; //TE
     CircleFigure maxCircle; //CIRCLE$MAX
-    LineFigure chordLine; //LINE$FIT
+    LineFigure contactLine; //LINE$FIT
     PointFigure contactLEPoint; //CONTACT$LE
     PointFigure contactTEPoint; //CONTACT$TE
     CurveFigure curveTE; //PART$CURVE_TE
@@ -151,7 +152,7 @@ public:
     CurveFigure curveLow; //PART$CURVE_LO
     CurveFigure curveHigh; //PART$CURVE_HI
     QVector<CurvePoint> contactEndPoints; //CONTACT$ENDPOINTS
-    double chordLength = 0;
+    double contactLineLength = 0;
 };
 
 struct Function19Result {

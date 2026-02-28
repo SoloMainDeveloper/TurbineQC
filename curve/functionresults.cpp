@@ -91,7 +91,7 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
             auto radius = points[0].dev; //idk what to do with that
             this->maxCircle = CircleFigure(QString(), center, Point(0, 0, 1), radius);
         } else if(header == "LINE$FIT") {
-            this->chordLine = LineFigure(QString(), Point(points[0].x, points[0].y), Point(points[0].i, points[0].j), points[0].dev);
+            this->contactLine = LineFigure(QString(), Point(points[0].x, points[0].y), Point(points[0].i, points[0].j), points[0].dev);
         } else if(header == "CONTACT$TE_LE") {
             this->contactTEPoint = PointFigure(QString(), points[0]);
             this->contactLEPoint = PointFigure(QString(), points[1]);
@@ -105,12 +105,9 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
             this->curveHigh = CurveFigure(QString(), points);
         } else if(header == "CONTACT$ENDPOINTS") {
             this->contactEndPoints = points;
-            this->chordLength = points.last().dev;
+            this->contactLineLength = points.last().dev;
         }
     }
-}
-
-Function18Result::Function18Result() {
 }
 
 Function19Result::Function19Result(CurveFigure curve) {

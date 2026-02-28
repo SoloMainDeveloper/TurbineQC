@@ -19,27 +19,23 @@ void CurveGraphicsWidget::setMargin(int margin) {
     _margin = margin;
 }
 
-void CurveGraphicsWidget::drawCurve(const Project *project, QListWidgetItem *currentItemOfFirstList, Qt::GlobalColor colorOfItemFromFisrtList, double widthOfItemFromFirstList,
-    QListWidgetItem *currentItemOfSecondList, Qt::GlobalColor colorOfItemFromSecondList, double widthOfItemFromSecondList) {
+void CurveGraphicsWidget::drawCurve(const CurveFigure *firstCurve, Qt::GlobalColor firstColor, double firstWidth, const CurveFigure *secondCurve, Qt::GlobalColor secondColor, double secondWidth) {
     QRectF boundingRect;
     clearScene();
 
-    if(currentItemOfFirstList != nullptr) {
-        auto firstCurve = dynamic_cast<const CurveFigure*>(project->findFigure(currentItemOfFirstList->text()));
-        auto pointsOfFirstCurve = firstCurve->points();
-        drawLines(firstCurve, pointsOfFirstCurve, boundingRect, colorOfItemFromFisrtList, widthOfItemFromFirstList);
+    if(firstCurve != nullptr) {
+        drawLines(firstCurve, boundingRect, firstColor, firstWidth);
     }
-    if(currentItemOfSecondList != nullptr) {
-        auto secondCurve = dynamic_cast<const CurveFigure*>(project->findFigure(currentItemOfSecondList->text()));
-        auto pointsOfSecondCurve = secondCurve->points();
-        drawLines(secondCurve, pointsOfSecondCurve, boundingRect, colorOfItemFromSecondList, widthOfItemFromSecondList);
+    if(secondCurve != nullptr) {
+        drawLines(secondCurve, boundingRect, secondColor, secondWidth);
     }
     _scene->setSceneRect(boundingRect);
     _ui->graphicsView->setScene(_scene);
     _ui->graphicsView->fitInView(boundingRect.adjusted(-_margin, -_margin, _margin, _margin), Qt::KeepAspectRatio);
 }
 
-void CurveGraphicsWidget::drawLines(const CurveFigure *curve, const QVector<CurvePoint> &points, QRectF &boundingRect, Qt::GlobalColor color, double width) {
+void CurveGraphicsWidget::drawLines(const CurveFigure *curve, QRectF &boundingRect, Qt::GlobalColor color, double width) {
+    auto points = curve->points();
     for(auto i = 0; i < points.length() - 1; i++) {
         auto currentPoint = &points[i];
         auto nextPoint = &points[i + 1];

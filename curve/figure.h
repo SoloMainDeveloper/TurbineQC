@@ -7,6 +7,10 @@ public:
 
 	Point();
 	Point(double x, double y, double z = 0.0);
+
+	void shift(double x, double y, double z);
+	void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	void alignment(double angle, double offsetX, double offsetY);
 };
 
 class CurvePoint {
@@ -17,6 +21,10 @@ public:
 
 	CurvePoint();
 	CurvePoint(double x, double y, double z = 0, double i = 0, double j = 0, double k = 0, double dev = 0, double lt = 0, double ut = 0);
+
+	void shift(double x, double y, double z);
+	void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	void alignment(double angle, double offsetX, double offsetY);
 	
 	explicit operator Point();
 };
@@ -45,6 +53,10 @@ public:
 	void toggleVisible();
 	void setColor(QColor color);
 	const QColor& color() const;
+	virtual void shift(double x, double y, double z) {};
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0) {};
+	virtual void alignment(double angle, double offsetX, double offsetY) {};
+	virtual void edit(QMap<QString, QString> paramsChanged) {};
 
 private:
 	QString _name;
@@ -92,16 +104,20 @@ public:
 	bool isHighLightOut() const;
 	void setAmplification(double amplification);
 	double amplification() const;
-
+	
 	void changePoints(QVector<CurvePoint> updatePoints);
+	void changePoint(int index, CurvePoint updatePoint);
 	void assignToleranceToSegment(double upperTolerance, double lowerTolerance);
-	void computeToleranceClouds();
 
-	const QVector<CurvePoint>& upperTolerance() const;
-	const QVector<CurvePoint>& lowerTolerance() const;
+	const QString exportToFLR(int precision) const;
+
+	virtual void shift(double x, double y, double z);
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	virtual void alignment(double angle, double offsetX, double offsetY);
+	virtual void edit(QMap<QString, QString> paramsChanged);
 
 private:
-	QVector<CurvePoint> _points, _upperTolerancePoints, _lowerTolerancePoints;
+	QVector<CurvePoint> _points;
 	double _devMultiplier;
 
 	bool _isShowPoints = false;
@@ -124,7 +140,8 @@ private:
 class LineFigure : public Figure {
 public:
 	LineFigure();
-	LineFigure(QString name, Point position, Point direction, double length = qInf());
+	LineFigure(QString name, Point position, Point direction, double length);
+	LineFigure(QString name, Point startPoint, Point endPoint);
 	virtual FigureSettings* settings();
 	void setLength(double length);
 	void setOrigin(Point origin);
@@ -137,6 +154,11 @@ public:
     void setTail(const QCPLineEnding &tail);
 	const QCPLineEnding& head() const;
     const QCPLineEnding& tail() const;
+
+	virtual void shift(double x, double y, double z);
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	virtual void alignment(double angle, double offsetX, double offsetY);
+	virtual void edit(QMap<QString, QString> paramsChanged);
 
 private:
 	Point _origin;
@@ -153,6 +175,11 @@ public:
 	virtual FigureSettings* settings();
 	CurvePoint point() const;
 
+	virtual void shift(double x, double y, double z);
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	virtual void alignment(double angle, double offsetX, double offsetY);
+	virtual void edit(QMap<QString, QString> paramsChanged);
+
 private:
 	CurvePoint _point;
 };
@@ -165,14 +192,23 @@ public:
 	Point center() const;
 	Point normal() const;
 	double radius() const;
+    void setCenterCross(bool centerCross);
+	bool centerCross() const;
+
+	virtual void shift(double x, double y, double z);
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	virtual void alignment(double angle, double offsetX, double offsetY);
+	virtual void edit(QMap<QString, QString> paramsChanged);
 
 private:
 	Point _center;
 	Point _normal;
 	double _radius;
+	bool _centerCross = true;
 };
 
 class DimFigure : public Figure {
+	Q_GADGET
 public:
 	enum struct ValueType {
 		Length,
@@ -182,13 +218,17 @@ public:
 		Radius, Diameter,
 		TruePosition,
 		dX, dY, Rotation,
-		MinMax, Form, Min, Max, MaxAbs, SupUT, InfLT, Sigma, Mean, RMS
+		MinMax, Form, Min, Max, MaxAbs, SupUT, InfLT,
+		Perimeter, Sigma, Mean, RMS
 	};
+
+	Q_ENUM(ValueType);
 
 	enum struct DimType {
 		Radius,
 		Diameter,
 		Distance,
+		DistanceBetweenCurvePoints,
 		Perimeter,
 		Position, TruePosition,
 		AngleTo, AngleBetween,
@@ -197,10 +237,19 @@ public:
 		Mean, Min, MinMax, RMS, Sigma
 	};
 
+	enum struct RenderType {
+		Callout,
+		Table,
+		Angle,
+		DistanceBetweenCurvePoints
+	};
+
 	struct Value {
-		Value(ValueType valueType);
+		Value(ValueType valueType, bool newIsShow = true, double newMeasurement = 0.0, double newNominal = 0.0, 
+			double newUT = 0.0, double newLT = 0.0);
 
 		ValueType type;
+		const QString typeToFLR() const;
 		bool isShow = true;
 		double measurement = 0.0;
 		double nominal = 0.0;
@@ -210,17 +259,37 @@ public:
 
 	DimFigure(const QString &name, const DimType type, const Point &labelPoint, const Figure *firstReference = nullptr,
 		const Figure *secondReference = nullptr);
+	DimFigure(const QString &name, const Point &labelPoint, const Figure *firstReference = nullptr, const Figure *secondReference = nullptr);
 	virtual FigureSettings* settings();
 	const Point& labelPoint() const;
+	void setLabelPoint(const Point &point);
 	const Figure* firstReference() const;
 	const Figure* secondReference() const;
 
 	void addValue(const Value &value);
+	void addValues(const QVector<Value> &value);
 	const QVector<Value>& values() const;
 	const DimType dimType() const;
+	const QVector<CurvePoint> convertDimValueToPoints();
+	const QString exportToFLR(int precision) const ;
+	bool isOnlyLabel() const;
+	void setOnlyLabel(bool onlyLabel);
+    bool isShowTols() const;
+	void setShowTolerances(bool showTols);
+	bool isFreePosition() const;
+	void setFreePosition(bool freePosition);
+    void setDimType(const DimType &dimType);
+	int A();
+	void setA(int A);
+	QList<Value*>* setTypeAndGetValueNames();
+	const RenderType renderType() const;
+	void setRenderType(const RenderType &renderType);
+
+	virtual void shift(double x, double y, double z);
+	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+	virtual void alignment(double angle, double offsetX, double offsetY);
 
 private:
-	const QVector<CurvePoint> convertDimValueToPoints(const QVector<Value> &values);
 
 	DimType _dimType;
 	QVector<Value> _values;
@@ -228,5 +297,46 @@ private:
 	const Figure *_secondReference;
 	Point _labelPoint;
 	int _a;
+	RenderType _renderType;
+	bool _onlyLabel = false;
+	bool _showTols = false;
+	bool _freePosition = false;
 };
 	
+class TextFigure : public Figure {
+public:
+	TextFigure();
+    TextFigure(QString name = "", QString text = "", Point position = Point(0, 0, 0), double textSize = 0, const Figure *reference = nullptr,
+		double imageWidth = 0, double imageHeight = 0, double imageZoom = 0);
+
+    virtual FigureSettings* settings();
+
+    QString text() const;
+    void setText(QString text);
+    Point position() const;
+    void setPosition(Point position);
+    double textSize() const;
+    void setTextSize(double textSize);
+    const Figure* reference() const;
+    void setReference(Figure *reference);
+    double imageWidth() const;
+    void setImageWidth(double imageWidth);
+    double imageHeight() const;
+    void setImageHeight(double imageHeight);
+    double imageZoom() const;
+    void setImageZoom(double imageZoom);
+
+    virtual void shift(double x, double y, double z);
+    virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
+    virtual void alignment(double angle, double offsetX, double offsetY);
+    //virtual void edit(QMap<QString, QString> paramsChanged);
+
+private:
+	QString _text = "";
+	Point _position = Point(0, 0, 0);
+	double _textSize = 0;
+	const Figure *_reference = nullptr;
+	double _imageWidth = 0;
+    double _imageHeight = 0;
+	double _imageZoom = 0;
+};

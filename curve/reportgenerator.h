@@ -4,99 +4,71 @@
 #include "project.h"
 #include "curvelibrary.h"
 #include "functionparams.h"
-#include "reportdata.h"
+#include "reportsettings.h"
 #include "algorithms.h"
+#include "creatingmarkup.h"
 
-class ReportData;
+class ReportSettings;
 
 class ReportGenerator {
 public:
-    explicit ReportGenerator(Project *project, Plot *plot, ReportData *reportData, const QString &filePath);
-    virtual ~ReportGenerator();
+    enum class EdgeType {
+        LE,
+        TE,
+    };
 
-    void createReport(const CurveFigure *nominalCurve, const CurveFigure *measuredCurve);
+    static void createReport(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings);
 
 private:
-    Project *_project;
-    Plot *_plot;
-    ReportData *_reportData;
+    static Project *_project;
+    static std::shared_ptr<ReportSettings> _reportSettings;
+    static CurveParts _curveParts;
+    static QVector<QString> _curvesToDelete;
 
-    CircleFigure *_nomMaxDia;
-    CircleFigure *_measMaxDia;
-    CurveFigure  *_nomMCL;
-    CurveFigure  *_measMCL;
-    LineFigure *_nomChord;
-    LineFigure *_measChord;
+    static QString _nominalCurveName;
+    static QString _measuredCurveName;
+    static QString _globalCurveName;
+    static QString _globalCVName;
+    static QString _globalCCName;
+    static QString _nominalMaxDiaName;
+    static QString _measuredMaxDiaName;
+    static QString _nominalMCLName;
+    static QString _measuredMCLName;
+    static QString _nominalContactLineName;
+    static QString _measuredContactLineName;
 
-    Function18Result _nominalRes18;
-    Function18Result _measuredRes18;
-
-    QVector<QString> _curvesToDelete;
-
-    QString _index;
-    QString _tableRowTemplate;
-    QString _screenshotsDir;
-    QString _reportPath;
-    QString _globalCurveName;
-    QString _globalCVName;
-    QString _globalCCName;
-    QString _nomCurveName;
-    QString _measCurveName;
-    QString _updatedNomCurveName;
-    QString _updatedMeasCurveName;
-    QString _nomMaxDiaName;
-    QString _measMaxDiaName;
-    QString _nomMCLName;
-    QString _measMCLName;
-    QString _nomChordName;
-    QString _measChordName;
-
-    bool _isCreateMaxDia;
-    bool _isCreateMCL;
-    bool _isCreateChord;
-
-    void makeDirectories();
-    void initialization(const QString &nomCurveName, const QString &measCurveName);
-    void showWholeProfile(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    void showProfileWithoutEdges(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    void showProfileWithoutTE(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    void showProfileWithoutEdgesLSQ(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    void showProfileWithoutEdgesForm(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    Function18Result getResult18WithDeviations();
-    QVector<CurvePoint> createUpdatedMeasuredCurve(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
-    QVector<CurvePoint> getPointsAfterPreProcess(const QVector<CurvePoint> &points);
-    QVector<CurvePoint> getUpdatedPoints(Function18Result &res18, bool needWithoutTE = false);
-    QVector<CurvePoint> getPointsAfterStretching(const QVector<CurvePoint> &nomPoints, const QVector<CurvePoint> &measPoints);
-    Function4Params getParams4(bool isClosed = false);
-    Function6Params getParams6();
-    Function18Params getParams18();
-    Function21Params getParams21();
-    void insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needDelete = false);
-    const CurveFigure* findCurve(const QString &curveName);
-    void createAditionalFigures(const QVector<CurvePoint> &nominalPoints);
-    void setVisibilityAditionalFigures();
-    void makeScreenshotOfEdges();
-    void makeScreenshotOfEdge(const QVector<CurvePoint> &points, const QString &edgeName, double amplification, 
-        ReportData::Axis axisType, ReportData::TypeOfShowDevs devsType, Plot::Position position);
-    void makeScreenshotOfGlobal(const QVector<CurvePoint> &resultPoints, bool needClosed = false);
-    void makeScreenshotOfGlobal(const QVector<CurvePoint> &resultCVPoints, const QVector<CurvePoint> &resultCCPoints);
-    void deleteCurves();
-
-    void createMarkup();
-    QString getComment();
-    QString getGlobalView();
-    QString getParameters();
-    QString getMaxWidth();
-    QString getXMaxWidth();
-    QString getYMaxWidth();
-    QString getChordLength();
-    QString getLEWidth();
-    QString getTEWidth();
-    QString getLERadius();
-    QString getTERadius();
-    QString getOOT(double upperTolerance, double downTolerance, double deviation);
-    QString getLEView();
-    QString getTEView();
-    QString getTable(const QVector<CurvePoint> &points, const QString &caption, const QString &style = "");
-    QString getPartData();
+    static void initialization(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings);
+    static void analyzeProfile(Plot *plot, const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints);
+    static QVector<CurvePoint> getReassembledPoints(const Function18Result &res18);
+    static QVector<CurvePoint> getReassembledPointsOfWholeCurve(const Function18Result &res18);
+    static QVector<CurvePoint> getReassembledPointsWithoutTE(const Function18Result &res18);
+    static QVector<CurvePoint> getReassembledPointsWithoutEdges(const Function18Result &res18);
+    static QVector<CurvePoint> getUpdatedMeasuredPoints(const QVector<CurvePoint> &updatedNomPoints, const QVector<CurvePoint> &measuredPoints, const Function18Params &params18);
+    static QVector<CurvePoint> getPointsAfterStretching(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &measuredPoints, const Function18Params &params18);
+    static QVector<CurvePoint> getPointsAfterPreProcess(const QVector<CurvePoint> &points);
+    static QVector<CurvePoint> getPointsAfterBestFit(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &updatedMeasPoints);
+    static void analyzeWholeProfile(Plot *plot, const QVector<CurvePoint> &updatedNomPoints, const QVector<CurvePoint> &globalPointsAfterBestFit, const Function18Result &globalRes18);
+    static void analyzeProfileWithoutTE(Plot *plot, const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &globalPointsAfterBestFit, const Function18Result &globalRes18);
+    static void analyzeProfileWithoutEdges(Plot *plot, const Function18Result &globalRes18);
+    static void analyzeProfileWithoutEdgesLSQ(Plot *plot, const Function18Result &nominalRes18, const Function18Result &updatedMeasRes18, const Function18Result &globalRes18);
+    static void analyzeProfileWithoutEdgesForm(Plot *plot, const Function18Result &nominalRes18, const Function18Result &updatedMeasRes18, const Function18Result &globalRes18);
+    static Function18Result getResult18(const QVector<CurvePoint> &points, const Function18Params &params18);
+    static Function18Result getResult18WithDevs(const QVector<CurvePoint> &nominalPoints, const QVector<CurvePoint> &globalPoints, const Function18Params &params18);
+    static const Function4Params getParams4(bool isClosed = false);
+    static const Function6Params getParams6();
+    static const Function18Params getParams18();
+    static const Function21Params getParams21();
+    static void insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needDelete = false);
+    static const CurveFigure* findCurve(const QString &curveName);
+    static void createAditionalFigures(const QString &nominalCurveName, const QString &globalCurveNameAfterBf);
+    static void setVisibilityAdditionalFigures();
+    static void createEdgesAndMakeScreenshots(Plot *plot, const QVector<CurvePoint> &pointsOfLE, const QVector<CurvePoint> &pointsOfTE);
+    static void createEdge(const QVector<CurvePoint> &points, double amplification, EdgeType edgeType, ReportSettings::TypeOfShowDevs devsType);
+    static void createNumericalDeviations(const QVector<CurvePoint> &points, ReportSettings::TypeOfShowDevs devsType, EdgeType edgeType);
+    static void makeScreenshotOfEdge(Plot *plot, EdgeType edgeType, ReportSettings::Axis axisType, Plot::Position position);
+    static void createGlobalCurve(const QVector<CurvePoint> &globalPoints, bool isClosed = false);
+    static void createPartsOfCurve(const CurveParts &curveParts, bool isResetVisibilityForAllFigures = false);
+    static void addTable(const QString &tableName, const CurveFigure *globalCurve, const Point &labelPoint = Point(0, 0));
+    static void makeScreenshotOfGlobal(Plot *plot);
+    static void deleteCurves();
 };

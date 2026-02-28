@@ -25,7 +25,7 @@ private slots:
     void devOffsetByTwo();
     void changeCurveType();
     void calculateOffsetCurve();
-    void changeResultCurveName(QString curveName);
+    void updateResultNameAndClosed(QString curveName);
 
 private:
     Ui::RadiusCorrectionDialogClass *_ui;

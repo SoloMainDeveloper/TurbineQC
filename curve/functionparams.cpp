@@ -274,16 +274,17 @@ QString Function18Params::toQString() {
     return result.arg(_leadingEdgeDirection).arg(_percentageLE).arg(_percentageTE).arg(_joinedSegmentsCount);
 }
 
-Function19Params::Function19Params(bool isClosed, bool isExternal, Direction material, int value) {
+Function19Params::Function19Params(bool isClosed, bool isExternal, Direction material, QString mode, int value) {
     _isClosed = isClosed;
     _isExternal = isExternal;
     _value = value;
     _material = material;
+    _mode = mode;
 }
 
 QString Function19Params::toQString() {
-    QString result = "function=19\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nmode=number\nvalue=%4";
-    return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N").arg(_material == Direction::Left ? "L" : "R").arg(_value);
+    QString result = "function=19\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nmode=%4\nvalue=%5";
+    return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N").arg(_material == Direction::Left ? "L" : "R").arg(_mode).arg(_value);
 }
 
 Function21Params::Function21Params(int limInterpMethod, bool needXShift, bool needYShift, bool needRotation, bool isClosed) {
@@ -308,4 +309,14 @@ Function31Params::Function31Params(bool isLEStretch, bool isTEStretch, int leadi
 QString Function31Params::toQString() {
     QString result = "function=31\nplane=XY\nle_dir=%1\nle_stretch=%2\nte_stretch=%3";
     return result.arg(_leadingEdgeDirection).arg(_isLEStretch ? "Y" : "N").arg(_isTEStretch ? "Y" : "N");
+}
+
+QMap<QString, QString> FunctionParams::toQMap() {
+    auto parsedText = toQString().split('\n');
+    auto params = QMap<QString, QString>();
+    for(auto i = 0; i < parsedText.size(); i++) {
+        auto pair = parsedText[i].split('=');
+        params.insert(pair[0], pair[1]);
+    }
+    return params;
 }

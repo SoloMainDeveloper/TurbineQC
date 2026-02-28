@@ -39,9 +39,9 @@ void WidthEdgeWindow::setupWindow() {
     directionLE = _ui->directionLEComboBox;
     checkBoxLE = _ui->checkBoxLE;
     checkBoxTE = _ui->checkBoxTE;
-    distanceLE  = _ui->distanceLE;
+    distanceLE = _ui->distanceLE;
     distanceLE->setValidator(_doubleValidator);
-    distanceTE  = _ui->distanceTE;
+    distanceTE = _ui->distanceTE;
     distanceTE->setValidator(_doubleValidator);
     groupBoxLE = _ui->groupBoxLE;
     groupBoxTE = _ui->groupBoxTE;
@@ -60,7 +60,7 @@ void WidthEdgeWindow::closeWindow() {
         checkBoxTE->click();
     }
     distanceLE->setText("1");
-    distanceTE->setText ("1");
+    distanceTE->setText("1");
     answerLE->clear();
     answerTE->clear();
     _ui->createDistanceCheckBoxLE->setChecked(false);
@@ -72,7 +72,7 @@ void WidthEdgeWindow::closeWindow() {
 void WidthEdgeWindow::calculateWidthEdge() {
     auto selectedItemsOfCurves = curves->selectedItems();
     auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
-    if (currFigure != nullptr) {
+    if(currFigure != nullptr) {
         auto distanceLEValue = distanceLE->text().toDouble() ? distanceLE->text().toDouble() : 1;
         auto distanceTEValue = distanceTE->text().toDouble() ? distanceTE->text().toDouble() : 1;
         auto result = Algorithms::getWidthOfEdges(currFigure->text(), distanceLEValue, distanceTEValue, _project,
@@ -84,19 +84,23 @@ void WidthEdgeWindow::calculateWidthEdge() {
 
 void WidthEdgeWindow::updateAnswerView() {
     auto selectedItemsOfCurves = curves->selectedItems();
-    auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
-    _curveGraphics->drawCurve(_project, currFigure, Qt::blue, 0.1);
-     if(currFigure != nullptr  && _widths.contains(currFigure->text())) {
-        auto figureName = currFigure->text();
-        answerLE->setText(QString::number(_widths[figureName]->widthLE));
-        distanceLE->setText(QString::number(_widths[figureName]->distanceLE));
-        answerTE->setText(QString::number(_widths[figureName]->widthTE));
-        distanceTE->setText(QString::number(_widths[figureName]->distanceTE));
-    }
-    else {
-        answerLE->clear();
-        answerTE->clear();
-    }
+    auto currentItem = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
+    if(currentItem) {
+        auto figure = _project->findFigure(currentItem->text());
+        auto curve = dynamic_cast<const CurveFigure*>(figure);
+        assert(curve);
+        _curveGraphics->drawCurve(curve, Qt::blue, 0.1);
+        if(_widths.contains(currentItem->text())) {
+            auto figureName = currentItem->text();
+            answerLE->setText(QString::number(_widths[figureName]->widthLE));
+            distanceLE->setText(QString::number(_widths[figureName]->distanceLE));
+            answerTE->setText(QString::number(_widths[figureName]->widthTE));
+            distanceTE->setText(QString::number(_widths[figureName]->distanceTE));
+        } else {
+            answerLE->clear();
+            answerTE->clear();
+        }
+    } 
 }
 
 void WidthEdgeWindow::closeEvent(QCloseEvent *event) {
@@ -107,8 +111,7 @@ void WidthEdgeWindow::checkBoxLEStateChange() {
     auto state = checkBoxLE->isChecked();
     if(state) {
         groupBoxLE->show();
-    }
-    else {
+    } else {
         groupBoxLE->hide();
     }
 }

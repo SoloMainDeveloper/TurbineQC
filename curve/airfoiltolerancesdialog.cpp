@@ -131,88 +131,57 @@ void AirfoilTolerancesDialog::changeCurrentMode() {
 
 void AirfoilTolerancesDialog::changeItemOfList() {
     auto selectedItemsOfCurves = _ui->listWidgetCurves->selectedItems();
-    auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
-    _curveGraphics->drawCurve(_project, currFigure, Qt::blue, 0.1);
+    auto currentItem = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
+    if(currentItem) {
+        auto figure = _project->findFigure(currentItem->text());
+        auto curve = dynamic_cast<const CurveFigure*>(figure);
+        _curveGraphics->drawCurve(curve, Qt::blue, 0.1);
+    }
 }
 
 void AirfoilTolerancesDialog::assignTolerances() {
     if(!_currentCurve) {
         auto text = QMessageBox::warning(this, "Curve not selected", "Select curve", "Ok");
-    } else {
-        auto currentMode = _ui->comboBoxMode->currentText();
-        if(currentMode == "Constant tolerance") {
-            auto newUpperTolerance = _upperToleranceLineEdit->text().toDouble();
-            auto newLowerTolerance = _lowerToleranceLineEdit->text().toDouble();
-            auto curveWithTolerances = *_currentCurve;
-            curveWithTolerances.assignToleranceToSegment(newUpperTolerance, newLowerTolerance);
-
-            auto f1params = Function1Params(0, 0, 0, true, true, FunctionParams::Direction::Left, true);
-            auto f1result = CurveLibrary::function1(curveWithTolerances.points(), f1params);
-
-            emit curveChangeToleranceRequested(_currentCurveName, f1result.curve.points());
-
-        } else if(currentMode == "Edges") {
-            auto lEDir = 0;
-            auto lEDirText = _leadingEdgeDirectionComboBox->currentText();
-            if(lEDirText == "Auto") {
-                lEDir = 0;
-            } else if(lEDirText == "+X") {
-                lEDir = 1;
-            } else if(lEDirText == "-X") {
-                lEDir = 3;
-            } else if(lEDirText == "+Y") {
-                lEDir = 2;
-            } else if(lEDirText == "-Y") {
-                lEDir = 4;
-            }
-            auto lEPercent = _leadingEdgePercentLineEdit->text().toDouble();
-            auto tEPercent = _trailingEdgePercentLineEdit->text().toDouble();
-            auto const f18params = Function18Params(lEDir, lEPercent, tEPercent);
-            auto f18result = CurveLibrary::function18(_currentCurve->points(), f18params);
-
-            auto lEUpper = _leadingEdgeUpperToleranceLineEdit->text().toDouble();
-            auto lELower = _leadingEdgeLowerToleranceLineEdit->text().toDouble();
-            auto tEUpper = _trailingEdgeUpperToleranceLineEdit->text().toDouble();
-            auto tELower = _trailingEdgeLowerToleranceLineEdit->text().toDouble();
-            auto highEUpper = _highEdgeUpperToleranceLineEdit->text().toDouble();
-            auto highELower = _highEdgeLowerToleranceLineEdit->text().toDouble();
-            auto lowEUpper = _lowEdgeUpperToleranceLineEdit->text().toDouble();
-            auto lowELower = _lowEdgeLowerToleranceLineEdit->text().toDouble();
-
-            f18result.curveLE.assignToleranceToSegment(lEUpper, lELower);
-            f18result.curveTE.assignToleranceToSegment(tEUpper, tELower);
-            f18result.curveHigh.assignToleranceToSegment(highEUpper, highELower);
-            f18result.curveLow.assignToleranceToSegment(lowEUpper, lowELower);
-
-            QVector<CurvePoint> pointsWithTolerances;
-            if(f18result.curveLE.points().length() + f18result.curveHigh.points().length() +
-                f18result.curveTE.points().length() + f18result.curveLow.points().length() == _currentCurve->points().length() + 8) {
-                auto curveLEPoints = f18result.curveLE.points();
-                curveLEPoints.pop_back();
-                curveLEPoints.pop_front();
-                auto curveTEPoints = f18result.curveTE.points();
-                curveTEPoints.pop_back();
-                curveTEPoints.pop_front();
-                auto curveHighPoints = f18result.curveHigh.points();
-                curveHighPoints.pop_back();
-                curveHighPoints.pop_front();
-                auto curveLowPoints = f18result.curveLow.points();
-                curveLowPoints.pop_back();
-                curveLowPoints.pop_front();
-
-                pointsWithTolerances = curveLEPoints + curveTEPoints + curveHighPoints + curveLowPoints;
-            } else {
-                pointsWithTolerances = f18result.curveLE.points() + f18result.curveHigh.points() +
-                    f18result.curveTE.points() + f18result.curveLow.points();
-            }
-
-            auto f1params = Function1Params(0, 0, 0, true, true, FunctionParams::Direction::Left, true);
-            auto f1result = CurveLibrary::function1(pointsWithTolerances, f1params);
-
-            emit curveChangeToleranceRequested(_currentCurveName, f1result.curve.points());
-        }
-        accept();
+        return;
     }
+    auto currentMode = _ui->comboBoxMode->currentText();
+    if(currentMode == "Constant tolerance") {
+        auto upperTolerance = _upperToleranceLineEdit->text().toDouble();
+        auto lowerTolerance = _lowerToleranceLineEdit->text().toDouble();
+
+        Algorithms::calculateConstantTolerances(_currentCurveName, upperTolerance, lowerTolerance, _project);
+
+    } else if(currentMode == "Edges") {
+        auto lEDir = 0;
+        auto lEDirText = _leadingEdgeDirectionComboBox->currentText();
+        if(lEDirText == "Auto") {
+            lEDir = 0;
+        } else if(lEDirText == "+X") {
+            lEDir = 1;
+        } else if(lEDirText == "-X") {
+            lEDir = 3;
+        } else if(lEDirText == "+Y") {
+            lEDir = 2;
+        } else if(lEDirText == "-Y") {
+            lEDir = 4;
+        }
+        auto lEPercent = _leadingEdgePercentLineEdit->text().toDouble();
+        auto tEPercent = _trailingEdgePercentLineEdit->text().toDouble();
+
+        auto lEUpper = _leadingEdgeUpperToleranceLineEdit->text().toDouble();
+        auto lELower = _leadingEdgeLowerToleranceLineEdit->text().toDouble();
+        auto tEUpper = _trailingEdgeUpperToleranceLineEdit->text().toDouble();
+        auto tELower = _trailingEdgeLowerToleranceLineEdit->text().toDouble();
+        auto highEUpper = _highEdgeUpperToleranceLineEdit->text().toDouble();
+        auto highELower = _highEdgeLowerToleranceLineEdit->text().toDouble();
+        auto lowEUpper = _lowEdgeUpperToleranceLineEdit->text().toDouble();
+        auto lowELower = _lowEdgeLowerToleranceLineEdit->text().toDouble();
+
+        Algorithms::calculateEdgesTolerance(_currentCurveName, lEDir, lEPercent, tEPercent, lEUpper, lELower, tEUpper, tELower, highEUpper, highELower,
+            lowEUpper, lowELower, _project);
+    }
+    accept();
+
 }
 
 void AirfoilTolerancesDialog::addToleranceBlock(QVBoxLayout* layout, QString blockName, QLabel* label, QLineEdit* upperLineEdit, QLineEdit* lowerLineEdit) {

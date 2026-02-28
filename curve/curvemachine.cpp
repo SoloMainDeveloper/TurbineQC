@@ -6,15 +6,23 @@ CurveFigure CurveMachine::enlargeCurveWithIntermediatePoints(const QVector<Curve
     return CurveLibrary::function1(points, params).curve;
 }
 
+CurveFigure CurveMachine::regenerateCurve(const QVector<CurvePoint> curve, const Function19Params params) {
+    return CurveLibrary::function19(curve, params).curve;
+}
+
 CurveFigure CurveMachine::getMiddleCurve(const QVector<CurvePoint> points, const Function18Params params) {
     return CurveLibrary::function18(points, params).middleCurve;
 }
 
-double CurveMachine::getChordLength(const QVector<CurvePoint> points, const Function18Params params) {
-    return CurveLibrary::function18(points, params).chordLength;
+LineFigure CurveMachine::getContactLine(const QVector<CurvePoint> points, const Function18Params params) {
+    return CurveLibrary::function18(points, params).contactLine;
 }
 
-CircleFigure CurveMachine::getMaxWidthCircle(const QVector<CurvePoint> points, const Function18Params params) {
+double CurveMachine::getContactLineLength(const QVector<CurvePoint> points, const Function18Params params) {
+    return CurveLibrary::function18(points, params).contactLineLength;
+}
+
+CircleFigure CurveMachine::getMaxCircle(const QVector<CurvePoint> points, const Function18Params params) {
     return CurveLibrary::function18(points, params).maxCircle;
 }
 
@@ -274,10 +282,8 @@ CurveFigure CurveMachine::calculateDeviations(const QVector<CurvePoint> nomCurve
     return CurveLibrary::function4(nomCurve, measCurve, params).curve;
 }
 
-CurveFigure CurveMachine::calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params, ReportData *reportData) {
+CurveFigure CurveMachine::calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params) {
     auto result = CurveLibrary::function6(measuredCurve, nominalCurve, params);
-    if(reportData != nullptr) {
-        reportData->setBestFitValues(result.offsetX, result.offsetY, result.rotation);
-    }
     return result.curve;
 }
+

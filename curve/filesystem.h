@@ -26,10 +26,11 @@ public:
     static QVector<CurvePoint> parsePointsFromElement(QStringList element, QString separator = ",", int startLineToSkip = 0, int finishLineToSkip = 0,
         Order order = Order::CurveLibrary, QString columnNames = nullptr, QString numberOfColumns = nullptr, QString decimal = ".");
     static QMap<QString, QStringList> parseOutputToElements(QStringList elements);
-    static bool loadCloud(Project *project, QString filePath, QString name, QString separator, int startLineToSkip,
+    static void loadCloud(Project *project, QString filePath, QString name, QString separator, int startLineToSkip,
         int finishLineToSkip, QString columnNames, QString numberOfColumns, QString decimal, Order order = Order::Default);
     static void saveProject(Project *project, QString dir, QString projectName, bool createCRV);
     static void loadProject(Project *project, const QString &filePath);
+    static void exportToFLR(Project *project, QString filepath, QStringList *curvesToTake);
 
 private:
     static void inputFigure(QTextStream &stream, FigureSettings *set);

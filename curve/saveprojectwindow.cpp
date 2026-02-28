@@ -62,7 +62,9 @@ void SaveProjectWindow::saveProject() {
         _ui->resultNameCRV->setPlaceholderText("File already exists");
         return;
     }
-    FileSystem::saveProject(_project, dir, name, needCreateCRV);
+    try{
+        FileSystem::saveProject(_project, dir, name, needCreateCRV);
+    } catch(...) { }
     closeWindow();
 }
 

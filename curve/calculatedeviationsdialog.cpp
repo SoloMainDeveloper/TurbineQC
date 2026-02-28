@@ -14,7 +14,7 @@ CalculateDeviationsDialog::CalculateDeviationsDialog(Project *project, QWidget *
     connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &CalculateDeviationsDialog::resetDialog);
     connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &CalculateDeviationsDialog::reject);
     connect(_ui->buttonBox, &QDialogButtonBox::accepted, this, &CalculateDeviationsDialog::calculateDeviations);
-    connect(_ui->measCurvesComboBox, &QComboBox::currentIndexChanged, this, &CalculateDeviationsDialog::changeResultName);
+    connect(_ui->measCurvesComboBox, &QComboBox::currentTextChanged, this, &CalculateDeviationsDialog::updateResultNameAndClosed);
 
     _ui->nomTolLineEdit->setValidator(new QIntValidator);
 }
@@ -115,9 +115,15 @@ void CalculateDeviationsDialog::changeCurveType() {
     }
 }
 
-void CalculateDeviationsDialog::changeResultName() {
-    if(!_ui->measCurvesComboBox->currentText().isEmpty()) {
+void CalculateDeviationsDialog::updateResultNameAndClosed(QString curveName) {
+    if(!curveName.isEmpty()) {
         _ui->resultNameLineEdit->setText(_ui->measCurvesComboBox->currentText() + "_Deviations");
+        auto isClosed = dynamic_cast<const CurveFigure*>(_project->findFigure(curveName))->isClosed();
+        if(isClosed) {
+            _ui->closedRadioButton->setChecked(true);
+        } else {
+            _ui->openedRadioButton->setChecked(true);
+        }
     } else {
         _ui->resultNameLineEdit->setText(QString());
     }

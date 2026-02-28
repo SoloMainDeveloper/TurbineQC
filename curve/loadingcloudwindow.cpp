@@ -6,7 +6,7 @@ LoadingCloudWindow::LoadingCloudWindow(Project *project, QWidget *parent) : QDia
 
     _project = project;
     _message = new QMessageBox(this);
-    _message->setWindowTitle("Error");
+    _message->setWindowTitle("Warning");
 
     this->setWindowTitle("Load file");
     this->setFixedSize(750, 500);
@@ -73,93 +73,115 @@ void LoadingCloudWindow::findFile() {
     auto filePath = _ui->filePathLineEdit->text();
     QFile file(filePath);
 
-    if(file.exists()) {
-        _fileData = FileSystem::readFile(filePath).split("\n");
-        _name = filePath.replace("\\", "/").split("/").last().split('.')[0];
-        _ui->inputData->clear();
-        _ui->notifyLabel->clear();
-        _ui->nameFigureLineEdit->setText(_name);
-        if(_fileData.length() > 0) {
-            for(auto i = 0; i < _fileData.length(); i++) {
-                _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
-            }
-            _ui->startLineEdit->setText("1");
-            _ui->finishLineEdit->setText(QString::number(_fileData.length()));
-        }
+    if(!file.exists()) {
+        _message->setText("File not found! Check the path.");
+        _message->exec();
+        return;
     }
+    if(!isCorrectFileExtension(filePath)) {
+        _message->setText("Incorrect file extension!");
+        _message->exec();
+        return;
+    }
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    auto name = filePath.replace("\\", "/").split("/").last().split('.')[0];
+    _fileData = FileSystem::readFile(filePath).split("\n");
+    _ui->inputData->clear();
+    _ui->notifyLabel->clear();
+    _ui->nameFigureLineEdit->setText(name);
+    for(auto i = 0; i < _fileData.length(); i++) {
+        _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
+    }
+    _ui->startLineEdit->setText("1");
+    _ui->finishLineEdit->setText(QString::number(_fileData.length()));
+    QApplication::restoreOverrideCursor();
+}
+
+bool LoadingCloudWindow::isCorrectFileExtension(const QString &filePath) {
+    auto extension = QFileInfo(filePath).suffix().toLower();
+    return extension == "txt" || extension == "nom";
 }
 
 void LoadingCloudWindow::openFile() {
-    auto filePath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt)");
+    auto filePath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt);; (*.nom)");
 
-    if(!filePath.isEmpty()) {
-        _ui->filePathLineEdit->setText(filePath);
-        _fileData = FileSystem::readFile(filePath).split("\n");
-        _name = filePath.replace("\\", "/").split('/').last().split('.')[0];
-        _ui->inputData->clear();
-        _ui->notifyLabel->clear();
-        _ui->nameFigureLineEdit->setText(_name);
-        if(_fileData.length() > 0) {
-            QApplication::setOverrideCursor(Qt::WaitCursor);
-            for(auto i = 0; i < _fileData.length(); i++) {
-                _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
-            }
-            _ui->startLineEdit->setText("1");
-            _ui->finishLineEdit->setText(QString::number(_fileData.length()));
-            QApplication::restoreOverrideCursor();
-        }
+    if(filePath.isEmpty()) {
+        return;
     }
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    _ui->filePathLineEdit->setText(filePath);
+    _fileData = FileSystem::readFile(filePath).split("\n");
+    auto name = filePath.replace("\\", "/").split('/').last().split('.')[0];
+    _ui->inputData->clear();
+    _ui->notifyLabel->clear();
+    _ui->nameFigureLineEdit->setText(name);
+    for(auto i = 0; i < _fileData.length(); i++) {
+        _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
+    }
+    _ui->startLineEdit->setText("1");
+    _ui->finishLineEdit->setText(QString::number(_fileData.length()));
+    QApplication::restoreOverrideCursor();
 }
 
 void LoadingCloudWindow::pasteData() {
-    QClipboard *clipboard = QApplication::clipboard();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    auto clipboard = QApplication::clipboard();
     _fileData = clipboard->text().split("\n");
     _ui->inputData->clear();
-    if(_fileData.length() > 0) {
-        for(auto i = 0; i < _fileData.length(); i++) {
-            _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
-        }
-        _ui->startLineEdit->setText("1");
-        _ui->finishLineEdit->setText(QString::number(_fileData.length()));
-        _ui->filePathLineEdit->clear();
-        _ui->nameFigureLineEdit->clear();
-        _ui->notifyLabel->clear();
+    for(auto i = 0; i < _fileData.length(); i++) {
+        _ui->inputData->append(QString("%1 -> %2").arg(i + 1, 4, 10, QChar('0')).arg(_fileData[i]));
     }
+    _ui->startLineEdit->setText("1");
+    _ui->finishLineEdit->setText(QString::number(_fileData.length()));
+    _ui->filePathLineEdit->clear();
+    _ui->nameFigureLineEdit->clear();
+    _ui->notifyLabel->clear();
+    QApplication::restoreOverrideCursor();
 }
 
 void LoadingCloudWindow::loadCloud() {
-    _name = _ui->nameFigureLineEdit->text();
+    auto name = _ui->nameFigureLineEdit->text();
 
-    if(_name != "" && _ui->inputData->toPlainText() != "") {
-        auto columnNames = _ui->columnNamesBox->currentText();
-        auto columnNumbers = _ui->columnNumbersBox->currentText();
-        auto decimal = _ui->decimalBox->currentText();
-        auto separator = _ui->separatorBox->currentText();
-        auto skipStart = _ui->startLineEdit->text().toInt() - 1;
-        auto skipAfter = _fileData.length() - _ui->finishLineEdit->text().toInt();
-        if(!_project->containsFigure(_name)) {
-            auto status = FileSystem::loadCloud(_project, _ui->filePathLineEdit->text(), _name, separator, skipStart,
-                skipAfter, columnNames, columnNumbers, decimal);
-            if(status) {
-                _ui->notifyLabel->setText(QString("Interpreted completed!"));
-            } else {
-                _message->setText("Error in interpretation settings!");
-                _message->exec();
-            }
-        } else {
-            _message->setText("This name already exists!");
-            _message->exec();
+    if(name.isEmpty()) {
+        _message->setText("Write a name for the curve!");
+        _message->exec();
+        return;
+    }
+    if(_ui->inputData->toPlainText().isEmpty()) {
+        _message->setText("There is no data to load!");
+        _message->exec();
+        return;
+    }
+    if(_project->containsFigure(name)) {
+        _message->setText("This name already exists!\nDo you want to overwrite the curve?");
+        _message->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        _message->exec();
+        auto button = _message->clickedButton()->text();
+        _message->setStandardButtons(QMessageBox::Ok);
+        if(button == "Cancel") {
+            return;
         }
+        _project->removeFigure(name);
+    }
+
+    auto columnNames = _ui->columnNamesBox->currentText();
+    auto columnNumbers = _ui->columnNumbersBox->currentText();
+    auto decimal = _ui->decimalBox->currentText();
+    auto separator = _ui->separatorBox->currentText();
+    auto skipStart = _ui->startLineEdit->text().toInt() - 1;
+    auto skipAfter = _fileData.length() - _ui->finishLineEdit->text().toInt();
+    try {
+        FileSystem::loadCloud(_project, _ui->filePathLineEdit->text(), name, separator, skipStart,
+            skipAfter, columnNames, columnNumbers, decimal);
+        _ui->notifyLabel->setText(QString("Interpreted completed!"));
+    } catch(...) {
     }
 }
 
-void LoadingCloudWindow::closeEvent(QCloseEvent *event) {
-        closeWindow();
-}
-
-// For the CURVE-56 test
-QString LoadingCloudWindow::name() {
-    return _name;
+void LoadingCloudWindow::closeEvent(QCloseEvent * event) {
+    closeWindow();
 }
 
 void LoadingCloudWindow::closeWindow() {
@@ -175,9 +197,9 @@ void LoadingCloudWindow::closeWindow() {
     _ui->finishLineEdit->clearFocus();
     _ui->finishLineEdit->clear();
     _ui->columnNumbersBox->clearFocus();
-    _ui->columnNumbersBox->setCurrentIndex(2);
+    _ui->columnNumbersBox->setCurrentIndex(0);
     _ui->columnNamesBox->clearFocus();
-    _ui->columnNamesBox->setCurrentIndex(2);
+    _ui->columnNamesBox->setCurrentIndex(0);
     _ui->decimalBox->clearFocus();
     _ui->decimalBox->setCurrentIndex(0);
     _ui->separatorBox->clearFocus();
