@@ -57,8 +57,15 @@ public:
 	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0) {};
 	virtual void alignment(double angle, double offsetX, double offsetY) {};
 	virtual void edit(QMap<QString, QString> paramsChanged) {};
+	virtual void updateRefToParent(QString oldParentName, QString newParentName) {};
+	const QList<Figure*>& children() const;
+	QList<Figure*>& childrenMutable() const;
+	void addChild(Figure *child) const;
+	void removeChild(Figure *child) const;
+
 
 private:
+	QList<Figure*> *_children;
 	QString _name;
 	bool _isVisible;
 	QColor _color = QColorConstants::Black;
@@ -210,7 +217,7 @@ private:
 class DimFigure : public Figure {
 	Q_GADGET
 public:
-	enum struct ValueType {
+	enum ValueType {
 		Length,
 		Angle0, Angle90, Angle180, Angle270,
 		AngleTo, AngleFrom,
@@ -237,13 +244,6 @@ public:
 		Mean, Min, MinMax, RMS, Sigma
 	};
 
-	enum struct RenderType {
-		Callout,
-		Table,
-		Angle,
-		DistanceBetweenCurvePoints
-	};
-
 	struct Value {
 		Value(ValueType valueType, bool newIsShow = true, double newMeasurement = 0.0, double newNominal = 0.0, 
 			double newUT = 0.0, double newLT = 0.0);
@@ -257,15 +257,16 @@ public:
 		double lowerTolerance = 0.0;
 	};
 
-	DimFigure(const QString &name, const DimType type, const Point &labelPoint, const Figure *firstReference = nullptr,
-		const Figure *secondReference = nullptr);
-	DimFigure(const QString &name, const Point &labelPoint, const Figure *firstReference = nullptr, const Figure *secondReference = nullptr);
+	DimFigure(const QString &name, const DimType type, const Point &labelPoint, const QString firstReference = QString(),
+		const QString secondReference = QString());
+	DimFigure(const QString &name, const Point &labelPoint, const QString firstReference = QString(), const QString secondReference = QString());
 	virtual FigureSettings* settings();
 	const Point& labelPoint() const;
 	void setLabelPoint(const Point &point);
-	const Figure* firstReference() const;
-	const Figure* secondReference() const;
-
+	const QString firstReference() const;
+	const QString secondReference() const;
+	void setFirstReference(const QString &firstReference);
+    void setSecondReference(const QString &secondReference);
 	void addValue(const Value &value);
 	void addValues(const QVector<Value> &value);
 	const QVector<Value>& values() const;
@@ -281,23 +282,24 @@ public:
     void setDimType(const DimType &dimType);
 	int A();
 	void setA(int A);
-	QList<Value*>* setTypeAndGetValueNames();
-	const RenderType renderType() const;
-	void setRenderType(const RenderType &renderType);
+	void setValues(QList<CurvePoint> points);
+	static ValueType valueTypeFromString(QString macrosType);
+	static QString valueTypeToString(ValueType value);
 
 	virtual void shift(double x, double y, double z);
 	virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
 	virtual void alignment(double angle, double offsetX, double offsetY);
+	virtual void edit(QMap<QString, QString> paramsChanged);
+	virtual void updateRefToParent(QString oldParentName, QString newParentName);
 
 private:
 
 	DimType _dimType;
 	QVector<Value> _values;
-	const Figure *_firstReference;
-	const Figure *_secondReference;
+	QString _firstReference;
+	QString _secondReference;
 	Point _labelPoint;
 	int _a;
-	RenderType _renderType;
 	bool _onlyLabel = false;
 	bool _showTols = false;
 	bool _freePosition = false;
@@ -306,7 +308,7 @@ private:
 class TextFigure : public Figure {
 public:
 	TextFigure();
-    TextFigure(QString name = "", QString text = "", Point position = Point(0, 0, 0), double textSize = 0, const Figure *reference = nullptr,
+    TextFigure(QString name = "", QString text = "", Point position = Point(0, 0, 0), double textSize = 0, QString reference = "",
 		double imageWidth = 0, double imageHeight = 0, double imageZoom = 0);
 
     virtual FigureSettings* settings();
@@ -317,8 +319,8 @@ public:
     void setPosition(Point position);
     double textSize() const;
     void setTextSize(double textSize);
-    const Figure* reference() const;
-    void setReference(Figure *reference);
+    const QString reference() const;
+    void setReference(const QString reference);
     double imageWidth() const;
     void setImageWidth(double imageWidth);
     double imageHeight() const;
@@ -329,13 +331,14 @@ public:
     virtual void shift(double x, double y, double z);
     virtual void rotate(double angle, double x = 0, double y = 0, double z = 0);
     virtual void alignment(double angle, double offsetX, double offsetY);
-    //virtual void edit(QMap<QString, QString> paramsChanged);
+    virtual void edit(QMap<QString, QString> paramsChanged);
+	virtual void updateRefToParent(QString oldParentName, QString newParentName);
 
 private:
 	QString _text = "";
 	Point _position = Point(0, 0, 0);
 	double _textSize = 0;
-	const Figure *_reference = nullptr;
+	QString _reference;
 	double _imageWidth = 0;
     double _imageHeight = 0;
 	double _imageZoom = 0;

@@ -209,7 +209,7 @@ void FigureControls::setVisibleDimensionLayout(bool visible) {
 
     dimFreePositionCheckBox->setVisible(false);
     if(auto dimFigure = dynamic_cast<const DimFigure*>(currentFigure)) {
-        if(dimFigure->renderType() == DimFigure::RenderType::DistanceBetweenCurvePoints) {
+        if(dimFigure->dimType() == DimFigure::DimType::DistanceBetweenCurvePoints) {
             dimFreePositionCheckBox->setVisible(visible);
         }
     }

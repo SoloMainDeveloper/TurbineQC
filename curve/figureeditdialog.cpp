@@ -1,203 +1,160 @@
 #include "curve/pch.h"
 #include "figureeditdialog.h"
 
-FigureEditDialog::FigureEditDialog(Project* mainProject, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::FigureEditDialogClass())
-{
-    _ui->setupUi(this);
+FigureEditDialog::FigureEditDialog(Project* mainProject, QWidget *parent) : QDialog(parent),
+    _ui(new Ui::FigureEditDialogClass()) {
 
+    _ui->setupUi(this);
     _project = mainProject;
-    _table = _ui->tableWidget;
     _doubleValidator = new QDoubleValidator();
+
     connect(_project, &Project::figureEditDialogRequested, this, &FigureEditDialog::dialogInitialization);
-    connect(_ui->colorPB, &QPushButton::clicked, this, &FigureEditDialog::chooseColor);
-    connect(this, &FigureEditDialog::dimensionValueChanged, _project, &Project::changeDimensionValue);
-    connect(_project, &Project::dimensionValueChanged, this, &FigureEditDialog::changeDimensionValue);
     connect(_ui->applyChangesButton, &QPushButton::clicked, this, &FigureEditDialog::applyChanges);
-    connect(_table, &QTableWidget::cellChanged, this, &FigureEditDialog::tableValueChanged);
+
+    connect(_ui->colorPB, &QPushButton::clicked, this, &FigureEditDialog::chooseColor);
     connect(_ui->nameLE, &QLineEdit::editingFinished, this, &FigureEditDialog::figureNameChanged);
+    connect(_ui->curveTable, &QTableWidget::cellChanged, this, &FigureEditDialog::tableCellChanged);
+    connect(_ui->dimTable, &QTableWidget::cellChanged, this, &FigureEditDialog::tableCellChanged);
+    //dim
+    //connect(this, &FigureEditDialog::dimensionValueChanged, _project, &Project::changeDimensionValue);
+    //connect(_project, &Project::dimensionValueChanged, this, &FigureEditDialog::changeDimensionValue);
 }
 
 void FigureEditDialog::dialogInitialization(const QString figureName) {
+    _ui->nameLE->blockSignals(true);
+    _ui->curveTable->blockSignals(true);
+    _ui->dimTable->blockSignals(true);
+
     _figureName = figureName;
     _figure = _project->findFigure(figureName);
-    auto &color = _figure->color();
-    auto precision = _project->precision();
-    
     setWindowTitle("Edit " + figureName);
-    resize(600, 400);
-
-    _ui->nameLE->blockSignals(true);
     _ui->nameLE->setText(figureName);
-    _ui->nameLE->blockSignals(false);
+    auto precision = _project->precision();
+    auto &color = _figure->color();
     _ui->colorPB->setStyleSheet("background-color: " + color.name() + ";");
-    _table->clear();
-    _table->hide();
 
-    _table->blockSignals(true);
     if(const CurveFigure* curve = dynamic_cast<const CurveFigure*>(_figure)) {
-        _table->show();
+        _ui->container->setCurrentIndex(0);
+        resize(605, 470);
+
         auto points = curve->points();
         auto pointsCount = points.length();
-        _table->setRowCount(pointsCount);
-        _table->setColumnCount(9);
-        _table->setHorizontalHeaderLabels({ "X", "Y", "Z", "I", "J", "K", "Dev.", "UT", "LT" });
-        _table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        _ui->curveTable->setRowCount(pointsCount);
+        _ui->curveTable->setColumnCount(9);
+        _ui->curveTable->setHorizontalHeaderLabels({ "X", "Y", "Z", "I", "J", "K", "Dev.", "UT", "LT" });
+        _ui->curveTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
         for(auto i = 0; i < pointsCount; i++) {
             auto currentPoint = points[i];
             auto parameters = QVector<double>{ currentPoint.x, currentPoint.y, currentPoint.z,
                 currentPoint.i, currentPoint.j, currentPoint.k, currentPoint.dev, currentPoint.ut, currentPoint.lt };
-            for(auto j = 0; j < _table->columnCount(); j++) {
+            for(auto j = 0; j < _ui->curveTable->columnCount(); j++) {
                 auto text = QString::number(parameters[j], 'f', precision);
                 QTableWidgetItem* item = new QTableWidgetItem;
                 item->setText(text);
-                _table->setItem(i, j, item);
+                _ui->curveTable->setItem(i, j, item);
             }
         }
-    } else if(const PointFigure* point = dynamic_cast<const PointFigure*>(_figure)) {
+    } else if(const PointFigure* point = dynamic_cast<const PointFigure*>(_figure)) { //param A?
+        _ui->container->setCurrentIndex(3);
+        resize(600, 200);
+
         auto coordinates = point->point();
-        addPositionLayout(coordinates.x, coordinates.y, coordinates.z);
-        addDirectionLayout(coordinates.i, coordinates.j, coordinates.k);
-        addParameterLayout("A", 0, _doubleValidator); // TODO: define parameter A
+        _ui->pointX->setText(QString::number(coordinates.x, 'f', precision));
+        _ui->pointY->setText(QString::number(coordinates.y, 'f', precision));
+        _ui->pointZ->setText(QString::number(coordinates.z, 'f', precision));
+        _ui->pointI->setText(QString::number(coordinates.i, 'f', precision));
+        _ui->pointJ->setText(QString::number(coordinates.j, 'f', precision));
+        _ui->pointK->setText(QString::number(coordinates.k, 'f', precision));
+
+        validateFields({ _ui->pointX, _ui->pointY, _ui->pointZ, _ui->pointI, _ui->pointJ, _ui->pointK }, _doubleValidator);
     } else if(const CircleFigure* circle = dynamic_cast<const CircleFigure*>(_figure)) {
+        _ui->container->setCurrentIndex(1);
+        resize(600, 250);
+
         auto center = circle->center();
         auto normal = circle->normal();
-        auto radius = circle->radius();
-        addPositionLayout(center.x, center.y, center.z);
-        addDirectionLayout(normal.x, normal.y, normal.z);
-        addParameterLayout("Radius", QString::number(radius, 'f', precision), _doubleValidator);
+
+        _ui->circleX->setText(QString::number(center.x, 'f', precision));
+        _ui->circleY->setText(QString::number(center.y, 'f', precision));
+        _ui->circleZ->setText(QString::number(center.z, 'f', precision));
+        _ui->circleI->setText(QString::number(normal.x, 'f', precision));
+        _ui->circleJ->setText(QString::number(normal.y, 'f', precision));
+        _ui->circleK->setText(QString::number(normal.z, 'f', precision));
+        _ui->circleRadius->setText(QString::number(circle->radius(), 'f', precision));
+
+        validateFields({ _ui->circleX, _ui->circleY, _ui->circleZ, _ui->circleI,
+            _ui->circleJ, _ui->circleK, _ui->circleRadius }, _doubleValidator);
     } else if(const LineFigure* line = dynamic_cast<const LineFigure*>(_figure)) {
+        _ui->container->setCurrentIndex(2);
+        resize(600, 250);
+
         auto origin = line->origin();
         auto direction = line->direction();
-        auto length = line->length();
-        addPositionLayout(origin.x, origin.y, origin.z);
-        addDirectionLayout(direction.x, direction.y, direction.z);
-        addParameterLayout("Length", QString::number(length, 'f', precision), _doubleValidator);
+        
+        _ui->lineX->setText(QString::number(origin.x, 'f', precision));
+        _ui->lineY->setText(QString::number(origin.y, 'f', precision));
+        _ui->lineZ->setText(QString::number(origin.z, 'f', precision));
+        _ui->lineI->setText(QString::number(direction.x, 'f', precision));
+        _ui->lineJ->setText(QString::number(direction.y, 'f', precision));
+        _ui->lineK->setText(QString::number(direction.z, 'f', precision));
+        _ui->lineLength->setText(QString::number(line->length(), 'f', precision));
+
+        validateFields({ _ui->lineX, _ui->lineY, _ui->lineZ, _ui->lineI, _ui->lineJ, _ui->lineK, _ui->lineLength }, _doubleValidator);
     } else if(const DimFigure* dimension = dynamic_cast<const DimFigure*>(_figure)) {
+        _ui->container->setCurrentIndex(4);
+        resize(600, 460);
+
         auto &labelPoint = dimension->labelPoint();
-        auto firstReference = dimension->firstReference();
-        auto secondReference = dimension->secondReference();
         auto &values = dimension->values();
 
-        QStringList figureNames;
-        for(auto &figure : _project->figures()) { 
-            figureNames.append(figure->name()); 
-        }
+        _ui->dimX->setText(QString::number(labelPoint.x, 'f', precision));
+        _ui->dimY->setText(QString::number(labelPoint.y, 'f', precision));
+        _ui->dimZ->setText(QString::number(labelPoint.z, 'f', precision));
+        _ui->dimRef1->setText(dimension->firstReference());
+        _ui->dimRef2->setText(dimension->secondReference());
 
-        addPositionLayout(labelPoint.x, labelPoint.y, labelPoint.z);
-        addParameterLayout("Ref. 1", firstReference != nullptr ? firstReference->name() : QString());
-        addParameterLayout("Ref. 2", secondReference != nullptr ? secondReference->name() : QString());
-
-        _table->show();
-        _table->setRowCount(values.length());
-        _table->setColumnCount(6);
-        _table->setHorizontalHeaderLabels({ "Show", "Type", "Meas", "Nom", "UT", "LT"});
-        _table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        _table->horizontalHeader()->setStretchLastSection(true);
+        _ui->dimTable->setRowCount(values.length());
+        _ui->dimTable->setColumnCount(6);
+        _ui->dimTable->setHorizontalHeaderLabels({ "Show", "Type", "Meas", "Nom", "UT", "LT" });
+        _ui->dimTable->horizontalHeader()->setStretchLastSection(true);
         fillDimTable(values);
+
+        validateFields({ _ui->dimX, _ui->dimY, _ui->dimZ }, _doubleValidator);
+    } else if(const TextFigure* txt = dynamic_cast<const TextFigure*>(_figure)) {
+        _ui->container->setCurrentIndex(5);
+        resize(510, 230);
+
+        auto position = txt->position();
+
+        _ui->txtContent->setText(txt->text());
+        _ui->txtX->setText(QString::number(position.x, 'f', precision));
+        _ui->txtY->setText(QString::number(position.y, 'f', precision));
+        _ui->zoomSB_2->setValue(txt->textSize());
+        _ui->zoomSB->setValue(txt->imageZoom());
+        _ui->txtWidth->setText(QString::number(txt->imageWidth(), 'f', precision));
+        _ui->txtHeight->setText(QString::number(txt->imageHeight(), 'f', precision));
+        _ui->txtRef->setText(txt->reference());
+
+        _ui->txtX->setValidator(_doubleValidator);
+        _ui->txtY->setValidator(_doubleValidator);
+        _ui->txtWidth->setValidator(_doubleValidator);
+        _ui->txtHeight->setValidator(_doubleValidator);
     }
-    _table->blockSignals(false);
-    
-    _ui->parametersGB->update();
-    _rowsChanged.clear();
+    _tableCellChanged.clear();
     _paramsChanged.clear();
-    adjustSize();
-    adjustSize();
+
+    _ui->nameLE->blockSignals(false);
+    _ui->curveTable->blockSignals(false);
+    _ui->dimTable->blockSignals(false);
+
     exec();
 }
 
-void FigureEditDialog::addPositionLayout(double x, double y, double z) {
-    auto horizontalLayout = new QHBoxLayout();
-    auto label = new QLabel("X,Y,Z:");
-    _positionXLE = new QLineEdit(QString::number(x));
-    _positionYLE = new QLineEdit(QString::number(y));
-    _positionZLE = new QLineEdit(QString::number(z));
-    _positionXLE->setValidator(_doubleValidator);
-    _positionYLE->setValidator(_doubleValidator);
-    _positionZLE->setValidator(_doubleValidator);
-    _positionXLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _positionYLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _positionZLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    horizontalLayout->addWidget(label);
-
-    connect(_positionXLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("X", _positionXLE->text()); });
-    connect(_positionYLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("Y", _positionYLE->text()); });
-    connect(_positionZLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("Z", _positionZLE->text()); });
-
-    horizontalLayout->addWidget(_positionXLE);
-    horizontalLayout->addWidget(_positionYLE);
-    horizontalLayout->addWidget(_positionZLE);
-    _layoutWidgets.push_back(_positionXLE);
-    _layoutWidgets.push_back(_positionYLE);
-    _layoutWidgets.push_back(_positionZLE);
-    
-    _layouts.push_back(horizontalLayout);
-    _ui->dynamicVL->addLayout(horizontalLayout);
-    _layoutWidgets.push_back(label);
-}
-
-void FigureEditDialog::addDirectionLayout(double i, double j, double k) {
-    auto horizontalLayout = new QHBoxLayout(_ui->parametersGB);
-    auto label = new QLabel("I,J,K:");
-    _directionILE = new QLineEdit(QString::number(i));
-    _directionJLE = new QLineEdit(QString::number(j));
-    _directionKLE = new QLineEdit(QString::number(k));
-    _directionILE->setValidator(_doubleValidator);
-    _directionJLE->setValidator(_doubleValidator);
-    _directionKLE->setValidator(_doubleValidator);
-    _directionILE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _directionJLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _directionKLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    horizontalLayout->addWidget(label);
-
-    connect(_directionILE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("I", _directionILE->text()); });
-    connect(_directionJLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("J", _directionJLE->text()); });
-    connect(_directionKLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert("K", _directionKLE->text()); });
-
-    horizontalLayout->addWidget(_directionILE);
-    horizontalLayout->addWidget(_directionJLE);
-    horizontalLayout->addWidget(_directionKLE);
-    _layoutWidgets.push_back(_directionILE);
-    _layoutWidgets.push_back(_directionJLE);
-    _layoutWidgets.push_back(_directionKLE);
-
-    _layouts.push_back(horizontalLayout);
-    _ui->dynamicVL->addLayout(horizontalLayout);
-    _layoutWidgets.push_back(label);
-}
-
-void FigureEditDialog::addParameterLayout(const QString &name, const QString &value, const QValidator *validator) {
-    auto horizontalLayout = new QHBoxLayout(_ui->parametersGB);
-    auto label = new QLabel(name + ":");
-    _parameterLE = new QLineEdit(value);
-    _parameterLE->setValidator(validator);
-    _parameterLE->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    horizontalLayout->addWidget(label);
-
-    connect(_parameterLE, &QLineEdit::editingFinished, this, [&]() { _paramsChanged.insert(name, _parameterLE->text()); });
-    
-    horizontalLayout->addWidget(_parameterLE);
-
-    _layouts.push_back(horizontalLayout);
-    _ui->dynamicVL->addLayout(horizontalLayout);
-    _layoutWidgets.push_back(label);
-}
-
-FigureEditDialog::~FigureEditDialog() {
-    delete _doubleValidator;
-
-    for (auto widget : _layoutWidgets) {
-        delete widget;
+void FigureEditDialog::validateFields(const QList<QLineEdit*> &fields, const QValidator *validator) {
+    for(auto field : fields) {
+        field->setValidator(validator);
     }
-
-    for (auto layout : _layouts) {
-        delete layout;
-    }
-
-    delete _table;
-    delete _ui;
 }
 
 void FigureEditDialog::chooseColor() {
@@ -211,19 +168,6 @@ void FigureEditDialog::chooseColor() {
         _paramsChanged.insert("newColor", QString::number(colorInt));
     }
     _ui->colorPB->setStyleSheet("background-color: " + color.name() + ";");
-}
-
-void FigureEditDialog::changeDimensionValue(const QString &dimName, const DimFigure::Value &value) {
-    if(dimName != _figureName) return;
-
-    if(auto dimFigure = dynamic_cast<const DimFigure*>(_project->findFigure(dimName))) {
-        _table->clear();
-        fillDimTable(dimFigure->values());
-    }
-}
-
-void FigureEditDialog::changeCurrentDimension(const QString &dimName) {
-
 }
 
 const QString FigureEditDialog::convertValueTypeToString(const DimFigure::ValueType &value) {
@@ -242,72 +186,110 @@ void FigureEditDialog::fillDimTable(const QVector<DimFigure::Value> &values) {
         layoutCheckBox->addWidget(checkBox);
         layoutCheckBox->setAlignment(Qt::AlignCenter);
         layoutCheckBox->setContentsMargins(0, 0, 0, 0);
-        _table->setCellWidget(i, 0, checkBoxWidget);
-        connect(checkBox, &QCheckBox::stateChanged, this, [&](int state) {
-            auto newValue = currentValue;
-            newValue.isShow = state == Qt::Checked;
-            emit dimensionValueChanged(_figureName, newValue);
-        });
+        _ui->dimTable->setCellWidget(i, 0, checkBoxWidget);
 
         auto tableItem = new QTableWidgetItem(convertValueTypeToString(currentValue.type));
+        tableItem->setFlags(tableItem->flags() ^ Qt::ItemIsEditable); //readonly for type
         tableItem->setTextAlignment(Qt::AlignCenter);
-        _table->setItem(i, 1, tableItem);
+        _ui->dimTable->setItem(i, 1, tableItem);
+
+        connect(checkBox, &QCheckBox::stateChanged, this, [this, i]() {
+            tableCellChanged(i, 0); }
+        );
 
         for(auto j = 0; j < parameters.size(); j++) {
             tableItem = new QTableWidgetItem(QString::number(parameters[j], 'f', _project->precision()));
             tableItem->setTextAlignment(Qt::AlignCenter);
-            _table->setItem(i, j + 2, tableItem);
+            _ui->dimTable->setItem(i, j + 2, tableItem);
+            if(j == 0) {
+                tableItem->setFlags(tableItem->flags() ^ Qt::ItemIsEditable); //readonly for meas
+            }
         }
     }
-}
-
-void FigureEditDialog::resetFields() {
-    _table->clear();
-    _table->hide();
 }
 
 void FigureEditDialog::applyChanges() {
-    _paramsChanged.insert("figureName", _figureName);
+     _paramsChanged.insert("figureName", _figureName);
+     if(const CurveFigure* curve = dynamic_cast<const CurveFigure*>(_figure)) {
+         QString updatedPoint;
+         for(auto pointIndex : _tableCellChanged) {
+             updatedPoint = "";
+             for(auto i = 0; i < _ui->curveTable->columnCount(); i++) {
+                 updatedPoint += (_ui->curveTable->item(pointIndex, i)->text()) + ',';
+             }
+             updatedPoint.removeLast();
+             _paramsChanged.insert(QString("Point %1").arg(pointIndex + 1), updatedPoint);
+         }
+     } else if(const PointFigure* point = dynamic_cast<const PointFigure*>(_figure)) { 
+         _paramsChanged.insert("x", _ui->pointX->text());
+         _paramsChanged.insert("y", _ui->pointY->text());
+         _paramsChanged.insert("z", _ui->pointZ->text());
+         _paramsChanged.insert("i", _ui->pointI->text());
+         _paramsChanged.insert("j", _ui->pointJ->text());
+         _paramsChanged.insert("k", _ui->pointK->text());
+     } else if(const CircleFigure* circle = dynamic_cast<const CircleFigure*>(_figure)) {
+         _paramsChanged.insert("x", _ui->circleX->text());
+         _paramsChanged.insert("y", _ui->circleY->text());
+         _paramsChanged.insert("z", _ui->circleZ->text());
+         _paramsChanged.insert("i", _ui->circleI->text());
+         _paramsChanged.insert("j", _ui->circleJ->text());
+         _paramsChanged.insert("k", _ui->circleK->text());
+     } else if(const LineFigure* line = dynamic_cast<const LineFigure*>(_figure)) {
+         _paramsChanged.insert("x", _ui->lineX->text());
+         _paramsChanged.insert("y", _ui->lineY->text());
+         _paramsChanged.insert("z", _ui->lineZ->text());
+         _paramsChanged.insert("i", _ui->lineI->text());
+         _paramsChanged.insert("j", _ui->lineJ->text());
+         _paramsChanged.insert("k", _ui->lineK->text());
+         _paramsChanged.insert("Radius", _ui->lineLength->text());
+     } else if(const DimFigure* dimension = dynamic_cast<const DimFigure*>(_figure)) {
+         _paramsChanged.insert("x", _ui->dimX->text());
+         _paramsChanged.insert("y", _ui->dimY->text());
+         _paramsChanged.insert("z", _ui->dimZ->text());
+         _paramsChanged.insert("Ref1", _ui->dimRef1->text());
+         _paramsChanged.insert("Ref2", _ui->dimRef2->text());
 
-    auto figure = _project->findFigure(_figureName);
-    if(auto curveFigure = dynamic_cast<const CurveFigure*>(figure)) {
-        QString updatedPoint;
-        for(auto pointIndex : _rowsChanged) {
-            updatedPoint = "";
-            for(auto i = 0; i < _table->columnCount(); i++) {
-                updatedPoint += (_table->item(pointIndex, i)->text()) + ',';
-            }
-            updatedPoint.removeLast();
-            _paramsChanged.insert(QString("Point %1").arg(pointIndex + 1), updatedPoint);
-        }
-    } else if(auto dimFigure = dynamic_cast<const DimFigure*>(figure)) {
-        for(auto valueIndex : _rowsChanged) {
-            _paramsChanged.insert("Index", QString::number(valueIndex));
-            _paramsChanged.insert("isShow", 
-                QString::number(_table->cellWidget(valueIndex, 0)->findChild<QCheckBox*>()->isChecked()));
-            _paramsChanged.insert("ValueType", convertValueTypeToString(dimFigure->values()[valueIndex].type));
-            _paramsChanged.insert("Measurement", _table->item(valueIndex, 2)->text());
-            _paramsChanged.insert("Nominal", _table->item(valueIndex, 3)->text());
-            _paramsChanged.insert("UT", _table->item(valueIndex, 4)->text());
-            _paramsChanged.insert("LT", _table->item(valueIndex, 5)->text());
-        }
-    }
-
-    if(_paramsChanged.size() > 1) {
-        try {
-            _project->editFigure(_figureName, _paramsChanged);
-        } catch(...) {
-        }
-    }
-    close();
+         QString updatedValue;
+         for(auto valueIndex : _tableCellChanged) {
+             updatedValue = "";
+             updatedValue += "Type:" + convertValueTypeToString(dimension->values()[valueIndex].type) + ",";
+             updatedValue += "Show:";
+             updatedValue += _ui->dimTable->cellWidget(valueIndex, 0)->findChild<QCheckBox*>()->isChecked() ? "true," : "false,";
+             //updatedValue += "Meas:" + _ui->dimTable->item(valueIndex, 2)->text() + ",";
+             updatedValue += "Nom:" + _ui->dimTable->item(valueIndex, 3)->text() + ",";
+             updatedValue += "UT:" + _ui->dimTable->item(valueIndex, 4)->text() + ",";
+             updatedValue += "LT:" + _ui->dimTable->item(valueIndex, 5)->text();
+             _paramsChanged.insert(QString("Dim %1").arg(valueIndex + 1), updatedValue);
+         }
+     } else if(const TextFigure* txt = dynamic_cast<const TextFigure*>(_figure)) {
+         _paramsChanged.insert("text", _ui->txtContent->text());
+         _paramsChanged.insert("x", _ui->txtX->text());
+         _paramsChanged.insert("y", _ui->txtY->text());
+         _paramsChanged.insert("textSize", _ui->zoomSB_2->text());
+         _paramsChanged.insert("imageZoom", _ui->zoomSB->text());
+         _paramsChanged.insert("reference", _ui->txtRef->text());
+     }
+     
+     if(_paramsChanged.size() > 1) {
+         try {
+             _project->editFigure(_figureName, _paramsChanged);
+         } catch(...) {
+         }
+     }
+     close();
 }
 
-void FigureEditDialog::tableValueChanged(int row, int column) {
-    _rowsChanged << row;
+void FigureEditDialog::tableCellChanged(int row, int column) {
+    _tableCellChanged << row;
 }
 
 void FigureEditDialog::figureNameChanged() {
     if(_ui->nameLE->text() != _figureName) {
         _paramsChanged.insert("newName", _ui->nameLE->text());
     }
+}
+
+FigureEditDialog::~FigureEditDialog() {
+    delete _doubleValidator;
+    delete _ui;
 }
