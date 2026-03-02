@@ -38,12 +38,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>6.5.1</QtInstall>
-    <QtModules>core;gui;widgets;printsupport</QtModules>
+    <QtModules>core;gui;widgets;concurrent;printsupport</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.5.1</QtInstall>
-    <QtModules>core;gui;widgets;printsupport</QtModules>
+    <QtModules>core;gui;widgets;concurrent;printsupport</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -127,7 +127,10 @@
     <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
     <ClCompile Include="continuableexception.cpp" />
-    <ClCompile Include="creatingmarkup.cpp" />
+    <ClCompile Include="curveanalyzer.cpp" />
+    <ClCompile Include="figurecreator.cpp" />
+    <ClCompile Include="functionparamsgenerator.cpp" />
+    <ClCompile Include="markupcreator.cpp" />
     <ClCompile Include="curvegraphicswidget.cpp" />
     <ClCompile Include="exporttoFLRdialog.cpp" />
     <ClCompile Include="figureeditdialog.cpp" />
@@ -141,27 +144,36 @@
     <ClCompile Include="plot.cpp" />
     <ClCompile Include="curvelibrary.cpp" />
     <ClCompile Include="functionresults.cpp" />
+    <ClCompile Include="printer.cpp" />
+    <ClCompile Include="printpreviewwindow.cpp" />
     <ClCompile Include="project.cpp" />
     <ClCompile Include="radiuscorrectiondialog.cpp" />
     <ClCompile Include="reportsettings.cpp" />
     <ClCompile Include="reportgenerator.cpp" />
     <ClCompile Include="rotatedialog.cpp" />
     <ClCompile Include="saveprojectwindow.cpp" />
+    <ClCompile Include="screenshotcreator.cpp" />
     <ClCompile Include="shiftdialog.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="turbinewindow.cpp" />
     <ClCompile Include="widthedgewindow.cpp" />
+    <ClInclude Include="figurecreator.h" />
+    <ClInclude Include="functionparamsgenerator.h" />
+    <ClInclude Include="screenshotcreator.h" />
     <QtMoc Include="rotatedialog.h" />
     <QtMoc Include="shiftdialog.h" />
     <QtMoc Include="macrosmanager.h" />
     <QtMoc Include="macroswindow.h" />
     <QtMoc Include="alignmentdialog.h" />
     <QtMoc Include="calculatecurvedialog.h" />
-    <QtMoc Include="creatingmarkup.h" />
+    <ClInclude Include="markupcreator.h" />
     <QtMoc Include="partdatadialog.h" />
     <ClInclude Include="continuableexception.h" />
     <QtMoc Include="inserttextdialog.h" />
-    <ClInclude Include="reportsettings.h" />
+    <QtMoc Include="printer.h" />
+    <QtMoc Include="printpreviewwindow.h" />
+    <ClInclude Include="curveanalyzer.h" />
+    <QtMoc Include="reportsettings.h" />
     <QtMoc Include="exporttoFLRdialog.h" />
     <ClInclude Include="reportgenerator.h" />
     <QtMoc Include="saveprojectwindow.h" />
@@ -215,6 +227,7 @@
     <QtUic Include="loadingcloudwindow.ui" />
     <QtUic Include="macroswindow.ui" />
     <QtUic Include="partdatadialog.ui" />
+    <QtUic Include="printpreviewwindow.ui" />
     <QtUic Include="radiuscorrectiondialog.ui" />
     <QtUic Include="mergepointcloudswindow.ui" />
     <QtUic Include="rotatedialog.ui" />

@@ -205,16 +205,23 @@
     </property>
     <addaction name="actionText"/>
    </widget>
+   <widget class="QMenu" name="menuReport">
+    <property name="title">
+     <string>Print</string>
+    </property>
+    <addaction name="actionShowPrintViewer"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuScreen"/>
+   <addaction name="menuConstruct"/>
    <addaction name="menuDimensions"/>
    <addaction name="menuCurve"/>
    <addaction name="menuTransform"/>
    <addaction name="menuAirfoil"/>
    <addaction name="menuCalculate"/>
    <addaction name="menuMacros"/>
-   <addaction name="menuConstruct"/>
+   <addaction name="menuReport"/>
   </widget>
   <action name="actionAssignTolerancesToNominal">
    <property name="text">
@@ -489,6 +496,11 @@
   <action name="actionText">
    <property name="text">
     <string>Text/Image</string>
+   </property>
+  </action>
+  <action name="actionShowPrintViewer">
+   <property name="text">
+    <string>Show Print Viewer</string>
    </property>
   </action>
  </widget>
