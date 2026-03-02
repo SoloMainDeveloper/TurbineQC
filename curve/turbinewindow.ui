@@ -31,617 +31,6 @@
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="3" column="4">
-    <widget class="QPushButton" name="closeButton">
-     <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="text">
-      <string>Close</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <spacer name="horizontalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="2" colspan="3">
-    <widget class="QGroupBox" name="parameters">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>235</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>520</width>
-       <height>260</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QGroupBox {
-	
-	background-color: rgb(255, 255, 255);
-}</string>
-     </property>
-     <property name="title">
-      <string>Airfoil parameters</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_8">
-      <item row="0" column="0">
-       <widget class="QListWidget" name="paramList">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>190</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="movement">
-         <enum>QListView::Static</enum>
-        </property>
-        <property name="sortingEnabled">
-         <bool>false</bool>
-        </property>
-        <item>
-         <property name="text">
-          <string>Position max. thickness (XD)</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Position max. thickness(YD)</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Chord length</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Max. Thickness (D)</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>LE Thickness</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>TE Thickness</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>LE Radius</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>TE Radius</string>
-         </property>
-         <property name="checkState">
-          <enum>Unchecked</enum>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QGroupBox" name="paramGroupBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>270</width>
-          <height>205</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QGroupBox {
-	border: 0px;
-}</string>
-        </property>
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="1" column="1">
-          <widget class="QPushButton" name="calculateButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>200</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="text">
-            <string>Calculate nominals</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="0">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QTabWidget" name="paramsTab">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <property name="tabBarAutoHide">
-            <bool>false</bool>
-           </property>
-           <widget class="QWidget" name="maxWidthXTab">
-            <attribute name="title">
-             <string>Max WidthX</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalMaxWidthX">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolMaxWidthX"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolMaxWidthX"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="maxWidthYTab">
-            <attribute name="title">
-             <string>Max WidthY</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalMaxWidthY">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolMaxWidthY"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolMaxWidthY"/>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="chordLengthTab">
-            <attribute name="title">
-             <string>Chord Length</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalChordLength">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolChordLength"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolChordLength"/>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="maxWidthTab">
-            <attribute name="title">
-             <string>MaxWidth</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_12">
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolMaxWidth"/>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalMaxWidth">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolMaxWidth"/>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="widthLETab">
-            <attribute name="title">
-             <string>Width LE</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_13">
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolWidthLE"/>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalWidthLE">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_15">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_26">
-               <property name="text">
-                <string>At</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLineEdit" name="atWidthLE">
-               <property name="text">
-                <string>1</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolWidthLE"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_16">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="widthTETab">
-            <attribute name="title">
-             <string>Width TE</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_14">
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalWidthTE">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolWidthTE"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_27">
-               <property name="text">
-                <string>At</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolWidthTE"/>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLineEdit" name="atWidthTE">
-               <property name="text">
-                <string>1</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="radiusLETab">
-            <attribute name="title">
-             <string>Radius LE</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_15">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_20">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalRadiusLE">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_21">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolRadiusLE"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_22">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolRadiusLE"/>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="radiusTETab">
-            <attribute name="title">
-             <string>Radius TE</string>
-            </attribute>
-            <layout class="QGridLayout" name="gridLayout_16">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_23">
-               <property name="text">
-                <string>Nominal</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="nominalRadiusTE">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_24">
-               <property name="text">
-                <string>Upper Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="upperTolRadiusTE"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_25">
-               <property name="text">
-                <string>Lower Tol.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lowerTolRadiusTE"/>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QPushButton" name="settingsButton">
-     <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="text">
-      <string>Settings</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="0" column="0" rowspan="2" colspan="2">
     <widget class="QGroupBox" name="profilesNominalMeasured">
      <property name="minimumSize">
@@ -942,283 +331,6 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="3">
-    <widget class="QPushButton" name="runButton">
-     <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="text">
-      <string>ОК</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="preparePointsGroupBox">
-     <property name="minimumSize">
-      <size>
-       <width>396</width>
-       <height>130</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>130</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QGroupBox {
-	
-	background-color: rgb(255, 255, 255);
-}</string>
-     </property>
-     <property name="title">
-      <string>Preparation of measured data</string>
-     </property>
-     <widget class="QCheckBox" name="needRemoveSimilar">
-      <property name="geometry">
-       <rect>
-        <x>105</x>
-        <y>58</y>
-        <width>157</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Remove equal points</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="needSort">
-      <property name="geometry">
-       <rect>
-        <x>105</x>
-        <y>31</y>
-        <width>157</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sort points</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="needUse3DVectors">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>105</x>
-        <y>112</y>
-        <width>157</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Use 3D vectors for comp.</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="needRadiusCorrection">
-      <property name="geometry">
-       <rect>
-        <x>105</x>
-        <y>85</y>
-        <width>157</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Radius compensation</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="needPreparePoints">
-      <property name="geometry">
-       <rect>
-        <x>12</x>
-        <y>31</y>
-        <width>87</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Pre-process</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="limitForEqualPoints">
-      <property name="geometry">
-       <rect>
-        <x>283</x>
-        <y>58</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>0.02</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="upperValue">
-      <property name="geometry">
-       <rect>
-        <x>283</x>
-        <y>85</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>1</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lowerValue">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>283</x>
-        <y>112</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>1</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-   </item>
-   <item row="2" column="2" colspan="3">
-    <widget class="QTabWidget" name="reportTab">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>145</height>
-      </size>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="singleReport">
-      <attribute name="title">
-       <string>Single report</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="needPrintTemplate">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Print with template</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" rowspan="3">
-        <widget class="QListWidget" name="reportList">
-         <item>
-          <property name="text">
-           <string>AirfoilReport1.html</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="commentLabel">
-         <property name="text">
-          <string>Report comment:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLineEdit" name="comment"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="multipleReport">
-      <attribute name="title">
-       <string>Summary report</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="2" column="1">
-        <widget class="QPushButton" name="createReportButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Create summary report</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLineEdit" name="profileNames">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="label">
-         <property name="maximumSize">
-          <size>
-           <width>460</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Double click on profile name to add to the list</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
    <item row="0" column="2" colspan="3">
     <widget class="QTabWidget" name="formTab">
      <property name="maximumSize">
@@ -1339,12 +451,37 @@
          </property>
          <item>
           <property name="text">
+           <string>No fit</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Whole profile (LSQ)</string>
           </property>
          </item>
          <item>
           <property name="text">
            <string>Profile without LE/TE (LSQ)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Profile without TE (LSQ)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2 points at 10%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Fit in Tol. Band</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Min. Form</string>
           </property>
          </item>
         </widget>
@@ -1359,7 +496,7 @@
          </property>
          <item>
           <property name="text">
-           <string>No axis</string>
+           <string>Axis left/down</string>
           </property>
          </item>
          <item>
@@ -1369,7 +506,7 @@
          </item>
          <item>
           <property name="text">
-           <string>Axis left/down</string>
+           <string>No axis</string>
           </property>
          </item>
         </widget>
@@ -1481,7 +618,7 @@
         </widget>
        </item>
        <item row="1" column="5" colspan="2">
-        <widget class="QCheckBox" name="needMaxDiam">
+        <widget class="QCheckBox" name="needMaxDia">
          <property name="text">
           <string>Create and show Max. Diam.</string>
          </property>
@@ -1633,7 +770,7 @@
        </property>
        <item>
         <property name="text">
-         <string>No axis</string>
+         <string>Axis left/down</string>
         </property>
        </item>
        <item>
@@ -1643,7 +780,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Axis left/down</string>
+         <string>No axis</string>
         </property>
        </item>
       </widget>
@@ -1816,7 +953,7 @@
        </property>
        <item>
         <property name="text">
-         <string>No axis</string>
+         <string>Axis left/down</string>
         </property>
        </item>
        <item>
@@ -1826,7 +963,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Axis left/down</string>
+         <string>No axis</string>
         </property>
        </item>
       </widget>
@@ -2183,6 +1320,1375 @@
        </item>
       </widget>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="2" colspan="3">
+    <widget class="QGroupBox" name="parameters">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>235</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>520</width>
+       <height>260</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+	
+	background-color: rgb(255, 255, 255);
+}</string>
+     </property>
+     <property name="title">
+      <string>Airfoil parameters</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="0" column="0">
+       <widget class="QListWidget" name="paramList">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>190</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="movement">
+         <enum>QListView::Static</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>false</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>Max. Thickness (D)</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Position max. thickness (XD)</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Position max. thickness (YD)</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Center of mass (XS)</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Center of mass (YS)</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Chord angle</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Chord length</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LE Thickness</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TE Thickness</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LE Radius</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TE Radius</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ShiftX</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ShiftY</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Turn</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MaxX</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MinX</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MaxY</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MinY</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Position size</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>DistX</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>DistY</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form LE Min</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form TE Min</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Convex Min</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Concave Min</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form LE Max</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form TE Max</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Convex Max</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Concave Max</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>LE deviation</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TE deviation</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Thickness from LE </string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form LE MinMax</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form TE MinMax</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Convex MinMax</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Form Concave MinMax</string>
+         </property>
+         <property name="checkState">
+          <enum>Unchecked</enum>
+         </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="paramGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>270</width>
+          <height>205</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox {
+	border: 0px;
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="1" column="1">
+          <widget class="QPushButton" name="calculateButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="text">
+            <string>Calculate nominals</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QTabWidget" name="paramsTab">
+           <property name="currentIndex">
+            <number>15</number>
+           </property>
+           <property name="tabBarAutoHide">
+            <bool>false</bool>
+           </property>
+           <widget class="QWidget" name="maxWidthTab">
+            <attribute name="title">
+             <string>MaxWidth</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_12">
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolMaxWidth"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalMaxWidth">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolMaxWidth"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="maxWidthXTab">
+            <attribute name="title">
+             <string>Max WidthX</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalMaxWidthX">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolMaxWidthX"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolMaxWidthX"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="maxWidthYTab">
+            <attribute name="title">
+             <string>Max WidthY</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalMaxWidthY">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolMaxWidthY"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolMaxWidthY"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="centerMassX">
+            <attribute name="title">
+             <string>Center Mass X</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="centerMassY">
+            <attribute name="title">
+             <string>Center Mass Y</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="chordAngleTab">
+            <attribute name="title">
+             <string>Chord Angle</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="chordLengthTab">
+            <attribute name="title">
+             <string>Chord Length</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalChordLength">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolChordLength"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolChordLength"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="widthLETab">
+            <attribute name="title">
+             <string>Width LE</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_13">
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolWidthLE"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalWidthLE">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>At</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="atWidthLE">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolWidthLE"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="widthTETab">
+            <attribute name="title">
+             <string>Width TE</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_14">
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalWidthTE">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolWidthTE"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_27">
+               <property name="text">
+                <string>At</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolWidthTE"/>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="atWidthTE">
+               <property name="text">
+                <string>1</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="radiusLETab">
+            <attribute name="title">
+             <string>Radius LE</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_15">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalRadiusLE">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolRadiusLE"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolRadiusLE"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="radiusTETab">
+            <attribute name="title">
+             <string>Radius TE</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_16">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalRadiusTE">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolRadiusTE"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolRadiusTE"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="shiftXTab">
+            <attribute name="title">
+             <string>Shift X</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="shiftYTab">
+            <attribute name="title">
+             <string>Shift Y</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="turnTab">
+            <attribute name="title">
+             <string>Turn</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="maxXTab">
+            <attribute name="title">
+             <string>Max X</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="minXTab">
+            <attribute name="title">
+             <string>Min X</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_17">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_28">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalMinX">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_29">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolMinX"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_30">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolMinX"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="maxYTab">
+            <attribute name="title">
+             <string>Max Y</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="minYTab">
+            <attribute name="title">
+             <string>Min Y</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="positionSizeTab">
+            <attribute name="title">
+             <string>Position Size</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="distXTab">
+            <attribute name="title">
+             <string>Dist X</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="distYTab">
+            <attribute name="title">
+             <string>Dist Y</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formLEMinTab">
+            <attribute name="title">
+             <string>Form LE Min</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formTEMinTab">
+            <attribute name="title">
+             <string>Form TE Min</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConvexMinTab">
+            <attribute name="title">
+             <string>Form Convex Min</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConcaveMinForm">
+            <attribute name="title">
+             <string>Form Concave Min</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formLEMaxTab">
+            <attribute name="title">
+             <string>Form LE Max</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formTEMaxTab">
+            <attribute name="title">
+             <string>Form TE Max</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConvexMaxTab">
+            <attribute name="title">
+             <string>Form Convex Max</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConcaveMaxTab">
+            <attribute name="title">
+             <string>Form Concave Max</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="deviationLETab">
+            <attribute name="title">
+             <string>LE deviation</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="deviationTETab">
+            <attribute name="title">
+             <string>TE deviation</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="thiknessFromLETab">
+            <attribute name="title">
+             <string>Thickness from LE</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formLEMinMaxTab">
+            <attribute name="title">
+             <string>Form LE MinMax</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formTEMinMaxTab">
+            <attribute name="title">
+             <string>Form TE MinMax</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConvexMinMaxTab">
+            <attribute name="title">
+             <string>Form Convex MinMax</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="formConcaveMinMaxTab">
+            <attribute name="title">
+             <string>Form Concave MinMax</string>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="preparePointsGroupBox">
+     <property name="minimumSize">
+      <size>
+       <width>396</width>
+       <height>130</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>130</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+	
+	background-color: rgb(255, 255, 255);
+}</string>
+     </property>
+     <property name="title">
+      <string>Preparation of measured data</string>
+     </property>
+     <widget class="QCheckBox" name="needRemoveSimilar">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>58</y>
+        <width>157</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Remove equal points</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="needSort">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>31</y>
+        <width>157</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Sort points</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="needUse3DVectors">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>112</y>
+        <width>157</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use 3D vectors for comp.</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="needRadiusCorrection">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>85</y>
+        <width>157</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Radius compensation</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="needPreparePoints">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>31</y>
+        <width>87</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Pre-process</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="limitForEqualPoints">
+      <property name="geometry">
+       <rect>
+        <x>283</x>
+        <y>58</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.02</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="upperValue">
+      <property name="geometry">
+       <rect>
+        <x>283</x>
+        <y>85</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lowerValue">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>283</x>
+        <y>112</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item row="2" column="2" colspan="3">
+    <widget class="QTabWidget" name="reportTab">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>145</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="singleReport">
+      <attribute name="title">
+       <string>Single report</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="needPrintTemplate">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Print with template</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" rowspan="3">
+        <widget class="QListWidget" name="reportList">
+         <item>
+          <property name="text">
+           <string>AirfoilReport1.html</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="commentLabel">
+         <property name="text">
+          <string>Report comment:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="comment"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="multipleReport">
+      <attribute name="title">
+       <string>Summary report</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="2" column="1">
+        <widget class="QPushButton" name="createReportButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Create summary report</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLineEdit" name="profileNames">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>460</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Double click on profile name to add to the list</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="settingsButton">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="text">
+      <string>Settings</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="2">
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="3">
+    <widget class="QPushButton" name="runButton">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="text">
+      <string>ОК</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="4">
+    <widget class="QPushButton" name="closeButton">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="text">
+      <string>Close</string>
+     </property>
     </widget>
    </item>
   </layout>

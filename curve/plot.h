@@ -1,7 +1,7 @@
 #pragma once
 #include "curve/pch.h"
 #include "curve/project.h"
-#include "curve/reportSettings.h"
+#include "curve/reportsettings.h"
 
 class Plot : public QCustomPlot {
     Q_OBJECT
@@ -18,11 +18,13 @@ public:
     void setProject(Project *project);
     void rescale(Position position);
     QImage getScreenshot(int width, int height, ReportSettings::Axis axisType);
-    void createFigureWithoutReplot(const Figure *figure);
-    void clearFiguresFromLayer(const QString &layerName);
+    void setGridVisible(bool enabled);
+    void setAxesVisible(bool enabled);
+    void setBuffering(bool enabled);
+    void unloadBuffer();
+    void loadFigure(const Figure *figure);
+    void clearLayer(const QString &layerName);
     Point centerPoint() const;
-    double pointRadius();
-    double defaultFontSize() const;
     const Figure* currentFigure() const;
     const Point pixelToCoord(const Point &pixel) const;
     const Point coordToPixel(const Point &coord) const;
@@ -58,36 +60,39 @@ signals:
     void currentFigureChanged(const QString &name);
     void figureEditDialogRequested(const QString figureName);
     void rescaled(double scaleFactor, const Point &center);
-    void projectMouseMoved(const Point pos);
     void projectMousePressed(const Point pos);
 
 private:
-    class Curve : public QCPCurve {
+    
+    class QCPItemTable final : public QCPItemRect {
     public:
-        Curve(Plot *plot, const CurveFigure *curveFigure, QCPAxis *keyAxis, QCPAxis *valueAxis);
-        void requestConnectPoints();
-        void requestShowPoints();
-        void requestShowVectors();
-        void requestShowNumbering();
-        void requestShowTolerances();
-        void requestShowDeviations();
-        void requestShowNumericalDeviations();
-        void requestConnectDeviations();
+        QCPItemTable(QCustomPlot *plot, const QString &name);
+        void addData(const QString &name, const QString &value);
+        void setIsCurrentFigure(bool isCurrentFigure);
+        void setOnlyLabel(bool isOnlyLabel);
+        void setColor(const QColor &color);
+        void draw(QCPPainter *painter) override;
+
+        QCPItemPosition * const targetPosition;
+        QCPItemPosition * const basePosition;
 
     private:
-        Plot *_plot;
-        const CurveFigure *_curveFigure;
-        const int _scatterSize = 3;
-        const int _scatterSkip = 0;
+        QVector<std::pair<QString, QString>> _data;
+        QString _name;
+        QFont _font;
+        bool _isCurrentFigure = false;
+        bool _isOnlyLabel = false;
+        QColor _color;
     };
+
 
     void updateFigure(const QString &figureName);
     void deleteFigure(const QString &figureName);
 
-    void addCurveLayer(const CurveFigure &curveFigure);
-    void addPointLayer(const PointFigure &pointFigure);
-    void addLineLayer(const LineFigure &lineFigure);
-    void addCircleLayer(const CircleFigure &circleFigure);
+    void addCurveLayer(const CurveFigure *curveFigure);
+    void addPointLayer(const PointFigure *pointFigure);
+    void addLineLayer(const LineFigure *lineFigure);
+    void addCircleLayer(const CircleFigure *circleFigure);
     void addDimLayer(const DimFigure *dimFigure);
     void addTextLayer(const TextFigure *textFigure);
 
@@ -98,28 +103,30 @@ private:
     void drawText(const TextFigure *textFigure);
     void drawImage(const TextFigure *textFigure);
 
-    void calculateCircleBox(const CircleFigure &circleFigure, QCPItemEllipse *circle);
-    void replotTimerTimeout();
     LineFigure* createLineFigure(const QString &name, const Point &startPoint, const Point &endPoint, const QCPLineEnding &head = QCPLineEnding::esNone, const QCPLineEnding &tail = QCPLineEnding::esNone, const QColor &color = Qt::black);
     const Point findNearestFigurePoint(const Point &point, const Figure* figure);
     const QHash<double, double> intersectionLineAndRect(const double k, const double b, const QRectF &rect) const;
     QPointF toQPointF(const Point &point) const;
     const QString getTextByValueType(const DimFigure::ValueType &valueType) const;
 
+    void setCurveDecoration(const CurveFigure *curveFigure, QCPCurve *curve);
+    void drawCurve(const CurveFigure *curveFigure);
+    void drawCurveVectors(const CurveFigure *curveFigure);
+    void drawCurveNumbering(const CurveFigure *curveFigure);
+    void drawCurveTolerances(const CurveFigure *curveFigure);
+    void drawCurveDeviations(const CurveFigure *curveFigure);
+
     void rescaleToCenter(double xMin, double xMax, double yMin, double yMax);
     void rescaleToRight(double xMin, double xMax, double yMin, double yMax);
     void rescaleToLeft(double xMin, double xMax, double yMin, double yMax);
 
     const double _labelOffsetPx = 5;
-    const int _columnWidthPx = 130;
-    const int _rowHeightPx = 20;
-    const int _separatorHeightPx = 3;
     const double _penWidth = 1;
     const double _currentFigurePenWidth = 2;
-    const double _minPointRadius = 0.1;
-    const double _maxPointRadius = 0.25;
+
     const int _offsetCalloutPx = 5;
-    const double _defaultScaleFactor = 1.5511657710909;
+    const double _defaultMagnitude = 1.5511657710909;
+    const double _defaultScaleFactor = 1.35;
     const double _magnificationFactor = 1.25;
     const double _reductionFactor = 0.8;
     const double _ratioXToY = 7.0 / 5;
@@ -127,10 +134,11 @@ private:
     double _magnitude = 1;
     double _defaultFontSize = 0.25;
     bool _calloutRendering = false;
-    bool _calloutFromProject = false;
+
+    bool _isBuffering = false;
+    QSet<QString> _buffer;
 
     Project *_project;
-    QTimer *_replotTimer;
     DimFigure *_calloutDimension = nullptr;
 
     void onItemClicked(QCPAbstractItem *item, QMouseEvent *event);
@@ -140,5 +148,5 @@ private:
     void onMouseWheel(QWheelEvent *event);
     void onMouseMove(QMouseEvent *event);
     void onMousePress(QMouseEvent *event);
-    void onMouseRelease(QMouseEvent *event);
+
 };

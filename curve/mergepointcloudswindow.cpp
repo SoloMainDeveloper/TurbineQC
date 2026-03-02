@@ -22,7 +22,7 @@ void MergePointCloudsWindow::windowInitialization() {
     auto figures = _project->figures();
     _curveGraphics->initialization();
 
-    if(figures.length() != 0) {
+    if(figures.size() != 0) {
         for(auto figure : figures) {
             if(dynamic_cast<CurveFigure*>(figure)) {
                 _ui->firstListWidgetOfCurves->addItem(figure->name());

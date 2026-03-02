@@ -1,6 +1,7 @@
 #pragma once
 
 #include "figure.h"
+#include <QElapsedTimer>
 
 class Project : public QObject {
     Q_OBJECT
@@ -9,7 +10,7 @@ public:
     Project() = default;
     virtual ~Project();
 
-    const QList<Figure*>& figures() const;
+    const QMap<QString, Figure*>& figures() const;
     const QList<CurveFigure*>& curveFigures() const;
     const QList<DimFigure*>& dimFigures() const;
     const QList<TextFigure*>& textFigures() const;
@@ -20,12 +21,13 @@ public:
     void resetVisibilityForAllFigures();
     void setCurrentFigure(const QString &currentFigureName);
     int precision() const;
-    QStringList findFigureChildren(const QString &name);
     bool confirmRemoveFigure(const QString& figureName);
 
     double scaleFactor() const;
-    const Point* centerPoint() const;
-
+    Point centerPoint() const;
+    void setProjectPath(const QString &path);
+    const QString projectPath();
+    
     const QString reportTitle();
     const QString description();
     const QString drawing();
@@ -40,6 +42,9 @@ public:
     const QString batch();
     const QString supplier();
     const QString revision();
+
+    QString getFreeName(QString startsWith, bool firstWithNumber = true, QString separator = "");
+    void addOperationtime(QString operation, quint64 time);
 
 public slots:
     void insertFigure(Figure* figure);
@@ -58,7 +63,7 @@ public slots:
     void requestFigureEditDialog(const QString figureName);
     void changeCurvePoints(const QString curveName, QVector<CurvePoint> newPoints);
     void changeFigureColor(const QString figureName, QColor color);
-    void changeScale(double scaleFactor, const Point &center);
+    void changeScale(double scaleFactor, const Point center);
     void clear();
     void shiftFigure(QString figureName, double x, double y, double z);
     void shiftFigure(QString figureName, QString x, QString y, QString z);
@@ -71,8 +76,6 @@ public slots:
         QString machine, QString tool, QString fixturing, QString batch, QString supplier, QString revision, bool needShowWindowWhenMacroRuns);
     void constructText(QString name, QString text, double x, double y, double textSize, QString reference,
         double imageWidth, double imageHeight, double imageZoom);
-    void plotMouseMoved(const Point pos) {};
-    void plotMousePressed(const Point pos);
     Point chooseCoordsByClick();
 
 signals:
@@ -98,17 +101,26 @@ signals:
     void trackMousePositionRequested();
     void raiseMainWindow();
     void mousePressed(const Point pos);
+    void projectPathChanged(const QString &projectPath);
 
 private:
     Figure* findFigureMutable(const QString &name);
-
+    void initiateParentChildReference(Figure *figure);
+    void attachChildToParent(Figure *child, QString parentName);
+    void detachChildFromParent(Figure *child, QString parentName);
+    void updateParent(Figure *child, QString newParent1, QString newParent2 = QString());
     QString txtFigureToText(QString txtFigure) const;
 
-    QList<Figure*> _figures;
+    QMap<QString, QList<quint64>> operationTimes;
+    std::mutex mtx;
+
+    QMap<QString, Figure*> _figures;
     QString _currentFigureName = nullptr;
+    QMap<QString, QList<Figure*>> _lostParents;
     double _scaleFactor = 1.0;
     int _precision = 3;
-    const Point *_centerPoint = new Point();
+    Point _centerPoint;
+    QString _projectPath = nullptr;
     
     QString _reportTitle = nullptr;
     QString _description = nullptr;
@@ -124,6 +136,4 @@ private:
     QString _batch = nullptr;
     QString _supplier = nullptr;
     QString _revision = nullptr;
-
-    Point _mousePos;
 };
