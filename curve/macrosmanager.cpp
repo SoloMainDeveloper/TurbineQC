@@ -10,7 +10,7 @@ bool MacrosManager::_isRecording = false;
 QStringList* MacrosManager::_macros = new QStringList();
 
 MacrosManager& MacrosManager::instance() {
-    static MacrosManager instance;  
+    static MacrosManager instance;
     return instance;
 }
 
@@ -19,6 +19,7 @@ void MacrosManager::load() {
     if(!path.isEmpty()) {
         auto macrosType = macrosTypeFromString(path.split('.').last().toUpper());
         auto operations = translate(macrosType, FileSystem::readFile(path));
+        //auto validated = validateOperations(operations);
         auto isCurrentlyRecording = isRecording();
         setRecording(true);
         for(auto i = 0; i < operations->size(); i++) {
@@ -31,7 +32,8 @@ void MacrosManager::load() {
 QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::translate(MacrosType type, const QString &operationText) {
     auto readyOperations = new QList<QPair<Operation, QMap<QString, QString>>>();
     switch(type) {
-        case MacrosType::CRM: {
+        case MacrosType::CRM:
+        {
             auto operations = MacrosTranslator::splitCRM(operationText);
             for(auto i = 0; i < operations.size(); i++) {
                 if(operations.at(i).isEmpty()) continue;
@@ -43,7 +45,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         params.insert("filepath", operationText[0].split(',')[2]);
                         readyOperations->push_back({ Operation::LoadProject, params });
                         break;
-                    case MacrosTranslator::PartData: {
+                    case MacrosTranslator::PartData:
+                    {
                         auto firstLine = operationText[0].split(',');
                         auto secondLine = operationText[1].split(',');
 
@@ -64,7 +67,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::PartData, params });
                         break;
                     }
-                    case MacrosTranslator::CollectCross: {
+                    case MacrosTranslator::CollectCross:
+                    {
                         auto firstLine = operationText[0].split(',');
 
                         params.insert({ { "firstName", firstLine[2] },
@@ -75,7 +79,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::MergeScans, params });
                         break;
                     }
-                    case MacrosTranslator::Regen2D: {
+                    case MacrosTranslator::Regen2D:
+                    {
                         auto firstLine = operationText[0].split(',');
                         params.insert({ { "figureName", firstLine[2] },
                             { "newFigureName", firstLine[3] },
@@ -87,7 +92,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::RegenerateCurve, params });
                         break;
                     }
-                    case MacrosTranslator::Alignment: {
+                    case MacrosTranslator::Alignment:
+                    {
                         params.insert("axis", "+X");
                         for(auto j = 1; j < operationText.size() - 1; j++) {
                             auto line = operationText[j].split(',');
@@ -104,7 +110,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::Alignment, params });
                         break;
                     }
-                    case MacrosTranslator::ShiftCurves1: { 
+                    case MacrosTranslator::ShiftCurves1:
+                    {
                         auto firstLine = operationText[0].split(',');
                         params.insert({ { "figureName", firstLine[5] },
                             { "x", firstLine[2] },
@@ -113,7 +120,8 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::ShiftFigure, params });
                         break;
                     }
-                    case MacrosTranslator::RotateCurves1: {
+                    case MacrosTranslator::RotateCurves1:
+                    {
                         auto firstLine = operationText[0].split(',');
                         params.insert({ { "figureName", firstLine[7] },
                             { "angle", firstLine[3] },
@@ -123,50 +131,74 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::RotateFigure, params });
                         break;
                     }
-                    case MacrosTranslator::BestFit2D: { //TODO: with constraints // FULL TODO
+                    case MacrosTranslator::BestFit2D:
+                    {
                         auto firstLine = operationText[1].split(',');
                         auto secondLine = operationText[2].split(',');
                         auto thirdLine = operationText[3].split(',');
                         params.insert({ { "resultName", firstLine[2] },
                             { "nominal", firstLine[3] },
                             { "measured", firstLine[4] },
-                            //{ "method", secondLine[6] },
-                            //{ "minimize"] == "Y",
-                            { "closed",  secondLine[2] == "1" ? "Y" : "N" },
+                            { "bestFitLineName", firstLine[2] + "_BF" },
+                            { "method", secondLine[6] == "0" ? "curve" : "point" },
+                            { "minimize", "Y" },
+                            { "closed", secondLine[2] == "1" ? "Y" : "N" },
                             { "xshift", secondLine[3] == "1" ? "Y" : "N" },
-                            { "yshift", secondLine[4] == "1" ? "Y" : "N"},
-                            { "rotation", secondLine[5] == "1" ? "Y" : "N"},
-                            //false, thirdLine[2]
-                            ////{ "xshiftfrom", thirdLine[3] },
-                            ////{ "xshiftto", thirdLine[4] },
-                            //false, thirdLine[5]
-                            ////{ "yshiftfrom", thirdLine[6] },
-                            ////{ "yshiftto", thirdLine[7] },
-                            //false, thirdLine[8]
-                            ////{ "rotationfrom", thirdLine[9] },
-                            ////{ "rotationto", thirdLine[10] }
+                            { "yshift", secondLine[4] == "1" ? "Y" : "N" },
+                            { "rotation", secondLine[5] == "1" ? "Y" : "N" },
+                            { "needHconstraint", thirdLine.length() > 2 && thirdLine[2] == "1" ? "Y" : "N" },
+                            { "xshiftfrom", thirdLine.length() > 3 && thirdLine[2] == "1" ? thirdLine[3] : 0 },
+                            { "xshiftto", thirdLine.length() > 4 && thirdLine[2] == "1" ? thirdLine[4] : 0 },
+                            { "needVconstraint", thirdLine.length() > 5 && thirdLine[5] == "1" ? "Y" : "N" },
+                            { "yshiftfrom", thirdLine.length() > 6 && thirdLine[5] == "1" ? thirdLine[6] : 0 },
+                            { "yshiftto", thirdLine.length() > 7 && thirdLine[5] == "1" ? thirdLine[7] : 0 },
+                            { "needRconstraint", thirdLine.length() > 8 && thirdLine[8] == "1" ? "Y" : "N" },
+                            { "rotationfrom", thirdLine.length() > 9 && thirdLine[8] == "1" ? thirdLine[9] : 0 },
+                            { "rotationto", thirdLine.length() > 10 && thirdLine[8] == "1" ? thirdLine[10] : 0 }
                             });
-
                         readyOperations->push_back({ Operation::BestFit, params });
                         break;
                     }
                     case MacrosTranslator::Airfoil:
+                    {
+                        auto lines = QList<QStringList>();
+                        for(int i = 0; i < operationText.size(); i++)
+                            lines.push_back(operationText[i].split(','));
+                        params.insert(ReportSettings::translateAirfoilSettings(lines));
+                        readyOperations->push_back({ Operation::CreateReport, params });
                         break;
+                    }
                     case MacrosTranslator::InsertBFPos:
+                    {
+                        auto firstLine = operationText[1].split(',');
+                        auto secondLine = operationText[2].split(',');
+                        params.insert({ { "showX", firstLine[2] == "1" ? "true" : "false" },
+                            { "showY", firstLine[3] == "1" ? "true" : "false" },
+                            { "showR", firstLine[4] == "1" ? "true" : "false" },
+                            { "figureName", secondLine[2] },
+                            { "parentName", secondLine[9] },
+                            { "x", secondLine[3] },
+                            { "y", secondLine[4] },
+                            { "z", secondLine[5] }
+                            });
+                        readyOperations->push_back({ Operation::InsertBestFitPosition, params });
                         break;
-                    case MacrosTranslator::ShowOptions: {
+                    }
+                    case MacrosTranslator::ShowOptions:
+                    {
                         auto firstLine = operationText[0].split(',');
+                        auto secondLine = operationText[1].split(',');
                         auto thirdLine = operationText[2].split(',');
                         auto fourthLine = operationText[3].split(',');
 
                         params.insert({ { "figureName", firstLine[2] },
+                            { "isVisible", secondLine[2] == "1" ? "true" : "false" },
                             { "showPoints", thirdLine[2] == "1" ? "true" : "false" },
-                            { "connectPoints", thirdLine[3] == "1" ? "true" : "false"    },
+                            { "connectPoints", thirdLine[3] == "1" ? "true" : "false" },
                             { "showVectors", thirdLine[4] == "1" ? "true" : "false" },
                             { "showNumbering", thirdLine[5] == "1" ? "true" : "false" },
                             { "numberingInterval", thirdLine[6] },
                             { "closed", thirdLine[7] == "1" ? "true" : "false" },
-
                             { "amplification", fourthLine[2] },
                             { "showTolerances", fourthLine[3] == "1" ? "true" : "false" },
                             { "showDeviations", fourthLine[7] == "1" ? "true" : "false" },
@@ -176,15 +208,37 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         break;
                     }
                     case MacrosTranslator::EditDim:
+                    {
+                        for(auto j = 5; j < operationText.size() - 1; j++) {
+                            auto str = operationText[j].split(',');
+                            QString updatedValue = "";
+                            updatedValue += "Show:";
+                            updatedValue += str[2] == "1" ? "true," : "false,";
+                            updatedValue += "Nom:" + str[3] + ",";
+                            updatedValue += "UT:" + str[4] + ",";
+                            updatedValue += "LT:" + str[5];
+                            params.insert(QString("Dim %1").arg(j - 4), updatedValue);
+                        }
+
+                        auto secondLine = operationText[1].split(',');
+                        params.insert({ { "figureName", secondLine[2] },
+                            { "x", secondLine[3] },
+                            { "y", secondLine[4] },
+                            { "z", secondLine[5] },
+                            { "Ref1", secondLine[6] },
+                            { "Ref2", secondLine.size() >= 8 ? secondLine[7] : QString() },
+                            { "newColor", operationText[4].split(',')[2] } });
+                        readyOperations->push_back({ Operation::EditFigure, params });
                         break;
+                    }
                     case MacrosTranslator::SaveFLR:
                     {
                         auto firstLine = operationText[0].split(',');
                         params.insert("filepath", firstLine[2]);
                         //params.insert("mode", firstLine[3]);
                         QList<QString> curves;
-                        for(auto i = 1; i < operationText.size() - 1; i++) {
-                            auto line = operationText[i].split(',');
+                        for(auto j = 1; j < operationText.size() - 1; j++) {
+                            auto line = operationText[j].split(',');
                             curves.append(line[2]);
                         }
                         params.insert("curvesToTake", curves.join(","));
@@ -192,16 +246,24 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         break;
                     }
                     case MacrosTranslator::PrinterSettings:
+                    {
+                        params.insert("printType", operationText[0].split(',')[3]);
+                        readyOperations->push_back({ Operation::SetPrinterSettings, params });
                         break;
+                    }
                     case MacrosTranslator::PrintFromViewer:
+                    {
+                        readyOperations->push_back({ Operation::PrintReport, params });
                         break;
+                    }
                     default:
                         break;
                 }
             }
             break;
         }
-        case MacrosType::CRMM: {
+        case MacrosType::CRMM:
+        {
             auto operations = operationText.split("$END_OPERATION");
             for(auto i = 0; i < operations.size(); i++) {
                 if(operations.at(i).isEmpty()) continue;
@@ -231,6 +293,12 @@ void MacrosManager::setRecording(bool needRecording) {
     if(needRecording != isRecording()) {
         toggleRecording();
     }
+}
+
+void MacrosManager::swapOperations(int index1, int index2) {
+    auto temp = _macros->at(index1);
+    _macros->replace(index1, _macros->at(index2));
+    _macros->replace(index2, temp);
 }
 
 void MacrosManager::log(const Operation operation, const QMap<QString, QString> &params) {
@@ -282,11 +350,23 @@ void MacrosManager::setRecordIndex(int newIndex) {
 }
 
 void MacrosManager::run(Project *project, Plot *plot) {
+    auto startTime = QDateTime::currentSecsSinceEpoch();
+    plot->setBuffering(true);
     for(auto i = 0; i < _macros->length(); i++) {
         auto status = tryExecuteOperation(project, plot, i);
         if(!status) {
             break;
         }
+    }
+    plot->setBuffering(false);
+    plot->zoomExtents();
+    auto endTime = QDateTime::currentSecsSinceEpoch();
+    qDebug() << "Elapsed: " << endTime - startTime;
+}
+
+void MacrosManager::executeOne(Project *project, Plot *plot, int index) {
+    if(index < _macros->length()) {
+        tryExecuteOperation(project, plot, index);
     }
 }
 
@@ -294,6 +374,13 @@ void MacrosManager::debugNext(Project *project, Plot *plot) {
     if(_debugIndex < _macros->length()) {
         auto status = tryExecuteOperation(project, plot, _debugIndex);
         emit instance().operationExecuted(_debugIndex, status);
+        _debugIndex++;
+    }
+}
+
+void MacrosManager::skipOne() {
+    if(_debugIndex < _macros->length()) {
+        emit instance().operationSkipped(_debugIndex);
         _debugIndex++;
     }
 }
@@ -336,22 +423,13 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
                     data["threshold"].toDouble(), data["needSorted"] == "true", project);
                 break;
             case RadiusCorrection:
-                Algorithms::makeRadiusCorrection(data["figureName"], data["newName"], new Function3Params(data["radius_corr"].toDouble(),
-                    data["closed"] == "Y", data["external"] == "Y", data["material"] == "L" ? FunctionParams::Direction::Left :
-                    FunctionParams::Direction::Right, data["sort"] == "Y"), project);
+                Algorithms::makeRadiusCorrection(data["figureName"], data["newName"], new Function3Params(&data), project);
                 break;
             case CalculateDeviations:
-                Algorithms::calculateDeviations(data["nominal"], data["measured"], data["resultName"], new Function4Params(
-                    data["nomtol"].toDouble(), data["evaluationplace"].toInt(), data["evaluationdirection"].toInt(), data["closed"] == "Y",
-                    data["external"] == "Y", data["material"] == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right,
-                    data["sort"] == "Y"), project);
+                Algorithms::calculateDeviations(data["nominal"], data["measured"], data["resultName"], new Function4Params(&data), project);
                 break;
             case BestFit:
-                Algorithms::calculateBestFit(data["nominal"], data["measured"], data["resultName"], new Function6Params(data["minimize"] == "Y",
-                    data["method"] == "curve" ? Function6Params::Algorithm::Curve : Function6Params::Algorithm::Point, data["closed"] == "Y",
-                    data["xshift"] == "Y", data["yshift"] == "Y", data["rotation"] == "Y", false, data["xshiftfrom"].toDouble(), data["xshiftto"].toDouble(),
-                    false, data["yshiftfrom"].toDouble(), data["yshiftto"].toDouble(), false, data["rotationfrom"].toDouble(), data["rotationto"].toDouble()
-                ), project);
+                Algorithms::calculateBestFit(data["nominal"], data["measured"], data["resultName"], data["bestFitLineName"], new Function6Params(&data), project);
                 break;
             case ConstantTolerance:
                 Algorithms::calculateConstantTolerances(data["figureName"], data["upperTolerance"].toDouble(), data["lowerTolerance"].toDouble(), project);
@@ -364,15 +442,21 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
                 break;
             case CreateDimension:
                 break;
+            case InsertBestFitPosition:
+                Algorithms::insertBestFitDimension(data["figureName"], data["parentName"], data["x"].toDouble(), data["y"].toDouble(),
+                    data["z"].toDouble(), data["showX"] == "true", data["showY"] == "true", data["showR"] == "true", project);
+                break;
             case RenameFigure:
                 project->renameFigure(data["figureName"], data["newName"]);
                 break;
             case RemoveFigure:
                 project->removeFigure(data["figureName"]);
                 break;
-            case GetWidthOfEdges:
-                Algorithms::getWidthOfEdges(data["figureName"], data["distanceLE"].toDouble(), data["distanceTE"].toDouble(),
-                    project, data["createSegmentLE"] == "true", data["createSegmentTE"] == "true");
+            case GetWidthOfLE:
+                Algorithms::getWidthOfLeadingEdge(data["figureName"], project, data["distanceLE"].toDouble(), data["createSegmentLE"] == "true");
+                break;
+            case GetWidthOfTE:
+                Algorithms::getWidthOfTrailingEdge(data["figureName"], project, data["distanceTE"].toDouble(), data["createSegmentTE"] == "true");
                 break;
             case CreateReport:
                 ReportGenerator::createReport(project, plot, ReportSettings::convertToSettings(&data));
@@ -393,40 +477,41 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
                 project->alignment(data["angle"], data["axis"], data["offsetX"], data["offsetY"]);
                 break;
             case CalculateCurve:
-                Algorithms::calculateCurve(data["figureName"], data["newFigureName"], new Function1Params(data["intermediate"].toDouble(), data["threshold"].toDouble(),
-                    data["minline"].toDouble(), data["closed"] == "Y", data["external"] == "Y",
-                    data["material"] == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right, data["needSort"] == "Y"), project);
+                Algorithms::calculateCurve(data["figureName"], data["newFigureName"], new Function1Params(&data), project);
                 break;
             case RegenerateCurve:
-                Algorithms::regenerateCurve(data["figureName"], data["newFigureName"], new Function19Params(data["closed"] == "Y", data["external"] == "Y",
-                    data["material"] == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right, data["mode"], data["value"].toInt()), project);
+                Algorithms::regenerateCurve(data["figureName"], data["newFigureName"], new Function19Params(&data), project);
                 break;
             case ChangeFigureVisibility:
                 project->changeFigureVisibility(data["figureName"], data["visible"] == "true");
                 break;
             case ChangeCurveParameters:
-                project->changeCurveParameters(data["figureName"], data["showPoints"] == "true", data["connectPoints"] == "true",
-                    data["showVectors"] == "true", data["closed"] == "true", data["showNumbering"] == "true", data["numberingInterval"].toInt(),
-                    data["amplification"].toDouble(), data["showTolerances"] == "true", data["showDeviations"] == "true",
-                    data["connectDeviations"] == "true", data["highLightOut"] == "true");
+            {
+                if(auto curve = dynamic_cast<const CurveFigure*>(project->findFigure(data["figureName"]))) {
+                    project->changeCurveParameters(data["figureName"], data["showPoints"] == "true", data["connectPoints"] == "true",
+                        data["showVectors"] == "true", data["closed"] == "true", data["showNumbering"] == "true", data["numberingInterval"].toInt(),
+                        data["amplification"].toDouble(), data["showTolerances"] == "true", data["showDeviations"] == "true",
+                        data["connectDeviations"] == "true", data["highLightOut"] == "true");
+                } else {
+                    project->changeFigureVisibility(data["figureName"], data["isVisible"] == "true"); //isVisible
+                }
                 break;
+            }
             case ChangeDimensionParameters:
                 project->changeDimensionParameters(data["dimName"], data["onlyLabel"] == "true", data["showTols"] == "true",
                     data["freePosition"] == "true");
                 break;
-            case CreateMaxCircle: 
-                Algorithms::createMaxCircle(data["parentName"], data["figureName"], new Function18Params(data["directionLE"].toInt(), data["percentLE"].toInt(),
-                    data["percentTE"].toInt(), data["joinedSegments"].toInt()), project);
+            case CreateMaxCircle:
+                Algorithms::createMaxCircle(data["parentName"], data["figureName"], new Function18Params(&data), project);
                 break;
             case CreateMiddleCurve:
-                Algorithms::createMiddleCurve(data["parentName"], data["figureName"], new Function18Params(data["directionLE"].toInt(), data["percentLE"].toInt(),
-                    data["percentTE"].toInt(), data["joinedSegments"].toInt()), project);
+                Algorithms::createMiddleCurve(data["parentName"], data["figureName"], new Function18Params(&data), project);
                 break;
             case CreateContactLine:
-                Algorithms::createContactLine(data["parentName"], data["figureName"], new Function18Params(data["directionLE"].toInt(), data["percentLE"].toInt(),
-                    data["percentTE"].toInt(), data["joinedSegments"].toInt()), project);
+                Algorithms::createContactLine(data["parentName"], data["figureName"], new Function18Params(&data), project);
                 break;
-            case ExportToFLR: {
+            case ExportToFLR:
+            {
                 auto curvesToTake = data["curvesToTake"].split(",");
                 FileSystem::exportToFLR(project, data["filepath"], &curvesToTake);
                 break;
@@ -434,11 +519,31 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
             case PartData:
                 if(data["showPartDataWindowWhenMacroRuns"] == "Yes") {
                     project->showPartDataDialogRequested(data["reportTitle"], data["description"], data["drawing"], data["orderNumber"], data["partNumber"], data["projectOperator"], data["note"],
-                        data["machine"], data["tool"], data["fixturing"], data["batch"], data["supplier"], data["revision"]);   
+                        data["machine"], data["tool"], data["fixturing"], data["batch"], data["supplier"], data["revision"]);
                 } else {
                     project->changePartData(data["reportTitle"], data["description"], data["drawing"], data["orderNumber"], data["partNumber"], data["projectOperator"], data["note"],
                         data["machine"], data["tool"], data["fixturing"], data["batch"], data["supplier"], data["revision"], false);
                 }
+                break;
+            case PrintReport:
+            {
+                if(data.contains("pagesToTake"))
+                    Printer::print(data["pagesToTake"].split(","));
+                else
+                    Printer::printAll();
+                break;
+            }
+            case SetPrinterSettings:
+            {
+                auto printType = Printer::qStringToPrintType(data["printType"]);
+                Printer::setPrinterSettings(printType);
+                break;
+            }
+            case ClearReport:
+                Printer::clear();
+                break;
+            case RemovePage:
+                Printer::removePage(data["index"].toInt());
                 break;
             case InsertText:
                 project->constructText(data["name"], data["text"], data["x"].toDouble(), data["y"].toDouble(), data["textSize"].toDouble(),

@@ -2,6 +2,8 @@
 #include "turbinewindow.h"
 #include "filesystem.h"
 #include "loadingcloudwindow.h"
+#include "printer.h"
+#include "plot.h"
 
 class MacrosTranslator : public QObject {
     Q_OBJECT
@@ -23,9 +25,9 @@ class MacrosManager : public QObject {
 public:
     enum Operation {
         LoadCloud, LoadProject, SaveProject, ClearProject,
-        ConstantTolerance, EdgesTolerance, GetWidthOfEdges,
+        ConstantTolerance, EdgesTolerance, GetWidthOfLE, GetWidthOfTE,
         MergeScans, RadiusCorrection, CalculateDeviations, BestFit,
-        CreateDimension,
+        CreateDimension, InsertBestFitPosition,
         RenameFigure, RemoveFigure, FigureVisibilityChanged,
         CreateReport, ChangeFigureColor, ExportToFLR,
         ShiftFigure, RotateFigure, Alignment,
@@ -33,6 +35,7 @@ public:
         CreateMaxCircle, CreateMiddleCurve, CreateContactLine,
         ChangeFigureVisibility, ChangeCurveParameters, ChangeDimensionParameters,
         PartData, InsertText,
+        PrintReport, ClearReport, RemovePage, SetPrinterSettings,
         Unknown
     };
     Q_ENUM(Operation)
@@ -50,7 +53,9 @@ public:
     static QList<QPair<Operation, QMap<QString, QString>>>* translate(MacrosType type, const QString &operationText);
     static void clear();
     static void run(Project *project, Plot *plot);
+    static void executeOne(Project *project, Plot *plot, int index);
     static void debugNext(Project *project, Plot *plot);
+    static void skipOne();
     static void stopDebug();
     static bool tryExecuteOperation(Project *project, Plot *plot, int index);
     static void log(const Operation operation, const QMap<QString, QString> &params = QMap<QString, QString>());
@@ -70,16 +75,17 @@ public:
 public slots:
     static void toggleRecording();
     static void setRecording(bool needRecording);
+    static void swapOperations(int index1, int index2);
 
 signals:
     void operationLogged(QString operation, QString comment);
     void recordingToggled();
     void recordIndexChanged(int index);
     void operationExecuted(int index, bool isSuccessful);
+    void operationSkipped(int index);
 
 private:
-    MacrosManager() {
-    }
+    MacrosManager() {}
     static QString createOperationText(const Operation operation, const QMap<QString, QString> &params = QMap<QString, QString>());
 
     static bool _isRecording;
