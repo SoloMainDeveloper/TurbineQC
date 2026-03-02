@@ -30,6 +30,7 @@ public:
         int finishLineToSkip, QString columnNames, QString numberOfColumns, QString decimal, Order order = Order::Default);
     static void saveProject(Project *project, QString dir, QString projectName, bool createCRV);
     static void loadProject(Project *project, const QString &filePath);
+    static void parseFigureFromCRV(Project *project, QString figureText);
     static void exportToFLR(Project *project, QString filepath, QStringList *curvesToTake);
 
 private:
@@ -42,6 +43,4 @@ private:
     static bool isColumnsCorrect(const QString &columnNames, const QString &numberOfColumns);
     static bool hasDecimalSeparator(const QStringList &pointStr, const QString &decimal);
     static CurvePoint getPoint(QStringList strPoint, Order order, const QString &decimal, int numberOfColumns = 9);
-    static DimFigure* createDim(QString name, int A, Point labelPoint, const Figure *rif,
-        const Figure *rif1, QList<CurvePoint> points);
 };

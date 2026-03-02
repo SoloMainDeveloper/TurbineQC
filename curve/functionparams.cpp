@@ -12,6 +12,10 @@ Function1Params::Function1Params(int intermediate, double threshold, double minl
     _material = material;
 }
 
+Function1Params::Function1Params(const QMap<QString, QString>* data) : Function1Params(data->value("intermediate").toDouble(), data->value("threshold").toDouble(),
+    data->value("minline").toDouble(), data->value("closed") == "Y", data->value("external") == "Y",
+    data->value("material") == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right, data->value("needSort") == "Y") { }
+
 QString Function1Params::toQString() {
     QString result = "function=1\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nthreshold=%4\nintermediate=%5\nminline=%6\nsort=%7";
     return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N")
@@ -37,10 +41,14 @@ Function3Params::Function3Params(double radiusCorrection, bool isClosed,
     _material = material;
 }
 
+Function3Params::Function3Params(const QMap<QString, QString>* data) : Function3Params(data->value("radius_corr").toDouble(),
+    data->value("closed") == "Y", data->value("external") == "Y", data->value("material") == "L" ? FunctionParams::Direction::Left :
+    FunctionParams::Direction::Right, data->value("sort") == "Y") { }
+
 QString Function3Params::toQString() {
-    QString result = "function=3\nplane=XY\nclosed=%1\nradius_corr=%2\nexternal=%3\nmaterial=%4\nsort=%5";
-    return result.arg(_isClosed ? "Y" : "N").arg(_radiusCorrection).arg(_isExternal ? "Y" : "N")
-        .arg(_material == Direction::Left ? "L" : "R").arg(_needSort ? "Y" : "N");
+    QString result = "function=3\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nradius_corr=%4\nsort=%5\nalgorithm=envelope";
+    return result.arg(_isClosed ? "Y" : "N").arg(_isExternal ? "Y" : "N")
+        .arg(_material == Direction::Left ? "L" : "R").arg(_radiusCorrection).arg(_needSort ? "Y" : "N");
 }
 
 Function4Params::Function4Params(float nominalTolerance, int evaluationPlace, int evaluationDirection,
@@ -53,6 +61,11 @@ Function4Params::Function4Params(float nominalTolerance, int evaluationPlace, in
     _nominalTolerance = nominalTolerance;
     _material = material;
 }
+
+Function4Params::Function4Params(const QMap<QString, QString>* data) : Function4Params(
+    data->value("nomtol").toDouble(), data->value("evaluationplace").toInt(), data->value("evaluationdirection").toInt(), data->value("closed") == "Y",
+    data->value("external") == "Y", data->value("material") == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right,
+    data->value("sort") == "Y") {}
 
 QString Function4Params::toQString() {
     QString result = "function=4\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nsort=%4\nnomtol=%5\nevaluationplace=%6\nevaluationdirection=%7";
@@ -94,6 +107,12 @@ Function6Params::Function6Params(bool needMinimize, Algorithm method, bool isClo
     //_material = material;
     _method = method;
 }
+
+Function6Params::Function6Params(const QMap<QString, QString>* data) : Function6Params(data->value("minimize") == "Y",
+    data->value("method") == "curve" ? Function6Params::Algorithm::Curve : Function6Params::Algorithm::Point, data->value("closed") == "Y",
+    data->value("xshift") == "Y", data->value("yshift") == "Y", data->value("rotation") == "Y", data->value("needHconstraint") == "Y",
+    data->value("xshiftfrom").toDouble(), data->value("xshiftto").toDouble(), data->value("needVconstraint") == "Y", data->value("yshiftfrom").toDouble(),
+    data->value("yshiftto").toDouble(), data->value("needRconstraint") == "Y", data->value("rotationfrom").toDouble(), data->value("rotationto").toDouble()) { }
 
 QString Function6Params::toQString() {
     /*QString result = "function=6\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nxshift=%4\n\
@@ -262,12 +281,15 @@ QString Function17Params::toQString() {
     return result.arg(_diameter).arg(sortZValue);
 }
 
-Function18Params::Function18Params(int directionLE, int percentLE, int percentTE, int joinedSegments) {
+Function18Params::Function18Params(int directionLE, double percentLE, double percentTE, int joinedSegments) {
     _leadingEdgeDirection = (directionLE >= 0 && directionLE < 5) ? directionLE : 0; //default is 0
     _percentageLE = (percentLE >= 0 && percentLE <= 100) ? percentLE : 5; //default is 5
     _percentageTE = (percentTE >= 0 && percentTE <= 100) ? percentTE : 5; // default is 5
     _joinedSegmentsCount = joinedSegments > 0 ? joinedSegments : 1; //default is 1
 }
+
+Function18Params::Function18Params(const QMap<QString, QString>* data) : Function18Params(data->value("directionLE").toInt(), data->value("percentLE").toInt(),
+    data->value("percentTE").toInt(), data->value("joinedSegments").toInt()) { }
 
 QString Function18Params::toQString() {
     QString result = "function=18\nplane=XY\nle_dir=%1\nle_perc=%2\nte_perc=%3\njoined_segments=%4";
@@ -281,6 +303,9 @@ Function19Params::Function19Params(bool isClosed, bool isExternal, Direction mat
     _material = material;
     _mode = mode;
 }
+
+Function19Params::Function19Params(const QMap<QString, QString>* data) : Function19Params(data->value("closed") == "Y", data->value("external") == "Y",
+    data->value("material") == "L" ? FunctionParams::Direction::Left : FunctionParams::Direction::Right, data->value("mode"), data->value("value").toInt()) {}
 
 QString Function19Params::toQString() {
     QString result = "function=19\nplane=XY\nclosed=%1\nexternal=%2\nmaterial=%3\nmode=%4\nvalue=%5";
@@ -309,6 +334,20 @@ Function31Params::Function31Params(bool isLEStretch, bool isTEStretch, int leadi
 QString Function31Params::toQString() {
     QString result = "function=31\nplane=XY\nle_dir=%1\nle_stretch=%2\nte_stretch=%3";
     return result.arg(_leadingEdgeDirection).arg(_isLEStretch ? "Y" : "N").arg(_isTEStretch ? "Y" : "N");
+}
+
+Function42Params::Function42Params(bool isClosed, bool needVectors, bool needColumnA, bool needColumnR, bool needColumnD) {
+    _isClosed = isClosed;
+    _needVectors = needVectors;
+    _needColumnA = needColumnA;
+    _needColumnR = needColumnR;
+    _needColumnD = needColumnD;
+}
+
+QString Function42Params::toQString() {
+    QString result = "function=42\nClosed=%1\nVectors=%2\nColumn_A=%3\nColumn_R=%4\nColumn_D=%5";
+    return result.arg(_isClosed ? "Y" : "N").arg(_needVectors ? "Y" : "N")
+        .arg(_needColumnA ? "Y" : "N").arg(_needColumnR ? "Y" : "N").arg(_needColumnD ? "Y" : "N");
 }
 
 QMap<QString, QString> FunctionParams::toQMap() {

@@ -235,7 +235,7 @@ void BestFitDialog::calculateBestFit(const QString &nominalCurveName, const QStr
         _needHConstraint, xShiftFrom, xShiftTo, _needVConstraint, yShiftFrom, yShiftTo, _needRConstraint,
         rotationFrom, rotationTo);
 
-    Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, &params, _project);
+    Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params, _project);
     QApplication::restoreOverrideCursor();
 }
 

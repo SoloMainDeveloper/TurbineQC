@@ -180,3 +180,10 @@ struct Function31Result {
     double coeffLE;
     double coeffTE;
 };
+
+struct Function42Result {
+    Function42Result(CurveFigure curve);
+    ~Function42Result() = default;
+
+    CurveFigure curve;
+};
