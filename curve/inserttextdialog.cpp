@@ -30,6 +30,8 @@ void InsertTextDialog::initialization() {
     _ui->textLE->clear();
     _ui->sizeSB->setValue(0);
     _ui->zoomSB->setValue(1);
+    _ui->le_width->setPlaceholderText("6");
+    _ui->le_height->setPlaceholderText("4.5");
     _ui->xLE->setText("");
     _ui->yLE->setText("");
     auto &refFigures = _project->figures();
@@ -90,7 +92,18 @@ void InsertTextDialog::insertText() {
     }
     auto size = _ui->sizeSB->value();
     auto zoom = _ui->zoomSB->value();
-    _project->constructText(name, text, x, y, size, referenceName, 0, 0, zoom);
+
+    double width = 6;
+    double height = 4.5;
+
+    if(_ui->le_width->text() != "") {
+        width = _ui->le_width->text().toDouble();
+    }
+    if(_ui->le_height->text() != "") {
+        height = _ui->le_height->text().toDouble();
+    }
+
+    _project->constructText(name, text, x, y, size, referenceName, width, height, zoom);
     accept();
 }
 
