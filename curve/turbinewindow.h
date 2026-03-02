@@ -7,6 +7,8 @@
 #include "reportsettings.h"
 #include "reportgenerator.h"
 
+using TurbineParamType = ReportSettings::TurbineParamType;
+
 class ReporData;
 
 namespace Ui {
@@ -17,23 +19,6 @@ class TurbineWindow : public QDialog {
     Q_OBJECT
 
 public:
-    enum class Operation {
-        MaxWidth,
-        MaxWidthX,
-        MaxWidthY,
-        ContactLineLength,
-        WidthLE,
-        WidthTE,
-        RadiusLE,
-        RadiusTE,
-        OperationsCount
-    };
-
-    enum class CurveType {
-        Nominal,
-        Measured,
-    };
-
     explicit TurbineWindow(Project *project, Plot *plot);
     virtual ~TurbineWindow();
 
@@ -44,9 +29,10 @@ private slots:
     void run();
     void closeWindow();
     void closeEvent(QCloseEvent *event);
-    void calculateNominals();
+    void onCalculateNominals();
     void updateParamOutputView();
     void changeItemOfList();
+    void onProfileTypeChange();
     void onNoBestFitLEClick();
     void onNoBestFitTEClick();
     void onShowNumDevLEClick();
@@ -70,10 +56,6 @@ private:
 
     void setupWindow();
     void disableUnrealizedParams();
-    QMap<Operation, double> calculate(const QString &curveName, CurveType curveType);
-    void setNominalParams(const QMap<Operation, double> &params);
-    void setMeasuredParams(const QMap<Operation, double> &params);
-    void calculateMeasured();
-    void setSettings(const QString &filePath);
-    void setTolerances(Operation operation);
+    void calculateNominals(const QString &curveName);
+    void setSettings();
 };

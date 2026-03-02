@@ -37,9 +37,9 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
         auto projectPath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt *.crv)");
         try {
             FileSystem::loadProject(&_project, projectPath);
-            changeWindowTitle(projectPath);
         } catch(...) { }
     });
+    connect(&_project, &Project::projectPathChanged, this, &CurveWindow::changeWindowTitle);
 
     connect(_ui->actionClearProject, &QAction::triggered, &_project, [&]() {
         _project.clear();
@@ -100,6 +100,10 @@ CurveWindow::CurveWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::Cur
     connect(_ui->actionText, &QAction::triggered, _insertTextDialog, &InsertTextDialog::initialization);
 
     connect(&_project, &Project::raiseMainWindow, this, [&]() { raise(); activateWindow(); showMaximized(); });
+
+    _printWindow = new PrintPreviewWindow(this);
+    connect(_ui->actionShowPrintViewer, &QAction::triggered, _printWindow, &PrintPreviewWindow::initialization);
+    connect(_printWindow, &PrintPreviewWindow::needShow, _ui->actionShowPrintViewer, &QAction::setEnabled);
 }
 
 void CurveWindow::dimensionMenuInit() {
@@ -140,22 +144,11 @@ void CurveWindow::keyPressEvent(QKeyEvent *event) {
     if(event->key() == Qt::Key_Delete && !_project.currentFigureName().isEmpty()) {
         QMessageBox mBox;
         QString name = _project.currentFigureName();
-        auto childs = _project.findFigureChildren(name);
 
-        if(childs.isEmpty()) {
-            mBox.setText(QString("Delete %1 ?").arg(name));
-            mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        } else {
-            auto text = QString("%1 was deleted with children. Continue deleting?\n").arg(name);
-            for(auto &child : childs) {
-                text += QString("%1\n").arg(child);
-            }
-            mBox.setText(text);
-            mBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        }
-
+        mBox.setText(QString("Delete %1 and its children?").arg(name));
+        mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         int dialogResponse = mBox.exec();
-        if(dialogResponse == QMessageBox::Yes || dialogResponse == QMessageBox::Ok) {
+        if(dialogResponse == QMessageBox::Ok) {
             _project.removeFigure(name);
         }
     }

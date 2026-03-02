@@ -26,12 +26,15 @@
 #include "calculatecurvedialog.h"
 #include "partdatadialog.h"
 #include "inserttextdialog.h"
+#include "printpreviewwindow.h"
 
 namespace Ui {
     class CurveWindow;
 };
 
 class LoadingCloudWindow;
+
+class PrintWindow;
 
 class CurveWindow : public QMainWindow {
     Q_OBJECT
@@ -69,7 +72,7 @@ private:
     CalculateCurveDialog *_calculatecurvedialog;
     PartDataDialog *_partDataDialog;
     InsertTextDialog *_insertTextDialog;
-
+    PrintPreviewWindow *_printWindow;
 
     QString _windowTitle;
 

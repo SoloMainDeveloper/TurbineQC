@@ -1,8 +1,10 @@
 #pragma once
 
 #include "functionparams.h"
+#include "functionresults.h"
 #include "filesystem.h"
 #include "figure.h"
+#include "curveanalyzer.h"
 
 class CurveMachine {
 public:
@@ -11,14 +13,22 @@ public:
     static LineFigure getContactLine(const QVector<CurvePoint> points, const Function18Params params);
     static double getContactLineLength(const QVector<CurvePoint> points, const Function18Params params);
     static CircleFigure getMaxCircle(const QVector<CurvePoint> points, const Function18Params params);
-    static QVector<std::pair<CurvePoint, CurvePoint>> getWidthOfEdges(const QVector<CurvePoint> points, double distanceFromLeadingEdge, double distanceFromTrailingEgde);
+    static std::pair<CurvePoint, CurvePoint> getWidthOfLeadingEdge(const QVector<CurvePoint> points, double distanceFromEdge);
+    static std::pair<CurvePoint, CurvePoint> getWidthOfTrailingEdge(const QVector<CurvePoint> points, double distanceFromEdge);
     static double getDistanceBetweenPoints(CurvePoint firstPoint, CurvePoint secondPoint);
-    static std::array<double, 2> getRadiusOfEdges(const QVector<CurvePoint> points, const Function18Params params);
+    static double getRadiusOfLeadingEdge(const QVector<CurvePoint> points, const Function18Params params);
+    static double getRadiusOfTrailingEdge(const QVector<CurvePoint> points, const Function18Params params);
     static QVector<CurvePoint> mergePointClouds(const QVector<CurvePoint> &firstCloud, const QVector<CurvePoint> &secondCloud, double threshold = 0.02, bool needSort = true);
     static CurveFigure offsetCurve(const QVector<CurvePoint> curve, const Function3Params params);
     static CurveFigure calculateDeviations(const QVector<CurvePoint> nomCurve, const QVector<CurvePoint> measCurve, const Function4Params params);
-    static CurveFigure calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params);
+    static Function6Result calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function6Params params);
+    static Function21Result calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function21Params params);
     static CurveFigure regenerateCurve(const QVector<CurvePoint> curve, const Function19Params params);
+    static Point getDirection(Point linePoint, double angularCoefficient);
+    static CurveAnalyzer::CurveParts divideCurveIntoParts(const QVector<CurvePoint> curve, const Function18Params params);
+    static QVector<CurvePoint> calculateStretch(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function31Params &params);
+    static QVector<CurvePoint> calculateCurveUsing3DVectors(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function42Params &params);
+    static double getMinX(const QVector<CurvePoint> points, const Function18Params params);
 
 private:
     static Point normalizeVector(Point vector);
@@ -34,4 +44,5 @@ private:
     static CurvePoint getNearestIntesectionPoint(const QVector<CurvePoint> &pointsOfIntersection, CurvePoint targetPoint);
     static void trimCloudFromStart(QVector<CurvePoint> &points, CurvePoint pointOfIntersection);
     static void trimCloudFromEnd(QVector<CurvePoint> &points, CurvePoint pointOfIntersection);
+    static double getMinXOfCurvePointVector(const QVector<CurvePoint> &points);
 };

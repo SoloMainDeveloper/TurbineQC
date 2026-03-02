@@ -34,6 +34,7 @@ void ExportToFLRDialog::exportToFLR() {
         }
     }
     FileSystem::exportToFLR(_project, _ui->filePathLineEdit->text(), figuresToTake);
+    close();
 }
 
 void ExportToFLRDialog::chooseFilePath() {

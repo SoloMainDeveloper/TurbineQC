@@ -30,7 +30,7 @@ void WidthEdgeWindow::initialization() {
 }
 
 void WidthEdgeWindow::setupWindow() {
-    _doubleValidator = new QDoubleValidator();
+    _doubleValidator = new QDoubleValidator(); // TODO: memory leak
     _doubleValidator->setDecimals(9);
     _doubleValidator->setLocale(QLocale::C);
     _doubleValidator->setNotation(QDoubleValidator::StandardNotation);
@@ -75,9 +75,17 @@ void WidthEdgeWindow::calculateWidthEdge() {
     if(currFigure != nullptr) {
         auto distanceLEValue = distanceLE->text().toDouble() ? distanceLE->text().toDouble() : 1;
         auto distanceTEValue = distanceTE->text().toDouble() ? distanceTE->text().toDouble() : 1;
-        auto result = Algorithms::getWidthOfEdges(currFigure->text(), distanceLEValue, distanceTEValue, _project,
-            _ui->createDistanceCheckBoxLE->isChecked(), _ui->createDistanceCheckBoxTE->isChecked());
-        _widths[currFigure->text()] = new EdgeWidth(result[0], distanceLEValue, result[1], distanceTEValue);
+        auto widthLE = 0.0;
+        auto widthTE = 0.0;
+        if(_ui->checkBoxLE) {
+            auto createDistanceLE = _ui->createDistanceCheckBoxLE->isChecked();
+            widthLE = Algorithms::getWidthOfLeadingEdge(currFigure->text(), _project, distanceLEValue, createDistanceLE);
+        }
+        if(_ui->checkBoxTE) {
+            auto createDistanceTE = _ui->createDistanceCheckBoxTE->isChecked();
+            widthTE = Algorithms::getWidthOfTrailingEdge(currFigure->text(), _project, distanceTEValue, createDistanceTE);
+        }
+        _widths[currFigure->text()] = new EdgeWidth(widthLE, distanceLEValue, widthTE, distanceTEValue);
         updateAnswerView();
     }
 }
@@ -100,7 +108,7 @@ void WidthEdgeWindow::updateAnswerView() {
             answerLE->clear();
             answerTE->clear();
         }
-    } 
+    }
 }
 
 void WidthEdgeWindow::closeEvent(QCloseEvent *event) {

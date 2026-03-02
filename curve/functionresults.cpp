@@ -126,3 +126,7 @@ Function31Result::Function31Result(CurveFigure curve, double coeffLE, double coe
     this->coeffLE = coeffLE;
     this->coeffTE = coeffTE;
 }
+
+Function42Result::Function42Result(CurveFigure curve) {
+    this->curve = curve;
+}

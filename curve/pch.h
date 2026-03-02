@@ -21,6 +21,8 @@
 #include <QPushButton>
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <QFuture>
+#include <QtConcurrent>
 #include "qcustomplot.h"
 #include "macrosmanager.h"
 #include <Eigen/Dense>

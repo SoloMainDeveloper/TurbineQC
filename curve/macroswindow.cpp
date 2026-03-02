@@ -12,16 +12,27 @@ MacrosWindow::MacrosWindow(QWidget *parent, Project *project, Plot *plot) : QMai
     move(parentWidget()->width() - width(), 0);
     _operationList->setHeaderHidden(true);
     setWindowTitle("Macros");
-    _ui->debugGroup->setVisible(false);
+    _ui->buttonsList->setCurrentIndex(0);
+    _isDebugging = false;
 
-    removeItem = new QAction(QIcon("icons/delete.png"), "Remove");
-    editItem = new QAction(QIcon("icons/circle.png"), "Edit");
+    editItem = new QAction(QIcon("icons/edit.ico"), "Edit");
+    removeItem = new QAction(QIcon("icons/delete.ico"), "Remove");
+    executeCurrentItem = new QAction(QIcon("icons/debug.ico"), "Execute current");
+    moveOperationUp = new QAction(QIcon("icons/arrowUp.ico"), "Move up");
+    moveOperationDown = new QAction(QIcon("icons/arrowDown.ico"), "Move down");
+
     connect(removeItem, &QAction::triggered, this, &MacrosWindow::onRemoveItemTriggered);
     connect(editItem, &QAction::triggered, this, &MacrosWindow::onEditItemTriggered);
+    connect(executeCurrentItem, &QAction::triggered, this, &MacrosWindow::onExecuteCurrentItemTriggered);
+    connect(moveOperationUp, &QAction::triggered, this, &MacrosWindow::onMoveOperationUpItemTriggered);
+    connect(moveOperationDown, &QAction::triggered, this, &MacrosWindow::onMoveOperationDownItemTriggered);
+
     connect(&MacrosManager::instance(), &MacrosManager::operationLogged, this, &MacrosWindow::addOperation);
     connect(&MacrosManager::instance(), &MacrosManager::recordingToggled, this, &MacrosWindow::updateRecordingButton);
     connect(&MacrosManager::instance(), &MacrosManager::recordIndexChanged, this, &MacrosWindow::onRecordIndexChanged);
     connect(&MacrosManager::instance(), &MacrosManager::operationExecuted, this, &MacrosWindow::onOperationExecuted);
+    connect(&MacrosManager::instance(), &MacrosManager::operationSkipped, this, &MacrosWindow::onOperationSkipped);
+
     connect(_ui->toggleRecordButton, &QPushButton::clicked, this, &MacrosManager::toggleRecording);
     connect(_ui->clearButton, &QPushButton::clicked, this, &MacrosWindow::clear);
     connect(_ui->runButton, &QPushButton::clicked, this, &MacrosWindow::run);
@@ -31,6 +42,7 @@ MacrosWindow::MacrosWindow(QWidget *parent, Project *project, Plot *plot) : QMai
     connect(_ui->startDebugButton, &QPushButton::clicked, this, &MacrosWindow::startDebug);
     connect(_ui->stopDebugButton, &QPushButton::clicked, this, &MacrosWindow::stopDebug);
     connect(_ui->nextDebugButton, &QPushButton::clicked, this, &MacrosWindow::debugNext);
+    connect(_ui->skipButton, &QPushButton::clicked, this, &MacrosManager::skipOne);
 }
 
 void MacrosWindow::initialization() {
@@ -42,31 +54,19 @@ void MacrosWindow::initialization() {
 void MacrosWindow::addOperation(QString operation, QString comment) {
     auto recordIndex = MacrosManager::recordIndex();
     auto item = createOperationItem(recordIndex, operation, comment);
-
-    insert(_operationList, recordIndex, item);
+    insert(recordIndex, item);
     reindex(recordIndex);
 }
 
-void MacrosWindow::insert(QTreeWidget *tree, int index, QTreeWidgetItem* item) {
+void MacrosWindow::insert(int index, QTreeWidgetItem* item) {
     auto items = QList<QTreeWidgetItem*>();
-    while(index != tree->topLevelItemCount()) {
-        auto itemi = tree->takeTopLevelItem(index - 1);
+    while(index != _operationList->topLevelItemCount()) {
+        auto itemi = _operationList->takeTopLevelItem(index - 1);
         auto text = itemi->text(0);
         items.append(itemi);
     }
     items.append(item);
-    tree->insertTopLevelItems(index, items);
-}
-
-QTreeWidgetItem* MacrosWindow::createOperationItem(int index, QString operation, QString comment) {
-    auto root = new QTreeWidgetItem(_operationList);
-    root->setText(0, QString("%1. %2").arg(index).arg(operation));
-    auto commentItem = new QTreeWidgetItem(root);
-    auto commentList = comment.trimmed().split('\n');
-    commentList.removeFirst();
-    commentList.removeLast();
-    commentItem->setText(0, commentList.join('\n'));
-    return root;
+    _operationList->insertTopLevelItems(index, items);
 }
 
 void MacrosWindow::closeEvent(QCloseEvent *event) {
@@ -88,15 +88,16 @@ void MacrosWindow::save() {
 }
 
 void MacrosWindow::startDebug() {
-    _ui->buttons->setVisible(false);
-    _ui->debugGroup->setVisible(true);
+    _ui->buttonsList->setCurrentIndex(1);
+    _isDebugging = true;
 }
 
 void MacrosWindow::stopDebug() {
     MacrosManager::stopDebug();
-    _ui->buttons->setVisible(true);
-    _ui->debugGroup->setVisible(false);
+    _ui->buttonsList->setCurrentIndex(0);
     _ui->nextDebugButton->setEnabled(true);
+    _ui->skipButton->setEnabled(true);
+    _isDebugging = false;
     for(auto i = 0; i < _operationList->topLevelItemCount(); i++) {
         _operationList->topLevelItem(i)->setBackground(0, QBrush(QColor(255, 255, 255)));
     }
@@ -120,10 +121,18 @@ void MacrosWindow::run() {
 
 void MacrosWindow::contextMenuEvent(QContextMenuEvent *event) {
     auto current = _operationList->currentItem();
+    auto index = current->text(0).split('.')[0].toInt() - 1;
     if(current && !current->parent()) {
         QMenu menu;
         menu.addAction(removeItem);
         menu.addAction(editItem);
+        if(!_isDebugging) {
+            moveOperationUp->setEnabled(index != 0);
+            moveOperationDown->setEnabled(index != _operationList->topLevelItemCount() - 1);
+            menu.addAction(executeCurrentItem);
+            menu.addAction(moveOperationUp);
+            menu.addAction(moveOperationDown);
+        }
         menu.exec(event->globalPos());
     }
 }
@@ -135,11 +144,37 @@ void MacrosWindow::onRemoveItemTriggered() {
     auto dialogWindow = mBox.exec();
     switch(dialogWindow) {
         case QMessageBox::Ok:
-            removeOperation(_operationList->currentItem());
+        {
+        auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+            removeOperation(index);
             break;
+        }
         case QMessageBox::Cancel:
             break;
     }
+}
+
+void MacrosWindow::onExecuteCurrentItemTriggered() {
+     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+     MacrosManager::executeOne(_project, _plot, index);
+}
+
+void MacrosWindow::onMoveOperationUpItemTriggered() {
+     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+     if(index == 0) return;
+     _operationList->insertTopLevelItem(index - 1, _operationList->takeTopLevelItem(index));
+     _operationList->setCurrentItem(_operationList->topLevelItem(index - 1));
+     reindex(index - 1, index);
+     MacrosManager::swapOperations(index - 1, index);
+}
+
+void MacrosWindow::onMoveOperationDownItemTriggered() {
+    auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+    if(index == _operationList->topLevelItemCount() - 1) return;
+    _operationList->insertTopLevelItem(index + 1, _operationList->takeTopLevelItem(index));
+    _operationList->setCurrentItem(_operationList->topLevelItem(index + 1));
+    reindex(index, index + 1);
+    MacrosManager::swapOperations(index, index + 1);
 }
 
 void MacrosWindow::onEditItemTriggered() {
@@ -221,22 +256,55 @@ void MacrosWindow::onOperationExecuted(int index, bool isSuccessful) {
     } else {
         _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(255, 0, 0)));
         _ui->nextDebugButton->setEnabled(false);
+        _ui->skipButton->setEnabled(false);
     }
 }
 
-void MacrosWindow::removeOperation(QTreeWidgetItem *item) {
-    auto text = item->text(0).split('.');
-    auto index = text[0].toInt() - 1;
+void MacrosWindow::onOperationSkipped(int index) {
+    _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(150, 150, 150)));
+}
+
+void MacrosWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Delete && _ui->operationList->currentItem()) {
+        QMessageBox mBox;
+        QString name = _ui->operationList->currentItem()->text(0);
+
+        mBox.setText(QString("Delete %1?").arg(name));
+        mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        int dialogResponse = mBox.exec();
+        if(dialogResponse == QMessageBox::Ok) {
+            auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+            removeOperation(index);
+        }
+    }
+}
+
+void MacrosWindow::removeOperation(int index) {
     _ui->operationList->takeTopLevelItem(index);
     MacrosManager::remove(index);
     reindex(index);
 }
 
-void MacrosWindow::reindex(int indexFrom) {
-    for(auto i = indexFrom; i < _operationList->topLevelItemCount(); i++) {
-        auto text = _operationList->topLevelItem(i)->text(0).split('.');
+void MacrosWindow::reindex(int indexFrom, int indexTo) {
+    for(auto i = indexFrom; i <= indexTo; i++) { //check
+        auto text = _operationList->topLevelItem(i)->text(0).split(". ");
         _operationList->topLevelItem(i)->setText(0, QString("%1. %2").arg(i + 1).arg(text[1]));
     }
+}
+
+void MacrosWindow::reindex(int indexFrom) {
+    reindex(indexFrom, _operationList->topLevelItemCount() - 1); // -1
+}
+
+QTreeWidgetItem* MacrosWindow::createOperationItem(int index, QString operation, QString comment) {
+    auto root = new QTreeWidgetItem(_operationList);
+    root->setText(0, QString("%1. %2").arg(index).arg(operation));
+    auto commentItem = new QTreeWidgetItem(root);
+    auto commentList = comment.trimmed().split('\n');
+    commentList.removeFirst();
+    commentList.removeLast();
+    commentItem->setText(0, commentList.join('\n'));
+    return root;
 }
 
 MacrosWindow::~MacrosWindow() {

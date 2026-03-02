@@ -133,6 +133,13 @@ Function31Result CurveLibrary::function31(QVector<CurvePoint> curve1, QVector<Cu
     return Function31Result(CurveFigure(QString(), points), coeffLEStr.toDouble(), coeffTEStr.toDouble());
 }
 
+Function42Result CurveLibrary::function42(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, Function42Params params) {
+    makeCurveCalculations(QList<QVector<CurvePoint>> { curve1, curve2 }, &params);
+    auto output = FileSystem::readOutput().split("\n\n");
+    auto points = FileSystem::parsePointsFromElement(output[0].split('\n'), ",", 1, 1);
+    return Function42Result(CurveFigure(QString(), points));
+}
+
 void CurveLibrary::runCurve() {
     QProcess* process = new QProcess();
     QStringList list;

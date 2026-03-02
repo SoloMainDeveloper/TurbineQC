@@ -193,12 +193,12 @@ void PointFigure::alignment(double angle, double offsetX, double offsetY) {
 }
 
 void PointFigure::edit(QMap<QString, QString> paramsChanged) {
-	paramsChanged.contains("X") ? _point.x = paramsChanged.value("X").toDouble() : 0;
-	paramsChanged.contains("Y") ? _point.y = paramsChanged.value("Y").toDouble() : 0;
-	paramsChanged.contains("Z") ? _point.z = paramsChanged.value("Z").toDouble() : 0;
-	paramsChanged.contains("I") ? _point.i = paramsChanged.value("I").toDouble() : 0;
-	paramsChanged.contains("J") ? _point.j = paramsChanged.value("J").toDouble() : 0;
-	paramsChanged.contains("K") ? _point.k = paramsChanged.value("K").toDouble() : 0;
+	paramsChanged.contains("x") ? _point.x = paramsChanged.value("x").toDouble() : 0;
+	paramsChanged.contains("y") ? _point.y = paramsChanged.value("y").toDouble() : 0;
+	paramsChanged.contains("z") ? _point.z = paramsChanged.value("z").toDouble() : 0;
+	paramsChanged.contains("i") ? _point.i = paramsChanged.value("i").toDouble() : 0;
+	paramsChanged.contains("j") ? _point.j = paramsChanged.value("j").toDouble() : 0;
+	paramsChanged.contains("k") ? _point.k = paramsChanged.value("k").toDouble() : 0;
 }
 
 
@@ -267,12 +267,12 @@ void LineFigure::alignment(double angle, double offsetX, double offsetY) {
 }
 
 void LineFigure::edit(QMap<QString, QString> paramsChanged) {
-	paramsChanged.contains("X") ? _origin.x = paramsChanged.value("X").toDouble() : 0;
-	paramsChanged.contains("Y") ? _origin.y = paramsChanged.value("Y").toDouble() : 0;
-	paramsChanged.contains("Z") ? _origin.z = paramsChanged.value("Z").toDouble() : 0;
-	paramsChanged.contains("I") ? _direction.x = paramsChanged.value("I").toDouble() : 0;
-	paramsChanged.contains("J") ? _direction.y = paramsChanged.value("J").toDouble() : 0;
-	paramsChanged.contains("K") ? _direction.z = paramsChanged.value("K").toDouble() : 0;
+	paramsChanged.contains("x") ? _origin.x = paramsChanged.value("x").toDouble() : 0;
+	paramsChanged.contains("y") ? _origin.y = paramsChanged.value("y").toDouble() : 0;
+	paramsChanged.contains("z") ? _origin.z = paramsChanged.value("z").toDouble() : 0;
+	paramsChanged.contains("i") ? _direction.x = paramsChanged.value("i").toDouble() : 0;
+	paramsChanged.contains("j") ? _direction.y = paramsChanged.value("j").toDouble() : 0;
+	paramsChanged.contains("k") ? _direction.z = paramsChanged.value("k").toDouble() : 0;
 	paramsChanged.contains("Length") ? _length = paramsChanged.value("Length").toDouble() : 0;
 }
 
@@ -284,12 +284,20 @@ const QCPLineEnding & LineFigure::tail() const {
 	return _tail;
 }
 
-const Figure* DimFigure::firstReference() const {
+const QString DimFigure::firstReference() const {
 	return _firstReference;
 }
 
-const Figure* DimFigure::secondReference() const {
+const QString DimFigure::secondReference() const {
 	return _secondReference;
+}
+
+void DimFigure::setFirstReference(const QString & firstReference) {
+	_firstReference = firstReference;
+}
+
+void DimFigure::setSecondReference(const QString & secondReference) {
+	_secondReference = secondReference;
 }
 
 void DimFigure::addValue(const Value &value) {
@@ -350,102 +358,97 @@ void DimFigure::setA(int A) {
 	_a = A;
 }
 
-QList<DimFigure::Value*>* DimFigure::setTypeAndGetValueNames() {
-	auto values = new QList<Value*>();
+void DimFigure::setValues(QList<CurvePoint> points) {
 	switch(_a) {
 		case 1:
-			setDimType(DimType::Position);
-			values->append({
-				new Value(ValueType::X),
-				new Value(ValueType::Y),
-				new Value(ValueType::Z),
-				new Value(ValueType::PolarRad),
-				new Value(ValueType::PolarAngle),
-				new Value(ValueType::Diameter),
-				new Value(ValueType::Radius)
-				});
+			setDimType(DimType::Position); // TODO: add plot for this type
+			_values.append({
+				Value(ValueType::X),
+				Value(ValueType::Y),
+				Value(ValueType::Z),
+				Value(ValueType::PolarRad),
+				Value(ValueType::PolarAngle),
+				Value(ValueType::Diameter),
+				Value(ValueType::Radius)
+			});
 			break;
 		case 2:
 			setDimType(DimType::Radius);
-			setRenderType(RenderType::Callout);
-			values->append(new Value(ValueType::Radius));
+			_values.append(Value(ValueType::Radius));
 			break;
 		case 3:
 			setDimType(DimType::Diameter);
-			setRenderType(RenderType::Callout);
-			values->append(new Value(ValueType::Diameter));
+			_values.append(Value(ValueType::Diameter));
 			break;
 		case 6:
 			setDimType(DimType::Distance);
-			values->append(new Value(ValueType::Length));
+			_values.append(Value(ValueType::Length));
 			break;
 		case 8:
 			setDimType(DimType::AngleTo);
-			values->append({
-				new Value(ValueType::Angle0),
-				new Value(ValueType::Angle90),
-				new Value(ValueType::Angle180),
-				new Value(ValueType::Angle270)
-				});
+			_values.append({
+				Value(ValueType::Angle0),
+				Value(ValueType::Angle90),
+				Value(ValueType::Angle180),
+				Value(ValueType::Angle270)
+			});
 			break;
 		case 10:
 			setDimType(DimType::DistanceBetweenCurvePoints);
-			values->append(new Value(ValueType::Length));
+			_values.append(Value(ValueType::Length));
             break;
 		case 11:
 			setDimType(DimType::AngleBetween);
-			values->append({
-				new Value(ValueType::AngleTo),
-				new Value(ValueType::AngleFrom)
-				});
+			_values.append({
+				Value(ValueType::AngleTo),
+				Value(ValueType::AngleFrom)
+			});
 			break;
 		case 16:
 			setDimType(DimType::Perimeter);
-			setRenderType(RenderType::Callout);
-			values->append(new Value(ValueType::Length));
+			_values.append(Value(ValueType::Length));
 			break;
 		case 19:
 			setDimType(DimType::BestFitData);
-			values->append({
-				new Value(ValueType::dX),
-				new Value(ValueType::dY),
-				new Value(ValueType::Rotation)
-				});
+			_values.append({
+				Value(ValueType::dX),
+				Value(ValueType::dY),
+				Value(ValueType::Rotation)
+			});
 			break;
 		case 20:
 			setDimType(DimType::Form);
-			setRenderType(RenderType::Table);
-			values->append({
-				new Value(ValueType::MinMax),
-				new Value(ValueType::Form),
-				new Value(ValueType::Min),
-				new Value(ValueType::Max),
-				new Value(ValueType::MaxAbs),
-				new Value(ValueType::SupUT),
-				new Value(ValueType::InfLT)
-				});
+			_values.append({
+				Value(ValueType::MinMax),
+				Value(ValueType::Form),
+				Value(ValueType::Min),
+				Value(ValueType::Max),
+				Value(ValueType::MaxAbs),
+				Value(ValueType::SupUT),
+				Value(ValueType::InfLT)
+			});
 			break;
 		case 21:
 			setDimType(DimType::TruePosition);
-			values->append({
-				new Value(ValueType::X),
-				new Value(ValueType::Y),
-				new Value(ValueType::TruePosition)
-				});
+			_values.append({
+				Value(ValueType::X),
+				Value(ValueType::Y),
+				Value(ValueType::TruePosition)
+			});
 			break;
 		default:
 			QMessageBox::critical(nullptr, "Error", "Unknown DIM type");
 			break;
 	}
-	return values;
-}
-
-const DimFigure::RenderType DimFigure::renderType() const {
-	return _renderType;
-}
-
-void DimFigure::setRenderType(const RenderType &renderType) {
-	_renderType = renderType;
+	for(auto i = 0; i < points.length(); i++) {
+		if(i >= _values.length())
+			break;
+		_values[i].isShow = std::fabs(points[i].x - 1) < 1e-6;
+		_values[i].nominal = points[i].y;
+		_values[i].measurement = points[i].k;
+		_values[i].lowerTolerance = points[i].lt;
+		_values[i].upperTolerance = points[i].ut;
+	}
 }
 
 const QVector<CurvePoint> DimFigure::convertDimValueToPoints() {
@@ -458,11 +461,14 @@ const QVector<CurvePoint> DimFigure::convertDimValueToPoints() {
 }
 
 const QString DimFigure::exportToFLR(int precision) const {
+	auto valueFLR = QString("  , %1, 0, %2, %3, %4, %5, %6, 0, 0\n");
 	QString result;
 	for(auto &value : _values) {
-		result += "  , " + name() + ", 0, " + value.typeToFLR() + ", " + QString::number(value.nominal, 'f', precision) + ", "
-			+ QString::number(value.upperTolerance, 'f', precision) + ", " + QString::number(value.lowerTolerance, 'f', precision) + ", "
-			+ QString::number(value.measurement, 'f', precision) + ", 0, 0\n";
+		auto type = value.typeToFLR();
+		if(!value.isShow || type == "Null")
+			continue;
+		result += valueFLR.arg(name()).arg(type).arg(QString::number(value.nominal, 'f', precision)).arg(QString::number(value.upperTolerance, 'f', precision))
+			.arg(QString::number(value.lowerTolerance, 'f', precision)).arg(QString::number(value.measurement, 'f', precision));
 	}
 	return result;
 }
@@ -477,6 +483,35 @@ void DimFigure::rotate(double angle, double x, double y, double z) {
 
 void DimFigure::alignment(double angle, double offsetX, double offsetY) {
 	_labelPoint.alignment(angle, offsetX, offsetY);
+}
+
+void DimFigure::edit(QMap<QString, QString> paramsChanged) {
+	paramsChanged.contains("x") ? _labelPoint.x = paramsChanged.value("x").toDouble() : 0;
+	paramsChanged.contains("y") ? _labelPoint.y = paramsChanged.value("y").toDouble() : 0;
+	paramsChanged.contains("z") ? _labelPoint.z = paramsChanged.value("z").toDouble() : 0;
+	paramsChanged.contains("Ref1") ? _firstReference = paramsChanged.value("Ref1") : "";
+	paramsChanged.contains("Ref2") ? _secondReference = paramsChanged.value("Ref2") : "";
+	for(auto key : paramsChanged.keys()) {
+		if(!key.contains("Dim")) {
+			continue;
+		}
+		auto index = key.split("Dim ")[1].toInt() - 1;
+		auto dimParams = QMap<QString, QString>();
+		auto paramsStr = paramsChanged[key].split(",");
+		for(auto param : paramsStr) {
+			auto pair = param.split(":");
+			dimParams[pair[0]] = pair[1];
+		}
+		_values[index] = Value(valueTypeFromString(dimParams.contains("Type") ? dimParams["Type"] : valueTypeToString(_values[index].type)), dimParams["Show"] == "true",
+			_values[index].measurement, dimParams["Nom"].toDouble(), dimParams["UT"].toDouble(), dimParams["LT"].toDouble());
+	}
+}
+
+void DimFigure::updateRefToParent(QString oldParentName, QString newParentName) {
+	if(firstReference() == oldParentName)
+		_firstReference = newParentName;
+	if(secondReference() == oldParentName)
+        _secondReference = newParentName;
 }
 
 CircleFigure::CircleFigure() {
@@ -524,22 +559,24 @@ void CircleFigure::alignment(double angle, double offsetX, double offsetY) {
 }
 
 void CircleFigure::edit(QMap<QString, QString> paramsChanged) {
-	paramsChanged.contains("X") ? _center.x = paramsChanged.value("X").toDouble() : 0;
-	paramsChanged.contains("Y") ? _center.y = paramsChanged.value("Y").toDouble() : 0;
-	paramsChanged.contains("Z") ? _center.z = paramsChanged.value("Z").toDouble() : 0;
-	paramsChanged.contains("I") ? _normal.x = paramsChanged.value("I").toDouble() : 0;
-	paramsChanged.contains("J") ? _normal.y = paramsChanged.value("J").toDouble() : 0;
-	paramsChanged.contains("K") ? _normal.z = paramsChanged.value("K").toDouble() : 0;
+	paramsChanged.contains("x") ? _center.x = paramsChanged.value("x").toDouble() : 0;
+	paramsChanged.contains("y") ? _center.y = paramsChanged.value("y").toDouble() : 0;
+	paramsChanged.contains("z") ? _center.z = paramsChanged.value("z").toDouble() : 0;
+	paramsChanged.contains("i") ? _normal.x = paramsChanged.value("i").toDouble() : 0;
+	paramsChanged.contains("j") ? _normal.y = paramsChanged.value("j").toDouble() : 0;
+	paramsChanged.contains("k") ? _normal.z = paramsChanged.value("k").toDouble() : 0;
 	paramsChanged.contains("Radius") ? _radius = paramsChanged.value("Radius").toDouble() : 0;
 }
 
 Figure::Figure() {
 	_isVisible = true;
+	_children = new QList<Figure*>();
 }
 
 Figure::Figure(QString name, bool isVisible) {
 	_name = name;
 	_isVisible = isVisible;
+	_children = new QList<Figure*>();
 }
 
 const QString& Figure::name() const {
@@ -568,6 +605,22 @@ void Figure::setColor(QColor color) {
 
 const QColor& Figure::color() const {
     return _color;
+}
+
+const QList<Figure*>& Figure::children() const {
+	return *_children;
+}
+
+QList<Figure*>& Figure::childrenMutable() const {
+	return *_children;
+}
+
+void Figure::addChild(Figure *child) const {
+	_children->append(child);
+}
+
+void Figure::removeChild(Figure *child) const {
+	_children->removeOne(child);
 }
 
 bool CurveFigure::isShowPoints() const {
@@ -720,15 +773,15 @@ FigureSettings* LineFigure::settings() {
 	};
 }
 
-DimFigure::DimFigure(const QString &name, const DimType type, const Point &labelPoint, const Figure *firstReference,
-	const Figure *secondReference) : Figure(name) {
+DimFigure::DimFigure(const QString &name, const DimType type, const Point &labelPoint, const QString firstReference,
+	const QString secondReference) : Figure(name) {
 		_dimType = type;
 		_labelPoint = labelPoint;
 		_firstReference = firstReference;
 		_secondReference = secondReference;
 }
 
-DimFigure::DimFigure(const QString &name, const Point &labelPoint, const Figure *firstReference, const Figure *secondReference) : Figure(name) {
+DimFigure::DimFigure(const QString &name, const Point &labelPoint, const QString firstReference, const QString secondReference) : Figure(name) {
 	_labelPoint = labelPoint;
 	_firstReference = firstReference;
 	_secondReference = secondReference;
@@ -736,8 +789,6 @@ DimFigure::DimFigure(const QString &name, const Point &labelPoint, const Figure 
 
 FigureSettings* DimFigure::settings() {
 	auto point = labelPoint();
-	auto rif = firstReference() ? firstReference()->name() : "";
-	auto rif1 = secondReference() ? secondReference()->name() : "";
 	double A;
 
 	if(_dimType == DimType::Position) A = 1;
@@ -751,7 +802,7 @@ FigureSettings* DimFigure::settings() {
 	else if(_dimType == DimType::Form) A = 20;
 	else if(_dimType == DimType::TruePosition) A = 21;
 
-	return new FigureSettings { name(), "DIM", rif, rif1, 0, 0,
+	return new FigureSettings { name(), "DIM", firstReference(), secondReference(), 0, 0,
 		point.x, point.y, point.z, 0, 0, 1, 0, 0, 0, A, 0, 0, 0, 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
 		false, false, false, false, false, false, convertDimValueToPoints()
@@ -796,12 +847,21 @@ DimFigure::Value::Value(DimFigure::ValueType valueType, bool newIsShow, double n
 }
 
 const QString DimFigure::Value::typeToFLR() const {
-	return QString(); // TODO
+	switch(type) {
+		case ValueType::X: return "X";
+		case ValueType::Diameter: return "RA";
+		case ValueType::Length: return "DXY";
+		case ValueType::Min: return "Min";
+		case ValueType::Max: return "Max";
+		case ValueType::dY: return "BF-Y";
+		case ValueType::Rotation: return "BF-Rot";
+		default: return "Null";
+	}
 }
 
 TextFigure::TextFigure(){ }
 
-TextFigure::TextFigure(QString name, QString text, Point position, double textSize, const Figure *reference, double imageWidth, double imageHeight, double imageZoom) {
+TextFigure::TextFigure(QString name, QString text, Point position, double textSize, QString reference, double imageWidth, double imageHeight, double imageZoom) {
 	setName(name);
 	_text = text;
     _position = position;
@@ -836,11 +896,11 @@ void TextFigure::setTextSize(double textSize) {
     _textSize = textSize;
 }
 
-const Figure* TextFigure::reference() const {
+const QString TextFigure::reference() const {
     return _reference;
 }
 
-void TextFigure::setReference(Figure *reference) {
+void TextFigure::setReference(const QString reference) {
     _reference = reference;
 }
 
@@ -880,12 +940,33 @@ void TextFigure::alignment(double angle, double offsetX, double offsetY) {
     _position.alignment(angle, offsetX, offsetY);
 }
 
+void TextFigure::edit(QMap<QString, QString> paramsChanged) {
+	_text = paramsChanged["text"];
+    _reference = paramsChanged["reference"];
+    _textSize = paramsChanged["textSize"].toDouble();
+    _imageZoom = paramsChanged["imageZoom"].toDouble();
+	_position.x = paramsChanged["x"].toDouble();
+    _position.y = paramsChanged["y"].toDouble();
+}
+
+void TextFigure::updateRefToParent(QString oldParentName, QString newParentName) {
+	if(_reference == oldParentName)
+		_reference = newParentName;
+}
+
 FigureSettings* TextFigure::settings() {
-	auto rif = reference() ? reference()->name() : "";
 	const QVector<CurvePoint> empty = {};
-	return new FigureSettings { name(), "TXT", text(), rif, ColorTranslator::getIntFromColor(&color()), 0,
+	return new FigureSettings { name(), "TXT", text(), reference(), ColorTranslator::getIntFromColor(&color()), 0,
 		position().x, position().y, position().z, 0, 0, 1, 0, 0, 0, textSize(), imageWidth(), imageHeight(), imageZoom(), 0, 0, 0, 0, 0,
 		isVisible(), false, false, false, false,
 		false, false, false, false, false, false, empty
 	};
+}
+
+DimFigure::ValueType DimFigure::valueTypeFromString(QString valueTypeStr) {
+	return static_cast<ValueType>(QMetaEnum::fromType<ValueType>().keyToValue(valueTypeStr.toLatin1()));
+}
+
+QString DimFigure::valueTypeToString(ValueType valueType) {
+	return QMetaEnum::fromType<ValueType>().valueToKey(valueType);
 }

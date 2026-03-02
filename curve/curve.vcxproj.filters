@@ -103,7 +103,7 @@
     <ClCompile Include="colortranslator.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
-    <ClCompile Include="creatingmarkup.cpp">
+    <ClCompile Include="markupcreator.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
     <ClCompile Include="curvegraphicswidget.cpp">
@@ -202,12 +202,30 @@
     <ClCompile Include="inserttextdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="printer.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="printpreviewwindow.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="curveanalyzer.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="screenshotcreator.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="figurecreator.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="functionparamsgenerator.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
+    <ClCompile Include="functionparamsgenerator.cpp">
+      <Filter>Source Files\Report</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curvemachine.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="filesystem.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="functionparams.h">
@@ -222,9 +240,6 @@
     <ClInclude Include="reportgenerator.h">
       <Filter>Header Files\Report</Filter>
     </ClInclude>
-    <ClInclude Include="reportsettings.h">
-      <Filter>Header Files\Report</Filter>
-    </ClInclude>
     <ClInclude Include="continuableexception.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
@@ -236,6 +251,24 @@
     </ClInclude>
     <ClInclude Include="curvelibrary.h">
       <Filter>Header Files\Curve Library</Filter>
+    </ClInclude>
+    <ClInclude Include="filesystem.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="screenshotcreator.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="functionparamsgenerator.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="markupcreator.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="curveanalyzer.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="figurecreator.h">
+      <Filter>Header Files\Report</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +286,6 @@
     </QtMoc>
     <QtMoc Include="calculatedeviationsdialog.h">
       <Filter>Header Files\Dialogs</Filter>
-    </QtMoc>
-    <QtMoc Include="creatingmarkup.h">
-      <Filter>Header Files\Report</Filter>
     </QtMoc>
     <QtMoc Include="curvegraphicswidget.h">
       <Filter>Header Files\Graphics</Filter>
@@ -314,17 +344,20 @@
     <QtMoc Include="exporttoFLRdialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="creatingmarkup.h">
-      <Filter>Header Files\Report</Filter>
-    </QtMoc>
     <QtMoc Include="figure.h">
       <Filter>Header Files\Core</Filter>
     </QtMoc>
-    <QtMoc Include="creatingmarkup.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="inserttextdialog.h">
       <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="printer.h">
+      <Filter>Header Files\Report</Filter>
+    </QtMoc>
+    <QtMoc Include="printpreviewwindow.h">
+      <Filter>Header Files\Report</Filter>
+    </QtMoc>
+    <QtMoc Include="reportsettings.h">
+      <Filter>Header Files\Report</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -402,6 +435,9 @@
     </QtUic>
     <QtUic Include="inserttextdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="printpreviewwindow.ui">
+      <Filter>Form Files\Other</Filter>
     </QtUic>
   </ItemGroup>
 </Project>

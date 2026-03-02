@@ -28,6 +28,7 @@ public:
     static Function19Result function19(QVector<CurvePoint> points, Function19Params params); //specified number of points
     static Function21Result function21(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, QVector<CurvePoint> curve3, Function21Params params); //best-fit analog
     static Function31Result function31(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, Function31Params params); //stretch LE, TE
+    static Function42Result function42(QVector<CurvePoint> curve1, QVector<CurvePoint> curve2, Function42Params params); //Use 3D Vectors for comp.
 
 private:
     static void runCurve();

@@ -7,7 +7,7 @@ Project::~Project() {
     }
 }
 
-const QList<Figure*>& Project::figures() const {
+const QMap<QString, Figure*>& Project::figures() const {
     return _figures;
 }
 
@@ -42,13 +42,7 @@ const QList<TextFigure*>& Project::textFigures() const {
 }
 
 const Figure* Project::findFigure(const QString &name) const {
-    for(auto i = 0; i < _figures.length(); i++) {
-        if(_figures[i]->name() == name) {
-            return _figures[i];
-        }
-    }
-
-    return nullptr;
+    return _figures.contains(name) ? _figures[name] : nullptr;
 }
 
 const bool Project::containsFigure(const QString &name) const {
@@ -77,49 +71,99 @@ int Project::precision() const {
     return _precision;
 }
 
-QStringList Project::findFigureChildren(const QString &name) {
-    QStringList childs;
-    const Figure *parentFigure = findFigure(name);
-
-    for(auto &figure : _figures) {
-        if(auto dimFigure = dynamic_cast<DimFigure*>(figure)) {
-            if(dimFigure->firstReference() == parentFigure || dimFigure->secondReference() == parentFigure) {
-                childs.push_back(dimFigure->name());
-            }
-        }
-        if(auto textFigure = dynamic_cast<TextFigure*>(figure)) {
-            if(textFigure->reference() == parentFigure) {
-                childs.push_back(textFigure->name());
-            }
-        }
-    }
-
-    return childs;
-}
-
 double Project::scaleFactor() const {
     return _scaleFactor;
 }
 
-const Point* Project::centerPoint() const {
+Point Project::centerPoint() const {
     return _centerPoint;
 }
 
-void Project::insertFigure(Figure * figure) {
-    _figures.append(figure);
+void Project::setProjectPath(const QString &path) {
+    _projectPath = path;
+    emit projectPathChanged(_projectPath);
+}
+
+const QString Project::projectPath() {
+    return _projectPath;
+}
+
+void Project::insertFigure(Figure *figure) {
+    _figures[figure->name()] = figure;
     emit figureAdded(figure);
+    initiateParentChildReference(figure);
+}
+
+void Project::initiateParentChildReference(Figure *figure) {
+    if(auto dim = dynamic_cast<DimFigure*>(figure)) {
+        attachChildToParent(dim, dim->firstReference());
+        attachChildToParent(dim, dim->secondReference());
+        emit figureEdited(dim->name());
+    } else if(auto text = dynamic_cast<TextFigure*>(figure)) {
+        attachChildToParent(text, text->reference());
+        emit figureEdited(text->name());
+    } else {
+        if(_lostParents.contains(figure->name())) {
+            for(auto child : _lostParents[figure->name()]) {
+                figure->addChild(child);
+                emit figureEdited(child->name());
+            }
+            _lostParents.remove(figure->name());
+        }
+    }
+}
+
+void Project::updateParent(Figure *child, QString newParent1, QString newParent2) { //edit references
+    if(auto dim = dynamic_cast<DimFigure*>(child)) {
+        detachChildFromParent(dim, dim->firstReference());
+        detachChildFromParent(dim, dim->secondReference());
+        attachChildToParent(dim, newParent1);
+        attachChildToParent(dim, newParent2);
+    } else if(auto text = dynamic_cast<TextFigure*>(child)) {
+        detachChildFromParent(text, text->reference());
+        attachChildToParent(text, newParent1);
+    }
+    emit figureEdited(child->name());
+}
+
+void Project::attachChildToParent(Figure *child, QString parentName) {
+    if(parentName != nullptr) {
+        auto parent1 = findFigure(parentName);
+        if(parent1 != nullptr)
+            parent1->addChild(child);
+        else
+            _lostParents[parentName].append(child);
+    }
+}
+
+void Project::detachChildFromParent(Figure *child, QString parentName) {
+    if(parentName != nullptr) {
+        auto parent1 = findFigure(parentName);
+        if(parent1) {
+            parent1->removeChild(child);
+        } else {
+            _lostParents[parentName].removeOne(child);
+        }
+    }
 }
 
 void Project::renameFigure(const QString &name, const QString &newName) {
     ARGUMENT_ASSERT(containsFigure(name), "Rename Figure: figure not found");
     ARGUMENT_ASSERT(!containsFigure(newName), "Rename Figure: other figure with the same name already exists");
-    findFigureMutable(name)->setName(newName);
+    auto figure = findFigureMutable(name);
+    figure->setName(newName);
+
+    _figures.remove(name);
+    _figures.insert(newName, figure);
+
     emit figureRenamed(name, newName);
 
     if(name == _currentFigureName) {
         _currentFigureName = newName;
         currentFigureChanged(newName, name);
     }
+    for(auto child : figure->childrenMutable())
+        child->updateRefToParent(name, newName);
     MacrosManager::log(MacrosManager::RenameFigure, { { "figureName", name }, { "newName", newName } });
 }
 
@@ -129,13 +173,14 @@ void Project::removeFigure(const QString &name) {
     if(_currentFigureName == name) {
         changeCurrentFigure(QString());
     }
-
-    for(auto &child : findFigureChildren(name)) {
-        removeFigure(child);
+    auto figure = findFigure(name);
+    for(auto child : figure->childrenMutable()) {
+        child->updateRefToParent(name, QString());
+        emit figureEdited(child->name());
     }
 
     emit figureAboutToBeRemoved(name);
-    _figures.removeOne(findFigure(name));
+    _figures.remove(figure->name());
     MacrosManager::log(MacrosManager::RemoveFigure, { { "figureName", name } });
 }
 
@@ -152,6 +197,11 @@ void Project::editFigure(const QString& name, QMap<QString, QString>& paramsChan
             auto color = ColorTranslator::getColorFromInt(paramsChanged.value("newColor").toInt());
             changeFigureColor(figure->name(), *color);
         });
+    }
+    if(auto dim = dynamic_cast<DimFigure*>(figure)) {
+        updateParent(dim, paramsChanged["Ref1"], paramsChanged["Ref2"]);
+    } else if(auto text = dynamic_cast<TextFigure*>(figure)) {
+        updateParent(text, paramsChanged["Ref"]);
     }
     figure->edit(paramsChanged);
     MacrosManager::log(MacrosManager::EditFigure, paramsChanged);
@@ -249,29 +299,10 @@ Figure* Project::findFigureMutable(const QString &name) {
 
 bool Project::confirmRemoveFigure(const QString &figureName) {
     QMessageBox mBox;
-    auto childs = findFigureChildren(figureName);
-    childs.removeDuplicates();
-
-    if(childs.isEmpty()) {
-        mBox.setText(QString("Delete %1 ?").arg(figureName));
-        mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    } else {
-        auto text = QString("%1 was deleted with children. Continue deleting?\nChildren:\n").arg(figureName);
-        if(childs.size() > 5) {
-            childs.resize(5);
-            childs.push_back("...");
-        }
-        auto lastChild = &childs.last();
-        for(auto &child : childs) {
-            text += QString("- %1").arg(child);
-            if(&child != lastChild) text += "\n";
-        }
-        mBox.setText(text);
-        mBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    }
-
+    mBox.setText(QString("Delete %1 and its children?").arg(figureName));
+    mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     int dialogResponse = mBox.exec();
-    return dialogResponse == QMessageBox::Yes || dialogResponse == QMessageBox::Ok;
+    return dialogResponse == QMessageBox::Ok;
 }
 
 const QString Project::currentFigureName() const {
@@ -283,6 +314,7 @@ void Project::requestFigureEditDialog(const QString figureName) {
 }
 
 void Project::safeInsert(QString figureName, Figure *figure, bool needToChangeCurrentFigure) {
+    std::lock_guard<std::mutex> lock(mtx);
     if(containsFigure(figureName)) {
         MacrosManager::executeWithoutLogging([&]() {
             removeFigure(figureName);
@@ -312,17 +344,16 @@ void Project::changeFigureColor(const QString figureName, QColor color) {
     emit figureColorChanged(figureName);
 }
 
-void Project::changeScale(double scaleFactor, const Point &center) {
+void Project::changeScale(double scaleFactor, const Point center) {
     _scaleFactor = scaleFactor;
-    _centerPoint = &center;
+    _centerPoint = center;
     emit scaleChanged(scaleFactor, center);
 }
 
 void Project::clear() {
-    auto length = _figures.length();
     MacrosManager::executeWithoutLogging([&]() {
-        for(int i = length - 1; i >= 0; i--) {
-            removeFigure(_figures[i]->name());
+        for(auto name : _figures.keys()) {
+            removeFigure(name);
         }
         changePartData(QString(), QString(), QString(), QString(), QString(), QString(),
             QString(), QString(), QString(), QString(), QString(), QString(), QString(), false);
@@ -470,9 +501,20 @@ void Project::rotateFigure(QString figureName, double angle, QString x, QString 
 }
 
 void Project::alignment(double angle, double offsetX, double offsetY) {
-    for(auto &figure : _figures) {
-        figure->alignment(angle, offsetX, offsetY);
-        emit figureCoordsChanged(figure->name());
+    QThread* thread = QThread::create([&]() {
+        auto itFirstThread = _figures.begin();
+        for(; itFirstThread != std::next(_figures.begin(), _figures.size() / 2); ++itFirstThread) {
+            std::future<void> future = std::async(std::launch::async, &Figure::alignment, *itFirstThread, angle, offsetX, offsetY);
+            emit figureCoordsChanged((*itFirstThread)->name());
+        }
+    });
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    thread->start();
+
+    auto itMainThread = std::next(_figures.begin(), _figures.size() / 2);
+    for(; itMainThread != _figures.end(); ++itMainThread) {
+        std::future<void> future = std::async(std::launch::async, &Figure::alignment, *itMainThread, angle, offsetX, offsetY);
+        emit figureCoordsChanged((*itMainThread)->name());
     }
     MacrosManager::log(MacrosManager::Alignment, {
         { "angle", QString::number(angle) },
@@ -544,11 +586,37 @@ void Project::alignment(QString angle, QString axis, QString offsetX, QString of
             alignmentOffsetY = -lineFigure->origin().y;
         }
     }
-    
-    for(auto &figure : _figures) {
-        figure->alignment(alignmentAngle, alignmentOffsetX, alignmentOffsetY);
-        emit figureCoordsChanged(figure->name());
+
+    QThread* thread = QThread::create([&]() {
+        auto itFirstThread = _figures.begin();
+        std::future<void> future;
+        std::vector<std::future<void>> futures;
+        for(; itFirstThread != std::next(_figures.begin(), _figures.size() / 2); ++itFirstThread) {
+            future = std::async(std::launch::async, &Figure::alignment, *itFirstThread, alignmentAngle, alignmentOffsetX, alignmentOffsetY);
+            emit figureCoordsChanged((*itFirstThread)->name());
+            futures.push_back(std::move(future));
+        }
+        for(int i = 0; i < futures.size(); i++) {
+            std::future<void> &itFuture = futures[i];
+            itFuture.wait();
+        }
+    });
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    thread->start();
+
+    auto itMainThread = std::next(_figures.begin(), _figures.size() / 2);
+    std::future<void> future;
+    std::vector<std::future<void>> futures;
+    for(; itMainThread != _figures.end(); ++itMainThread) {
+        future = std::async(std::launch::async, &Figure::alignment, *itMainThread, alignmentAngle, alignmentOffsetX, alignmentOffsetY);
+        emit figureCoordsChanged((*itMainThread)->name());
+        futures.push_back(std::move(future));
     }
+    for(int i = 0; i < futures.size(); i++) {
+        std::future<void> &itFuture = futures[i];
+        itFuture.wait();
+    }
+
     MacrosManager::log(MacrosManager::Alignment, {
         { "angle", angle },
         { "axis", axis },
@@ -622,26 +690,26 @@ void Project::changePartData(QString reportTitle, QString description, QString d
     _revision = txtFigureToText(revision);
 
     MacrosManager::log(MacrosManager::PartData, {
-        {"reportTitle", reportTitle},
-        {"description", description},
-        {"drawing", drawing},
-        {"orderNumber", orderNumber},
-        {"partNumber", partNumber},
-        {"projectOperator", projectOperator},
-        {"note", note},
-        {"machine", machine},
-        {"tool", tool},
-        {"fixturing", fixturing},
-        {"batch", batch},
-        {"supplier", supplier},
-        {"revision", revision},
-        {"showPartDataWindowWhenMacroRuns", needShowWindowWhenMacroRuns == true ? "Yes" : "No"}
+        { "reportTitle", reportTitle },
+        { "description", description },
+        { "drawing", drawing },
+        { "orderNumber", orderNumber },
+        { "partNumber", partNumber },
+        { "projectOperator", projectOperator },
+        { "note", note },
+        { "machine", machine },
+        { "tool", tool },
+        { "fixturing", fixturing },
+        { "batch", batch },
+        { "supplier", supplier },
+        { "revision", revision },
+        { "showPartDataWindowWhenMacroRuns", needShowWindowWhenMacroRuns == true ? "Yes" : "No" }
         });
 }
 
 void Project::constructText(QString name, QString text, double x, double y, double textSize, QString reference,
     double imageWidth, double imageHeight, double imageZoom) {
-    auto textFigure = new TextFigure(name, text, Point(x, y, 0), textSize, findFigure(reference), imageWidth, imageHeight, imageZoom);
+    auto textFigure = new TextFigure(name, text, Point(x, y, 0), textSize, reference, imageWidth, imageHeight, imageZoom);
     safeInsert(name, textFigure);
     MacrosManager::log(MacrosManager::InsertText, {
         { "name", name },
@@ -656,18 +724,19 @@ void Project::constructText(QString name, QString text, double x, double y, doub
         });
 }
 
-void Project::plotMousePressed(const Point pos) {
-    emit mousePressed(pos);
-    _mousePos = pos;
+Point Project::chooseCoordsByClick() {
+    //emit controlWidgetsEnabled(false);
+    //emit raiseMainWindow();
+    //emit trackMousePositionRequested();
+    //QEventLoop loop;
+    //connect(this, &Project::mousePressed, &loop, &QEventLoop::quit);
+    //loop.exec();
+    //return Point(_mousePos.x, _mousePos.y, 0);
+    return Point(0, 0);
 }
 
-Point Project::chooseCoordsByClick() {
-    emit raiseMainWindow();
-    emit trackMousePositionRequested();
-    QEventLoop loop;    
-    connect(this, &Project::mousePressed, &loop, &QEventLoop::quit);
-    loop.exec();
-    return Point(_mousePos.x, _mousePos.y, 0);
+void Project::addOperationtime(QString operation, quint64 time) {
+    operationTimes[operation].append(time);
 }
 
 QString Project::txtFigureToText(QString txtFigure) const {
@@ -681,4 +750,25 @@ QString Project::txtFigureToText(QString txtFigure) const {
     } else {
         return txtFigure;
     }
+}
+
+QString Project::getFreeName(QString startsWith, bool firstWithNumber, QString separator) {
+    if(!firstWithNumber && !figures().contains(startsWith)) {
+        return startsWith;
+    }
+    auto index = 1;
+    auto flag = true;
+    while(flag) {
+        flag = false;
+        auto newName = startsWith + separator + QString::number(index);
+        if(_figures.contains(newName)) {
+            index++;
+            flag = true;
+            break;
+        }
+        if(!flag) {
+            return startsWith + QString::number(index);
+        }
+    }
+    return QString();
 }

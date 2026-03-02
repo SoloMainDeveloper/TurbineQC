@@ -14,6 +14,7 @@ class Function1Params : public FunctionParams {
 public:
     Function1Params(int intermediate, double threshold = 0, double minline = 0, bool isClosed = false,
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
+    Function1Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
@@ -41,6 +42,7 @@ class Function3Params : public FunctionParams {
 public:
     Function3Params(double radiusCorrection, bool isClosed = false, 
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
+    Function3Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
@@ -55,6 +57,7 @@ class Function4Params : public FunctionParams {
 public:
     Function4Params(float nominalTolerance = 0, int evaluationPlace = 1, int evaluationDirection = 1, 
         bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
+    Function4Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
@@ -88,6 +91,7 @@ public:
         bool needYShift = true, bool needRotation = true, bool needHConstraint = false, double xShiftFrom = 0, double xShiftTo = 0, 
         bool needVConstraint = false, double yShiftFrom = 0, double yShiftTo = 0, bool needRConstraint = false, double rotationFrom = 0, 
         double rotationTo = 0);
+    Function6Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
@@ -246,19 +250,21 @@ private:
 
 class Function18Params : public FunctionParams {
 public:
-    Function18Params(int directionLE = 0, int percentLE = 5, int percentTE = 5, int joinedSegments = 1);
+    Function18Params(int directionLE = 0, double percentLE = 5, double percentTE = 5, int joinedSegments = 1);
+    Function18Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
     int _leadingEdgeDirection;
-    int _percentageLE;
-    int _percentageTE;
+    double _percentageLE;
+    double _percentageTE;
     int _joinedSegmentsCount;
 };
 
 class Function19Params : public FunctionParams {
 public:
     Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, QString mode = "number", int value = 500);
+    Function19Params(const QMap<QString, QString> *data);
     QString toQString() override;
 
 private:
@@ -291,4 +297,18 @@ private:
     int _leadingEdgeDirection;
     bool _isLEStretch;
     bool _isTEStretch;
+};
+
+class Function42Params : public FunctionParams {
+public:
+    Function42Params(bool isClosed = true, bool needVectors = true, 
+        bool needColumnA = false, bool needColumnR = false, bool needColumnD = false);
+    QString toQString() override;
+
+private:
+    bool _isClosed;
+    bool _needVectors;
+    bool _needColumnA;
+    bool _needColumnR;
+    bool _needColumnD;
 };
