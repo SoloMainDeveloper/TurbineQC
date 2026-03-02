@@ -1,9 +1,15 @@
 #pragma once
 
-class ReportSettings {
+#include <QObject>
+#include "turbinewindow.h"
+
+class ReportSettings : public QObject {
+    Q_OBJECT
+
 public:
     static QMap<QString, QString> convertToQMap(std::shared_ptr<ReportSettings> reportSettings);
     static std::shared_ptr<ReportSettings> convertToSettings(QMap<QString, QString> *params);
+    static QMap<QString, QString> translateAirfoilSettings(QList<QStringList> lines);
 
     explicit ReportSettings();
     virtual ~ReportSettings();
@@ -30,8 +36,13 @@ public:
         WithoutEdgesForm,
     };
     enum class GlobalBestFit {
+        NoFit,
         Whole,
         WithoutEdges,
+        WithoutTE,
+        TwoPointsAt10Percent,
+        FitInTolBand,
+        MinForm,
     };
     enum class BestFitType {
         TranslationAndRotation,
@@ -43,9 +54,9 @@ public:
         YTranslationAndRotation,
     };
     enum class Axis {
-        No,
-        Center,
         LeftAndDown,
+        Center,
+        No,
     };
 
     //LE, TE
@@ -62,13 +73,64 @@ public:
 
     //Form axis
     enum class Evaluation {
-        Nominal,
-        Measured
+        Nominal = 1,
+        Measured = 2,
     };
 
     //Single report
     enum class Template {
         AirfoilReport1,
+    };
+
+    enum class TurbineParamType {
+        MaxWidth = 0,
+        MaxWidthX = 1,
+        MaxWidthY = 2,
+        CenterMassX = 3,
+        CenterMassY = 4,
+        ChordAngle = 5,
+        ContactLineLength = 6,
+        LEWidth = 7,
+        TEWidth = 8,
+        LERadius = 9,
+        TERadius = 10,
+        ShiftX = 11,
+        ShiftY = 12,
+        Turn = 13,
+        MaxX = 14,
+        MinX = 15,
+        MaxY = 16,
+        MinY = 17,
+        PositionSize = 18,
+        DistX = 19,
+        DistY = 20,
+        FormLEMin = 21,
+        FormTEMin = 22,
+        FormConvexMin = 23,
+        FormConcaveMin = 24,
+        FormLEMax = 25,
+        FormTEMax = 26,
+        FormConvexMax = 27,
+        FormConcaveMax = 28,
+        LEDeviation = 29,
+        TEDeviation = 30,
+        ThicknessFromLE = 31,
+        FormLEMinMax = 32,
+        FormTEMinMax = 33,
+        FormConvexMinMax = 34,
+        FormConcaveMinMax = 35
+    };
+    Q_ENUM(TurbineParamType)
+
+    struct TurbineParameter {
+        TurbineParamType type;
+        bool needCalculate = false;
+        double nominal = 0.0;
+        double measured = 0.0;
+        double UT = 0.0;
+        double LT = 0.0;
+        QString extraParam1;
+        QString extraParam2;
     };
 
     void setNominalName(QString name);
@@ -83,85 +145,13 @@ public:
     QImage screenshotOfTE() const;
 
     //Calculate parameters
-    void setNomMaxWidth(double nominal);
-    void setMeasMaxWidth(double measured);
-    void setMaxWidthTolerances(double upTol, double downTol);
-    bool onMaxWidth() const;
-    double nominalMaxWidth() const;
-    double upTolMaxWidth() const;
-    double downTolMaxWidth() const;
-    double measuredMaxWidth() const;
-    double deviationMaxWidth() const;
-
-    void setNomXMaxWidth(double nominal);
-    void setMeasXMaxWidth(double measured);
-    void setXMaxWidthTolerances(double upTol, double downTol);
-    bool onXMaxWidth() const;
-    double nominalXMaxWidth() const;
-    double upTolXMaxWidth() const;
-    double downTolXMaxWidth() const;
-    double measuredXMaxWidth() const;
-    double deviationXMaxWidth() const;
-
-    void setNomYMaxWidth(double nominal);
-    void setMeasYMaxWidth(double measured);
-    void setYMaxWidthTolerances(double upTol, double downTol);
-    bool onYMaxWidth() const;
-    double nominalYMaxWidth() const;
-    double upTolYMaxWidth() const;
-    double downTolYMaxWidth() const;
-    double measuredYMaxWidth() const;
-    double deviationYMaxWidth() const;
-
-    void setNomContactLineLength(double nominal);
-    void setMeasContactLineLength(double measured);
-    void setContactLineLengthTolerances(double upTol, double downTol);
-    bool onContactLineLength() const;
-    double nominalContactLineLength() const;
-    double upTolContactLineLength() const;
-    double downTolContactLineLength() const;
-    double measuredContactLineLength() const;
-    double deviationContactLineLength() const;
-
-    void setNomLEWidth(double nominal);
-    void setMeasLEWidth(double measured);
-    void setLEWidthTolerances(double upTol, double downTol);
-    bool onLEWidth() const;
-    double nominalLEWidth() const;
-    double upTolLEWidth() const;
-    double downTolLEWidth() const;
-    double measuredLEWidth() const;
-    double deviationLEWidth() const;
-
-    void setNomTEWidth(double nominal);
-    void setMeasTEWidth(double measured);
-    void setTEWidthTolerances(double upTol, double downTol);
-    bool onTEWidth() const;
-    double nominalTEWidth() const;
-    double upTolTEWidth() const;
-    double downTolTEWidth() const;
-    double measuredTEWidth() const;
-    double deviationTEWidth() const;
-
-    void setNomLERadius(double nominal);
-    void setMeasLERadius(double measured);
-    void setLERadiusTolerances(double upTol, double downTol);
-    bool onLERadius() const;
-    double nominalLERadius() const;
-    double upTolLERadius() const;
-    double downTolLERadius() const;
-    double measuredLERadius() const;
-    double deviationLERadius() const;
-
-    void setNomTERadius(double nominal);
-    void setMeasTERadius(double measured);
-    void setTERadiusTolerances(double upTol, double downTol);
-    bool onTERadius() const;
-    double nominalTERadius() const;
-    double upTolTERadius() const;
-    double downTolTERadius() const;
-    double measuredTERadius() const;
-    double deviationTERadius() const;
+    QList<TurbineParameter> getTurbineParameter(TurbineParamType type) const;
+    void appendTurbineParameter(TurbineParameter parameter);
+    QMap<TurbineParamType, QList<TurbineParameter>>&  turbineParameters();
+    bool needCalculateParam(TurbineParamType type) const;
+    void clearTurbineParameters();
+    static TurbineParamType turbineParamTypeFromQString(const QString &name);
+    static QString turbineParamTypeToQString(TurbineParamType type);
     
     //Direction, zone
     void setLEDirection(LEDirection direction);
@@ -184,7 +174,7 @@ public:
     double radiusCompensation() const;
 
     //Global form
-    void setNeedAdditionalFigures(bool needMeasuredMaxDia, bool needMeasuredMCL, bool needMeasuredContactLine);
+    void setNeedAdditionalFigures(bool needMaxDia, bool needMCL, bool needContactLine);
     bool needMaxDiameter() const;
     bool needMCL() const;
     bool needContactLine() const;
@@ -218,7 +208,7 @@ public:
     void setStretch(bool isLEStrech, bool isTEStretch);
     bool isLEStretch() const;
     bool isTEStretch() const;
-    
+
     //LE, TE
     void setEdgesBestFit(EdgeBestFit bestFitOfLE, EdgeBestFit bestFitOfTE);
     EdgeBestFit bestFitOfLE() const;
@@ -243,8 +233,8 @@ public:
     int valueOfSetShowDevsTE() const;
 
     //Form axis
-    void setTypesOfTableValue(QMap<DimFigure::ValueType, bool> typesOfTableValue);
-    QMap<DimFigure::ValueType, bool> typesOfTableValue() const;
+    void setOutputFormMode(int number);
+    int outputFormMode() const;
 
     void setEvaluation(Evaluation evaluationPlace, Evaluation evaluationDirection);
     Evaluation evaluationPlace() const;
@@ -260,42 +250,9 @@ public:
     void setComment(const QString &comment);
     QString comment() const;
 
-    void setReportPath(const QString &reportPath);
-    QString reportPath() const;
-    QString reportName() const;
-
-    //Part Data
-    /*QString description() const;
-    QString drawing() const;
-    QString orderNumber() const;
-    QString partNumber() const;
-    QString projectOperator() const;
-    QString note() const;
-    QString machine() const;
-    QString tool() const;
-    QString fixturing() const;
-    QString batch() const;
-    QString supplier() const;
-    QString revision() const;*/
-
-    //void setPartData(QString description, QString drawing, QString orderNumber, QString partNumber, QString projectOperator, QString note,
-    //    QString machine, QString tool, QString fixturing, QString batch, QString supplier, QString revision);
-    //void setDescription(QString description);
-    //void setDrawing(QString drawing);
-    //void setOrderNumber(QString orderNumber);
-    //void setPartNumber(QString partNumber);
-    //void setProjectOperator(QString operatorName);
-    //void setNote(QString note);
-    //void setMachine(QString machine);
-    //void setTool(QString tool);
-    //void setFixturing(QString fixturing);
-    //void setBatch(QString batch);
-    //void setSupplier(QString supplier);
-    //void setRevision(QString revision);
-
-    void clear();
-
 private:
+    static QList<QStringList> getAirfoilPart(QList<QStringList> lines, QString startWith, QString endWith);
+
     QString _nominalName;
     QString _measuredName;
 
@@ -304,61 +261,7 @@ private:
     QImage _screenshotOfTE;
 
     //Calculate parameters
-    bool _onMaxWidth;
-    double _nominalMaxWidth;
-    double _upTolMaxWidth;
-    double _downTolMaxWidth;
-    double _measuredMaxWidth;
-    double _deviationMaxWidth;
-
-    bool _onXMaxWidth;
-    double _nominalXMaxWidth;
-    double _upTolXMaxWidth;
-    double _downTolXMaxWidth;
-    double _measuredXMaxWidth;
-    double _deviationXMaxWidth;
-
-    bool _onYMaxWidth;
-    double _nominalYMaxWidth;
-    double _upTolYMaxWidth;
-    double _downTolYMaxWidth;
-    double _measuredYMaxWidth;
-    double _deviationYMaxWidth;
-
-    bool _onContactLineLength;
-    double _nominalContactLineLength;
-    double _upTolContactLineLength;
-    double _downTolContactLineLength;
-    double _measuredContactLineLength;
-    double _deviationContactLineLength;
-
-    bool _onLEWidth;
-    double _nominalLEWidth;
-    double _upTolLEWidth;
-    double _downTolLEWidth;
-    double _measuredLEWidth;
-    double _deviationLEWidth;
-
-    bool _onTEWidth;
-    double _nominalTEWidth;
-    double _upTolTEWidth;
-    double _downTolTEWidth;
-    double _measuredTEWidth;
-    double _deviationTEWidth;
-
-    bool _onLERadius;
-    double _nominalLERadius;
-    double _upTolLERadius;
-    double _downTolLERadius;
-    double _measuredLERadius;
-    double _deviationLERadius;
-
-    bool _onTERadius;
-    double _nominalTERadius;
-    double _upTolTERadius;
-    double _downTolTERadius;
-    double _measuredTERadius;
-    double _deviationTERadius;
+    QMap<TurbineParamType, QList<TurbineParameter>> _turbineParameters;
 
     //Direction, zone
     LEDirection _directionOfLE;
@@ -410,28 +313,12 @@ private:
     int _valueOfSetShowDevsTE;
 
     //Form axis
-    QMap<DimFigure::ValueType, bool> _typesOfTableValue;
+    int _outputFormMode;
     Evaluation _evaluationPlace;
     Evaluation _evaluationDirection;
 
     //Single report
     bool _needPrintWithTemplate;
-    QString _reportPath;
-    QString _reportName;
     QString _comment;
     Template _reportTemplate;
-
-    ////Part Data
-    //QString _description;
-    //QString _drawing;
-    //QString _orderNumber;
-    //QString _partNumber;
-    //QString _projectOperator;
-    //QString _note;
-    //QString _machine;
-    //QString _tool;
-    //QString _fixturing;
-    //QString _batch;
-    //QString _supplier;
-    //QString _revision;
 };
