@@ -9,5 +9,9 @@
         <file>icons/point.ico</file>
         <file>icons/rename.ico</file>
         <file>icons/text.ico</file>
+        <file>icons/hideAll.ico</file>
+        <file>icons/showAll.ico</file>
+        <file>icons/all.ico</file>
+        <file>icons/empty.ico</file>
     </qresource>
 </RCC>

@@ -224,11 +224,12 @@ void FileSystem::saveProject(Project *project, QString dir, QString projectName,
     }
     input.close();
     if(createCRV) {
-        QString command;
-        QTextStream commandStream(&command);
-        commandStream << "powershell.exe -Command " << "\"$file_text = Get-Content '" << resultTXT << "';"
-            << "Set-Content -Path '" << dir + "/" + projectName + ".crv" << "' -Value $file_text;\"";
-        system(command.toStdString().c_str());
+        auto command = QString("Get-Content '%1' | Set-Content -Path '%2/%3.crv'").arg(resultTXT, dir, projectName);
+
+        QProcess process;
+        process.setProcessChannelMode(QProcess::MergedChannels);
+        process.start("powershell.exe", QStringList() << "-Command" << command);
+        process.waitForFinished();
     }
     project->setProjectPath(resultTXT);
     MacrosManager::log(MacrosManager::SaveProject, {
@@ -331,15 +332,18 @@ void FileSystem::loadProject(Project *project, const QString &filePath) {
     auto figures = parts[1].split("$END POINTS");
     figures.removeLast();
 
-    QVector<QFuture<void>> futures;
+    QVector<QFuture<Figure*>> futures;
     for(const auto &figure : figures) {
         futures.append(QtConcurrent::run([=]() {
-            parseFigureFromCRV(project, figure);
+            return parseFigureFromCRV(project, figure);
         }));
     }
-    for(auto &future : futures) {
-        future.waitForFinished();
+    QVector<Figure*> results;
+    for(const auto &future : futures) {
+        results.append(future.result());
     }
+    for(auto figure : results)
+        project->safeInsert(figure->name(), figure);
 
     project->changeScale(scaleFactor, offsetPoint);
     MacrosManager::executeWithoutLogging([&]() {
@@ -350,7 +354,7 @@ void FileSystem::loadProject(Project *project, const QString &filePath) {
     MacrosManager::log(MacrosManager::LoadProject, { { "filepath", filePath } });
 }
 
-void FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
+Figure* FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
     QElapsedTimer timer;
     timer.start();
     QMap<QString, QString> data;
@@ -376,26 +380,26 @@ void FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
         curve->setNumberingInterval(data["PointNumberingShowEach"].toInt());
         curve->setClosed(data["Closed"] == "1");
         curve->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
-        project->safeInsert(curve->name(), curve, false);
+        return curve;
     } else if(type == "LIN") {
         auto position = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
         auto direction = Point(data["U"].toDouble(), data["V"].toDouble(), data["W"].toDouble());
         auto line = new LineFigure(data["Name"], position, direction, qInf());
         line->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
         line->setVisible(data["Visible"] == "1");
-        project->safeInsert(line->name(), line, false);
+        return line;
     } else if(type == "PNT") {
         auto point = new PointFigure(data["Name"], CurvePoint(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble()));
         point->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
         point->setVisible(data["Visible"] == "1");
-        project->safeInsert(point->name(), point, false);
+        return point;
     } else if(type == "CIR") {
         auto center = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
         auto normal = Point(data["U"].toDouble(), data["V"].toDouble(), data["W"].toDouble());
         auto circle = new CircleFigure(data["Name"], center, normal, data["A"].toDouble() / 2);
         circle->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
         circle->setVisible(data["Visible"] == "1");
-        project->safeInsert(circle->name(), circle, false);
+        return circle;
     } else if(type == "DIM") {
         auto labelPoint = Point(data["X"].toDouble(), data["Y"].toDouble(), data["Z"].toDouble());
         auto dim = new DimFigure(data["Name"], labelPoint, data["Rif"], data["Rif1"]);
@@ -403,11 +407,11 @@ void FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
         dim->setValues(points);
         dim->setColor(*ColorTranslator::getColorFromInt(data["Colour"].toInt()));
         dim->setVisible(data["Visible"] == "1");
-        project->safeInsert(dim->name(), dim, false);
+        return dim;
     } else if(type == "TXT") {
         auto txt = new TextFigure(data["Name"], data["Rif"], Point(data["X"].toDouble(), data["Y"].toDouble(), 0), data["A"].toDouble(), data["Rif1"],
             data["B"].toDouble(), data["C"].toDouble(), data["D"].toDouble());
-        project->safeInsert(txt->name(), txt, false);
+        return txt;
     } else {
         QMessageBox::critical(nullptr, "Error", "Unknown element type");
     }
@@ -436,7 +440,9 @@ void FileSystem::exportToFLR(Project *project, QString filepath, QStringList *cu
     stream << "C23=" << time.toString("yyyy.MM.dd HH:mm:ss") << "\n";
     stream << "$END$\n";
 
-    for(auto dim : project->dimFigures()) {
+    auto dims = project->dimFigures();
+    std::sort(dims.begin(), dims.end(), [](const auto &a, const auto &b) { return a->index() < b->index(); });
+    for(auto dim : dims) {
         stream << dim->exportToFLR(4);
     }
     for(auto name : *curvesToTake) {
@@ -451,4 +457,33 @@ void FileSystem::exportToFLR(Project *project, QString filepath, QStringList *cu
         { "filepath", filepath },
         { "curvesToTake", curvesToTake->join(",") }
     });
+}
+
+void FileSystem::writeCompareFLR(QString fullFileName, QList<ResultCompare2Params*> result, double precision) {
+    QFile file(fullFileName);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning("Could not open file to write");
+        return;
+    }
+
+    QTextStream out(&file);
+    out << QString("%1 %2 %3 %4\n")
+        .arg("Name 1", -25) 
+        .arg("Name 2", -25)
+        .arg("Difference", -15)
+        .arg(QString("Status (%1)").arg(precision), -20);
+    out << QString("%1 %2 %3 %4\n")
+        .arg(QString("-").repeated(25), -25)
+        .arg(QString("-").repeated(25), -25)
+        .arg(QString("-").repeated(15), -15)
+        .arg(QString("-").repeated(20), -20);
+
+    for(auto i = 0; i < result.count(); i++) {
+        out << QString("%1 %2 %3 %4\n")
+            .arg(result[i]->name1(), -25)
+            .arg(result[i]->name2(), -25)
+            .arg(result[i]->diff(), -15)
+            .arg(result[i]->diff() > precision ? "FAIL" : "OK", -5);
+    }
+    file.close();
 }

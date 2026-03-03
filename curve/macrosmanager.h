@@ -12,7 +12,7 @@ public:
     enum OperationCRM {
         LoadCRV, PartData, CollectCross, Regen2D, Alignment,
         ShiftCurves1, RotateCurves1, BestFit2D, Airfoil, InsertBFPos,
-        ShowOptions, EditDim, SaveFLR, PrinterSettings, PrintFromViewer
+        ShowOptions, EditDim, SaveFLR, PrinterSettings, PrintFromViewer, ImportQDS
     };
     Q_ENUM(OperationCRM)
 
@@ -25,7 +25,7 @@ class MacrosManager : public QObject {
 public:
     enum Operation {
         LoadCloud, LoadProject, SaveProject, ClearProject,
-        ConstantTolerance, EdgesTolerance, GetWidthOfLE, GetWidthOfTE,
+        ConstantTolerance, EdgesTolerance, CreateWidthOfLE, CreateWidthOfTE,
         MergeScans, RadiusCorrection, CalculateDeviations, BestFit,
         CreateDimension, InsertBestFitPosition,
         RenameFigure, RemoveFigure, FigureVisibilityChanged,
@@ -36,6 +36,8 @@ public:
         ChangeFigureVisibility, ChangeCurveParameters, ChangeDimensionParameters,
         PartData, InsertText,
         PrintReport, ClearReport, RemovePage, SetPrinterSettings,
+        ShowAll, HideAll,
+        CompareFLR,
         Unknown
     };
     Q_ENUM(Operation)

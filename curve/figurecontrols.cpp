@@ -62,8 +62,7 @@ void FigureControls::changeCurrentItem(const QString &currentFigureName) {
 }
 
 void FigureControls::changeFigureVisibility(const QString figureName, bool visible) {
-    auto current = currentFigure->name();
-    if(current == figureName) {
+    if(currentFigure && currentFigure->name() == figureName) {
         visibilityCheckBox->setChecked(visible);
     }
 }
@@ -141,6 +140,7 @@ void FigureControls::addCurveLayout() {
     numberLayout->addWidget(numbersCheckBox);
     numbersLineEdit = new QLineEdit;
     numbersLineEdit->setValidator(new QIntValidator(0, 9999));
+    numbersLineEdit->setMaximumWidth(50);
     connect(numbersLineEdit, &QLineEdit::editingFinished, this, &FigureControls::curveParametersSwitched);
     //connect(numbersLineEdit, &QLineEdit::textEdited, this, &FigureControls::curveParametersSwitched);
     numberLayout->addWidget(numbersLineEdit);
@@ -151,6 +151,7 @@ void FigureControls::addCurveLayout() {
     amplificationLabel = new QLabel("Amplification");
     amplificationLineEdit = new QLineEdit;
     amplificationLineEdit->setValidator(new QDoubleValidator);
+    amplificationLineEdit->setMaximumWidth(50);
     connect(amplificationLineEdit, &QLineEdit::editingFinished, this, &FigureControls::curveParametersSwitched);
     //connect(amplificationLineEdit, &QLineEdit::textEdited, this, &FigureControls::curveParametersSwitched);
     layoutAmplification->addWidget(amplificationLabel);

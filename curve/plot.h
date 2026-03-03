@@ -28,6 +28,7 @@ public:
     const Figure* currentFigure() const;
     const Point pixelToCoord(const Point &pixel) const;
     const Point coordToPixel(const Point &coord) const;
+    const void findNearestCurvePoint(const Point &point, const CurveFigure *curveFigure, CurvePoint &result, int &resultIndex) const;
 
 public slots:
     void addFigure(Figure *figure);
@@ -63,29 +64,6 @@ signals:
     void projectMousePressed(const Point pos);
 
 private:
-    
-    class QCPItemTable final : public QCPItemRect {
-    public:
-        QCPItemTable(QCustomPlot *plot, const QString &name);
-        void addData(const QString &name, const QString &value);
-        void setIsCurrentFigure(bool isCurrentFigure);
-        void setOnlyLabel(bool isOnlyLabel);
-        void setColor(const QColor &color);
-        void draw(QCPPainter *painter) override;
-
-        QCPItemPosition * const targetPosition;
-        QCPItemPosition * const basePosition;
-
-    private:
-        QVector<std::pair<QString, QString>> _data;
-        QString _name;
-        QFont _font;
-        bool _isCurrentFigure = false;
-        bool _isOnlyLabel = false;
-        QColor _color;
-    };
-
-
     void updateFigure(const QString &figureName);
     void deleteFigure(const QString &figureName);
 
@@ -108,7 +86,6 @@ private:
     const QHash<double, double> intersectionLineAndRect(const double k, const double b, const QRectF &rect) const;
     QPointF toQPointF(const Point &point) const;
     const QString getTextByValueType(const DimFigure::ValueType &valueType) const;
-
     void setCurveDecoration(const CurveFigure *curveFigure, QCPCurve *curve);
     void drawCurve(const CurveFigure *curveFigure);
     void drawCurveVectors(const CurveFigure *curveFigure);
@@ -123,7 +100,7 @@ private:
     const double _labelOffsetPx = 5;
     const double _penWidth = 1;
     const double _currentFigurePenWidth = 2;
-
+    const double _pointRadius = 0.1;
     const int _offsetCalloutPx = 5;
     const double _defaultMagnitude = 1.5511657710909;
     const double _defaultScaleFactor = 1.35;
@@ -140,6 +117,9 @@ private:
 
     Project *_project;
     DimFigure *_calloutDimension = nullptr;
+
+    QTimer _replotTimer;
+    
 
     void onItemClicked(QCPAbstractItem *item, QMouseEvent *event);
     void onItemDoubleClicked(QCPAbstractItem *item, QMouseEvent *event);

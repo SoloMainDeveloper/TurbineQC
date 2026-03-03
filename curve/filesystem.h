@@ -4,6 +4,7 @@
 #include "figure.h"
 #include "project.h"
 #include "curvemachine.h"
+#include "resultcompareflr.h"
 
 enum class Order {
     CurveLibrary, //xyzutijkdevlt
@@ -30,8 +31,9 @@ public:
         int finishLineToSkip, QString columnNames, QString numberOfColumns, QString decimal, Order order = Order::Default);
     static void saveProject(Project *project, QString dir, QString projectName, bool createCRV);
     static void loadProject(Project *project, const QString &filePath);
-    static void parseFigureFromCRV(Project *project, QString figureText);
+    static Figure* parseFigureFromCRV(Project *project, QString figureText);
     static void exportToFLR(Project *project, QString filepath, QStringList *curvesToTake);
+    static void writeCompareFLR(QString fullFileName, QList<ResultCompare2Params*> result, double precision);
 
 private:
     static void inputFigure(QTextStream &stream, FigureSettings *set);

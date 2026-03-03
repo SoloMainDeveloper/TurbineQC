@@ -27,6 +27,7 @@
 #include "partdatadialog.h"
 #include "inserttextdialog.h"
 #include "printpreviewwindow.h"
+#include "compareflrdialog.h"
 
 namespace Ui {
     class CurveWindow;
@@ -53,6 +54,12 @@ private:
     FigureControls* _figureControls;
     Tree *_tree;
     Plot *_plot;
+    QStatusBar *_statusBar;
+    QLabel *_formLabel; // max dev - min dev
+    QLabel *_coordsLabel;
+    QLabel *_workPlaneLabel;
+    QLabel *_currentFigureLabel;
+    QLabel *_magnificationLabel;
 
     AirfoilTolerancesDialog* _airfoilTolerancesDialog;
     LoadingCloudWindow *_loadingCloudWindow;
@@ -73,6 +80,7 @@ private:
     PartDataDialog *_partDataDialog;
     InsertTextDialog *_insertTextDialog;
     PrintPreviewWindow *_printWindow;
+    CompareFLRDialog *_compareFLRDialog;
 
     QString _windowTitle;
 

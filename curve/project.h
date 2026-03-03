@@ -76,7 +76,8 @@ public slots:
         QString machine, QString tool, QString fixturing, QString batch, QString supplier, QString revision, bool needShowWindowWhenMacroRuns);
     void constructText(QString name, QString text, double x, double y, double textSize, QString reference,
         double imageWidth, double imageHeight, double imageZoom);
-    Point chooseCoordsByClick();
+    void showAllFigures(QString figuresType);
+    void hideAllFigures(QString figuresType);
 
 signals:
     void figureAdded(Figure* figure);
@@ -112,15 +113,15 @@ private:
     QString txtFigureToText(QString txtFigure) const;
 
     QMap<QString, QList<quint64>> operationTimes;
-    std::mutex mtx;
 
     QMap<QString, Figure*> _figures;
     QString _currentFigureName = nullptr;
     QMap<QString, QList<Figure*>> _lostParents;
     double _scaleFactor = 1.0;
-    int _precision = 3;
+    int _precision = 6;
     Point _centerPoint;
     QString _projectPath = nullptr;
+    int _lastFigureIndex = -1;
     
     QString _reportTitle = nullptr;
     QString _description = nullptr;

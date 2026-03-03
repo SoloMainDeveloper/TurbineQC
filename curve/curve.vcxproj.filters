@@ -223,6 +223,15 @@
     <ClCompile Include="functionparamsgenerator.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
+    <ClCompile Include="turbineparameter.cpp">
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="compareflrdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="resultcompareflr.cpp">
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curvemachine.h">
@@ -269,6 +278,12 @@
     </ClInclude>
     <ClInclude Include="figurecreator.h">
       <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="reportsettings.h">
+      <Filter>Header Files\Report</Filter>
+    </ClInclude>
+    <ClInclude Include="resultcompareflr.h">
+      <Filter>Header Files\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -356,8 +371,11 @@
     <QtMoc Include="printpreviewwindow.h">
       <Filter>Header Files\Report</Filter>
     </QtMoc>
-    <QtMoc Include="reportsettings.h">
-      <Filter>Header Files\Report</Filter>
+    <QtMoc Include="turbineparameter.h">
+      <Filter>Header Files\Other</Filter>
+    </QtMoc>
+    <QtMoc Include="compareflrdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +456,9 @@
     </QtUic>
     <QtUic Include="printpreviewwindow.ui">
       <Filter>Form Files\Other</Filter>
+    </QtUic>
+    <QtUic Include="compareflrdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
     </QtUic>
   </ItemGroup>
 </Project>

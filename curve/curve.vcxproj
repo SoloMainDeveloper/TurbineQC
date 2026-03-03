@@ -126,6 +126,7 @@
     <ClCompile Include="calculatecurvedialog.cpp" />
     <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
+    <ClCompile Include="compareflrdialog.cpp" />
     <ClCompile Include="continuableexception.cpp" />
     <ClCompile Include="curveanalyzer.cpp" />
     <ClCompile Include="figurecreator.cpp" />
@@ -150,16 +151,21 @@
     <ClCompile Include="radiuscorrectiondialog.cpp" />
     <ClCompile Include="reportsettings.cpp" />
     <ClCompile Include="reportgenerator.cpp" />
+    <ClCompile Include="resultcompareflr.cpp" />
     <ClCompile Include="rotatedialog.cpp" />
     <ClCompile Include="saveprojectwindow.cpp" />
     <ClCompile Include="screenshotcreator.cpp" />
     <ClCompile Include="shiftdialog.cpp" />
     <ClCompile Include="tree.cpp" />
+    <ClCompile Include="turbineparameter.cpp" />
     <ClCompile Include="turbinewindow.cpp" />
     <ClCompile Include="widthedgewindow.cpp" />
+    <QtMoc Include="compareflrdialog.h" />
     <ClInclude Include="figurecreator.h" />
     <ClInclude Include="functionparamsgenerator.h" />
+    <ClInclude Include="resultcompareflr.h" />
     <ClInclude Include="screenshotcreator.h" />
+    <QtMoc Include="turbineparameter.h" />
     <QtMoc Include="rotatedialog.h" />
     <QtMoc Include="shiftdialog.h" />
     <QtMoc Include="macrosmanager.h" />
@@ -173,7 +179,7 @@
     <QtMoc Include="printer.h" />
     <QtMoc Include="printpreviewwindow.h" />
     <ClInclude Include="curveanalyzer.h" />
-    <QtMoc Include="reportsettings.h" />
+    <ClInclude Include="reportsettings.h" />
     <QtMoc Include="exporttoFLRdialog.h" />
     <ClInclude Include="reportgenerator.h" />
     <QtMoc Include="saveprojectwindow.h" />
@@ -199,6 +205,7 @@
     <QtUic Include="bestfitdialog.ui" />
     <QtUic Include="calculatecurvedialog.ui" />
     <QtUic Include="calculatedeviationsdialog.ui" />
+    <QtUic Include="compareflrdialog.ui" />
     <QtUic Include="curvegraphicswidget.ui" />
     <QtUic Include="curvewindow.ui" />
     <QtMoc Include="curvewindow.h" />

@@ -3,6 +3,7 @@
 
 SaveProjectWindow::SaveProjectWindow(Project *project, QWidget *parent) : QDialog(parent), _ui(new Ui::SaveProjectWindow()) {
     _ui->setupUi(this);
+    this->setWindowTitle("Save project");
     _project = project;
     connect(_ui->createCRV, &QCheckBox::clicked, this, &SaveProjectWindow::showBoxCRV);
     connect(_ui->saveButton, &QPushButton::clicked, this, &SaveProjectWindow::saveProject);
