@@ -253,6 +253,7 @@ public:
     Function18Params(int directionLE = 0, double percentLE = 5, double percentTE = 5, int joinedSegments = 1);
     Function18Params(const QMap<QString, QString> *data);
     QString toQString() override;
+    int getLEDirection() const;
 
 private:
     int _leadingEdgeDirection;
@@ -279,6 +280,7 @@ class Function21Params : public FunctionParams {
 public:
     Function21Params(int limInterpMethod = 0, bool needXSift = true, bool needYShift = true, bool needRotation = true, bool isClosed = false);
     QString toQString();
+    bool isClosedCurve() const;
 
 private:
     bool _isClosed;

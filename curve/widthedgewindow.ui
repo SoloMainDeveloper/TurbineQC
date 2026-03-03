@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Направление главной кромки</string>
+     <string>Leading edge direction</string>
     </property>
    </widget>
    <widget class="QComboBox" name="directionLEComboBox">
@@ -104,7 +104,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Главная кромка</string>
+    <string>Leading edge</string>
    </property>
    <property name="checked">
     <bool>true</bool>
@@ -120,7 +120,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Задняя кромка</string>
+    <string>Trailing edge</string>
    </property>
    <property name="checked">
     <bool>true</bool>
@@ -148,7 +148,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>На</string>
+     <string>At</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="distanceLE">
@@ -228,7 +228,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Создать расстояние</string>
+     <string>Create distance</string>
     </property>
     <property name="checked">
      <bool>false</bool>
@@ -244,7 +244,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Ширина</string>
+     <string>Width</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="answerLE">
@@ -289,7 +289,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>На</string>
+     <string>At</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="distanceTE">
@@ -369,7 +369,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Создать расстояние</string>
+     <string>Create distance</string>
     </property>
     <property name="checked">
      <bool>false</bool>
@@ -385,7 +385,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Ширина</string>
+     <string>Width</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="answerTE">
@@ -418,7 +418,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Закрыть</string>
+    <string>Close</string>
    </property>
   </widget>
   <widget class="QPushButton" name="calculateButton">
@@ -431,7 +431,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Ок</string>
+    <string>OK</string>
    </property>
   </widget>
  </widget>

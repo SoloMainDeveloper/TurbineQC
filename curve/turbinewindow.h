@@ -7,10 +7,6 @@
 #include "reportsettings.h"
 #include "reportgenerator.h"
 
-using TurbineParamType = ReportSettings::TurbineParamType;
-
-class ReporData;
-
 namespace Ui {
     class TurbineWindow;
 }
@@ -39,8 +35,9 @@ private slots:
     void onShowNumDevTEClick();
     void onPreparePointsClick();
     void onDeleteSimilarClick();
-    void onRadiusCorrectionClick();
-    void onUpperValueChange();
+    void onRadiusCompensationClick();
+    void onUse3DVectorsForCompClick();
+    void onRadiusCompensationChange();
     void onNeedPrintTemplateClick();
 
 private:
@@ -52,7 +49,6 @@ private:
     QGridLayout *_containerLayout;
     QDoubleValidator *_doubleValidator;
     QIntValidator *_intValidator;
-    QMessageBox *_message;
 
     void setupWindow();
     void disableUnrealizedParams();

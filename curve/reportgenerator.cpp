@@ -29,7 +29,7 @@ void ReportGenerator::createReport(Project *project, Plot *plot, std::shared_ptr
     MacrosManager::log(MacrosManager::CreateReport, ReportSettings::convertToQMap(reportSettings));
 }
 
-QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString &nominalName) {
+QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString &nominalName, const QString &measuredName) {
     auto globalName = QString("Global_%1").arg(nominalName);
     auto globalCVName = QString("GlobalCV_%1").arg(nominalName);
     auto globalCCName = QString("GlobalCC_%1").arg(nominalName);
@@ -47,7 +47,7 @@ QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNam
 QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(const QString &nominalName) {
     auto globalFormName = QString("%1_Form").arg(nominalName);
     auto globalCVFormName = QString("%1_Convex_Form").arg(nominalName);
-    auto globalCCFormName = QString("%1_Concave_Form").arg(nominalName);
+    auto globalCCFormName = QString("%1_Concav_Form").arg(nominalName);
     auto globalLEFormName = QString("%1_LE_Form").arg(nominalName);
     auto globalTEFormName = QString("%1_TE_Form").arg(nominalName);
     return {
@@ -62,8 +62,8 @@ QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(c
 QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAdditionalNames(const QString &nominalName, const QString &measuredName) {
     auto nomMCLName = QString("%1_MCL").arg(nominalName);
     auto measMCLName = QString("%1_MCL").arg(measuredName);
-    auto nomMaxDiaName = QString("%1_MaxDia").arg(nominalName);
-    auto measMaxDiaName = QString("%1_MaxDia").arg(measuredName);
+    auto nomMaxDiaName = QString("%1_CMaxDia").arg(nominalName);
+    auto measMaxDiaName = QString("%1_CMaxDia").arg(measuredName);
     auto nomContactLineName = QString("%1_CntctLine").arg(nominalName);
     auto measContactLineName = QString("%1_CntctLine").arg(measuredName);
     return {
@@ -73,5 +73,22 @@ QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAddit
         { AdditionalName::MeasuredMaxDia, measMaxDiaName },
         { AdditionalName::NominalCntctLine, nomContactLineName },
         { AdditionalName::MeasuredCntctLine, measContactLineName },
+    };
+}
+
+QMap<ReportGenerator::InterimName, QString> ReportGenerator::getTemplateInterimNames(const QString & nominalName, const QString & measuredName) {
+    auto dummyNomName = QString("_%1").arg(nominalName);
+    auto dummyMeasName = QString("_%1").arg(measuredName);
+    auto dummyNomCVName = QString("dummy_CV_%1").arg(nominalName);
+    auto dummyMeasCVName = QString("dummy_CV_%1").arg(measuredName);
+    auto dummyNomCCName = QString("dummy_CC_%1").arg(nominalName);
+    auto dummyMeasCCName = QString("dummy_CC_%1").arg(measuredName);
+    return {
+        { InterimName::NominalCurve, dummyNomName },
+        { InterimName::MeasuredCurve, dummyMeasName },
+        { InterimName::NominalCV, dummyNomCVName },
+        { InterimName::MeasuredCV, dummyMeasCVName },
+        { InterimName::NominalCC, dummyNomCCName },
+        { InterimName::MeasuredCC, dummyMeasCCName }
     };
 }

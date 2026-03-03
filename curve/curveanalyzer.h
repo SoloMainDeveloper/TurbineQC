@@ -47,25 +47,21 @@ private:
 
     void initialization();
 
-    QPair<CurveParts, CurveParts> analyzeProfile();
-    GlobalCurveMap analyzeWholeProfile();
-    GlobalCurveMap analyzeProfileWithoutTE();
-    GlobalCurveMap analyzeProfileWithoutEdges();
-    GlobalCurveMap analyzeProfileWithoutEdgesLSQ(const CurveParts &nominalParts, const CurveParts &measuredParts);
-    GlobalCurveMap analyzeProfileWithoutEdgesForm(const CurveParts &nominalParts, const CurveParts &measuredParts);
-
-    void reassemblePointsIntoWholeCurve(const QString &curveName, const CurveParts &curveParts);
-    void reassemblePointsIntoCurveWithoutTE(const QString &curveName, const CurveParts &curveParts);
-    void reassemblePointsIntoCurveWithoutEdges(const QString &curveName, const CurveParts &curveParts);
+    QPair<CurveParts, CurveParts> analyzeProfile(const Function18Params *params18);
+    GlobalCurveMap analyzeWholeProfile(const Function18Params *params18);
+    GlobalCurveMap analyzeProfileWithoutTE(const Function18Params *params18);
+    GlobalCurveMap analyzeProfileWithoutEdges(const Function18Params *params18);
+    GlobalCurveMap analyzeProfileWithoutEdgesLSQ(const CurveParts &nominalParts, const CurveParts &measuredParts, const Function18Params *params18);
+    GlobalCurveMap analyzeProfileWithoutEdgesForm(const CurveParts &nominalParts, const CurveParts &measuredParts, const Function18Params *params18);
 
     void calculatePreprocessingFunctions(const QString &updatedNomName, const QString &updatedMeasName);
     CurveParts getCurvePartsAfterStretching(const QString &nominalName, const QString &measuredName, const Function18Params &params18);
     template <class T> void calculateBestFit(const QString &updateNomName, const QString &updateMeasName, const T &params);
-    void calculateBestFitWithAlignment(const QString &updateNomName, const QString &updateMeasName, const CurveParts &nominalParts, const CurveParts &measuredParts);
+    void calculateBestFitWithAlignment(const QString &updateNomName, const QString &updateMeasName, const Function6Params &params6, const CurveParts &nominalParts, CurveParts *measuredParts);
 
     CurveParts alignCurveParts(const CurveParts &curveParts, const Function18Params &params18);
 
-    void insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needDelete = false);
+    void insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needToDelete = false);
     const CurveFigure* getCurveFromProject(const QString &curveName);
     void deleteDummyCurves();
 };

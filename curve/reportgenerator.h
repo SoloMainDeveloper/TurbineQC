@@ -31,8 +31,15 @@ public:
         NominalCntctLine, MeasuredCntctLine
     };
 
+    enum class InterimName {
+        NominalCurve, MeasuredCurve,
+        NominalCV, MeasuredCV,
+        NominalCC, MeasuredCC,
+    };
+
     static void createReport(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings);
-    static QMap<GlobalName, QString> getTemplateGlobalNames(const QString &nominalName);
+    static QMap<GlobalName, QString> getTemplateGlobalNames(const QString &nominalName, const QString &measuredName);
     static QMap<FormName, QString> getTemplateFormNames(const QString &nominalName);
     static QMap<AdditionalName, QString> getTemplateAdditionalNames(const QString &nominalName, const QString &measuredName);
+    static QMap<InterimName, QString> getTemplateInterimNames(const QString &nominalName, const QString &measuredName);
 };

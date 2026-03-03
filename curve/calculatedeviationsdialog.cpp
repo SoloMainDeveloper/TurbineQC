@@ -20,6 +20,7 @@ CalculateDeviationsDialog::CalculateDeviationsDialog(Project *project, QWidget *
 }
 
 void CalculateDeviationsDialog::initialization() {
+    resetDialog();
     auto figures = _project->figures();
     for(auto figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
@@ -84,8 +85,8 @@ void CalculateDeviationsDialog::calculateDeviations() {
 
         Algorithms::calculateDeviations(nomCurve->name(), measCurve->name(), resultName, &params, _project);
 
-        resetDialog();
-        accept();
+        //resetDialog();
+        //accept();
     }
 }
 

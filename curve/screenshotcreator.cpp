@@ -55,8 +55,11 @@ void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList &globalNames) {
 }
 
 void ScreenshotCreator::setVisibilityAdditionalFigures() {
+    auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
+    auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+
     using AdditionalName = ReportGenerator::AdditionalName;
-    auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, _measuredName);
+    auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, preparedMeasName);
     QStringList figuresToVisible;
 
     if(_reportSettings->needMCL()) {
@@ -81,7 +84,9 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType 
     _plot->rescale(position);
 
     if(_reportSettings->needMCL()) {
-        auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, _measuredName);
+        auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
+        auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+        auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, preparedMeasName);
         using AdditionalName = ReportGenerator::AdditionalName;
         _project->setVisibility({
             templateAdditionalNames[AdditionalName::NominalMCL],

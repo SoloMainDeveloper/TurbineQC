@@ -4,6 +4,7 @@
 #include "project.h"
 #include "algorithms.h"
 #include "curvegraphicswidget.h"
+#include "turbineparameter.h"
 
 struct EdgeWidth {
 public:

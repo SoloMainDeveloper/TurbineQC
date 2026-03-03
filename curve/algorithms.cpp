@@ -37,10 +37,21 @@ void Algorithms::regenerateCurve(QString figureName, QString newFigureName, cons
 
     ARGUMENT_ASSERT(curve, "Regenerate curve: curve`s not found");
 
-    auto result = CurveMachine::regenerateCurve(curve->points(), *params);
+    auto &pointsToRegen = curve->points();
+    auto regenCurve = CurveMachine::regenerateCurve(pointsToRegen, *params);
+    auto &regeneratedPoints = regenCurve.points();
+
+    QVector<CurvePoint> resultPoints;
+    for(auto i = 0; i < regeneratedPoints.length(); i++) {
+        resultPoints.append(CurvePoint(
+            regeneratedPoints[i].x, regeneratedPoints[i].y, pointsToRegen[0].z,
+            regeneratedPoints[i].i, regeneratedPoints[i].j, regeneratedPoints[i].k
+        ));
+    }
+
     auto resultCurve = new CurveFigure;
     *resultCurve = *curve;
-    resultCurve->changePoints(result.points());
+    resultCurve->changePoints(resultPoints);
     resultCurve->setName(newFigureName);
     project->safeInsert(newFigureName, resultCurve);
 
@@ -50,12 +61,7 @@ void Algorithms::regenerateCurve(QString figureName, QString newFigureName, cons
 }
 
 void Algorithms::createMiddleCurve(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
-    auto figure = project->findFigure(parentName);
-    auto curve = dynamic_cast<const CurveFigure*>(figure);
-
-    ARGUMENT_ASSERT(curve, "Create middle curve: curve`s not found");
-
-    auto result = CurveMachine::getMiddleCurve(curve->points(), *params);
+    auto result = getMiddleCurve(parentName, params, project);
     auto middleCurve = new CurveFigure(figureName, result.points());
     middleCurve->setColor(color);
     project->safeInsert(figureName, middleCurve);
@@ -65,8 +71,8 @@ void Algorithms::createMiddleCurve(QString parentName, QString figureName, const
     MacrosManager::log(MacrosManager::CreateMiddleCurve, log);
 }
 
-CurveFigure Algorithms::getMiddleCurve(QString figureName, const Function18Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
+CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get middle curve: curve`s not found");
@@ -74,24 +80,28 @@ CurveFigure Algorithms::getMiddleCurve(QString figureName, const Function18Param
     return CurveMachine::getMiddleCurve(curve->points(), *params);
 }
 
-void Algorithms::createContactLine(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
-    auto figure = project->findFigure(parentName);
+double Algorithms::getMiddleCurveLength(QString curveName, const Function18Params *params, Project * project) {
+    auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
-    ARGUMENT_ASSERT(curve, "Create contact line: curve`s not found");
+    ARGUMENT_ASSERT(curve, "Get middle curve: curve`s not found");
 
-    auto result = CurveMachine::getContactLine(curve->points(), *params);
-    auto contactLine = new LineFigure(figureName, result.origin(), result.direction(), qInf());
-    contactLine->setColor(color);
-    project->safeInsert(figureName, contactLine);
+    return CurveMachine::getMiddleCurveLength(curve->points(), *params);
+}
+
+void Algorithms::createContactLine(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
+    auto contactLine = getContactLine(parentName, params, project);
+    auto lineFigure = new LineFigure(figureName, contactLine.origin(), contactLine.direction(), qInf());
+    lineFigure->setColor(color);
+    project->safeInsert(figureName, lineFigure);
 
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
     MacrosManager::log(MacrosManager::CreateContactLine, log);
 }
 
-LineFigure Algorithms::getContactLine(QString figureName, const Function18Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
+LineFigure Algorithms::getContactLine(QString curveName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get contact line: curve`s not found");
@@ -99,23 +109,8 @@ LineFigure Algorithms::getContactLine(QString figureName, const Function18Params
     return CurveMachine::getContactLine(curve->points(), *params);
 }
 
-double Algorithms::getContactLineLength(QString figureName, const Function18Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
-    auto curve = dynamic_cast<const CurveFigure*>(figure);
-
-    ARGUMENT_ASSERT(curve, "Get contact line length: curve`s not found");
-
-    auto contactLineLength = CurveMachine::getContactLineLength(curve->points(), *params);
-    return contactLineLength;
-}
-
 void Algorithms::createMaxCircle(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
-    auto figure = project->findFigure(parentName);
-    auto curve = dynamic_cast<const CurveFigure*>(figure);
-
-    ARGUMENT_ASSERT(curve, "Create max circle: curve`s not found");
-
-    auto result = CurveMachine::getMaxCircle(curve->points(), *params);
+    auto result = getMaxCircle(parentName, params, project);
     auto circle = new CircleFigure(figureName, result.center(), Point(0, 0, 1), result.radius());
     circle->setColor(color);
     project->safeInsert(figureName, circle);
@@ -125,93 +120,68 @@ void Algorithms::createMaxCircle(QString parentName, QString figureName, const F
     MacrosManager::log(MacrosManager::CreateMaxCircle, log);
 }
 
-CircleFigure Algorithms::getMaxCircle(QString figureName, const Function18Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
+CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
-    ARGUMENT_ASSERT(curve, "Max width circle: curve`s not found");
+    ARGUMENT_ASSERT(curve, "Get max circle: curve`s not found");
 
     return CurveMachine::getMaxCircle(curve->points(), *params);
 }
 
-double Algorithms::getWidthOfLeadingEdge(QString figureName, Project *project, double distanceFromEdge, bool createSegment) {
-    auto figure = project->findFigure(figureName);
+QPair<PointFigure, PointFigure> Algorithms::getChord(QString curveName, const Function18Params * params, Project * project) {
+    auto figure = project->findFigure(curveName);
+    auto curve = dynamic_cast<const CurveFigure*>(figure);
+
+    ARGUMENT_ASSERT(curve, "Get chord: curve`s not found");
+
+    return CurveMachine::getChord(curve->points(), *params);
+}
+
+double Algorithms::getChordLength(QString curveName, const Function18Params *params, Project *project) {
+    auto figure = project->findFigure(curveName);
+    auto curve = dynamic_cast<const CurveFigure*>(figure);
+
+    ARGUMENT_ASSERT(curve, "Get chord length: curve`s not found");
+
+    auto chordLength = CurveMachine::getChordLength(curve->points(), *params);
+    return chordLength;
+}
+
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(QString curveName, const Function18Params *params, double distanceFromEdge, Project *project) {
+    auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Width of leading edge: curve`s not found");
 
-    auto points = CurveMachine::getWidthOfLeadingEdge(curve->points(), distanceFromEdge);
-    auto widthLE = CurveMachine::getDistanceBetweenPoints(points.first, points.second);
-
-    if(createSegment) {
-        /*auto segmentName = figureName + "_LE_width_";
-        auto point1 = new PointFigure(project->getFreeName(segmentName), points.first);
-        project->safeInsert(point1->name(), point1);
-        auto point2 = new PointFigure(project->getFreeName(segmentName), points.second);
-        project->safeInsert(point2->name(), point2);
-
-        auto middlePoint = Point((point1->point().x + point2->point().x) / 2, (point1->point().y + point2->point().y) / 2);
-        auto value = DimFigure::Value(DimFigure::ValueType::Length);
-        value.measurement = widthLE;
-        auto dimFigure = new DimFigure(project->getFreeName(segmentName), middlePoint, point1->name(), point2->name());
-        dimFigure->setDimType(DimFigure::DimType::DistanceBetweenCurvePoints);
-        dimFigure->addValue(value);
-        project->safeInsert(dimFigure->name(), dimFigure);*/
-    }
-    MacrosManager::log(MacrosManager::GetWidthOfLE, {
-        { "figureName", figureName },
-        { "distanceLE", QString::number(distanceFromEdge) },
-        { "createSegmentLE", createSegment ? "true" : "false" }, });
-    return widthLE;
+    return CurveMachine::getWidthOfLeadingEdge(curve->points(), *params, distanceFromEdge);
 }
 
-double Algorithms::getWidthOfTrailingEdge(QString figureName, Project *project, double distanceFromEdge, bool createSegment) {
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(QString figureName, const Function18Params *params, double distanceFromEdge, Project *project) {
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Width of trailing edge: curve`s not found");
 
-    auto points = CurveMachine::getWidthOfTrailingEdge(curve->points(), distanceFromEdge);
-    auto widthTE = CurveMachine::getDistanceBetweenPoints(points.first, points.second);
-
-    if(createSegment) {
-        /*auto segmentName = figureName + "_TE_width_";
-        auto point1 = new PointFigure(project->getFreeName(segmentName), points.first);
-        project->safeInsert(point1->name(), point1);
-        auto point2 = new PointFigure(project->getFreeName(segmentName), points.second);
-        project->safeInsert(point2->name(), point2);
-
-        auto middlePoint = Point((point1->point().x + point2->point().x) / 2, (point1->point().y + point2->point().y) / 2);
-        auto value = DimFigure::Value(DimFigure::ValueType::Length);
-        value.measurement = widthTE;
-        auto dimFigure = new DimFigure(project->getFreeName(segmentName), middlePoint, point1->name(), point2->name());
-        dimFigure->setDimType(DimFigure::DimType::DistanceBetweenCurvePoints);
-        dimFigure->addValue(value);
-        project->safeInsert(dimFigure->name(), dimFigure);*/
-    }
-    MacrosManager::log(MacrosManager::GetWidthOfTE, {
-        { "figureName", figureName },
-        { "distanceTE", QString::number(distanceFromEdge) },
-        { "createSegmentTE", createSegment ? "true" : "false" } });
-    return widthTE;
+    return CurveMachine::getWidthOfTrailingEdge(curve->points(), *params, distanceFromEdge);
 }
 
-double Algorithms::getRadiusOfLeadingEdge(QString figureName, const Function18Params *params, Project *project) {
+CircleFigure Algorithms::getRadiusOfLeadingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project) {
+    auto figure = project->findFigure(curveName);
+    auto curve = dynamic_cast<const CurveFigure*>(figure);
+
+    ARGUMENT_ASSERT(curve, "Get radius of leading edge: curve`s not found");
+
+    return CurveMachine::getRadiusOfLeadingEdge(curve->points(), *params, degreeAngle);
+}
+
+CircleFigure Algorithms::getRadiusOfTrailingEdge(QString figureName, const Function18Params *params, double degreeAngle, Project * project) {
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
-    ARGUMENT_ASSERT(curve, "Radius of leading edge: curve`s not found");
+    ARGUMENT_ASSERT(curve, "Get radius of trailing edge: curve`s not found");
 
-    return CurveMachine::getRadiusOfLeadingEdge(curve->points(), *params);
-}
-
-double Algorithms::getRadiusOfTrailingEdge(QString figureName, const Function18Params * params, Project * project) {
-    auto figure = project->findFigure(figureName);
-    auto curve = dynamic_cast<const CurveFigure*>(figure);
-
-    ARGUMENT_ASSERT(curve, "Radius of trailing edge: curve`s not found");
-
-    return CurveMachine::getRadiusOfTrailingEdge(curve->points(), *params);
+    return CurveMachine::getRadiusOfTrailingEdge(curve->points(), *params, degreeAngle);
 }
 
 double Algorithms::getMinX(QString figureName, const Function18Params *params, Project *project) {
@@ -220,28 +190,6 @@ double Algorithms::getMinX(QString figureName, const Function18Params *params, P
 
     ARGUMENT_ASSERT(curve, "Get MinX: curve`s not found");
     return CurveMachine::getMinX(curve->points(), *params);
-}
-
-double Algorithms::createMinX(QString figureName, const Function18Params *params, Project *project, QString dimName, QColor color) {
-    auto figure = project->findFigure(figureName);
-    auto curve = dynamic_cast<const CurveFigure*>(figure);
-
-    ARGUMENT_ASSERT(curve, "Create MinX: curve`s not found");
-    auto minXPoint = CurvePoint(CurveMachine::getMinX(curve->points(), *params), 0, 0);
-
-    auto pointName = project->getFreeName(figureName + "_PMinX", false);
-    auto result = new PointFigure(pointName, minXPoint);
-    result->setColor(color);
-    project->safeInsert(pointName, result);
-
-    auto value = DimFigure::Value(DimFigure::ValueType::X);
-    value.measurement = minXPoint.x;
-    auto dimFigure = new DimFigure(project->getFreeName(dimName), Point(0, 0, 0), result->name());
-    dimFigure->setDimType(DimFigure::DimType::Position); // TODO: add plot for this dimtype
-    dimFigure->addValue(value);
-    project->safeInsert(dimFigure->name(), dimFigure);
-
-    return minXPoint.x;
 }
 
 void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params, Project *project) {
@@ -299,10 +247,6 @@ void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName
     ARGUMENT_ASSERT(measCurve && nomFigure, "Calculate deviations: curve`s not found");
 
     auto result = CurveMachine::calculateDeviations(nomCurve->points(), measCurve->points(), *params);
-    //for(auto point : result.points()) {
-    //    qDebug() << point.dev;
-    //}
-
     auto resultCurve = new CurveFigure;
     *resultCurve = *nomCurve;
     resultCurve->changePoints(result.points());
@@ -325,7 +269,6 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
     ARGUMENT_ASSERT(nominalCurve && measuredCurve, "Calculate best-fit (6): curve`s not found");
 
     auto result = CurveMachine::calculateBestFit(nominalCurve->points(), measuredCurve->points(), *params);
-
     auto resultCurve = new CurveFigure;
     resultCurve->changePoints(result.curve.points());
     resultCurve->setName(resultCurveName);
@@ -353,8 +296,7 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
 
     ARGUMENT_ASSERT(nominalCurve && measuredCurve, "Calculate best-fit (21): curve`s not found");
 
-    auto result = CurveMachine::calculateBestFit(nominalCurve->points(), measuredCurve->points(), *params);
-
+    auto result = CurveMachine::calculateBestFit(nominalCurve->points(), measuredCurve->points(), *params, 0.02);
     auto resultCurve = new CurveFigure;
     resultCurve->changePoints(result.curve.points());
     resultCurve->setName(resultCurveName);
@@ -458,8 +400,8 @@ void Algorithms::insertBestFitDimension(const QString &figureName, const QString
     auto dy = bestFitLine->origin().y;
     auto angularCoeff = bestFitLine->direction().y / bestFitLine->direction().x;
 
-    auto xShift = DimFigure::Value(DimFigure::ValueType::X, isShowX, dx);
-    auto yShift = DimFigure::Value(DimFigure::ValueType::Y, isShowY, dy);
+    auto xShift = DimFigure::Value(DimFigure::ValueType::dX, isShowX, dx);
+    auto yShift = DimFigure::Value(DimFigure::ValueType::dY, isShowY, dy);
     auto rotation = DimFigure::Value(DimFigure::ValueType::Rotation, isShowR, angularCoeff);
     dimension->addValues({ xShift, yShift, rotation });
     dimension->setDimType(DimFigure::DimType::BestFitData);
@@ -468,7 +410,7 @@ void Algorithms::insertBestFitDimension(const QString &figureName, const QString
     project->safeInsert(figureName, dimension, false);
 }
 
-CurveAnalyzer::CurveParts Algorithms::divideCurveIntoParts(const QString &figureName, const Function18Params *params, Project *project) {
+CurveParts Algorithms::divideCurveIntoParts(const QString &figureName, const Function18Params *params, Project *project) {
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -494,7 +436,7 @@ void Algorithms::calculateStretch(const QString &nomCurveName, const QString &me
     project->safeInsert(resultCurveName, resultCurve);
 }
 
-void Algorithms::calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString & resultCurveName, const Function42Params *params, Project *project) {
+void Algorithms::calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function42Params *params, double radiusCorrection, Project *project) {
     auto nominalFigure = project->findFigure(nomCurveName);
     auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
     auto measuredFigure = project->findFigure(measCurveName);
@@ -504,78 +446,110 @@ void Algorithms::calculateCurveUsing3DVectors(const QString &nomCurveName, const
 
     auto nominalPoints = nominalCurve->points();
     auto measuredPoints = measuredCurve->points();
-    auto resultPoints = CurveMachine::calculateCurveUsing3DVectors(nominalPoints, measuredPoints, *params);
+    auto resultPoints = CurveMachine::calculateCurveUsing3DVectors(nominalPoints, measuredPoints, *params, radiusCorrection);
 
     auto resultCurve = new CurveFigure(resultCurveName, resultPoints);
     project->safeInsert(resultCurveName, resultCurve);
 }
 
-void Algorithms::calculateMeasuredParams(Project *project, std::shared_ptr<ReportSettings> reportSettings, const QString &globalMeasName) {
+void Algorithms::calculateMeasuredParams(Project *project, std::shared_ptr<ReportSettings> reportSettings, const QString &globalMeasCurve) {
+    auto nominalCurve = reportSettings->nominalName();
     auto &turbineParams = reportSettings->turbineParameters();
+    auto params18 = FunctionParamsGenerator::params18(project, reportSettings);
     for(auto [type, paramList] : turbineParams.asKeyValueRange()) {
-        if(!reportSettings->needCalculateParam(type))
-            continue;
         for(auto i = 0; i < paramList.count(); i++) {
-            try {
-                switch(type) {
-                    case TurbineParamType::MaxWidth:
-                    {
-                        auto maxCircle = Algorithms::getMaxCircle(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = maxCircle.radius() * 2;
-                        break;
-                    }
-                    case TurbineParamType::MaxWidthX:
-                    {
-                        auto maxCircle = Algorithms::getMaxCircle(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = maxCircle.center().x;
-                        break;
-                    }
-                    case TurbineParamType::MaxWidthY:
-                    {
-                        auto maxCircle = Algorithms::getMaxCircle(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = maxCircle.center().y;
-                        break;
-                    }
-                    case TurbineParamType::ContactLineLength:
-                    {
-                        auto contactLineLength = Algorithms::getContactLineLength(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = contactLineLength;
-                        break;
-                    }
-                    case TurbineParamType::LEWidth:
-                    {
-                        auto widthOfLE = Algorithms::getWidthOfLeadingEdge(globalMeasName, project, paramList[i].extraParam1.toDouble(), true);
-                        paramList[i].measured = widthOfLE;
-                        break;
-                    }
-                    case TurbineParamType::TEWidth:
-                    {
-                        auto widthOfTE = Algorithms::getWidthOfTrailingEdge(globalMeasName, project, paramList[i].extraParam1.toDouble(), true);
-                        paramList[i].measured = widthOfTE;
-                        break;
-                    }
-                    case TurbineParamType::LERadius:
-                    {
-                        auto radiusLE = Algorithms::getRadiusOfLeadingEdge(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = radiusLE;
-                        break;
-                    }
-                    case TurbineParamType::TERadius:
-                    {
-                        auto radiusTE = Algorithms::getRadiusOfTrailingEdge(globalMeasName, new Function18Params(), project);
-                        paramList[i].measured = radiusTE;
-                        break;
-                    }
-                    case TurbineParamType::MinX:
-                    {
-                        auto minX = Algorithms::createMinX(globalMeasName, new Function18Params(), project, reportSettings->nominalName() + " MinX");
-                        paramList[i].measured = minX;
-                        break;
-                    }
-                }
-            } catch(ContinuableException exception) {
-                throw exception;
-            }
+            paramList[i]->createMeasured(nominalCurve, globalMeasCurve, params18, project);
         }
     }
 }
+
+double Algorithms::getDistanceBetweenPoints(Point firstPoint, Point secondPoint) {
+    return CurveMachine::getDistanceBetweenPoints(firstPoint, secondPoint);
+}
+
+Point Algorithms::getMiddlePoint(Point firstPoint, Point secondPoint) {
+    return CurveMachine::getMiddlePoint(firstPoint, secondPoint);
+}
+
+void Algorithms::reassembleWholeCurve(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+    auto reassembledPoints = CurveMachine::reassembleWholeCurve(curveParts, direction);
+    auto curve = new CurveFigure(resultCurveName, reassembledPoints);
+    project->safeInsert(resultCurveName, curve);
+}
+
+void Algorithms::reassembleCurveWithoutTE(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+    auto reassembledPoints = CurveMachine::reassembleCurveWithoutTE(curveParts, direction);
+    auto curve = new CurveFigure(resultCurveName, reassembledPoints);
+    project->safeInsert(resultCurveName, curve);
+}
+
+void Algorithms::reassembleCurveWithoutEdges(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+    auto reassembledPoints = CurveMachine::reassembleCurveWithoutEdges(curveParts, direction);
+    auto curve = new CurveFigure(resultCurveName, reassembledPoints);
+    project->safeInsert(resultCurveName, curve);
+}
+
+ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathFLR2, QString resultPath, int pointsStartIndex, double precision) {
+    ARGUMENT_ASSERT(QFile::exists(filepathFLR1), "Compare FLR: FLR 1 not found");
+    ARGUMENT_ASSERT(QFile::exists(filepathFLR2), "Compare FLR: FLR 2 not found");
+    auto flr1 = FileSystem::readFile(filepathFLR1).split("$END$")[1].trimmed().split("\n");
+    auto flr2 = FileSystem::readFile(filepathFLR2).split("$END$")[1].trimmed().split("\n");
+
+    int dimsFails = 0, pointsFails = 0, totalParams = 0;
+    double dimsFailsDeviationSum = 0.0, pointsFailsDeviationSum = 0.0, maxFailDeviation = 0.0;
+    QList<ResultCompare2Params*> result;
+
+    for(auto i = 0; i < pointsStartIndex; i++) {
+        auto compare2 = compareTwoParamsFLR(flr1[i], flr2[i]);
+        if(compare2->isDiffBiggerThanPrecision(precision)) {
+            dimsFails++;
+            dimsFailsDeviationSum += compare2->diff();
+            if(compare2->diff() > maxFailDeviation)
+                maxFailDeviation = compare2->diff();
+        }
+        totalParams++;
+        result.append(compare2);
+    }
+
+    for(auto i = pointsStartIndex, j = pointsStartIndex; i < flr1.size(); i++, j++) {
+        auto compare2 = compareTwoParamsFLR(flr1[i], flr2[j]);
+        while(!compare2->isComparable()) {
+            auto num1 = compare2->name1().split("-")[1].toInt();
+            auto num2 = compare2->name2().split("-")[1].toInt();
+            if(num1 > num2) {
+                i++;
+            } else {
+                j++;
+            }
+            compare2 = compareTwoParamsFLR(flr1[i], flr2[j]);
+        }
+        totalParams++;
+        if(compare2->isDiffBiggerThanPrecision(precision)) {
+            pointsFails++;
+            pointsFailsDeviationSum += compare2->diff();
+            if(compare2->diff() > maxFailDeviation)
+                maxFailDeviation = compare2->diff();
+        }
+        result.append(compare2);
+    }
+
+    if(!resultPath.isEmpty()) {
+        FileSystem::writeCompareFLR(resultPath, result, precision);
+        MacrosManager::log(MacrosManager::CompareFLR, {
+            { "filepathFLR1", filepathFLR1 },
+            { "filepathFLR2", filepathFLR2 },
+            { "resultPath", resultPath },
+            { "pointsStartIndex", QString::number(pointsStartIndex) },
+            { "precision", QString::number(precision) }
+            });
+    }
+    return new ResultCompareFLR(totalParams, dimsFails, dimsFailsDeviationSum, pointsFails, pointsFailsDeviationSum, maxFailDeviation);
+}
+
+ResultCompare2Params* Algorithms::compareTwoParamsFLR(QString first, QString second) {
+    auto splitted1 = first.split(", ");
+    auto splitted2 = second.split(", ");
+    return new ResultCompare2Params(splitted1[1], splitted2[1], splitted1[7].toDouble(), splitted2[7].toDouble());
+}
+
+

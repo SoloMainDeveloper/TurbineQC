@@ -5,23 +5,28 @@
 #include "curvemachine.h"
 #include "curvelibrary.h"
 #include "curveanalyzer.h"
+#include "resultcompareflr.h"
+
+using CurveParts = CurveAnalyzer::CurveParts;
+using LEDirection = ReportSettings::LEDirection;
 
 class Algorithms {
 public:
     static void enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params *params, Project *project);
     static void createMiddleCurve(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color = Qt::black);
     static CurveFigure getMiddleCurve(QString figureName, const Function18Params *params, Project *project);
+    static double getMiddleCurveLength(QString curveName, const Function18Params *params, Project *project);
     static void createContactLine(QString parentName, QString figureName, const Function18Params * params, Project * project, QColor color = Qt::black);
-    static LineFigure getContactLine(QString figureName, const Function18Params *params, Project *project);
-    static double getContactLineLength(QString figureName, const Function18Params *params, Project *project);
+    static LineFigure getContactLine(QString curveName, const Function18Params *params, Project *project);
     static void createMaxCircle(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color = Qt::black);
-    static CircleFigure getMaxCircle(QString figureName, const Function18Params *params, Project *project);
-    static double getWidthOfLeadingEdge(QString figureName, Project *project, double distanceFromEdge, bool createSegment = true);
-    static double getWidthOfTrailingEdge(QString figureName, Project *project, double distanceFromEdge, bool createSegment = true);
-    static double getRadiusOfLeadingEdge(QString figureName, const Function18Params *params, Project *project);
-    static double getRadiusOfTrailingEdge(QString figureName, const Function18Params *params, Project *project);
-    static double getMinX(QString figureName, const Function18Params *params, Project *project);
-    static double createMinX(QString figureName, const Function18Params *params, Project *project, QString dimName, QColor color = Qt::black);
+    static CircleFigure getMaxCircle(QString curveName, const Function18Params *params, Project *project);
+    static QPair<PointFigure, PointFigure> getChord(QString curveName, const Function18Params *params, Project *project);
+    static double getChordLength(QString curveName, const Function18Params *params, Project *project);
+    static QPair<CurvePoint, CurvePoint> getWidthOfLeadingEdge(QString curveName, const Function18Params *params, double distanceFromEdge, Project *project);
+    static QPair<CurvePoint, CurvePoint> getWidthOfTrailingEdge(QString curveName, const Function18Params *params, double distanceFromEdge, Project *project);
+    static CircleFigure getRadiusOfLeadingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project);
+    static CircleFigure getRadiusOfTrailingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project);
+    static double getMinX(QString curveName, const Function18Params *params, Project *project);
     static void makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params, Project *project);
     static bool tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted, Project *project);
     static void calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params, Project *project);
@@ -33,8 +38,17 @@ public:
     static void calculateEdgesTolerance(QString figureName, int leadingEdgeDirection, double lEPercent, double tEPercent, double lEUpper, double lELower,
         double tEUpper, double tELower, double highEUpper, double highELower, double lowEUpper, double lowELower, Project *project);
     static void insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR, Project *project);
-    static CurveAnalyzer::CurveParts divideCurveIntoParts(const QString &curveName, const Function18Params *params, Project *project);
+    static CurveParts divideCurveIntoParts(const QString &curveName, const Function18Params *params, Project *project);
     static void calculateStretch(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function31Params *params31, const Function6Params *params6, Project *project);
-    static void calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function42Params *params, Project *project);
+    static void calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function42Params *params, double radiusCorrection, Project *project);
     static void calculateMeasuredParams(Project *project, std::shared_ptr<ReportSettings> reportSettings, const QString &globalMeasName);
+    static double getDistanceBetweenPoints(Point firstPoint, Point secondPoint);
+    static Point getMiddlePoint(Point firstPoint, Point secondPoint);
+    static void reassembleWholeCurve(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project);
+    static void reassembleCurveWithoutTE(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project);
+    static void reassembleCurveWithoutEdges(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project);
+    static ResultCompareFLR* compareFLR(QString filepathFLR1, QString filepathFLR2, QString resultPath, int pointsStartIndex, double precision);
+
+private:
+    static ResultCompare2Params* compareTwoParamsFLR(QString first, QString second);
 };

@@ -10,12 +10,7 @@ QMap<QString, QString> ReportSettings::convertToQMap(std::shared_ptr<ReportSetti
     //Calculated turbine parameters
     for(auto [type, paramList] : reportSettings->turbineParameters().asKeyValueRange()) {
         for(auto i = 0; i < paramList.size(); i++) {
-            QString parameter = "Type:%1,need:%2,Nom:%3,UT:%4,LT:%5,ex1:%6,ex2:%7";
-            auto index = static_cast<int>(type);
-            parameter = parameter.arg(turbineParamTypeToQString(type)).arg(paramList[i].needCalculate ? "true" : "false")
-                .arg(QString::number(paramList[i].nominal)).arg(QString::number(paramList[i].UT))
-                .arg(QString::number(paramList[i].LT)).arg(paramList[i].extraParam1).arg(paramList[i].extraParam2);
-            params.insert("Param " + QString::number(index) + " " + QString::number(i), parameter);
+            params.insert(TurbineParameter::toQMap(paramList[i], i));
         }
     }
 
@@ -84,22 +79,9 @@ std::shared_ptr<ReportSettings> ReportSettings::convertToSettings(QMap<QString, 
     reportSettings->setMeasuredName(params->value("measuredName"));
 
     //Calculate parameters
-    for(auto [type, turbParam] : params->asKeyValueRange()) {
-        if(!type.contains("Param "))
-            continue;
-        auto turbParamPairs = QMap<QString, QString>();
-        auto paramsStr = turbParam.split(",");
-        for(auto param : paramsStr) {
-            auto pair = param.split(":");
-            turbParamPairs[pair[0]] = pair[1];
-        }
-        reportSettings->appendTurbineParameter({
-            turbineParamTypeFromQString(
-                turbParamPairs["Type"]), turbParamPairs["need"] == "true",
-                turbParamPairs["Nom"].toDouble(), 0.0,
-                turbParamPairs["UT"].toDouble(), turbParamPairs["LT"].toDouble(),
-                turbParamPairs["ex1"], turbParamPairs["ex2"]
-            });
+    for(auto [type, turbineParam] : params->asKeyValueRange()) {
+        if(!type.contains("Param ")) continue;
+        reportSettings->appendTurbineParameter(TurbineParameter::toTurbineParameter(turbineParam));
     }
 
     //Direction zone
@@ -177,19 +159,8 @@ QMap<QString, QString> ReportSettings::translateAirfoilSettings(QList<QStringLis
         { "needUse3DVectors", lines[1][8] == "1" ? "true" : "false" } });
 
     //params to calculate
-    QString parameter = "Type:%1,need:%2,Nom:%3,UT:%4,LT:%5,ex1:%6,ex2:%7";
     for(auto i = 0; i < calcParamsPart.size(); i++) {
-        if(calcParamsPart[i][2] == "0")
-            continue;
-        auto index = calcParamsPart[i][1].mid(3).toInt();
-        auto type = static_cast<TurbineParamType>(index);
-        auto nominals = calcParamsPart[i][3].split(";");
-        auto extra1 = calcParamsPart[i][6].split(";");
-        for(auto j = 0; j < nominals.size(); j++) {
-            QString result = parameter.arg(turbineParamTypeToQString(type)).arg(calcParamsPart[i][2] != "0" ? "true" : "false")
-                .arg(nominals[j]).arg(calcParamsPart[i][4]).arg(calcParamsPart[i][5]).arg(extra1[j]).arg(calcParamsPart[i][7]);
-            params.insert("Param " + QString::number(index) + " " + QString::number(j), result);
-        }
+        params.insert(TurbineParameter::toQMapFromCRM(calcParamsPart[i]));
     }
 
     //global, LE, TE form
@@ -216,7 +187,7 @@ QMap<QString, QString> ReportSettings::translateAirfoilSettings(QList<QStringLis
     params.insert("typeOfShowDevsTE", globalFormPart[4][9]);
 
     params.insert("needPrintWithTemplate", globalFormPart[7][2] == "1" ? "true" : "false");
-    params.insert("reportTemplate", "0"); //��������
+    params.insert("reportTemplate", "0");
     params.insert("comment", globalFormPart[7].size() == 5 ? globalFormPart[7][4] : QString());
     return params;
 }
@@ -345,27 +316,8 @@ QImage ReportSettings::screenshotOfTE() const {
     return _screenshotOfTE;
 }
 
-QList<ReportSettings::TurbineParameter> ReportSettings::getTurbineParameter(TurbineParamType type) const {
-    return _turbineParameters[type];
-}
-
-bool ReportSettings::needCalculateParam(TurbineParamType type) const {
-    if(_turbineParameters.contains(type)) {
-        return _turbineParameters[type][0].needCalculate;
-    }
-    return false;
-}
-
 void ReportSettings::clearTurbineParameters() {
     _turbineParameters.clear();
-}
-
-ReportSettings::TurbineParamType ReportSettings::turbineParamTypeFromQString(const QString &name) {
-    return static_cast<TurbineParamType>(QMetaEnum::fromType<TurbineParamType>().keyToValue(name.toLatin1()));
-}
-
-QString ReportSettings::turbineParamTypeToQString(TurbineParamType type) {
-    return QMetaEnum::fromType<TurbineParamType>().valueToKey(static_cast<int>(type));
 }
 
 void ReportSettings::setZone(int zoneLE, int zoneTE, MeasureType type) {
@@ -580,11 +532,11 @@ QString ReportSettings::comment() const {
     return _comment;
 }
 
-void ReportSettings::appendTurbineParameter(TurbineParameter parameter) {
-    _turbineParameters[parameter.type].append(parameter);
+void ReportSettings::appendTurbineParameter(TurbineParameter *parameter) {
+    _turbineParameters[parameter->type].append(parameter);
 }
 
-QMap<ReportSettings::TurbineParamType, QList<ReportSettings::TurbineParameter>>& ReportSettings::turbineParameters() {
+QMap<TurbineParameter::Type, QList<TurbineParameter*>>& ReportSettings::turbineParameters() {
     return _turbineParameters;
 }
 
@@ -667,7 +619,4 @@ QList<QStringList> ReportSettings::getAirfoilPart(QList<QStringList> lines, QStr
             end = i;
     }
     return lines.mid(start, end - start + 1);
-}
-
-ReportSettings::~ReportSettings() {
 }

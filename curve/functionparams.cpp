@@ -288,12 +288,16 @@ Function18Params::Function18Params(int directionLE, double percentLE, double per
     _joinedSegmentsCount = joinedSegments > 0 ? joinedSegments : 1; //default is 1
 }
 
-Function18Params::Function18Params(const QMap<QString, QString>* data) : Function18Params(data->value("directionLE").toInt(), data->value("percentLE").toInt(),
-    data->value("percentTE").toInt(), data->value("joinedSegments").toInt()) { }
+Function18Params::Function18Params(const QMap<QString, QString>* data) : Function18Params(data->value("le_dir").toInt(), data->value("le_perc").toInt(),
+    data->value("te_perc").toInt(), data->value("joined_segments").toInt()) { }
 
 QString Function18Params::toQString() {
     QString result = "function=18\nplane=XY\nle_dir=%1\nle_perc=%2\nte_perc=%3\njoined_segments=%4";
     return result.arg(_leadingEdgeDirection).arg(_percentageLE).arg(_percentageTE).arg(_joinedSegmentsCount);
+}
+
+int Function18Params::getLEDirection() const {
+    return _leadingEdgeDirection;
 }
 
 Function19Params::Function19Params(bool isClosed, bool isExternal, Direction material, QString mode, int value) {
@@ -323,6 +327,10 @@ Function21Params::Function21Params(int limInterpMethod, bool needXShift, bool ne
 QString Function21Params::toQString() {
     QString result = "function=21\nplane=XY\nclosed=%1\nlim_interp_method=%2\nxshift=%3\nyshift=%4\nrotation=%5\nunits=inch";
     return result.arg(_isClosed ? "Y" : "N").arg(_limInterpMethod).arg(_needXShift ? "Y" : "N").arg(_needYShift ? "Y" : "N").arg(_needRotation ? "Y" : "N");
+}
+
+bool Function21Params::isClosedCurve() const {
+    return _isClosed;
 }
 
 Function31Params::Function31Params(bool isLEStretch, bool isTEStretch, int leadingEdgeDirection) {

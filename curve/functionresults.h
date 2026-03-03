@@ -151,8 +151,8 @@ public:
     CurveFigure curveLE; //PART$CURVE_LE
     CurveFigure curveLow; //PART$CURVE_LO
     CurveFigure curveHigh; //PART$CURVE_HI
-    QVector<CurvePoint> contactEndPoints; //CONTACT$ENDPOINTS
-    double contactLineLength = 0;
+    QPair<PointFigure, PointFigure> chord; //CONTACT$ENDPOINTS
+    double chordLength = 0;
 };
 
 struct Function19Result {
