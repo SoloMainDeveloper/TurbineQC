@@ -51,12 +51,118 @@
           <number>5</number>
          </property>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item alignment="Qt::AlignLeft">
+            <widget class="QToolButton" name="visibilityOnTB">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="toolTip">
+              <string>Show figures</string>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="curvewindow.qrc">
+               <normaloff>:/CurveWindow/icons/showAll.ico</normaloff>:/CurveWindow/icons/showAll.ico</iconset>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::InstantPopup</enum>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignLeft">
+            <widget class="QToolButton" name="visibilityOffTB">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="toolTip">
+              <string>Hide figures</string>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="curvewindow.qrc">
+               <normaloff>:/CurveWindow/icons/hideAll.ico</normaloff>:/CurveWindow/icons/hideAll.ico</iconset>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::InstantPopup</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="searchCB">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>140</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+             <property name="insertPolicy">
+              <enum>QComboBox::NoInsert</enum>
+             </property>
+             <property name="placeholderText">
+              <string>Search figure</string>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="Tree" name="tree">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>258</width>
+             <height>258</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>500</height>
+            </size>
+           </property>
+           <property name="indentation">
+            <number>0</number>
+           </property>
+           <property name="rootIsDecorated">
+            <bool>false</bool>
+           </property>
+           <property name="uniformRowHeights">
+            <bool>true</bool>
+           </property>
+           <property name="animated">
+            <bool>true</bool>
+           </property>
+           <property name="headerHidden">
+            <bool>true</bool>
            </property>
            <column>
             <property name="text">
@@ -211,6 +317,12 @@
     </property>
     <addaction name="actionShowPrintViewer"/>
    </widget>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>Test</string>
+    </property>
+    <addaction name="actionCompareFLR"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuScreen"/>
@@ -222,6 +334,7 @@
    <addaction name="menuCalculate"/>
    <addaction name="menuMacros"/>
    <addaction name="menuReport"/>
+   <addaction name="menuTest"/>
   </widget>
   <action name="actionAssignTolerancesToNominal">
    <property name="text">
@@ -230,12 +343,12 @@
   </action>
   <action name="actionCalculateTurbineParameters">
    <property name="text">
-    <string>Расчёт турбинных лопаток</string>
+    <string>Airfoil evaluations</string>
    </property>
   </action>
   <action name="actionCalculateEdgeWidth">
    <property name="text">
-    <string>Расчёт толщины кромки</string>
+    <string>Calculate edge width</string>
    </property>
   </action>
   <action name="actionLoadFile">
@@ -501,6 +614,11 @@
   <action name="actionShowPrintViewer">
    <property name="text">
     <string>Show Print Viewer</string>
+   </property>
+  </action>
+  <action name="actionCompareFLR">
+   <property name="text">
+    <string>Compare FLR</string>
    </property>
   </action>
  </widget>

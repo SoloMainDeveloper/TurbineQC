@@ -1,6 +1,78 @@
 #include "curve/pch.h"
 #include "figurecreator.h"
 
+void FigureCreator::createAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings) {
+    auto nominalName = reportSettings->nominalName();
+    auto measuredName = reportSettings->measuredName();
+
+    auto dummyNames = ReportGenerator::getTemplateInterimNames(nominalName, measuredName);
+    auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+
+    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(nominalName, preparedMeasName);
+    auto params18 = FunctionParamsGenerator::params18(project, reportSettings);
+
+    using Name = ReportGenerator::AdditionalName;
+
+    if(reportSettings->needMCL()) {
+        Algorithms::createMiddleCurve(nominalName, additionalNames[Name::NominalMCL], &params18, project);
+        Algorithms::createMiddleCurve(preparedMeasName, additionalNames[Name::MeasuredMCL], &params18, project, Qt::blue);
+    }
+    if(reportSettings->needMaxDiameter()) {
+        Algorithms::createMaxCircle(nominalName, additionalNames[Name::NominalMaxDia], &params18, project);
+        Algorithms::createMaxCircle(preparedMeasName, additionalNames[Name::MeasuredMaxDia], &params18, project, Qt::blue);
+    }
+    if(reportSettings->needContactLine()) {
+        Algorithms::createContactLine(nominalName, additionalNames[Name::NominalCntctLine], &params18, project);
+        Algorithms::createContactLine(preparedMeasName, additionalNames[Name::MeasuredCntctLine], &params18, project, Qt::blue);
+    }
+}
+
+void FigureCreator::alignAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings) {
+    auto nominalName = reportSettings->nominalName();
+    auto measuredName = reportSettings->measuredName();
+
+    auto dummyNames = ReportGenerator::getTemplateInterimNames(nominalName, measuredName);
+    auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+
+    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(reportSettings->nominalName(), preparedMeasName);
+    using Name = ReportGenerator::AdditionalName;
+
+    auto xShift = reportSettings->xShift();
+    auto yShift = reportSettings->yShift();
+    auto rotation = reportSettings->rotation();
+
+    if(reportSettings->needMCL()) {
+        auto figure = project->findFigure(additionalNames[Name::MeasuredMCL]);
+        auto measuredMCL = dynamic_cast<const CurveFigure*>(figure);
+
+        ARGUMENT_ASSERT(measuredMCL, "Align additional figures: curve's not found");
+
+        auto alignmentMCL = const_cast<CurveFigure*>(measuredMCL);
+        alignmentMCL->alignment(rotation, xShift, yShift);
+        project->safeInsert(alignmentMCL->name(), alignmentMCL);
+    }
+    if(reportSettings->needMaxDiameter()) {
+        auto figure = project->findFigure(additionalNames[Name::MeasuredMaxDia]);
+        auto measuredMaxDia = dynamic_cast<const CircleFigure*>(figure);
+
+        ARGUMENT_ASSERT(measuredMaxDia, "Align additional figures: circle's not found");
+
+        auto alignmentMaxDia = const_cast<CircleFigure*>(measuredMaxDia);
+        alignmentMaxDia->alignment(rotation, xShift, yShift);
+        project->safeInsert(alignmentMaxDia->name(), alignmentMaxDia);
+    }
+    if(reportSettings->needContactLine()) {
+        auto figure = project->findFigure(additionalNames[Name::MeasuredCntctLine]);
+        auto measuredCntctLine = dynamic_cast<const LineFigure*>(figure);
+
+        ARGUMENT_ASSERT(measuredCntctLine, "Align additional figures: line's not found");
+
+        auto alignmentCntctLine = const_cast<LineFigure*>(measuredCntctLine);
+        alignmentCntctLine->alignment(rotation, xShift, yShift);
+        project->safeInsert(alignmentCntctLine->name(), alignmentCntctLine);
+    }
+}
+
 FigureCreator::FigureCreator(Project * project, std::shared_ptr<ReportSettings> reportSettings) 
     : _project(project), _reportSettings(reportSettings) {
 }
@@ -56,59 +128,6 @@ void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>
             default:
                 break;
         }
-    }
-}
-
-void FigureCreator::createAdditionalFigures(const QString &preparedMeasName) {
-    auto nominalName = _reportSettings->nominalName();
-    auto measuredName = _reportSettings->measuredName();
-    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(nominalName, measuredName);
-    auto params18 = FunctionParamsGenerator::params18(_project, _reportSettings);
-
-    using Name = ReportGenerator::AdditionalName;
-
-    if(_reportSettings->needMCL()) {
-        Algorithms::createMiddleCurve(nominalName, additionalNames[Name::NominalMCL], &params18, _project);
-        Algorithms::createMiddleCurve(preparedMeasName, additionalNames[Name::MeasuredMCL], &params18, _project, Qt::blue);
-    }
-    if(_reportSettings->needMaxDiameter()) {
-        Algorithms::createMaxCircle(nominalName, additionalNames[Name::NominalMaxDia], &params18, _project);
-        Algorithms::createMaxCircle(preparedMeasName, additionalNames[Name::MeasuredMaxDia], &params18, _project, Qt::blue);
-    }
-    if(_reportSettings->needContactLine()) {
-        Algorithms::createContactLine(nominalName, additionalNames[Name::NominalCntctLine], &params18, _project);
-        Algorithms::createContactLine(preparedMeasName, additionalNames[Name::MeasuredCntctLine], &params18, _project, Qt::blue);
-    }
-}
-
-void FigureCreator::alignAdditionalFigures() {
-    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(_reportSettings->nominalName(), _reportSettings->measuredName());
-    using Name = ReportGenerator::AdditionalName;
-
-    auto xShift = _reportSettings->xShift();
-    auto yShift = _reportSettings->yShift();
-    auto rotation = _reportSettings->rotation();
-
-    if(_reportSettings->needMCL()) {
-        auto figure = _project->findFigure(additionalNames[Name::MeasuredMCL]);
-        auto measuredMCL = dynamic_cast<const CurveFigure*>(figure);
-        auto alignmentMCL = const_cast<CurveFigure*>(measuredMCL);
-        alignmentMCL->alignment(rotation, xShift, yShift);
-        _project->safeInsert(alignmentMCL->name(), alignmentMCL);
-    }
-    if(_reportSettings->needMaxDiameter()) {
-        auto figure = _project->findFigure(additionalNames[Name::MeasuredMaxDia]);
-        auto measuredMaxDia = dynamic_cast<const CircleFigure*>(figure);
-        auto alignmentMaxDia = const_cast<CircleFigure*>(measuredMaxDia);
-        alignmentMaxDia->alignment(rotation, xShift, yShift);
-        _project->safeInsert(alignmentMaxDia->name(), alignmentMaxDia);
-    }
-    if(_reportSettings->needContactLine()) {
-        auto figure = _project->findFigure(additionalNames[Name::MeasuredCntctLine]);
-        auto measuredCntctLine = dynamic_cast<const LineFigure*>(figure);
-        auto alignmentCntctLine = const_cast<LineFigure*>(measuredCntctLine);
-        alignmentCntctLine->alignment(rotation, xShift, yShift);
-        _project->safeInsert(alignmentCntctLine->name(), alignmentCntctLine);
     }
 }
 

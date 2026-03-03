@@ -623,6 +623,17 @@ void Figure::removeChild(Figure *child) const {
 	_children->removeOne(child);
 }
 
+void Figure::setIndex(int index) {
+	if(!_hasIndex) {
+		_index = index;
+		_hasIndex = true;
+	}
+}
+
+int Figure::index() const {
+	return _index;
+}
+
 bool CurveFigure::isShowPoints() const {
 	return _isShowPoints;
 }

@@ -77,13 +77,29 @@ void WidthEdgeWindow::calculateWidthEdge() {
         auto distanceTEValue = distanceTE->text().toDouble() ? distanceTE->text().toDouble() : 1;
         auto widthLE = 0.0;
         auto widthTE = 0.0;
+        auto currentFigure = currFigure->text();
+        auto params18 = new Function18Params();
         if(_ui->checkBoxLE) {
-            auto createDistanceLE = _ui->createDistanceCheckBoxLE->isChecked();
-            widthLE = Algorithms::getWidthOfLeadingEdge(currFigure->text(), _project, distanceLEValue, createDistanceLE);
+            if(_ui->createDistanceCheckBoxLE->isChecked()) {
+                auto param = WidthLE(0, 0, 0, QString::number(distanceLEValue));
+                param.createMeasured(currentFigure, currentFigure, Function18Params(), _project);
+                widthLE = param.measured;
+            } else {
+                auto result = Algorithms::getWidthOfLeadingEdge(currentFigure, params18, distanceLEValue, _project);
+                auto [firstPoint, secondPoint] = result;
+                widthLE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
+            }
         }
         if(_ui->checkBoxTE) {
-            auto createDistanceTE = _ui->createDistanceCheckBoxTE->isChecked();
-            widthTE = Algorithms::getWidthOfTrailingEdge(currFigure->text(), _project, distanceTEValue, createDistanceTE);
+            if(_ui->createDistanceCheckBoxTE->isChecked()) {
+                auto param = WidthTE(0, 0, 0, QString::number(distanceTEValue));
+                param.createMeasured(currentFigure, currentFigure, Function18Params(), _project);
+                widthTE = param.measured;
+            } else {
+                auto result = Algorithms::getWidthOfTrailingEdge(currentFigure, params18, distanceTEValue, _project);
+                auto [firstPoint, secondPoint] = result;
+                widthTE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
+            }
         }
         _widths[currFigure->text()] = new EdgeWidth(widthLE, distanceLEValue, widthTE, distanceTEValue);
         updateAnswerView();

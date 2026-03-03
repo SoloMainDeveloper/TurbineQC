@@ -62,6 +62,8 @@ public:
 	QList<Figure*>& childrenMutable() const;
 	void addChild(Figure *child) const;
 	void removeChild(Figure *child) const;
+	void setIndex(int index);
+	int index() const;
 
 
 private:
@@ -69,6 +71,8 @@ private:
 	QString _name;
 	bool _isVisible;
 	QColor _color = QColorConstants::Black;
+	int _index;
+	bool _hasIndex = false;
 };
 
 class CurveFigure : public Figure {

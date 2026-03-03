@@ -14,22 +14,61 @@ CurveFigure CurveMachine::getMiddleCurve(const QVector<CurvePoint> points, const
     return CurveLibrary::function18(points, params).middleCurve;
 }
 
-LineFigure CurveMachine::getContactLine(const QVector<CurvePoint> points, const Function18Params params) {
-    return CurveLibrary::function18(points, params).contactLine;
+double CurveMachine::getMiddleCurveLength(const QVector<CurvePoint> points, const Function18Params params) {
+    auto mclPoints = getMiddleCurve(points, params).points();
+    auto mclLength = 0.0;
+    for(auto i = 0; i < mclPoints.size() - 1; i++) {
+        mclLength += getDistanceBetweenPoints(
+            Point(mclPoints[i]),
+            Point(mclPoints[i + 1])
+        );
+    }
+    return mclLength;
 }
 
-double CurveMachine::getContactLineLength(const QVector<CurvePoint> points, const Function18Params params) {
-    return CurveLibrary::function18(points, params).contactLineLength;
+LineFigure CurveMachine::getContactLine(const QVector<CurvePoint> points, const Function18Params params) {
+    return CurveLibrary::function18(points, params).contactLine;
 }
 
 CircleFigure CurveMachine::getMaxCircle(const QVector<CurvePoint> points, const Function18Params params) {
     return CurveLibrary::function18(points, params).maxCircle;
 }
 
-std::pair<CurvePoint, CurvePoint> CurveMachine::getWidthOfLeadingEdge(const QVector<CurvePoint> points, double distanceFromEdge) {
-    auto res18 = CurveLibrary::function18(points, Function18Params());
-    auto middleCurve = res18.middleCurve.points();
-    auto widthOfThickestPart = res18.maxCircle.radius();
+QPair<PointFigure, PointFigure> CurveMachine::getChord(const QVector<CurvePoint> points, const Function18Params params) {
+    auto res18 = CurveLibrary::function18(points, params);
+
+    auto [first, second] = res18.chord;
+    auto contactLine = getEquationOfLine(res18.contactLEPoint.point(), res18.contactTEPoint.point());
+    auto lineVectorX = res18.contactLEPoint.point().x - res18.contactTEPoint.point().x;
+    auto lineVectorY = res18.contactLEPoint.point().y - res18.contactTEPoint.point().y;
+
+    auto pointTE = first.point();
+    auto xCoeffTE = lineVectorX / -lineVectorY;
+    auto yCoeffTE = lineVectorY / -lineVectorY;
+    auto freeCoeffTE = (lineVectorX * -pointTE.x + lineVectorY * -pointTE.y) / -lineVectorY;
+    auto chordXTE = (freeCoeffTE - contactLine[2]) / (contactLine[0] - xCoeffTE);
+    auto chordYTE = contactLine[0] * chordXTE + contactLine[2];
+    auto p1Chord = PointFigure(QString(), CurvePoint(chordXTE, chordYTE));
+
+    auto pointLE = second.point();
+    auto xCoeffLE = lineVectorX / -lineVectorY;
+    auto yCoeffLE = lineVectorY / -lineVectorY;
+    auto freeCoeffLE = (lineVectorX * -pointLE.x + lineVectorY * -pointLE.y) / -lineVectorY;
+    auto chordXLE = (freeCoeffLE - contactLine[2]) / (contactLine[0] - xCoeffLE);
+    auto chordYLE = contactLine[0] * chordXLE + contactLine[2];
+    auto p2Chord = PointFigure(QString(), CurvePoint(chordXLE, chordYLE));
+
+    return QPair<PointFigure, PointFigure>(p1Chord, p2Chord);
+}
+
+double CurveMachine::getChordLength(const QVector<CurvePoint> points, const Function18Params params) {
+    return CurveLibrary::function18(points, params).chordLength;
+}
+
+QPair<CurvePoint, CurvePoint> CurveMachine::getWidthOfLeadingEdge(const QVector<CurvePoint> points, const Function18Params params, double distanceFromEdge) {
+    auto res18 = CurveLibrary::function18(points, params);
+    auto &middleCurve = res18.middleCurve.points();
+    auto maxWidth = res18.maxCircle.radius() * 2;
     auto LEpoint = res18.leadingEdgePoint.point();
     auto contactLE = res18.contactLEPoint.point();
 
@@ -41,16 +80,21 @@ std::pair<CurvePoint, CurvePoint> CurveMachine::getWidthOfLeadingEdge(const QVec
     auto mainLine = getEquationOfLine(point, contactLE);
     auto angle = getAngleBetweenLines(perpendicular, mainLine);
 
-    auto pointsOfEdge = getOutput7thFunction(intersectionPoint, angle >= 0 ? M_PI - angle : -angle, points);
-    pointsOfEdge = removeExtraPoints(pointsOfEdge, intersectionPoint, widthOfThickestPart);
+    auto reassembledPoints = reassembleWholeCurve(CurveParts(
+        res18.curveLE.points(),
+        res18.curveTE.points(),
+        res18.curveHigh.points(),
+        res18.curveLow.points()),
+        static_cast<LEDirection>(params.getLEDirection()));
+    auto edgePoints = getOutput7thFunction(intersectionPoint, angle >= 0 ? M_PI - angle : -angle, reassembledPoints);
 
-    return std::make_pair(pointsOfEdge[0], pointsOfEdge[1]);
+    return selectPairOfPoints(edgePoints, intersectionPoint, maxWidth);;
 }
 
-std::pair<CurvePoint, CurvePoint> CurveMachine::getWidthOfTrailingEdge(const QVector<CurvePoint> points, double distanceFromEdge) {
-    auto res18 = CurveLibrary::function18(points, Function18Params());
-    auto middleCurve = res18.middleCurve.points();
-    auto widthOfThickestPart = res18.maxCircle.radius();
+QPair<CurvePoint, CurvePoint> CurveMachine::getWidthOfTrailingEdge(const QVector<CurvePoint> points, const Function18Params params, double distanceFromEdge) {
+    auto res18 = CurveLibrary::function18(points, params);
+    auto &middleCurve = res18.middleCurve.points();
+    auto maxWidth = res18.maxCircle.radius() * 2;
     auto TEpoint = res18.trailingEdgePoint.point();
     auto contactTE = res18.contactTEPoint.point();
 
@@ -62,14 +106,23 @@ std::pair<CurvePoint, CurvePoint> CurveMachine::getWidthOfTrailingEdge(const QVe
     auto mainLine = getEquationOfLine(point, contactTE);
     auto angle = getAngleBetweenLines(perpendicular, mainLine);
 
-    auto pointsOfEdge = getOutput7thFunction(intersectionPoint, angle >= 0 ? M_PI - angle : -angle, points);
-    pointsOfEdge = removeExtraPoints(pointsOfEdge, intersectionPoint, widthOfThickestPart);
+    auto reassembledPoints = reassembleWholeCurve(CurveParts(
+        res18.curveLE.points(),
+        res18.curveTE.points(),
+        res18.curveHigh.points(),
+        res18.curveLow.points()), 
+        static_cast<LEDirection>(params.getLEDirection()));
+    auto pointsOfEdge = getOutput7thFunction(intersectionPoint, angle >= 0 ? M_PI - angle : -angle, reassembledPoints);
 
-    return std::make_pair(pointsOfEdge[0], pointsOfEdge[1]);
+    return selectPairOfPoints(pointsOfEdge, intersectionPoint, maxWidth);
 }
 
-double CurveMachine::getDistanceBetweenPoints(CurvePoint firstPoint, CurvePoint secondPoint) {
+double CurveMachine::getDistanceBetweenPoints(Point firstPoint, Point secondPoint) {
     return hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
+}
+
+Point CurveMachine::getMiddlePoint(Point firstPoint, Point secondPoint) {
+    return Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2);;
 }
 
 Point CurveMachine::normalizeVector(Point vector) {
@@ -83,12 +136,13 @@ Point CurveMachine::getOutput8thFunction(CurvePoint puncturePoint, double diamet
 }
 
 Point CurveMachine::getNearestPoint(Point pointOfIntersection, QVector<CurvePoint> middleCurve) {
-    auto distanceBetweenPointsOfCurve = hypot(middleCurve[0].x - middleCurve[1].x, middleCurve[0].y - middleCurve[1].y);
     Point nearestPoint;
-    for(auto i = 0; i < middleCurve.length(); i++) {
-        auto distance = hypot(pointOfIntersection.x - middleCurve[i].x, pointOfIntersection.y - middleCurve[i].y);
-        if(distanceBetweenPointsOfCurve >= distance) {
-            nearestPoint = Point(middleCurve[i]); // TODO: extra data?
+    auto maxDistance = hypot(pointOfIntersection.x - middleCurve[0].x, pointOfIntersection.y - middleCurve[0].y);
+    for(auto i = 1; i < middleCurve.length(); i++) {
+        auto currentDistance = hypot(pointOfIntersection.x - middleCurve[i].x, pointOfIntersection.y - middleCurve[i].y);
+        if(currentDistance < maxDistance) {
+            nearestPoint = Point(middleCurve[i]);
+            maxDistance = currentDistance;
         }
     }
     return nearestPoint;
@@ -119,18 +173,21 @@ double CurveMachine::getAngleBetweenLines(QVector<double> firstLine, QVector<dou
     return qAtan((secondLine[0] - firstLine[0]) / (1 + firstLine[0] * secondLine[0]));
 }
 
-QVector<CurvePoint> CurveMachine::removeExtraPoints(QVector<CurvePoint> edgePoints, Point pointOfIntersection, double width) {
-    QVector<CurvePoint> edgeNewPoints;
-    for(auto i = 0; i < edgePoints.length(); i++) {
-        auto point = edgePoints[i];
-        if(hypot(pointOfIntersection.x - point.x, pointOfIntersection.y - point.y) < width * 2) {
-            edgeNewPoints.append(edgePoints[i]);
+QPair<CurvePoint, CurvePoint> CurveMachine::selectPairOfPoints(QVector<CurvePoint> edgePoints, Point pointOfIntersection, double maxWidth) {
+    QVector<CurvePoint> selectedPoints;
+    for(auto &point : edgePoints) {
+        if(hypot(pointOfIntersection.x - point.x, pointOfIntersection.y - point.y) < maxWidth) {
+            selectedPoints.append(point);
         }
     }
-    return edgeNewPoints;
+
+    if(selectedPoints.length() < 2) {
+        return QPair<CurvePoint, CurvePoint>();
+    }
+    return QPair<CurvePoint, CurvePoint>(selectedPoints[0], selectedPoints[1]);
 }
 
-double CurveMachine::getRadiusOfLeadingEdge(const QVector<CurvePoint> points, const Function18Params params) {
+CircleFigure CurveMachine::getRadiusOfLeadingEdge(const QVector<CurvePoint> points, const Function18Params params, double degreeAngle) {
     auto res18 = CurveLibrary::function18(points, params);
     auto puncturePointLE = res18.leadingEdgePoint.point();
     auto maxRadius = res18.maxCircle.radius();
@@ -138,12 +195,12 @@ double CurveMachine::getRadiusOfLeadingEdge(const QVector<CurvePoint> points, co
     auto middleCurvePointLE = middleCurve[middleCurve.length() - 2];
 
     auto equationOfLine = getEquationOfLine(puncturePointLE, middleCurvePointLE);
-    auto radiusOfLE = correctRadius(points, equationOfLine, puncturePointLE, middleCurvePointLE, maxRadius);
+    auto radiusOfLE = correctRadius(points, equationOfLine, puncturePointLE, middleCurvePointLE, maxRadius, degreeAngle / 2);
 
     return radiusOfLE;
 }
 
-double CurveMachine::getRadiusOfTrailingEdge(const QVector<CurvePoint> points, const Function18Params params) {
+CircleFigure CurveMachine::getRadiusOfTrailingEdge(const QVector<CurvePoint> points, const Function18Params params, double degreeAngle) {
     auto res18 = CurveLibrary::function18(points, params);
     auto puncturePointTE = res18.trailingEdgePoint.point();
     auto maxRadius = res18.maxCircle.radius();
@@ -151,42 +208,40 @@ double CurveMachine::getRadiusOfTrailingEdge(const QVector<CurvePoint> points, c
     auto middleCurvePointTE = middleCurve[1];
 
     auto equationOfLineTE = getEquationOfLine(puncturePointTE, middleCurvePointTE);
-    auto radiusOfLE = correctRadius(points, equationOfLineTE, puncturePointTE, middleCurvePointTE, maxRadius);
+    auto radiusOfLE = correctRadius(points, equationOfLineTE, puncturePointTE, middleCurvePointTE, maxRadius, degreeAngle / 2);
 
     return radiusOfLE;
 }
 
-double CurveMachine::correctRadius(const QVector<CurvePoint> &points, const QVector<double> &equationOfLine, CurvePoint puncturePoint, CurvePoint middleCurvePoint, double radius) {
-    auto angle = 60;
+CircleFigure CurveMachine::correctRadius(const QVector<CurvePoint> &points, const QVector<double> &equationOfLine, CurvePoint puncturePoint, CurvePoint middleCurvePoint, double radius, double degreeAngle) {
     auto previousRadius = 0.0;
     auto angularCoefficient = equationOfLine[0];
+    auto circle = CircleFigure();
 
     while(true) {
-        auto coordXOfPoint = 0.0;
-        if(puncturePoint.x < middleCurvePoint.x) {
-            coordXOfPoint = puncturePoint.x + radius * qCos(abs(qAtan(angularCoefficient)));
-        } else {
-            coordXOfPoint = puncturePoint.x - radius * qCos(abs(qAtan(angularCoefficient)));
-        }
-        Point pointOfLine(coordXOfPoint, getCoordY(equationOfLine, coordXOfPoint));
+        auto coordXOfPoint = puncturePoint.x < middleCurvePoint.x ?
+            puncturePoint.x + radius * qCos(abs(qAtan(angularCoefficient))) :
+            puncturePoint.x - radius * qCos(abs(qAtan(angularCoefficient)));
+        auto coordYOfPoint = getCoordY(equationOfLine, coordXOfPoint);
+        Point pointOfLine(coordXOfPoint, coordYOfPoint);
 
-        auto k1 = qTan(qDegreesToRadians(angle) + qAtan(angularCoefficient));
+        auto k1 = qTan(qDegreesToRadians(degreeAngle) + qAtan(angularCoefficient));
         auto intersectionPoints = CurveLibrary::function7(points, Function7Params(qAtan(k1), pointOfLine.x, pointOfLine.y)).contactPoints;
         auto firstNearestPoint = getNearestIntesectionPoint(intersectionPoints, puncturePoint);
 
-        auto k2 = qTan(-qDegreesToRadians(angle) + qAtan(angularCoefficient));
+        auto k2 = qTan(-qDegreesToRadians(degreeAngle) + qAtan(angularCoefficient));
         intersectionPoints = CurveLibrary::function7(points, Function7Params(qAtan(k2), pointOfLine.x, pointOfLine.y)).contactPoints;
         auto secondNearstPoint = getNearestIntesectionPoint(intersectionPoints, puncturePoint);
 
-        radius = CurveLibrary::function12(QVector<CurvePoint>{ firstNearestPoint, puncturePoint, secondNearstPoint }, Function12Params()).circle.radius();
+        circle = CurveLibrary::function12(QVector<CurvePoint>{ firstNearestPoint, puncturePoint, secondNearstPoint }, Function12Params()).circle;
+        radius = circle.radius();
 
         if(abs(previousRadius - radius) <= 0.0005) {
             break;
-        } else {
-            previousRadius = radius;
         }
+        previousRadius = radius;
     }
-    return radius;
+    return circle;
 }
 
 double CurveMachine::getCoordY(const QVector<double> &equationOfLine, double coordX) {
@@ -218,7 +273,7 @@ QVector<CurvePoint> CurveMachine::mergePointClouds(const QVector<CurvePoint> &fi
 
     auto lengthOfFirstCloud = pointsOfFirstCloud.length();
     auto leftPoints = pointsOfFirstCloud.mid(0, lengthOfFirstCloud / 2);
-    auto rightPoints = pointsOfFirstCloud.mid(lengthOfFirstCloud / 2, lengthOfFirstCloud);
+    auto rightPoints = pointsOfFirstCloud.mid(lengthOfFirstCloud / 2);
 
     auto leftPointsOfIntersection = CurveLibrary::function14(leftPoints, pointsOfSecondCloud, Function14Params()).curve.points();
     auto rightPointsOfIntersection = CurveLibrary::function14(rightPoints, pointsOfSecondCloud, Function14Params()).curve.points();
@@ -227,34 +282,55 @@ QVector<CurvePoint> CurveMachine::mergePointClouds(const QVector<CurvePoint> &fi
         return QVector<CurvePoint>();
     }
 
-    QVector<CurvePoint> processedLeftPoints = { leftPointsOfIntersection[0] };
+    /*QVector<CurvePoint> processedLeftPoints = { leftPointsOfIntersection[0] };
     for(auto i = 1; i < leftPointsOfIntersection.length(); i++) {
         auto previousPoint = leftPointsOfIntersection[i - 1];
         auto currentPoint = leftPointsOfIntersection[i];
         auto distance = hypot(previousPoint.x - currentPoint.x, previousPoint.y - currentPoint.y);
         if(distance > threshold) processedLeftPoints.append(currentPoint);
     }
-    QVector<CurvePoint> processedRightPoints = rightPointsOfIntersection;
+    QVector<CurvePoint> processedRightPoints = { rightPointsOfIntersection[0] };
     for(auto i = 1; i < rightPointsOfIntersection.length(); i++) {
         auto previousPoint = rightPointsOfIntersection[i - 1];
         auto currentPoint = rightPointsOfIntersection[i];
         auto distance = hypot(previousPoint.x - currentPoint.x, previousPoint.y - currentPoint.y);
         if(distance > threshold) processedRightPoints.append(currentPoint);
+    } */
+
+    /* auto leftMiddlePoint = processedLeftPoints.length() % 2 == 0 ?
+         processedLeftPoints[processedLeftPoints.length() / 2 - 1] :
+         processedLeftPoints[processedLeftPoints.length() / 2];
+     auto rightMiddlePoint = processedRightPoints.length() % 2 == 0 ?
+         processedRightPoints[processedRightPoints.length() / 2 - 1] :
+         processedRightPoints[processedRightPoints.length() / 2];
+
+     trimCloudFromStart(pointsOfFirstCloud, leftMiddlePoint);
+     trimCloudFromEnd(pointsOfFirstCloud, rightMiddlePoint);
+
+     trimCloudFromStart(pointsOfSecondCloud, rightMiddlePoint);
+     trimCloudFromEnd(pointsOfSecondCloud, leftMiddlePoint);*/
+
+     /*trimCloudFromStart(pointsOfFirstCloud, leftPointsOfIntersection[leftPointsOfIntersection.length() / 2]);
+     trimCloudFromEnd(pointsOfFirstCloud, rightPointsOfIntersection[rightPointsOfIntersection.length() / 2]);
+
+     trimCloudFromStart(pointsOfSecondCloud, rightPointsOfIntersection[rightPointsOfIntersection.length() / 2]);
+     trimCloudFromEnd(pointsOfSecondCloud, leftPointsOfIntersection[leftPointsOfIntersection.length() / 2]);*/
+
+     /*trimCloudFromStart(pointsOfFirstCloud, leftPointsOfIntersection[leftPointsOfIntersection.length() / 2]);
+     trimCloudFromStart(pointsOfSecondCloud, rightPointsOfIntersection[rightPointsOfIntersection.length() / 2]);
+     trimCloudFromEnd(pointsOfFirstCloud, pointsOfSecondCloud[0]);
+     trimCloudFromEnd(pointsOfSecondCloud, pointsOfFirstCloud[0]);*/
+
+    trimCloudFromStart(pointsOfFirstCloud, leftPointsOfIntersection[leftPointsOfIntersection.length() / 2]);
+    trimCloudFromEnd(pointsOfFirstCloud, rightPointsOfIntersection[rightPointsOfIntersection.length() / 2]);
+    trimCloudFromStart(pointsOfSecondCloud, pointsOfFirstCloud[pointsOfFirstCloud.length() - 1]);
+    trimCloudFromEnd(pointsOfSecondCloud, pointsOfFirstCloud[0]);
+    if(hypot(pointsOfSecondCloud[pointsOfSecondCloud.length() - 2].x - pointsOfSecondCloud[pointsOfSecondCloud.length() - 1].x,
+        pointsOfSecondCloud[pointsOfSecondCloud.length() - 2].y - pointsOfSecondCloud[pointsOfSecondCloud.length() - 1].y) >
+        hypot(pointsOfSecondCloud[pointsOfSecondCloud.length() - 2].x - pointsOfFirstCloud[0].x,
+        pointsOfSecondCloud[pointsOfSecondCloud.length() - 2].y - pointsOfFirstCloud[0].y)) {
+        pointsOfSecondCloud.removeAt(pointsOfSecondCloud.length() - 1);
     }
-
-    auto leftMiddlePoint = processedLeftPoints.length() % 2 == 0 ?
-        processedLeftPoints[processedLeftPoints.length() / 2 - 1] :
-        processedLeftPoints[processedLeftPoints.length() / 2];
-    auto rightMiddlePoint = processedRightPoints.length() % 2 == 0 ?
-        processedRightPoints[processedRightPoints.length() / 2 - 1] :
-        processedRightPoints[processedRightPoints.length() / 2];
-
-    trimCloudFromStart(pointsOfFirstCloud, leftMiddlePoint);
-    trimCloudFromEnd(pointsOfFirstCloud, rightMiddlePoint);
-
-    auto firstPointOfFirstCloud = pointsOfFirstCloud[0];
-    trimCloudFromStart(pointsOfSecondCloud, rightMiddlePoint);
-    trimCloudFromEnd(pointsOfSecondCloud, leftMiddlePoint);
 
     auto mergedCloud = pointsOfFirstCloud + pointsOfSecondCloud;
     if(needSort) {
@@ -268,37 +344,53 @@ QVector<CurvePoint> CurveMachine::mergePointClouds(const QVector<CurvePoint> &fi
 }
 
 void CurveMachine::trimCloudFromStart(QVector<CurvePoint> &points, CurvePoint pointOfIntersection) {
-    for(auto i = 1; i < points.length(); i++) {
-        auto previousPoint = points[i - 1];
-        auto currentPoint = points[i];
-        auto previousDistance = hypot(pointOfIntersection.x - previousPoint.x, pointOfIntersection.y - previousPoint.y);
-        auto currentDistance = hypot(pointOfIntersection.x - currentPoint.x, pointOfIntersection.y - currentPoint.y);
-        auto centerDistance = hypot(previousPoint.x - currentPoint.x, previousPoint.y - currentPoint.y);
-        auto isInInterval = previousDistance < centerDistance && currentDistance < centerDistance ? true : false;
-
-        if((previousPoint.x > pointOfIntersection.x && pointOfIntersection.x > currentPoint.x ||
-            previousPoint.x < pointOfIntersection.x && pointOfIntersection.x < currentPoint.x) && isInInterval) {
-            points = previousDistance < currentDistance ? points.mid(i - 1) : points.mid(i);
-            break;
+    auto minDistance = hypot(pointOfIntersection.x - points[0].x, pointOfIntersection.y - points[0].y);
+    auto index = 0;
+    for(auto i = 0; i < points.length(); i++) {
+        auto distance = hypot(pointOfIntersection.x - points[i].x, pointOfIntersection.y - points[i].y);
+        if(distance < minDistance) {
+            minDistance = distance;
+            index = i;
         }
     }
+    //if((hypot(pointOfIntersection.x - points[index - 1].x, pointOfIntersection.y - points[index - 1].y) <
+    //    hypot(points[index - 1].x - points[index].x, points[index - 1].y - points[index].y)) /*&& (index - 1) >= 0*/) {
+    //    points = points.mid(index - 1);
+    //    qDebug() << "start 1";
+    //} else {
+    //    points = points.mid(index);
+    //    qDebug() << "start 2";
+    //}
+    points = points.mid(index);
 }
 
 void CurveMachine::trimCloudFromEnd(QVector<CurvePoint> &points, CurvePoint pointOfIntersection) {
-    for(auto i = points.length() - 2; i >= 0; i--) {
-        auto currentPoint = points[i];
-        auto previousPoint = points[i + 1];
-        auto previousDistance = hypot(pointOfIntersection.x - previousPoint.x, pointOfIntersection.y - previousPoint.y);
-        auto currentDistance = hypot(pointOfIntersection.x - currentPoint.x, pointOfIntersection.y - currentPoint.y);
-        auto centerDistance = hypot(previousPoint.x - currentPoint.x, previousPoint.y - currentPoint.y);
-        auto isInInterval = previousDistance < centerDistance && currentDistance < centerDistance ? true : false;
-
-        if((previousPoint.x > pointOfIntersection.x && pointOfIntersection.x > currentPoint.x ||
-            previousPoint.x < pointOfIntersection.x && pointOfIntersection.x < currentPoint.x) && isInInterval) {
-            points = previousDistance < currentDistance ? points.mid(0, i + 2) : points.mid(0, i + 1);
-            break;
+    auto minDistance = hypot(pointOfIntersection.x - points[points.length() - 1].x, pointOfIntersection.y - points[points.length() - 1].y);
+    auto index = points.length() - 1;
+    for(auto i = points.length() - 1; i >= 0; i--) {
+        auto distance = hypot(pointOfIntersection.x - points[i].x, pointOfIntersection.y - points[i].y);
+        if(distance < minDistance) {
+            minDistance = distance;
+            index = i;
         }
     }
+    /*if(hypot(pointOfIntersection.x - points[index + 1].x, pointOfIntersection.y - points[index + 1].y) <
+        hypot(points[index + 1].x - points[index].x, points[index + 1].y - points[index].y)) {
+        points = points.mid(0, index + 1);
+    } else {
+        points = points.mid(0, index);
+    }*/
+
+    //if(hypot(pointOfIntersection.x - points[index - 1].x, pointOfIntersection.y - points[index - 1].y) <
+    //    hypot(points[index - 1].x - points[index].x, points[index - 1].y - points[index].y)) {
+    //    points = points.mid(0, index);
+    //    //qDebug() << "end 1";
+    //} else {
+    //    points = points.mid(0, index + 1);
+    //    //qDebug() << "end 2";
+    //}
+
+    points = points.mid(0, index + 1);
 }
 
 double CurveMachine::getMinXOfCurvePointVector(const QVector<CurvePoint>& points) {
@@ -323,8 +415,28 @@ Function6Result CurveMachine::calculateBestFit(const QVector<CurvePoint> nominal
     return CurveLibrary::function6(measuredCurve, nominalCurve, params);
 }
 
-Function21Result CurveMachine::calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function21Params params) {
-    return CurveLibrary::function21(measuredCurve, nominalCurve, nominalCurve, params);
+Function21Result CurveMachine::calculateBestFit(const QVector<CurvePoint> nominalCurve, const QVector<CurvePoint> measuredCurve, const Function21Params params, double constTolerance) {
+    if(params.isClosedCurve()) {
+        return CurveLibrary::function21(measuredCurve, nominalCurve, nominalCurve, params);
+    }
+
+    QVector<CurvePoint> upperNomPoints;
+    QVector<CurvePoint> lowerNomPoints;
+    for(auto &point : nominalCurve) {
+        upperNomPoints.append(CurvePoint(
+            point.x + constTolerance * point.i,
+            point.y + constTolerance * point.j,
+            point.z + constTolerance * point.k,
+            point.i, point.j, point.k)
+        );
+        lowerNomPoints.append(CurvePoint(
+            point.x - constTolerance * point.i,
+            point.y - constTolerance * point.j,
+            point.z - constTolerance * point.k,
+            point.i, point.j, point.k)
+        );
+    }
+    return CurveLibrary::function21(measuredCurve, upperNomPoints, lowerNomPoints, params);
 }
 
 Point CurveMachine::getDirection(Point linePoint, double angularCoefficient) {
@@ -337,9 +449,9 @@ Point CurveMachine::getDirection(Point linePoint, double angularCoefficient) {
     return normalizeVector(direction);
 }
 
-CurveAnalyzer::CurveParts CurveMachine::divideCurveIntoParts(const QVector<CurvePoint> curve, const Function18Params params) {
+CurveParts CurveMachine::divideCurveIntoParts(const QVector<CurvePoint> curve, const Function18Params params) {
     auto res18 = CurveLibrary::function18(curve, params);
-    return CurveAnalyzer::CurveParts(
+    return CurveParts(
         res18.curveLE.points(),
         res18.curveTE.points(),
         res18.curveHigh.points(),
@@ -352,9 +464,61 @@ QVector<CurvePoint> CurveMachine::calculateStretch(const QVector<CurvePoint> &no
     return res31.curve.points();
 }
 
-QVector<CurvePoint> CurveMachine::calculateCurveUsing3DVectors(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function42Params &params) {
-    auto res42 = CurveLibrary::function42(measuredCurve, nominalCurve, params);
-    return res42.curve.points();
+QVector<CurvePoint> CurveMachine::calculateCurveUsing3DVectors(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function42Params &params, double radiusCorrection) {
+    auto nominalBallCenter = calculateBallCenterPoints(nominalCurve, radiusCorrection);
+    auto resultPoints = CurveLibrary::function42(measuredCurve, nominalBallCenter, params).curve.points();
+
+    if(resultPoints[0].k == 0) {
+        return resultPoints;
+    }
+    auto updatedPoints = shiftPointsAtNonZeroK(resultPoints, radiusCorrection);
+    return updatedPoints;
+}
+
+QVector<CurvePoint> CurveMachine::calculateBallCenterPoints(const QVector<CurvePoint> &points, double radiusCorrection) {
+    QVector<CurvePoint> ballCenterPoints;
+    for(auto &point : points) {
+        CurvePoint resultPoint;
+
+        auto projectionLength = sqrt(1 - pow(point.k, 2));
+
+        resultPoint.x = point.x + radiusCorrection * (point.i / projectionLength);
+        resultPoint.y = point.y + radiusCorrection * (point.j / projectionLength);
+        resultPoint.z = point.z;
+        resultPoint.i = point.i;
+        resultPoint.j = point.j;
+        resultPoint.k = point.k;
+
+        ballCenterPoints.append(resultPoint);
+    }
+    return ballCenterPoints;
+}
+
+QVector<CurvePoint> CurveMachine::shiftPointsAtNonZeroK(const QVector<CurvePoint> &points, double radiusCorrection) {
+    QVector<CurvePoint> updatedPoints;
+    for(auto &point : points) {
+        CurvePoint updatedPoint;
+
+        auto roundedNumber = std::round(point.z);
+        auto differenceZ = roundedNumber - point.z;
+        auto lengthOf2DVector = hypot(point.i, point.j);
+        auto normalizedK = point.k / lengthOf2DVector;
+        auto offset = (normalizedK * differenceZ) + ((1 / lengthOf2DVector - 1) * radiusCorrection);
+
+        auto normalizedI = point.i / lengthOf2DVector;
+        updatedPoint.x = point.x - normalizedI * offset;
+
+        auto normalizedJ = point.j / lengthOf2DVector;
+        updatedPoint.y = point.y - normalizedJ * offset;
+
+        updatedPoint.z = point.z;
+        updatedPoint.i = point.i;
+        updatedPoint.j = point.j;
+        updatedPoint.k = point.k;
+
+        updatedPoints.append(updatedPoint);
+    }
+    return updatedPoints;
 }
 
 double CurveMachine::getMinX(const QVector<CurvePoint> points, const Function18Params params) {
@@ -364,4 +528,52 @@ double CurveMachine::getMinX(const QVector<CurvePoint> points, const Function18P
     minX = std::min(minX, getMinXOfCurvePointVector(res18.curveHigh.points()));
     minX = std::min(minX, getMinXOfCurvePointVector(res18.curveLow.points()));
     return minX;
+}
+
+QVector<CurvePoint> CurveMachine::reassembleWholeCurve(const CurveParts &curveParts, LEDirection direction) {
+    auto curvePointsOfLE = curveParts.pointsOfLE;
+    auto curvePointsOfTE = curveParts.pointsOfTE;
+    auto lowCurvePoints = curveParts.pointsOfLow;
+    auto highCurvePoints = curveParts.pointsOfHigh;
+
+    QVector<CurvePoint> resultPoints;
+    if(direction == LEDirection::PlusX || direction == LEDirection::MinusY || direction == LEDirection::Auto) {
+        curvePointsOfLE.removeFirst();
+        lowCurvePoints.removeFirst();
+        curvePointsOfTE.removeFirst();
+        curvePointsOfTE.removeLast();
+        resultPoints = highCurvePoints + curvePointsOfLE + lowCurvePoints + curvePointsOfTE;
+    } else {           
+        curvePointsOfLE.removeFirst();
+        highCurvePoints.removeFirst();
+        curvePointsOfTE.removeFirst();
+        curvePointsOfTE.removeLast();
+        resultPoints = lowCurvePoints + curvePointsOfLE + highCurvePoints + curvePointsOfTE;
+    }
+    return resultPoints;
+}
+
+QVector<CurvePoint> CurveMachine::reassembleCurveWithoutTE(const CurveParts &curveParts, LEDirection direction) {
+    auto curvePointsOfLE = curveParts.pointsOfLE;
+    auto lowCurvePoints = curveParts.pointsOfLow;
+    auto highCurvePoints = curveParts.pointsOfHigh;
+
+    QVector<CurvePoint> resultPoints;
+    if(direction == LEDirection::PlusX || direction == LEDirection::MinusY || direction == LEDirection::Auto) {
+        curvePointsOfLE.removeFirst();
+        lowCurvePoints.removeFirst();
+        resultPoints = highCurvePoints + curvePointsOfLE + lowCurvePoints;
+    } else {
+        curvePointsOfLE.removeFirst();
+        highCurvePoints.removeFirst();
+        resultPoints = lowCurvePoints + curvePointsOfLE + highCurvePoints;
+    }
+    return resultPoints;
+}
+
+QVector<CurvePoint> CurveMachine::reassembleCurveWithoutEdges(const CurveParts &curveParts, LEDirection direction) {
+    //Maybe there is a dependence on the direction
+    auto highCurvePoints = curveParts.pointsOfHigh;
+    auto lowCurvePoints = curveParts.pointsOfLow;
+    return highCurvePoints + lowCurvePoints;
 }

@@ -1,18 +1,15 @@
 #pragma once
 
-#include <QObject>
-#include "turbinewindow.h"
+#include "turbineparameter.h"
 
-class ReportSettings : public QObject {
-    Q_OBJECT
-
+class ReportSettings {
 public:
     static QMap<QString, QString> convertToQMap(std::shared_ptr<ReportSettings> reportSettings);
     static std::shared_ptr<ReportSettings> convertToSettings(QMap<QString, QString> *params);
     static QMap<QString, QString> translateAirfoilSettings(QList<QStringList> lines);
 
     explicit ReportSettings();
-    virtual ~ReportSettings();
+    virtual ~ReportSettings() = default;
 
     //Direction, zone
     enum class LEDirection {
@@ -82,57 +79,6 @@ public:
         AirfoilReport1,
     };
 
-    enum class TurbineParamType {
-        MaxWidth = 0,
-        MaxWidthX = 1,
-        MaxWidthY = 2,
-        CenterMassX = 3,
-        CenterMassY = 4,
-        ChordAngle = 5,
-        ContactLineLength = 6,
-        LEWidth = 7,
-        TEWidth = 8,
-        LERadius = 9,
-        TERadius = 10,
-        ShiftX = 11,
-        ShiftY = 12,
-        Turn = 13,
-        MaxX = 14,
-        MinX = 15,
-        MaxY = 16,
-        MinY = 17,
-        PositionSize = 18,
-        DistX = 19,
-        DistY = 20,
-        FormLEMin = 21,
-        FormTEMin = 22,
-        FormConvexMin = 23,
-        FormConcaveMin = 24,
-        FormLEMax = 25,
-        FormTEMax = 26,
-        FormConvexMax = 27,
-        FormConcaveMax = 28,
-        LEDeviation = 29,
-        TEDeviation = 30,
-        ThicknessFromLE = 31,
-        FormLEMinMax = 32,
-        FormTEMinMax = 33,
-        FormConvexMinMax = 34,
-        FormConcaveMinMax = 35
-    };
-    Q_ENUM(TurbineParamType)
-
-    struct TurbineParameter {
-        TurbineParamType type;
-        bool needCalculate = false;
-        double nominal = 0.0;
-        double measured = 0.0;
-        double UT = 0.0;
-        double LT = 0.0;
-        QString extraParam1;
-        QString extraParam2;
-    };
-
     void setNominalName(QString name);
     QString nominalName() const;
     void setMeasuredName(QString name);
@@ -145,13 +91,9 @@ public:
     QImage screenshotOfTE() const;
 
     //Calculate parameters
-    QList<TurbineParameter> getTurbineParameter(TurbineParamType type) const;
-    void appendTurbineParameter(TurbineParameter parameter);
-    QMap<TurbineParamType, QList<TurbineParameter>>&  turbineParameters();
-    bool needCalculateParam(TurbineParamType type) const;
+    void appendTurbineParameter(TurbineParameter *parameter);
+    QMap<TurbineParameter::Type, QList<TurbineParameter*>>& turbineParameters();
     void clearTurbineParameters();
-    static TurbineParamType turbineParamTypeFromQString(const QString &name);
-    static QString turbineParamTypeToQString(TurbineParamType type);
     
     //Direction, zone
     void setLEDirection(LEDirection direction);
@@ -261,7 +203,7 @@ private:
     QImage _screenshotOfTE;
 
     //Calculate parameters
-    QMap<TurbineParamType, QList<TurbineParameter>> _turbineParameters;
+    QMap<TurbineParameter::Type, QList<TurbineParameter*>> _turbineParameters;
 
     //Direction, zone
     LEDirection _directionOfLE;

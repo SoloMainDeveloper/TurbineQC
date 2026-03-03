@@ -90,6 +90,7 @@ const QString Project::projectPath() {
 
 void Project::insertFigure(Figure *figure) {
     _figures[figure->name()] = figure;
+    figure->setIndex(++_lastFigureIndex);
     emit figureAdded(figure);
     initiateParentChildReference(figure);
 }
@@ -143,6 +144,8 @@ void Project::detachChildFromParent(Figure *child, QString parentName) {
             parent1->removeChild(child);
         } else {
             _lostParents[parentName].removeOne(child);
+            if(_lostParents[parentName].isEmpty())
+                _lostParents.remove(parentName);
         }
     }
 }
@@ -173,9 +176,10 @@ void Project::removeFigure(const QString &name) {
     if(_currentFigureName == name) {
         changeCurrentFigure(QString());
     }
-    auto figure = findFigure(name);
+    auto figure = findFigureMutable(name);
+    updateParent(figure, nullptr, nullptr);
     for(auto child : figure->childrenMutable()) {
-        child->updateRefToParent(name, QString());
+        _lostParents[figure->name()].append(child);
         emit figureEdited(child->name());
     }
 
@@ -222,6 +226,114 @@ void Project::changeFigureVisibility(const QString figureName, bool visible) {
     MacrosManager::log(MacrosManager::ChangeFigureVisibility, {
         { "figureName", figureName },
         { "visible", visible == true ? "true" : "false" } });
+}
+
+void Project::showAllFigures(QString figuresType) {
+    if(figuresType == "ANY") {
+        for(auto figure : _figures) {
+            if(!figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "CRV") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<CurveFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "CIR") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<CircleFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "LIN") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<LineFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "PNT") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<PointFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "DIM") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<DimFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    } else if(figuresType == "TXT") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<TextFigure*>(figure) && !figure->isVisible()) {
+                figure->setVisible(true);
+                emit figureVisibilityChanged(figure->name(), true);
+            }
+        }
+    }
+    MacrosManager::log(MacrosManager::ShowAll, { { "figuresType", figuresType } });
+}
+
+void Project::hideAllFigures(QString figuresType) {
+    if(figuresType == "ANY") {
+        for(auto figure : _figures) {
+            if(figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "CRV") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<CurveFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "CIR") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<CircleFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "LIN") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<LineFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "PNT") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<PointFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "DIM") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<DimFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    } else if(figuresType == "TXT") {
+        for(auto figure : _figures) {
+            if(dynamic_cast<TextFigure*>(figure) && figure->isVisible()) {
+                figure->setVisible(false);
+                emit figureVisibilityChanged(figure->name(), false);
+            }
+        }
+    }
+    MacrosManager::log(MacrosManager::HideAll, { { "figuresType", figuresType } });
 }
 
 void Project::toggleFigureVisibility(const QString figureName) {
@@ -314,7 +426,6 @@ void Project::requestFigureEditDialog(const QString figureName) {
 }
 
 void Project::safeInsert(QString figureName, Figure *figure, bool needToChangeCurrentFigure) {
-    std::lock_guard<std::mutex> lock(mtx);
     if(containsFigure(figureName)) {
         MacrosManager::executeWithoutLogging([&]() {
             removeFigure(figureName);
@@ -358,6 +469,8 @@ void Project::clear() {
         changePartData(QString(), QString(), QString(), QString(), QString(), QString(),
             QString(), QString(), QString(), QString(), QString(), QString(), QString(), false);
     });
+    _lostParents.clear();
+    _lastFigureIndex = 0;
     MacrosManager::log(MacrosManager::ClearProject);
 }
 
@@ -501,27 +614,26 @@ void Project::rotateFigure(QString figureName, double angle, QString x, QString 
 }
 
 void Project::alignment(double angle, double offsetX, double offsetY) {
-    QThread* thread = QThread::create([&]() {
-        auto itFirstThread = _figures.begin();
-        for(; itFirstThread != std::next(_figures.begin(), _figures.size() / 2); ++itFirstThread) {
-            std::future<void> future = std::async(std::launch::async, &Figure::alignment, *itFirstThread, angle, offsetX, offsetY);
-            emit figureCoordsChanged((*itFirstThread)->name());
-        }
-    });
-    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-    thread->start();
-
-    auto itMainThread = std::next(_figures.begin(), _figures.size() / 2);
-    for(; itMainThread != _figures.end(); ++itMainThread) {
-        std::future<void> future = std::async(std::launch::async, &Figure::alignment, *itMainThread, angle, offsetX, offsetY);
-        emit figureCoordsChanged((*itMainThread)->name());
+    QVector<QFuture<void>> futures;
+    auto figuresToAlign = figures().values();
+    for(auto figure : figuresToAlign) {
+        futures.append(QtConcurrent::run([=]() {
+            figure->alignment(angle, offsetX, offsetY);
+        }));
     }
+
+    for(auto future : futures) {
+        future.waitForFinished();
+    }
+    for(auto figure : figuresToAlign) {
+        emit figureCoordsChanged(figure->name());
+    }
+
     MacrosManager::log(MacrosManager::Alignment, {
         { "angle", QString::number(angle) },
         { "axis", "" },
         { "offsetX", QString::number(offsetX) },
-        { "offsetY", QString::number(offsetY) },
-        });
+        { "offsetY", QString::number(offsetY) }, });
 }
 
 void Project::alignment(QString angle, QString axis, QString offsetX, QString offsetY) {
@@ -587,42 +699,26 @@ void Project::alignment(QString angle, QString axis, QString offsetX, QString of
         }
     }
 
-    QThread* thread = QThread::create([&]() {
-        auto itFirstThread = _figures.begin();
-        std::future<void> future;
-        std::vector<std::future<void>> futures;
-        for(; itFirstThread != std::next(_figures.begin(), _figures.size() / 2); ++itFirstThread) {
-            future = std::async(std::launch::async, &Figure::alignment, *itFirstThread, alignmentAngle, alignmentOffsetX, alignmentOffsetY);
-            emit figureCoordsChanged((*itFirstThread)->name());
-            futures.push_back(std::move(future));
-        }
-        for(int i = 0; i < futures.size(); i++) {
-            std::future<void> &itFuture = futures[i];
-            itFuture.wait();
-        }
-    });
-    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-    thread->start();
-
-    auto itMainThread = std::next(_figures.begin(), _figures.size() / 2);
-    std::future<void> future;
-    std::vector<std::future<void>> futures;
-    for(; itMainThread != _figures.end(); ++itMainThread) {
-        future = std::async(std::launch::async, &Figure::alignment, *itMainThread, alignmentAngle, alignmentOffsetX, alignmentOffsetY);
-        emit figureCoordsChanged((*itMainThread)->name());
-        futures.push_back(std::move(future));
+    QVector<QFuture<void>> futures;
+    auto figuresToAlign = figures().values();
+    for(auto figure : figuresToAlign) {
+        futures.append(QtConcurrent::run([=]() {
+            figure->alignment(alignmentAngle, alignmentOffsetX, alignmentOffsetY);
+        }));
     }
-    for(int i = 0; i < futures.size(); i++) {
-        std::future<void> &itFuture = futures[i];
-        itFuture.wait();
+
+    for(auto future : futures) {
+        future.waitForFinished();
+    }
+    for(auto figure : figuresToAlign) {
+        emit figureCoordsChanged(figure->name());
     }
 
     MacrosManager::log(MacrosManager::Alignment, {
         { "angle", angle },
         { "axis", axis },
         { "offsetX", offsetX },
-        { "offsetY", offsetY },
-        });
+        { "offsetY", offsetY }, });
 }
 
 void Project::changeDimensionValue(const QString &dimName, const DimFigure::Value &value) {
@@ -724,17 +820,6 @@ void Project::constructText(QString name, QString text, double x, double y, doub
         });
 }
 
-Point Project::chooseCoordsByClick() {
-    //emit controlWidgetsEnabled(false);
-    //emit raiseMainWindow();
-    //emit trackMousePositionRequested();
-    //QEventLoop loop;
-    //connect(this, &Project::mousePressed, &loop, &QEventLoop::quit);
-    //loop.exec();
-    //return Point(_mousePos.x, _mousePos.y, 0);
-    return Point(0, 0);
-}
-
 void Project::addOperationtime(QString operation, quint64 time) {
     operationTimes[operation].append(time);
 }
@@ -764,10 +849,9 @@ QString Project::getFreeName(QString startsWith, bool firstWithNumber, QString s
         if(_figures.contains(newName)) {
             index++;
             flag = true;
-            break;
         }
         if(!flag) {
-            return startsWith + QString::number(index);
+            return newName;
         }
     }
     return QString();

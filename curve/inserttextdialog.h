@@ -17,6 +17,9 @@ public:
 
     void initialization();
 
+public slots:
+    void onPlotClick(const QPointF &point);
+
 private:
     int findFreeIndex();
     void insertText();
@@ -25,4 +28,5 @@ private:
 
     Ui::InsertTextDialogClass *_ui;
     Project *_project;
+    bool _pointSelecting = false;
 };

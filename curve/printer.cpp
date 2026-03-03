@@ -58,12 +58,12 @@ void Printer::print(const QStringList &pagesToTake) {
             QFile file(filePath);
             file.open(QIODevice::WriteOnly | QIODevice::Truncate);
             QTextStream in(&file);
-            QString fullMarkup = "";
+            QStringList fullMarkup;
             for(auto i = 0; i < pagesToTake.size(); i++) {
                 auto index = pagesToTake[i].toInt();
-                fullMarkup += _printPages[index];
+                fullMarkup.append(_printPages[index]);
             }
-            in << MarkupCreator::index.arg(fullMarkup);
+            in << MarkupCreator::index.arg(fullMarkup.join(""));
             file.close();
             break;
         }

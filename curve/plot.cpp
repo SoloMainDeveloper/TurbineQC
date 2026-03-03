@@ -7,7 +7,13 @@ Plot::Plot(QWidget *parent) : QCustomPlot(parent), _project(nullptr) {
 
     xAxis->setRange(0, 7);
     yAxis->setRange(0, 5);
-
+    _replotTimer.setSingleShot(false);
+    _replotTimer.setInterval(500);
+    connect(&_replotTimer, &QTimer::timeout, this, [&]() {
+        for(const auto &figure : _project->figures()) {
+            if(figure->isVisible()) updateFigure(figure->name());
+        }
+    });
     setInteractions(QCP::iRangeDrag | QCP::iSelectPlottables | QCP::iSelectItems);
 }
 
@@ -61,6 +67,10 @@ void Plot::removeFigure(const QString figureName) {
 }
 
 void Plot::changeCurrentFigure(const QString &currentFigureName, const QString &previousFigureName) {
+    if(layer(currentFigureName) != nullptr && layer(previousFigureName) != nullptr) {
+        moveLayer(layer(currentFigureName), layer(previousFigureName), LayerInsertMode::limAbove);
+    }
+
     if(!previousFigureName.isNull()) {
         updateFigure(previousFigureName);
     }
@@ -71,10 +81,9 @@ void Plot::changeCurrentFigure(const QString &currentFigureName, const QString &
 }
 
 void Plot::changeFigureVisibility(const QString figureName, bool visible) {
-    layer(figureName)->setVisible(visible);
-
-    if(visible) {
-        updateFigure(figureName);
+    if(auto figureLayer = layer(figureName)) {
+        figureLayer->setVisible(visible);
+        figureLayer->replot();
     }
 }
 
@@ -295,14 +304,7 @@ void Plot::updateFigure(const QString &figureName) {
         return;
     }
 
-    auto figure = _project->findFigure(figureName);
-    if(figure == nullptr) return;
-    if(figure->isVisible()) {
-        if(layer(figureName) == nullptr) {
-            qDebug() << "Layer " << figureName << " does not exist";
-            return;
-        }
-
+    if(auto figure = _project->findFigure(figureName)) {
         clearLayer(figureName);
         loadFigure(figure);
         layer(figureName)->replot();
@@ -326,7 +328,7 @@ void Plot::addCurveLayer(const CurveFigure *curveFigure) {
 }
 
 void Plot::addPointLayer(const PointFigure *pointFigure) {
-    auto circleFigure = new CircleFigure(pointFigure->name(), Point(pointFigure->point()), Point(0, 0, 1), 1);
+    auto circleFigure = new CircleFigure(pointFigure->name(), Point(pointFigure->point()), Point(0, 0, 1), _pointRadius);
     auto &pointColor = pointFigure->color();
     circleFigure->setColor(pointColor);
     circleFigure->setCenterCross(false);
@@ -384,7 +386,7 @@ void Plot::addCircleLayer(const CircleFigure *circleFigure) {
     } else {
         penWidth = _penWidth;
     }
-
+    
     auto brush = QBrush(circleFigure->color());
     auto pen = QPen(brush, penWidth);
     circle->setPen(pen);
@@ -420,15 +422,17 @@ void Plot::addDimLayer(const DimFigure *dimFigure) {
             break;
         };
         case(DimFigure::DimType::Form):
+        case(DimFigure::DimType::Position):
+        case(DimFigure::DimType::BestFitData):
         {
             drawTable(dimFigure);
             break;
         };
         case(DimFigure::DimType::DistanceBetweenCurvePoints):
-        case(DimFigure::DimType::BestFitData):
+        case(DimFigure::DimType::Distance):
         {
-            drawDistanceBetweenCurvePoints(dimFigure);
-            break;
+            /*drawDistanceBetweenCurvePoints(dimFigure);
+            break;*/
         };
     }
 }
@@ -461,10 +465,10 @@ const Point Plot::findNearestFigurePoint(const Point &point, const Figure *figur
     if(auto circleFigure = dynamic_cast<const CircleFigure*>(figure)) {
         const double &radius = circleFigure->radius();
         const Point &centerPoint = circleFigure->center();
-        double length = hypot(point.x - centerPoint.x, point.y - centerPoint.y);
-        double k = radius / length;
-        double dx = point.x - centerPoint.x;
-        double dy = point.y - centerPoint.y;
+        const double length = hypot(point.x - centerPoint.x, point.y - centerPoint.y);
+        const double k = radius / length;
+        const double dx = point.x - centerPoint.x;
+        const double dy = point.y - centerPoint.y;
         result.x = centerPoint.x + k * dx;
         result.y = centerPoint.y + k * dy;
     } else if(auto curveFigure = dynamic_cast<const CurveFigure*>(figure)) {
@@ -479,14 +483,50 @@ const Point Plot::findNearestFigurePoint(const Point &point, const Figure *figur
         }
         result.x = nearestPoint.x;
         result.y = nearestPoint.y;
+    } else if(auto pointFigure = dynamic_cast<const PointFigure*>(figure)) {
+        const CurvePoint &point = pointFigure->point();
+        const double length = hypot(point.x - point.x, point.y - point.y);
+        const double k = _pointRadius / length;
+        const double dx = point.x - point.x;
+        const double dy = point.y - point.y;
+        result.x = point.x + k * dx;
+        result.y = point.y + k * dy;
+    } else if(auto lineFigure = dynamic_cast<const LineFigure*>(figure)) {
+        const Point &origin = lineFigure->origin();
+        const Point &direction = lineFigure->direction();
+        const double dx = point.x - origin.x;
+        const double dy = point.y - origin.y;
+        const double t = (dx * direction.x + dy * direction.y) / (direction.x * direction.x + direction.y * direction.y);
+        result.x = origin.x + t * direction.x;
+        result.y = origin.y + t * direction.y;
     }
     return result;
 }
+
+const void Plot::findNearestCurvePoint(const Point &point, const CurveFigure *curveFigure, CurvePoint &result, int &resultIndex) const {
+    double length, minLength = DBL_MAX;
+    int index = 0;
+    for(const auto &curvePoint : curveFigure->points()) {
+        length = hypot(curvePoint.x - point.x, curvePoint.y - point.y);
+        if(length < minLength) {
+            minLength = length;
+            result = curvePoint;
+            resultIndex = index + 1;
+        }
+        index++;
+    }
+}
+
 
 void Plot::drawCallout(const DimFigure *dimFigure) {
     const Point &labelPoint = dimFigure->labelPoint();
     auto &value = dimFigure->values()[0];
     auto reference = _project->findFigure(dimFigure->firstReference());
+
+    if(reference == nullptr) {
+        qDebug() << "Callout reference not found. DimFigure: " << dimFigure->name();
+        return;
+    }
 
     auto &endPoint = findNearestFigurePoint(labelPoint, reference);
     drawCalloutLine(dimFigure->name(), dimFigure->color(), labelPoint, endPoint);
@@ -565,7 +605,7 @@ void Plot::drawText(const TextFigure *textFigure) {
         drawCalloutLine(textFigure->name(), color, position, endPoint);
     } else {
         offsetPointPx.x += textWidthPx / 2;
-        itemText->position->setCoords(toQPointF(coordToPixel(offsetPointPx)));
+        itemText->position->setCoords(toQPointF(pixelToCoord(offsetPointPx)));
     }
 }
 
@@ -586,6 +626,11 @@ void Plot::drawImage(const TextFigure *textFigure) {
     image->topLeft->setCoords(position.x, position.y);
     image->bottomRight->setCoords(position.x + zoom * width, position.y - zoom * height);
     image->setScaled(true, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::FastTransformation);
+
+    if(textFigure->reference() != nullptr) {
+        auto &endPoint = findNearestFigurePoint(position, _project->findFigure(textFigure->reference()));
+        drawCalloutLine(textFigure->name(), textFigure->color(), position, endPoint);
+    }
 }
 
 void Plot::createRadiusDimension() {
@@ -659,8 +704,9 @@ void Plot::setBuffering(bool enabled) {
 
 void Plot::unloadBuffer() {
     for(const auto &figure : _buffer) {
-        if(figure == nullptr) continue;
-        updateFigure(figure);
+        if(figure != nullptr) {
+            updateFigure(figure);
+        }
     }
     _buffer.clear();
 }
@@ -721,6 +767,7 @@ void Plot::onMouseWheel(QWheelEvent *event) {
         Point mousePoint = pixelToCoord(Point(event->position().x(), event->position().y()));
         zoomMinusToPoint(mousePoint);
     }
+    _replotTimer.start();
 }
 
 void Plot::onMouseMove(QMouseEvent *event) {
@@ -741,6 +788,12 @@ void Plot::onMousePress(QMouseEvent *event) {
 }
 
 void Plot::drawTable(const DimFigure *dimFigure) {
+    const auto referenceFigure = _project->findFigure(dimFigure->firstReference());
+    if(referenceFigure == nullptr) {
+        qDebug() << "Table reference not found. DimFigure: " << dimFigure->name();
+        return;
+    }
+
     const int _columnWidthPx = 130;
     const int _rowHeightPx = 20;
     const int _separatorHeightPx = 3;
@@ -758,7 +811,7 @@ void Plot::drawTable(const DimFigure *dimFigure) {
     QFont font = QFont();
     font.setBold(currentFigure() == dimFigure);
 
-    Point targetPoint = findNearestFigurePoint(labelPoint, _project->findFigure(dimFigure->firstReference()));
+    Point targetPoint = findNearestFigurePoint(labelPoint, referenceFigure);
     auto connectLine = new LineFigure(name, targetPoint, labelPoint);
     loadFigure(connectLine);
     delete connectLine;
@@ -843,17 +896,24 @@ void Plot::drawTable(const DimFigure *dimFigure) {
 }
 
 void Plot::drawDistanceBetweenCurvePoints(const DimFigure *dimFigure) {
+    // TODO: Rewrite function
+    const auto firstPointFigure = dynamic_cast<const PointFigure*>(_project->findFigure(dimFigure->firstReference()));
+    const auto secondPointFigure = dynamic_cast<const PointFigure*>(_project->findFigure(dimFigure->secondReference()));
+    if(firstPointFigure == nullptr || secondPointFigure == nullptr) {
+        qDebug() << "Distance between curve points references not found. DimFigure: " << dimFigure->name();
+        return;
+    }
+
     QFont font = QFont();
     font.setBold(currentFigure() == dimFigure);
-    auto labelPoint = dimFigure->labelPoint();
-    auto &labelPointPx = coordToPixel(labelPoint);
     auto &name = dimFigure->name();
-    auto firstPointFigure = dynamic_cast<const PointFigure*>(_project->findFigure(dimFigure->firstReference()));
-    auto secondPointFigure = dynamic_cast<const PointFigure*>(_project->findFigure(dimFigure->secondReference()));
     const auto &firstDimPoint = (Point)firstPointFigure->point();
     const auto &secondDimPoint = (Point)secondPointFigure->point();
+    auto labelPoint = Algorithms::getMiddlePoint(firstDimPoint, secondDimPoint);
+    auto &labelPointPx = coordToPixel(labelPoint);
 
     auto label = new QCPItemText(this);
+    label->position->setCoords(labelPoint.x, labelPoint.y);
     auto labelText = QString::number(dimFigure->values()[0].measurement, 'f', _project->precision());
 
     label->setColor(dimFigure->color());
@@ -876,19 +936,19 @@ void Plot::drawDistanceBetweenCurvePoints(const DimFigure *dimFigure) {
     auto bottomRight = toQPointF(pixelToCoord(Point(labelPointPx.x + widthPx / 2.0, labelPointPx.y - heightPx / 2.0)));
     auto textRect = QRectF(topLeft, bottomRight).normalized();
     auto totalArea = totalRect.width() * totalRect.height();
+    if(totalArea == 0) return;
+
     auto textArea = textRect.width() * textRect.height();
 
-    auto k = (firstDimPoint.y - secondDimPoint.y) / (firstDimPoint.x - secondDimPoint.x);
+    double k;
+    if((firstDimPoint.x - secondDimPoint.x) == 0) k = 0;
+    else k = (firstDimPoint.y - secondDimPoint.y) / (firstDimPoint.x - secondDimPoint.x);
     auto b = firstDimPoint.y - k * firstDimPoint.x;
     auto isEnoughSpace = (textArea / totalArea) <= 0.25;
-    const LineFigure *firstLine, *secondLine;
+    LineFigure *firstLine, *secondLine;
+
     if(isEnoughSpace) {
-        label->position->setCoords(labelPoint.x, labelPoint.y);
-        
-        Point firstPointOnRect = Point(firstDimPoint.x + qCos(k), firstDimPoint.y + qSin(k));
-        Point secondPointOnRect = Point(secondDimPoint.x - qCos(k), secondDimPoint.y - qSin(k));
-        
-        /*
+        Point firstPointOnRect, secondPointOnRect;
         const auto &points = intersectionLineAndRect(k, b, textRect);
         const auto &keys = points.keys();
         const auto &values = points.values();
@@ -899,16 +959,12 @@ void Plot::drawDistanceBetweenCurvePoints(const DimFigure *dimFigure) {
             firstPointOnRect = Point(keys[1], values[1]);
             secondPointOnRect = Point(keys[0], values[0]);
         }
-        */
+        
         firstLine = createLineFigure(name, firstPointOnRect, firstDimPoint,
             QCPLineEnding::esNone, QCPLineEnding::esLineArrow, dimFigure->color());
         secondLine = createLineFigure(name, secondPointOnRect, secondDimPoint,
             QCPLineEnding::esNone, QCPLineEnding::esLineArrow, dimFigure->color());
     } else {
-        if(dimFigure->isFreePosition() == false) {
-            labelPoint = Point(xAxis->pixelToCoord(labelPointPx.x - widthPx / 2.0 - _labelOffsetPx), labelPoint.y);
-        }
-        label->position->setCoords(labelPoint.x, labelPoint.y);
         auto direction = Point(firstDimPoint.x - secondDimPoint.x, firstDimPoint.y - secondDimPoint.y);
         auto length = hypot(direction.x, direction.y);
         direction.x /= length;
@@ -922,8 +978,11 @@ void Plot::drawDistanceBetweenCurvePoints(const DimFigure *dimFigure) {
         secondLine = createLineFigure(name, secondStartPoint, secondDimPoint,
             QCPLineEnding::esNone, QCPLineEnding::esLineArrow, dimFigure->color());
     }
+    firstLine->setColor(dimFigure->color());
+    secondLine->setColor(dimFigure->color());
     loadFigure(firstLine);
     loadFigure(secondLine);
+    delete firstLine, secondLine;
 }
 
 const QHash<double, double> Plot::intersectionLineAndRect(const double k, const double b, const QRectF &rect) const {
@@ -1028,112 +1087,112 @@ void Plot::drawCurve(const CurveFigure *curveFigure) {
 }
 
 void Plot::drawCurveVectors(const CurveFigure *curveFigure) {
-    if(curveFigure->isShowVectors() == false) return;
-    const auto pen = QPen(QColorConstants::Red);
+    if(curveFigure->isShowVectors()) {
+        const auto pen = QPen(QColorConstants::Red);
+        for(const auto &point : curveFigure->points()) {
+            if(point.i == 0 && point.j == 0) continue;
+            auto line = new QCPItemLine(this);
 
-    for(const auto &point : curveFigure->points()) {
-        if(point.i == 0 && point.j == 0) continue;
-        auto line = new QCPItemLine(this);
-
-        line->setPen(pen);
-        line->setHead(QCPLineEnding::esLineArrow);
-        line->start->setCoords(point.x, point.y);
-        line->end->setCoords(point.x + point.i, point.y + point.j);
+            line->setPen(pen);
+            line->setHead(QCPLineEnding::esLineArrow);
+            line->start->setCoords(point.x, point.y);
+            line->end->setCoords(point.x + point.i, point.y + point.j);
+        }
     }
 }
 
 void Plot::drawCurveNumbering(const CurveFigure *curveFigure) {
-    if(curveFigure->isShowNumbering() == false) return;
-    const auto &points = curveFigure->points();
-    const auto numberingInterval = curveFigure->numberingInterval();
-    if(numberingInterval > points.size()) return;
+    if(curveFigure->isShowNumbering()) {
+        const auto &points = curveFigure->points();
+        const auto numberingInterval = curveFigure->numberingInterval();
+        if(numberingInterval > points.size()) return;
 
-    double textHeight = QFontMetrics(QFont()).height();
-    QPointF labelPointPx;
-    QCPItemText *label;
-    for(int i = 0; i < points.size(); i += numberingInterval) {
-        label = new QCPItemText(this);
-        label->setText(QString::number(i + 1));
-        
-        label->position->setCoords(QPointF(points[i].x, points[i].y));
-        labelPointPx = label->position->pixelPosition();
-        labelPointPx.setY(labelPointPx.y() - textHeight / 2);
-        label->position->setPixelPosition(labelPointPx);
+        double textHeight = QFontMetrics(QFont()).height();
+        QPointF labelPointPx;
+        QCPItemText *label;
+        for(int i = 0; i < points.size(); i += numberingInterval) {
+            label = new QCPItemText(this);
+            label->setText(QString::number(i + 1));
+
+            label->position->setCoords(QPointF(points[i].x, points[i].y));
+            labelPointPx = label->position->pixelPosition();
+            labelPointPx.setY(labelPointPx.y() - textHeight / 2);
+            label->position->setPixelPosition(labelPointPx);
+        }
     }
 }
 
 void Plot::drawCurveTolerances(const CurveFigure *curveFigure) {
-    if(curveFigure->isShowTolerances() == false) return;
     const auto amplification = curveFigure->amplification();
-    if(amplification == 0) return;
+    if(curveFigure->isShowTolerances() && amplification != 0) {
+        const auto &curveName = curveFigure->name();
+        const auto color = QColorConstants::DarkGreen;
 
-    const auto &curveName = curveFigure->name();
-    const auto color = QColorConstants::DarkGreen;
-    
-    QVector<CurvePoint> upperTolerancePoints, lowerTolerancePoints;
-    CurvePoint upperOffsetPoint, lowerOffsetPoint;
-    for(const auto &point : curveFigure->points()) {
-        if(point.ut != 0) {
-            upperOffsetPoint = point;
-            upperOffsetPoint.x += point.i * point.ut * amplification;
-            upperOffsetPoint.y += point.j * point.ut * amplification;
-            upperOffsetPoint.z += point.k * point.ut * amplification;
-            upperTolerancePoints.push_back(upperOffsetPoint);
+        QVector<CurvePoint> upperTolerancePoints, lowerTolerancePoints;
+        CurvePoint upperOffsetPoint, lowerOffsetPoint;
+        for(const auto &point : curveFigure->points()) {
+            if(point.ut != 0) {
+                upperOffsetPoint = point;
+                upperOffsetPoint.x += point.i * point.ut * amplification;
+                upperOffsetPoint.y += point.j * point.ut * amplification;
+                upperOffsetPoint.z += point.k * point.ut * amplification;
+                upperTolerancePoints.push_back(upperOffsetPoint);
+            }
+
+            if(point.lt != 0) {
+                lowerOffsetPoint = point;
+                lowerOffsetPoint.x += point.i * point.lt * amplification;
+                lowerOffsetPoint.y += point.j * point.lt * amplification;
+                lowerOffsetPoint.z += point.k * point.lt * amplification;
+                lowerTolerancePoints.push_back(lowerOffsetPoint);
+            }
         }
 
-        if(point.lt != 0) {
-            lowerOffsetPoint = point;
-            lowerOffsetPoint.x += point.i * point.lt * amplification;
-            lowerOffsetPoint.y += point.j * point.lt * amplification;
-            lowerOffsetPoint.z += point.k * point.lt * amplification;
-            lowerTolerancePoints.push_back(lowerOffsetPoint);
+        if(upperTolerancePoints.isEmpty() == false) {
+            auto upperCurveFigure = new CurveFigure(curveName, upperTolerancePoints);
+            upperCurveFigure->setColor(color);
+            upperCurveFigure->setClosed(curveFigure->isClosed());
+            loadFigure(upperCurveFigure);
         }
-    }
 
-    if(upperTolerancePoints.isEmpty() == false) {
-        auto upperCurveFigure = new CurveFigure(curveName, upperTolerancePoints);
-        upperCurveFigure->setColor(color);
-        upperCurveFigure->setClosed(curveFigure->isClosed());
-        loadFigure(upperCurveFigure);
-    }
-
-    if(lowerTolerancePoints.isEmpty() == false) {
-        auto lowerCurveFigure = new CurveFigure(curveName, lowerTolerancePoints);
-        lowerCurveFigure->setColor(color);
-        lowerCurveFigure->setClosed(curveFigure->isClosed());
-        loadFigure(lowerCurveFigure);
+        if(lowerTolerancePoints.isEmpty() == false) {
+            auto lowerCurveFigure = new CurveFigure(curveName, lowerTolerancePoints);
+            lowerCurveFigure->setColor(color);
+            lowerCurveFigure->setClosed(curveFigure->isClosed());
+            loadFigure(lowerCurveFigure);
+        }
     }
 }
 
 void Plot::drawCurveDeviations(const CurveFigure *curveFigure) {
+    // TODO: Rewrite function to one loop
     if(curveFigure->isShowDeviations()) {
         Point direction, middlePoint;
         double length, amplification = curveFigure->amplification();
         const QString &curveName = curveFigure->name();
         bool isHighLightOut = curveFigure->isHighLightOut();
         for(const auto &point : curveFigure->points()) {
-            if(point.dev == 0) continue;
-            direction = Point(point.i, point.j);
-            middlePoint = Point(point.x + (point.i * point.dev * amplification) / 2, point.y + (point.j * point.dev * amplification) / 2);
+            if(point.dev != 0) {
+                direction = Point(point.i, point.j);
+                middlePoint = Point(point.x + (point.i * point.dev * amplification) / 2, point.y + (point.j * point.dev * amplification) / 2);
 
-            length = abs(point.dev * amplification);
-            const auto lineFigure = new LineFigure(curveName, middlePoint, direction, length);
+                length = abs(point.dev * amplification);
+                const auto lineFigure = new LineFigure(curveName, middlePoint, direction, length);
 
-            lineFigure->setColor(QColorConstants::Red);
-            if(point.dev < 0 && isHighLightOut) {
-                lineFigure->setColor(QColorConstants::Blue);
+                lineFigure->setColor(QColorConstants::Red);
+                if(point.dev < 0 && isHighLightOut) {
+                    lineFigure->setColor(QColorConstants::Blue);
+                }
+
+                loadFigure(lineFigure);
+                delete lineFigure;
             }
-
-            loadFigure(lineFigure);
-            delete lineFigure;
         }
     }
 
-    if(curveFigure->isConnectDeviations()) {
+    const auto amplification = curveFigure->amplification();
+    if(curveFigure->isConnectDeviations() && amplification != 0) {
         // TODO: rewrite
-        auto amplification = curveFigure->amplification();
-        if(amplification == 0) return;
-
         const auto &points = curveFigure->points();
         auto isHighLight = curveFigure->isHighLightOut();
 
@@ -1201,111 +1260,4 @@ void Plot::drawCurveDeviations(const CurveFigure *curveFigure) {
             label->position->setCoords(point.x + offsetX, point.y + offsetY);
         }
     }
-}
-
-Plot::QCPItemTable::QCPItemTable(QCustomPlot *plot, const QString &name) : QCPItemRect(plot), targetPosition(), basePosition() {
-    _name = name;
-}
-
-void Plot::QCPItemTable::addData(const QString &name, const QString &value) {
-    _data.push_back({ name, value });
-}
-
-void Plot::QCPItemTable::setIsCurrentFigure(bool isCurrentFigure) {
-    _isCurrentFigure = isCurrentFigure;
-}
-
-void Plot::QCPItemTable::setOnlyLabel(bool isOnlyLabel) {
-    _isOnlyLabel = isOnlyLabel;
-}
-
-void Plot::QCPItemTable::setColor(const QColor &color) {
-    _color = color;
-}
-
-void Plot::QCPItemTable::draw(QCPPainter *painter) {
-    const int columnWidthPx = 130;
-    const int rowHeightPx = 20;
-    const int separatorHeightPx = 3;
-
-    if(_data.isEmpty()) return;
-    _font.setBold(_isCurrentFigure);
-    
-    mPen.setColor(_color);
-    painter->setPen(mPen);
-    painter->setFont(_font);
-
-    QPointF basePoint = basePosition->pixelPosition();
-    QPointF targetPoint = targetPosition->pixelPosition();
-    QPointF referencePoint;
-
-    painter->drawLine(basePoint, targetPoint);
-
-    int dataCount = _data.size();
-    char sideSign = ((targetPoint.x() - basePoint.x()) / abs(targetPoint.x() - basePoint.x())) == 1 ? -1 : 0;
-
-    if(sideSign == 1) {
-        topLeft->setCoords(basePoint.x() - columnWidthPx, basePoint.y());
-        bottomRight->setCoords(basePoint.x(), basePoint.y() + rowHeightPx * dataCount + separatorHeightPx * (dataCount - 1));
-    } else {
-        topLeft->setCoords(basePoint.x(), basePoint.y());
-        bottomRight->setCoords(basePoint.x() + columnWidthPx, basePoint.y() + rowHeightPx * dataCount + separatorHeightPx * (dataCount - 1));
-    }
-    QCPItemRect::draw(painter);
-    referencePoint = topLeft->pixelPosition();
-
-    const QFontMetrics fontMetrics(_font);
-    const int textHeight = fontMetrics.height();
-    painter->drawText(QPointF(referencePoint.x() + columnWidthPx / 2, referencePoint.y() - textHeight / 2), _name);
-    
-    if(_isOnlyLabel) return;
-    /*
-    for(auto i = 0; i < dataCount; i++) {
-        painter->drawText()
-        /*
-        const DimFigure::Value value = visibleValues[i];
-        QCPItemRect *rect = new QCPItemRect(this);
-        rect->setBrush(QBrush(QColor::fromRgb(230, 230, 230)));
-        rect->topLeft->setPixelPosition(toQPointF(referencePointPx));
-        rect->bottomRight->setPixelPosition(QPointF(referencePointPx.x + _columnWidthPx, referencePointPx.y + _rowHeightPx));
-
-        QCPItemText *keyLabel = new QCPItemText(this);
-        keyLabel->setFont(font);
-        text = DimFigure::valueTypeToString(value.type);
-        widthPx = fontMetrics.horizontalAdvance(text);
-        keyLabel->position->setPixelPosition(QPointF(referencePointPx.x + _labelOffsetPx + widthPx / 2, referencePointPx.y + _rowHeightPx / 2));
-        keyLabel->setText(text);
-        keyLabel->setColor(dimFigure->color());
-
-        QCPItemText *valueLabel = new QCPItemText(this);
-        valueLabel->setFont(font);
-        text = QString::number(value.measurement, 'f', _project->precision());
-        widthPx = fontMetrics.horizontalAdvance(text);
-        valueLabel->position->setPixelPosition(QPointF(referencePointPx.x + _columnWidthPx - widthPx / 2 - _labelOffsetPx, referencePointPx.y + _rowHeightPx / 2));
-        valueLabel->setText(text);
-        valueLabel->setColor(dimFigure->color());
-
-        if(dimFigure->isShowTols()) {
-            QCPItemText *toleranceLabel = new QCPItemText(this);
-            toleranceLabel->setFont(font);
-            text = QString("(%1 %2 %3)").arg(QString::number(value.nominal, 'f', _project->precision()))
-                .arg(QString::number(value.upperTolerance, 'f', _project->precision()))
-                .arg(QString::number(value.lowerTolerance, 'f', _project->precision()));
-            widthPx = fontMetrics.horizontalAdvance(text);
-            toleranceLabel->position->setPixelPosition(QPointF(referencePointPx.x + _columnWidthPx + widthPx / 2 + _labelOffsetPx, referencePointPx.y + _rowHeightPx / 2));
-            toleranceLabel->setText(text);
-            toleranceLabel->setColor(dimFigure->color());
-        }
-
-        referencePointPx.y += _rowHeightPx;
-        if(i < visibleValues.length() - 1) {
-            QCPItemRect *rect = new QCPItemRect(this);
-            rect->setBrush(QBrush(QColorConstants::White));
-            rect->topLeft->setPixelPosition(toQPointF(referencePointPx));
-            rect->bottomRight->setPixelPosition(QPointF(referencePointPx.x + _columnWidthPx, referencePointPx.y + _rowHeightPx));
-            referencePointPx.y += _separatorHeightPx;
-        }
-        
-    }
-    */
 }

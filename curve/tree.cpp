@@ -3,8 +3,6 @@
 
 Tree::Tree(QWidget *parent) {
 
-    setHeaderHidden(true);
-
     renameItem = new QAction(QIcon("icons/rename.ico"), "Rename");
     removeItem = new QAction(QIcon("icons/delete.ico"), "Remove");
     editItem = new QAction(QIcon("icons/edit.ico"), "Edit");
@@ -76,6 +74,9 @@ void Tree::setProject(Project* mainProject) {
     connect(project, &Project::figureAboutToBeRemoved, this, &Tree::removeFigure);
     connect(project, &Project::figureRenamed, this, &Tree::renameFigure);
     connect(project, &Project::currentFigureChanged, this, &Tree::changeCurrentFigureByName);
+    connect(project, &Project::figureVisibilityChanged, [&](QString figureName, bool visible) {
+        visible ? findChild(figureName)->setIcon(0, QIcon("icons/showAll.ico")) : findChild(figureName)->setIcon(0, QIcon("icons/empty.ico"));
+    });
 }
 
 void Tree::contextMenuEvent(QContextMenuEvent *event) {
@@ -93,19 +94,26 @@ void Tree::addFigure(Figure* figure) {
     child->setText(0, figure->name());
     if(dynamic_cast<CurveFigure*>(figure)) {
         treeCurves->addChild(child);
+        treeCurves->setText(0, "Curves (" + QString::number(treeCurves->childCount()) + ")");
     } else if(dynamic_cast<CircleFigure*>(figure)) {
         treeCircles->addChild(child);
+        treeCircles->setText(0, "Circles (" + QString::number(treeCircles->childCount()) + ")");
     } else if(dynamic_cast<LineFigure*>(figure)) {
         treeLines->addChild(child);
+        treeLines->setText(0, "Lines (" + QString::number(treeLines->childCount()) + ")");
     } else if(dynamic_cast<PointFigure*>(figure)) {
         treePoints->addChild(child);
+        treePoints->setText(0, "Points (" + QString::number(treePoints->childCount()) + ")");
     } else if(dynamic_cast<DimFigure*>(figure)) {
         treeDimensions->addChild(child);
+        treeDimensions->setText(0, "Dimensions (" + QString::number(treeDimensions->childCount()) + ")");
     } else if(dynamic_cast<TextFigure*>(figure)) {
         treeTexts->addChild(child);
+        treeTexts->setText(0, "Texts (" + QString::number(treeTexts->childCount()) + ")");
     } else {
         delete child;
     }
+    figure->isVisible() ? child->setIcon(0, QIcon("icons/showAll.ico")) : child->setIcon(0, QIcon("icons/empty.ico"));
 }
 
 void Tree::removeFigure(const QString &name) {
@@ -114,6 +122,7 @@ void Tree::removeFigure(const QString &name) {
     int index = tree->indexOfChild(child);
     tree->takeChild(index);
     delete child;
+    tree->setText(0, tree->text(0).section(" (", 0, 0) + " (" + QString::number(tree->childCount()) + ")");
 }
 
 void Tree::renameFigure(const QString &name, const QString &newName) {
@@ -133,7 +142,7 @@ void Tree::updateTree(QList<Figure*> figures) {
 }
 
 QTreeWidgetItem* Tree::findChild(const QString &name) {
-    auto items = findItems(name, Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive | Qt::MatchFlag::MatchRecursive);
+    auto items = findItems(name, Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive | Qt::MatchFlag::MatchRecursive | Qt::MatchFlag::MatchExactly);
     assert(items.size() == 1);
     return items[0];
 }
@@ -178,6 +187,7 @@ void Tree::changeCurrentFigureByName(const QString currentFigureName) {
         if(newItem != nullptr) {
             blockSignals(true);
             setCurrentItem(newItem);
+            scrollToItem(newItem);
             blockSignals(false);
         }       
     }

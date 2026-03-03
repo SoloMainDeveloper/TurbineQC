@@ -42,7 +42,17 @@ void InsertTextDialog::initialization() {
             _ui->refsLW->addItem(figure->name());
         }
     }
-    this->show();
+
+    show();
+}
+
+void InsertTextDialog::onPlotClick(const QPointF &point) {
+    if(_pointSelecting == false) return;
+    _pointSelecting = false;
+    const auto &precision = _project->precision();
+    _ui->xLE->setText(QString::number(point.x(), 'f', precision));
+    _ui->yLE->setText(QString::number(point.y(), 'f', precision));
+    raise();
 }
 
 int InsertTextDialog::findFreeIndex() {
@@ -77,14 +87,8 @@ void InsertTextDialog::insertText() {
     }
     auto x = 0.0;
     auto y = 0.0;
-    if(_ui->xLE->text() == "" || _ui->yLE->text() == "") {
-        auto position = _project->chooseCoordsByClick();
-        x = position.x;
-        y = position.y;
-    } else {
-        x = _ui->xLE->text().toDouble();
-        y = _ui->yLE->text().toDouble();
-    }
+    if(_ui->xLE->text().isEmpty() == false) x = _ui->xLE->text().toDouble();
+    if(_ui->yLE->text().isEmpty() == false) y = _ui->yLE->text().toDouble();
 
     QString referenceName;
     if(auto ref = _ui->refsLW->currentItem()) {
@@ -95,13 +99,8 @@ void InsertTextDialog::insertText() {
 
     double width = 6;
     double height = 4.5;
-
-    if(_ui->le_width->text() != "") {
-        width = _ui->le_width->text().toDouble();
-    }
-    if(_ui->le_height->text() != "") {
-        height = _ui->le_height->text().toDouble();
-    }
+    if(_ui->le_width->text().isEmpty() == false) width = _ui->le_width->text().toDouble();
+    if(_ui->le_height->text().isEmpty() == false) height = _ui->le_height->text().toDouble();
 
     _project->constructText(name, text, x, y, size, referenceName, width, height, zoom);
     accept();
@@ -121,10 +120,6 @@ void InsertTextDialog::openImage() {
 }
 
 void InsertTextDialog::selectCoords() {
-    auto position = _project->chooseCoordsByClick();
-    _ui->xLE->setText(QString::number(position.x));
-    _ui->yLE->setText(QString::number(position.y));
-    raise();
+    _pointSelecting = true;
+    lower();
 }
-
-

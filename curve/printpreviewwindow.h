@@ -15,9 +15,11 @@ public:
 signals:
     void needShow(bool needShow);
 
+public slots:
+    void clearHandler();
+
 private slots:
     void printHandler();
-    void clearHandler();
     void printItemTriggered();
     void deleteItemTriggered();
     void addPage(const QMap<QString, QString> &information);

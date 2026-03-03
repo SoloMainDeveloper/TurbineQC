@@ -256,6 +256,23 @@ QList<QPair<MacrosManager::Operation, QMap<QString, QString>>>* MacrosManager::t
                         readyOperations->push_back({ Operation::PrintReport, params });
                         break;
                     }
+                    case MacrosTranslator::ImportQDS:
+                    {
+                        auto filepath = operationText[0].split(',')[2];
+                        auto firstLine = FileSystem::readFile(filepath).split("\n")[0];
+                        auto name = QRegularExpression("NAM=([^,]*)").match(firstLine).captured(1);
+
+                        params.insert({ { "filepath", filepath },
+                            { "name", name },
+                            { "separator", "," },
+                            { "skipStart", "1" },
+                            { "skipAfter", "1" },
+                            { "columnNames", "X,Y,Z,I,J,K" },
+                            { "columnNumbers", "1,2,3,4,5,6" },
+                            { "decimal", "." } });
+                        readyOperations->push_back({ Operation::LoadCloud, params });
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -452,12 +469,20 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
             case RemoveFigure:
                 project->removeFigure(data["figureName"]);
                 break;
-            case GetWidthOfLE:
-                Algorithms::getWidthOfLeadingEdge(data["figureName"], project, data["distanceLE"].toDouble(), data["createSegmentLE"] == "true");
+            case CreateWidthOfLE:
+            {
+                auto widthLE = WidthLE(0, 0, 0, data["distanceLE"]);
+                auto &figureName = data["figureName"];
+                widthLE.createMeasured(figureName, figureName, Function18Params(&data), project);
                 break;
-            case GetWidthOfTE:
-                Algorithms::getWidthOfTrailingEdge(data["figureName"], project, data["distanceTE"].toDouble(), data["createSegmentTE"] == "true");
+            }
+            case CreateWidthOfTE:
+            {
+                auto widthTE = WidthTE(0, 0, 0, data["distanceTE"]);
+                auto &figureName = data["figureName"];
+                widthTE.createMeasured(figureName, figureName, Function18Params(&data), project);
                 break;
+            }
             case CreateReport:
                 ReportGenerator::createReport(project, plot, ReportSettings::convertToSettings(&data));
                 break;
@@ -548,6 +573,15 @@ bool MacrosManager::tryExecuteOperation(Project *project, Plot *plot, int index)
             case InsertText:
                 project->constructText(data["name"], data["text"], data["x"].toDouble(), data["y"].toDouble(), data["textSize"].toDouble(),
                     data["reference"], data["imageWidth"].toDouble(), data["imageHeight"].toDouble(), data["imageZoom"].toDouble());
+                break;
+            case ShowAll:
+                project->showAllFigures(data["figuresType"]);
+                break;
+            case HideAll:
+                project->hideAllFigures(data["figuresType"]);
+                break;
+            case CompareFLR:
+                Algorithms::compareFLR(data["filepathFLR1"], data["filepathFLR2"], data["resultPath"], data["pointsStartIndex"].toInt(), data["precision"].toDouble());
                 break;
             case Unknown:
                 break;

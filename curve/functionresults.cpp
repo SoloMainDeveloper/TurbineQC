@@ -104,8 +104,8 @@ Function18Result::Function18Result(QMap<QString, QStringList> elements) {
         } else if(header == "PART$CURVE_HI") {
             this->curveHigh = CurveFigure(QString(), points);
         } else if(header == "CONTACT$ENDPOINTS") {
-            this->contactEndPoints = points;
-            this->contactLineLength = points.last().dev;
+            this->chord = QPair(PointFigure(QString(), points[0]), PointFigure(QString(), points[1]));
+            this->chordLength = points.last().dev;
         }
     }
 }

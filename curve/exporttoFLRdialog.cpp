@@ -15,7 +15,9 @@ ExportToFLRDialog::ExportToFLRDialog(Project *project, QWidget *parent) : QDialo
 }
 
 void ExportToFLRDialog::initialization() {
-    for(auto curve : _project->curveFigures()) {
+    auto curves = _project->curveFigures();
+    std::sort(curves.begin(), curves.end(), [](const auto &a, const auto &b) { return a->index() < b->index(); });
+    for(auto curve : curves) {
         auto item = new QListWidgetItem(curve->name());
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         item->setCheckState(Qt::Unchecked);
@@ -33,8 +35,11 @@ void ExportToFLRDialog::exportToFLR() {
             figuresToTake->append(item->text());
         }
     }
-    FileSystem::exportToFLR(_project, _ui->filePathLineEdit->text(), figuresToTake);
-    close();
+    try {
+        FileSystem::exportToFLR(_project, _ui->filePathLineEdit->text(), figuresToTake);
+        close();
+    } catch(...) {
+    }
 }
 
 void ExportToFLRDialog::chooseFilePath() {
