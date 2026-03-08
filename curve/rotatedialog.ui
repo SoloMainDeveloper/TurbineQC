@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RotateDialogClass</class>
- <widget class="QDialog" name="RotateDialogClass">
+ <class>RotateDialog</class>
+ <widget class="QDialog" name="RotateDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

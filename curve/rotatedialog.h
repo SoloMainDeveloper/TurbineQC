@@ -1,21 +1,17 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_rotatedialog.h"
+namespace Ui {
+    class RotateDialog;
+};
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class RotateDialogClass; };
-QT_END_NAMESPACE
-
-class RotateDialog : public QDialog
-{
+class RotateDialog : public BaseDialog {
     Q_OBJECT
 
 public:
-    RotateDialog(Project* project, QWidget *parent = nullptr);
-    ~RotateDialog();
+    explicit RotateDialog();
+    virtual ~RotateDialog();
 
-    void initialization();
+    void initialize() override;
     void addTreeTab(QStandardItem* tab);
 
 private slots:
@@ -28,9 +24,7 @@ signals:
     void figureRotateRequested(QString figureName, double angle, QString x, QString y, QString z);
 
 private:
-    Ui::RotateDialogClass *_ui;
-
-    Project* _project;
+    Ui::RotateDialog *_ui;
 
     QStandardItemModel* _treeModel;
     QStandardItem* _treeCurves;

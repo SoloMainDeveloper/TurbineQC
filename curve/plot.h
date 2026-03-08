@@ -9,14 +9,9 @@ class Plot : public QCustomPlot {
 public:
     explicit Plot(QWidget *parent = nullptr);
 
-    enum class Position {
-        Center,
-        Left,
-        Right,
-    };
+    static Plot& instance();
 
     void setProject(Project *project);
-    void rescale(Position position);
     QImage getScreenshot(int width, int height, ReportSettings::Axis axisType);
     void setGridVisible(bool enabled);
     void setAxesVisible(bool enabled);
@@ -42,7 +37,7 @@ public slots:
     void changeDimensionParameters(const QString dimensionName, bool showNumbers, bool showTolerances, bool freePosition);
     void changeCurveTolerance(const QString curveName);
     void changeFigureColor(const QString figureName);
-    void changeScale(double magnitude, const Point &center);
+    void changeScale(double magnitude, const Point &center, bool needToReplot);
     void createRadiusDimension();
     void createDiameterDimension();
     void createPerimeterDimension(double perimeter);
@@ -52,15 +47,16 @@ public slots:
     void cancelInteractiveOperations();
 
     void zoomExtents();
+    void zoomToPoint(double scaleFactor, const Point center);
     void zoomPlus();
-    void zoomPlusToPoint(const Point &point);
+    void zoomPlusToPoint(const Point &point, bool needToReplot);
     void zoomMinus();
-    void zoomMinusToPoint(const Point &point);
+    void zoomMinusToPoint(const Point &point, bool needToReplot);
 
 signals:
     void currentFigureChanged(const QString &name);
     void figureEditDialogRequested(const QString figureName);
-    void rescaled(double scaleFactor, const Point &center);
+    void rescaled(double scaleFactor, const Point &center, bool needToReplot);
     void projectMousePressed(const Point pos);
 
 private:
@@ -93,10 +89,6 @@ private:
     void drawCurveTolerances(const CurveFigure *curveFigure);
     void drawCurveDeviations(const CurveFigure *curveFigure);
 
-    void rescaleToCenter(double xMin, double xMax, double yMin, double yMax);
-    void rescaleToRight(double xMin, double xMax, double yMin, double yMax);
-    void rescaleToLeft(double xMin, double xMax, double yMin, double yMax);
-
     const double _labelOffsetPx = 5;
     const double _penWidth = 1;
     const double _currentFigurePenWidth = 2;
@@ -106,8 +98,8 @@ private:
     const double _defaultScaleFactor = 1.35;
     const double _magnificationFactor = 1.25;
     const double _reductionFactor = 0.8;
-    const double _ratioXToY = 7.0 / 5;
-    const double _ratioYToX = 5.0 / 7;
+    double _defaultXRangeLength = 16;
+    double _defaultYRangeLength = 9;
     double _magnitude = 1;
     double _defaultFontSize = 0.25;
     bool _calloutRendering = false;
@@ -119,7 +111,7 @@ private:
     DimFigure *_calloutDimension = nullptr;
 
     QTimer _replotTimer;
-    
+
 
     void onItemClicked(QCPAbstractItem *item, QMouseEvent *event);
     void onItemDoubleClicked(QCPAbstractItem *item, QMouseEvent *event);

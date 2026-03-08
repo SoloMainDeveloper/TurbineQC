@@ -11,7 +11,7 @@ public:
     static const QString tableRowTemplate;
     static QString getOOTMarkup(double upperTolerance, double downTolerance, double deviation);
 
-    explicit MarkupCreator(Project *project, std::shared_ptr<ReportSettings> reportSettings);
+    explicit MarkupCreator(std::shared_ptr<ReportSettings> reportSettings);
     virtual ~MarkupCreator() = default;
 
     QString run(const GlobalCurveMap &analyzedGlobalCurves);

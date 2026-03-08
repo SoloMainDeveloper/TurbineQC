@@ -1,5 +1,19 @@
 #include "curve/pch.h"
+
 #include "project.h"
+
+#include "alignmentcommand.h"
+#include "renamefigurecommand.h"
+#include "removefigurecommand.h"
+#include "clearprojectcommand.h"
+#include "partdatacommand.h"
+#include "shiftfigurecommand.h"
+#include "rotatefigurecommand.h"
+
+Project& Project::instance() {
+    static Project instance;
+    return instance;
+}
 
 Project::~Project() {
     for(auto item : _figures) {
@@ -167,7 +181,7 @@ void Project::renameFigure(const QString &name, const QString &newName) {
     }
     for(auto child : figure->childrenMutable())
         child->updateRefToParent(name, newName);
-    MacrosManager::log(MacrosManager::RenameFigure, { { "figureName", name }, { "newName", newName } });
+    MacrosManager::instance().log(std::make_shared<RenameFigureCommand>(name, newName));
 }
 
 void Project::removeFigure(const QString &name) {
@@ -185,19 +199,20 @@ void Project::removeFigure(const QString &name) {
 
     emit figureAboutToBeRemoved(name);
     _figures.remove(figure->name());
-    MacrosManager::log(MacrosManager::RemoveFigure, { { "figureName", name } });
+
+    MacrosManager::instance().log(std::make_shared<RemoveFigureCommand>(name));
 }
 
 void Project::editFigure(const QString& name, QMap<QString, QString>& paramsChanged) {
     ARGUMENT_ASSERT(containsFigure(name), "Edit Figure: figure`s not found");
     auto figure = findFigureMutable(name);
     if(paramsChanged.contains("newName")) {
-        MacrosManager::executeWithoutLogging([&]() {
+        MacrosManager::instance().executeWithoutLogging([&]() {
             renameFigure(name, paramsChanged.value("newName"));
         });
     }
     if(paramsChanged.contains("newColor")) {
-        MacrosManager::executeWithoutLogging([&]() {
+        MacrosManager::instance().executeWithoutLogging([&]() {
             auto color = ColorTranslator::getColorFromInt(paramsChanged.value("newColor").toInt());
             changeFigureColor(figure->name(), *color);
         });
@@ -208,7 +223,7 @@ void Project::editFigure(const QString& name, QMap<QString, QString>& paramsChan
         updateParent(text, paramsChanged["Ref"]);
     }
     figure->edit(paramsChanged);
-    MacrosManager::log(MacrosManager::EditFigure, paramsChanged);
+    //MacrosManager::instance().log(MacrosManager::instance().EditFigure, paramsChanged);
     emit figureEdited(figure->name());
 }
 
@@ -223,9 +238,9 @@ void Project::changeFigureVisibility(const QString figureName, bool visible) {
     auto figure = findFigureMutable(figureName);
     figure->setVisible(visible);
     emit figureVisibilityChanged(figureName, visible);
-    MacrosManager::log(MacrosManager::ChangeFigureVisibility, {
-        { "figureName", figureName },
-        { "visible", visible == true ? "true" : "false" } });
+    //MacrosManager::instance().log(MacrosManager::instance().ChangeFigureVisibility, {
+    //    { "figureName", figureName },
+    //    { "visible", visible == true ? "true" : "false" } });
 }
 
 void Project::showAllFigures(QString figuresType) {
@@ -279,7 +294,7 @@ void Project::showAllFigures(QString figuresType) {
             }
         }
     }
-    MacrosManager::log(MacrosManager::ShowAll, { { "figuresType", figuresType } });
+    //MacrosManager::instance().log(MacrosManager::instance().ShowAll, { { "figuresType", figuresType } });
 }
 
 void Project::hideAllFigures(QString figuresType) {
@@ -333,7 +348,7 @@ void Project::hideAllFigures(QString figuresType) {
             }
         }
     }
-    MacrosManager::log(MacrosManager::HideAll, { { "figuresType", figuresType } });
+    //MacrosManager::instance().log(MacrosManager::instance().HideAll, { { "figuresType", figuresType } });
 }
 
 void Project::toggleFigureVisibility(const QString figureName) {
@@ -341,9 +356,9 @@ void Project::toggleFigureVisibility(const QString figureName) {
     figure->toggleVisible();
     auto visible = figure->isVisible();
     emit figureVisibilityChanged(figureName, visible);
-    MacrosManager::log(MacrosManager::ChangeFigureVisibility, {
-        { "figureName", figureName },
-        { "visible", visible == true ? "true" : "false" } });
+    //MacrosManager::instance().log(MacrosManager::instance().ChangeFigureVisibility, {
+    //    { "figureName", figureName },
+    //    { "visible", visible == true ? "true" : "false" } });
 }
 
 void Project::changeCurveParameters(const QString figureName, bool showPoints, bool connectPoints,
@@ -365,7 +380,7 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
     emit curveParametersChanged(figureName, showPoints, connectPoints,
         showVectors, closed, showNumbering, numberingInterval,
         amplification, showTolerances, showDeviations, connectDeviations, highLightOut);
-    MacrosManager::log(MacrosManager::ChangeCurveParameters, {
+    /*MacrosManager::instance().log(MacrosManager::instance().ChangeCurveParameters, {
         { "figureName", figureName },
         { "showPoints", showPoints == true ? "true" : "false" },
         { "connectPoints", connectPoints == true ? "true" : "false" },
@@ -377,7 +392,7 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
         { "showTolerances", showTolerances == true ? "true" : "false" },
         { "showDeviations", showDeviations == true ? "true" : "false" },
         { "connectDeviations", connectDeviations == true ? "true" : "false" },
-        { "highLightOut", highLightOut == true ? "true" : "false" }, });
+        { "highLightOut", highLightOut == true ? "true" : "false" }, });*/
 }
 
 void Project::changeDimensionParameters(const QString dimName, bool onlyLabel, bool showTols, bool freePosition) {
@@ -386,11 +401,11 @@ void Project::changeDimensionParameters(const QString dimName, bool onlyLabel, b
     dimFigure->setShowTolerances(showTols);
     dimFigure->setFreePosition(freePosition);
     emit dimensionParametersChanged(dimName, onlyLabel, showTols, freePosition);
-    MacrosManager::log(MacrosManager::ChangeDimensionParameters, {
+    /*MacrosManager::instance().log(MacrosManager::instance().ChangeDimensionParameters, {
         { "dimName", dimName },
         { "onlyLabel", onlyLabel == true ? "true" : "false" },
         { "showTols", showTols == true ? "true" : "false" },
-        { "freePosition", freePosition == true ? "true" : "false" } });
+        { "freePosition", freePosition == true ? "true" : "false" } });*/
 }
 
 void Project::changeCurveTolerance(const QString curveName, QVector<CurvePoint> curveWithTolerances) {
@@ -427,7 +442,7 @@ void Project::requestFigureEditDialog(const QString figureName) {
 
 void Project::safeInsert(QString figureName, Figure *figure, bool needToChangeCurrentFigure) {
     if(containsFigure(figureName)) {
-        MacrosManager::executeWithoutLogging([&]() {
+        MacrosManager::instance().executeWithoutLogging([&]() {
             removeFigure(figureName);
         });
     }
@@ -449,20 +464,24 @@ void Project::changeFigureColor(const QString figureName, QColor color) {
     ARGUMENT_ASSERT(containsFigure(figureName), "Change Figure Color: figure`s not found");
     auto figure = findFigureMutable(figureName);
     figure->setColor(color);
-    MacrosManager::log(MacrosManager::ChangeFigureColor, {
+    /*MacrosManager::instance().log(MacrosManager::instance().ChangeFigureColor, {
         { "figureName", figureName },
-        { "color", QString::number(ColorTranslator::getIntFromColor(&color)) } });
+        { "color", QString::number(ColorTranslator::getIntFromColor(&color)) } });*/
     emit figureColorChanged(figureName);
 }
 
-void Project::changeScale(double scaleFactor, const Point center) {
+void Project::changeScale(double scaleFactor, const Point center, bool needToReplot) {
     _scaleFactor = scaleFactor;
     _centerPoint = center;
-    emit scaleChanged(scaleFactor, center);
+    emit scaleChanged(scaleFactor, center, needToReplot);
+}
+
+void Project::zoomToPoint(double scaleFactor, const Point center) {
+    emit zoomToPointRequested(scaleFactor, center);
 }
 
 void Project::clear() {
-    MacrosManager::executeWithoutLogging([&]() {
+    MacrosManager::instance().executeWithoutLogging([&]() {
         for(auto name : _figures.keys()) {
             removeFigure(name);
         }
@@ -471,20 +490,20 @@ void Project::clear() {
     });
     _lostParents.clear();
     _lastFigureIndex = 0;
-    MacrosManager::log(MacrosManager::ClearProject);
+    MacrosManager::instance().log(std::make_shared<ClearProjectCommand>());
 }
 
-void Project::shiftFigure(QString figureName, double x, double y, double z) {
-    auto figure = findFigureMutable(figureName);
-    figure->shift(x, y, z);
-    MacrosManager::log(MacrosManager::ShiftFigure, {
-        { "figureName", figureName },
-        { "x", QString::number(x) },
-        { "y", QString::number(y) },
-        { "z", QString::number(z) },
-        });
-    emit figureCoordsChanged(figureName);
-}
+//void Project::shiftFigure(QString figureName, double x, double y, double z) {
+//    auto figure = findFigureMutable(figureName);
+//    figure->shift(x, y, z);
+//    /*MacrosManager::instance().log(MacrosManager::instance().ShiftFigure, {
+//        { "figureName", figureName },
+//        { "x", QString::number(x) },
+//        { "y", QString::number(y) },
+//        { "z", QString::number(z) },
+//        });*/
+//    emit figureCoordsChanged(figureName);
+//}
 
 void Project::shiftFigure(QString figureName, QString x, QString y, QString z) {
     auto shiftX = 0.0;
@@ -540,27 +559,22 @@ void Project::shiftFigure(QString figureName, QString x, QString y, QString z) {
 
     auto figure = findFigureMutable(figureName);
     figure->shift(shiftX, shiftY, shiftZ);
-    MacrosManager::log(MacrosManager::ShiftFigure, {
-        { "figureName", figureName },
-        { "x", x },
-        { "y", y },
-        { "z", z },
-        });
+    MacrosManager::instance().log(std::make_shared<ShiftFigureCommand>(figureName, x, y, z));
     emit figureCoordsChanged(figureName);
 }
 
-void Project::rotateFigure(QString figureName, double angle, double x, double y, double z) {
-    auto figure = findFigureMutable(figureName);
-    figure->rotate(angle, x, y, z);
-    MacrosManager::log(MacrosManager::RotateFigure, {
-        { "figureName", figureName },
-        { "angle", QString::number(angle) },
-        { "x", QString::number(x) },
-        { "y", QString::number(y) },
-        { "z", QString::number(z) },
-        });
-    emit figureCoordsChanged(figureName);
-}
+//void Project::rotateFigure(QString figureName, double angle, double x, double y, double z) {
+//    auto figure = findFigureMutable(figureName);
+//    figure->rotate(angle, x, y, z);
+//    /*MacrosManager::instance().log(MacrosManager::instance().RotateFigure, {
+//        { "figureName", figureName },
+//        { "angle", QString::number(angle) },
+//        { "x", QString::number(x) },
+//        { "y", QString::number(y) },
+//        { "z", QString::number(z) },
+//        });*/
+//    emit figureCoordsChanged(figureName);
+//}
 
 void Project::rotateFigure(QString figureName, double angle, QString x, QString y, QString z) {
     auto rotateX = 0.0;
@@ -603,38 +617,32 @@ void Project::rotateFigure(QString figureName, double angle, QString x, QString 
     auto figure = findFigureMutable(figureName);
     figure->rotate(angle, rotateX, rotateY, rotateZ);
 
-    MacrosManager::log(MacrosManager::RotateFigure, {
-        { "figureName", figureName },
-        { "angle", QString::number(angle) },
-        { "x", x },
-        { "y", y },
-        { "z", z },
-        });
+    MacrosManager::instance().log(std::make_shared<RotateFigureCommand>(figureName, angle, x, y, z));
     emit figureCoordsChanged(figureName);
 }
 
-void Project::alignment(double angle, double offsetX, double offsetY) {
-    QVector<QFuture<void>> futures;
-    auto figuresToAlign = figures().values();
-    for(auto figure : figuresToAlign) {
-        futures.append(QtConcurrent::run([=]() {
-            figure->alignment(angle, offsetX, offsetY);
-        }));
-    }
-
-    for(auto future : futures) {
-        future.waitForFinished();
-    }
-    for(auto figure : figuresToAlign) {
-        emit figureCoordsChanged(figure->name());
-    }
-
-    MacrosManager::log(MacrosManager::Alignment, {
-        { "angle", QString::number(angle) },
-        { "axis", "" },
-        { "offsetX", QString::number(offsetX) },
-        { "offsetY", QString::number(offsetY) }, });
-}
+//void Project::alignment(double angle, double offsetX, double offsetY) {
+//    QVector<QFuture<void>> futures;
+//    auto figuresToAlign = figures().values();
+//    for(auto figure : figuresToAlign) {
+//        futures.append(QtConcurrent::run([=]() {
+//            figure->alignment(angle, offsetX, offsetY);
+//        }));
+//    }
+//
+//    for(auto future : futures) {
+//        future.waitForFinished();
+//    }
+//    for(auto figure : figuresToAlign) {
+//        emit figureCoordsChanged(figure->name());
+//    }
+//
+//    /*MacrosManager::instance().log(MacrosManager::instance().Alignment, {
+//        { "angle", QString::number(angle) },
+//        { "axis", "" },
+//        { "offsetX", QString::number(offsetX) },
+//        { "offsetY", QString::number(offsetY) }, });*/
+//}
 
 void Project::alignment(QString angle, QString axis, QString offsetX, QString offsetY) {
     auto alignmentAngle = 0.0;
@@ -714,11 +722,7 @@ void Project::alignment(QString angle, QString axis, QString offsetX, QString of
         emit figureCoordsChanged(figure->name());
     }
 
-    MacrosManager::log(MacrosManager::Alignment, {
-        { "angle", angle },
-        { "axis", axis },
-        { "offsetX", offsetX },
-        { "offsetY", offsetY }, });
+    MacrosManager::instance().log(std::make_shared<AlignmentCommand>(angle, axis, offsetX, offsetY));
 }
 
 void Project::changeDimensionValue(const QString &dimName, const DimFigure::Value &value) {
@@ -728,24 +732,31 @@ void Project::changeDimensionValue(const QString &dimName, const DimFigure::Valu
     }
     emit dimensionValueChanged(dimName, value);
 }
+
 const QString Project::reportTitle() {
     return _reportTitle;
 }
+
 const QString Project::description() {
     return _description;
 }
+
 const QString Project::drawing() {
     return _drawing;
 }
+
 const QString Project::orderNumber() {
     return _orderNumber;
 }
+
 const QString Project::partNumber() {
     return _partNumber;
 }
+
 const QString Project::projectOperator() {
     return _projectOperator;
 }
+
 const QString Project::note() {
     return _note;
 }
@@ -753,21 +764,27 @@ const QString Project::note() {
 const QString Project::machine() {
     return _machine;
 }
+
 const QString Project::tool() {
     return _tool;
 }
+
 const QString Project::fixturing() {
     return _fixturing;
 }
+
 const QString Project::batch() {
     return _batch;
 }
+
 const QString Project::supplier() {
     return _supplier;
 }
+
 const QString Project::revision() {
     return _revision;
 }
+
 void Project::changePartData(QString reportTitle, QString description, QString drawing, QString orderNumber, QString partNumber, QString projectOperator, QString note,
     QString machine, QString tool, QString fixturing, QString batch, QString supplier, QString revision, bool needShowWindowWhenMacroRuns) {
 
@@ -785,29 +802,29 @@ void Project::changePartData(QString reportTitle, QString description, QString d
     _supplier = txtFigureToText(supplier);
     _revision = txtFigureToText(revision);
 
-    MacrosManager::log(MacrosManager::PartData, {
-        { "reportTitle", reportTitle },
-        { "description", description },
-        { "drawing", drawing },
-        { "orderNumber", orderNumber },
-        { "partNumber", partNumber },
-        { "projectOperator", projectOperator },
-        { "note", note },
-        { "machine", machine },
-        { "tool", tool },
-        { "fixturing", fixturing },
-        { "batch", batch },
-        { "supplier", supplier },
-        { "revision", revision },
-        { "showPartDataWindowWhenMacroRuns", needShowWindowWhenMacroRuns == true ? "Yes" : "No" }
-        });
+    MacrosManager::instance().log(std::make_shared<PartDataCommand>(
+        reportTitle,
+        description,
+        drawing,
+        orderNumber,
+        partNumber,
+        projectOperator,
+        note,
+        machine,
+        tool,
+        fixturing,
+        batch,
+        supplier,
+        revision,
+        needShowWindowWhenMacroRuns
+    ));
 }
 
 void Project::constructText(QString name, QString text, double x, double y, double textSize, QString reference,
     double imageWidth, double imageHeight, double imageZoom) {
     auto textFigure = new TextFigure(name, text, Point(x, y, 0), textSize, reference, imageWidth, imageHeight, imageZoom);
     safeInsert(name, textFigure);
-    MacrosManager::log(MacrosManager::InsertText, {
+    /*MacrosManager::instance().log(MacrosManager::instance().InsertText, {
         { "name", name },
         { "text", text },
         { "x", QString::number(x) },
@@ -817,7 +834,7 @@ void Project::constructText(QString name, QString text, double x, double y, doub
         { "imageWidth", QString::number(imageWidth) },
         { "imageHeight", QString::number(imageHeight) },
         { "imageZoom", QString::number(imageZoom) },
-        });
+        });*/
 }
 
 void Project::addOperationtime(QString operation, quint64 time) {

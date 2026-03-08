@@ -1,22 +1,21 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_partdatadialog.h"
+#include "basedialog.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class PartDataDialogClass; };
-QT_END_NAMESPACE
+namespace Ui {
+    class PartDataDialog;
+};
 
-class PartDataDialog : public QDialog
-{
+class PartDataDialog : public BaseDialog {
     Q_OBJECT
 
 public:
-    PartDataDialog(Project *project, QWidget *parent = nullptr);
-    ~PartDataDialog();
+    explicit PartDataDialog();
+    virtual ~PartDataDialog();
+
+    void initialize() override;
 
 public slots:
-    void initialization();
     void initializationByMacros(QString reportTitle = nullptr, QString description = nullptr, QString drawing = nullptr, QString orderNumber = nullptr,
         QString partNumber = nullptr, QString projectOperator = nullptr, QString note = nullptr, QString machine = nullptr, QString tool = nullptr,
         QString fixturing = nullptr, QString batch = nullptr, QString supplier = nullptr, QString revision = nullptr);
@@ -28,6 +27,5 @@ signals:
         QString machine, QString tool, QString fixturing, QString batch, QString supplier, QString revision, bool needShowWindowWhenMacroRuns);
 
 private:
-    Ui::PartDataDialogClass *_ui;
-    Project *_project;
+    Ui::PartDataDialog *_ui;
 };

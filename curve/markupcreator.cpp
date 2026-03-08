@@ -43,7 +43,8 @@ QString MarkupCreator::getOOTMarkup(double upperTolerance, double downTolerance,
     }
 }
 
-MarkupCreator::MarkupCreator(Project *project, std::shared_ptr<ReportSettings> reportSettings) : _project(project), _reportSettings(reportSettings) {
+MarkupCreator::MarkupCreator(std::shared_ptr<ReportSettings> reportSettings) : _reportSettings(reportSettings) {
+    _project = &Project::instance();
     _reportTemplate = "%1\n \
                        <div style=\"margin-bottom: 20px; padding: 5px; display: grid; gap: 5px; grid-template-columns: 1fr 1fr 1.5fr; grid-template-rows: 2fr 1fr; border: 1px solid;\">\n \
                            %2\n \
