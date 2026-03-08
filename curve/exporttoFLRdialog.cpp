@@ -1,9 +1,11 @@
 #include "curve/pch.h"
-#include "exporttoFLRdialog.h"
 
-ExportToFLRDialog::ExportToFLRDialog(Project *project, QWidget *parent) : QDialog(parent), _ui(new Ui::ExportToFLRDialog) {
+#include "exporttoFLRdialog.h"
+#include "ui_exporttoFLRdialog.h"
+#include "filesystem.h"
+
+ExportToFLRDialog::ExportToFLRDialog() : _ui(new Ui::ExportToFLRDialog) {
     _ui->setupUi(this);
-    _project = project;
 
     setWindowTitle("Export to FLR");
     setFixedSize(350, 420);
@@ -14,8 +16,8 @@ ExportToFLRDialog::ExportToFLRDialog(Project *project, QWidget *parent) : QDialo
     connect(_ui->exportButton, &QPushButton::clicked, this, &ExportToFLRDialog::exportToFLR);
 }
 
-void ExportToFLRDialog::initialization() {
-    auto curves = _project->curveFigures();
+void ExportToFLRDialog::initialize() {
+    auto curves = Project::instance().curveFigures();
     std::sort(curves.begin(), curves.end(), [](const auto &a, const auto &b) { return a->index() < b->index(); });
     for(auto curve : curves) {
         auto item = new QListWidgetItem(curve->name());
@@ -28,15 +30,15 @@ void ExportToFLRDialog::initialization() {
 }
 
 void ExportToFLRDialog::exportToFLR() {
-    auto figuresToTake = new QStringList();
+    QStringList figuresToTake;
     for(auto i = 0; i < _ui->curveList->count(); i++) {
         auto item = _ui->curveList->item(i);
         if(item->checkState() == Qt::Checked) {
-            figuresToTake->append(item->text());
+            figuresToTake.append(item->text());
         }
     }
     try {
-        FileSystem::exportToFLR(_project, _ui->filePathLineEdit->text(), figuresToTake);
+        FileSystem::exportToFLR(_ui->filePathLineEdit->text(), &figuresToTake);
         close();
     } catch(...) {
     }
@@ -65,6 +67,6 @@ void ExportToFLRDialog::onChooseAllStateChanged() {
     }
 }
 
-ExportToFLRDialog::~ExportToFLRDialog() {  
+ExportToFLRDialog::~ExportToFLRDialog() {
     delete _ui;
 }

@@ -1,12 +1,10 @@
 #include "curve/pch.h"
-#include "inserttextdialog.h"
 
-InsertTextDialog::InsertTextDialog(Project *project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::InsertTextDialogClass())
-{
+#include "inserttextdialog.h"
+#include "ui_inserttextdialog.h"
+
+InsertTextDialog::InsertTextDialog() : _ui(new Ui::InsertTextDialog()) {
     _ui->setupUi(this);
-    _project = project;
 
     _ui->xLE->setValidator(new QDoubleValidator);
     _ui->yLE->setValidator(new QDoubleValidator);
@@ -19,12 +17,11 @@ InsertTextDialog::InsertTextDialog(Project *project, QWidget *parent)
     connect(_ui->selectPB, &QPushButton::clicked, this, &InsertTextDialog::selectCoords);
 }
 
-InsertTextDialog::~InsertTextDialog()
-{
+InsertTextDialog::~InsertTextDialog() {
     delete _ui;
 }
 
-void InsertTextDialog::initialization() {
+void InsertTextDialog::initialize() {
     _ui->refsLW->clear();
     _ui->nameLE->setText("TXT_" + QString::number(findFreeIndex()));
     _ui->textLE->clear();
@@ -34,9 +31,9 @@ void InsertTextDialog::initialization() {
     _ui->le_height->setPlaceholderText("4.5");
     _ui->xLE->setText("");
     _ui->yLE->setText("");
-    auto &refFigures = _project->figures();
-    for (auto &figure : refFigures) {
-        if (dynamic_cast<TextFigure*>(figure) || dynamic_cast<DimFigure*>(figure)) {
+    auto &refFigures = Project::instance().figures();
+    for(auto &figure : refFigures) {
+        if(dynamic_cast<TextFigure*>(figure) || dynamic_cast<DimFigure*>(figure)) {
             continue;
         } else {
             _ui->refsLW->addItem(figure->name());
@@ -49,14 +46,14 @@ void InsertTextDialog::initialization() {
 void InsertTextDialog::onPlotClick(const QPointF &point) {
     if(_pointSelecting == false) return;
     _pointSelecting = false;
-    const auto &precision = _project->precision();
+    const auto &precision = Project::instance().precision();
     _ui->xLE->setText(QString::number(point.x(), 'f', precision));
     _ui->yLE->setText(QString::number(point.y(), 'f', precision));
     raise();
 }
 
 int InsertTextDialog::findFreeIndex() {
-    auto &textFigures = _project->textFigures();
+    auto &textFigures = Project::instance().textFigures();
     auto index = 1;
     auto flag = true;
     while(flag) {
@@ -73,7 +70,7 @@ int InsertTextDialog::findFreeIndex() {
         }
     }
     return 0;
-}   
+}
 
 void InsertTextDialog::insertText() {
     auto text = _ui->textLE->text();
@@ -102,7 +99,7 @@ void InsertTextDialog::insertText() {
     if(_ui->le_width->text().isEmpty() == false) width = _ui->le_width->text().toDouble();
     if(_ui->le_height->text().isEmpty() == false) height = _ui->le_height->text().toDouble();
 
-    _project->constructText(name, text, x, y, size, referenceName, width, height, zoom);
+    Project::instance().constructText(name, text, x, y, size, referenceName, width, height, zoom);
     accept();
 }
 

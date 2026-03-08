@@ -18,7 +18,7 @@ public:
         QVector<CurvePoint> pointsOfLow;
     };
 
-    explicit CurveAnalyzer(Project *project, std::shared_ptr<ReportSettings> reportSettings);
+    explicit CurveAnalyzer(std::shared_ptr<ReportSettings> reportSettings);
     virtual ~CurveAnalyzer() = default;
 
     GlobalCurveMap run();

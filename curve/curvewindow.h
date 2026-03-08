@@ -1,90 +1,50 @@
 #pragma once
 
 #include "figure.h"
-#include "functionparams.h"
 #include "ui_curvewindow.h"
 #include "filesystem.h"
 #include "project.h"
-#include "algorithms.h"
 #include "tree.h"
 #include "figurecontrols.h"
-#include "airfoiltolerancesdialog.h"
-#include "loadingcloudwindow.h"
-#include "figureeditdialog.h"
-#include "turbinewindow.h"
-#include "widthedgewindow.h"
-#include "radiuscorrectiondialog.h"
-#include "mergepointcloudswindow.h"
-#include "saveprojectwindow.h"
-#include "calculatedeviationsdialog.h"
-#include "bestfitdialog.h"
-#include "macroswindow.h"
-#include "exporttoFLRdialog.h"
-#include "shiftdialog.h"
-#include "rotatedialog.h"
-#include "alignmentdialog.h"
-#include "calculatecurvedialog.h"
-#include "partdatadialog.h"
-#include "inserttextdialog.h"
-#include "printpreviewwindow.h"
-#include "compareflrdialog.h"
+#include "dialogservice.h"
 
 namespace Ui {
-    class CurveWindow;
+	class CurveWindow;
 };
 
-class LoadingCloudWindow;
+class LoadingCloudDialog;
 
 class PrintWindow;
 
 class CurveWindow : public QMainWindow {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit CurveWindow(QWidget *parent = nullptr);
-    void dimensionMenuInit();
-    void disableDimensionMenu();
-    virtual ~CurveWindow();
+	explicit CurveWindow(QWidget* parent = nullptr);
+	void dimensionMenuInit();
+	void disableDimensionMenu();
+	virtual ~CurveWindow();
 
 private:
-    Ui::CurveWindow *_ui;
+	DialogService* _dialogService;
 
-    Project _project;
+	Ui::CurveWindow* _ui;
+	Project* _project;
+	FigureControls* _figureControls;
+	Tree* _tree;
+	Plot* _plot;
 
-    FigureControls* _figureControls;
-    Tree *_tree;
-    Plot *_plot;
-    QStatusBar *_statusBar;
-    QLabel *_formLabel; // max dev - min dev
-    QLabel *_coordsLabel;
-    QLabel *_workPlaneLabel;
-    QLabel *_currentFigureLabel;
-    QLabel *_magnificationLabel;
+	QStatusBar* _statusBar;
+	QLabel* _formLabel; // max dev - min dev
+	QLabel* _coordsLabel;
+	QLabel* _workPlaneLabel;
+	QLabel* _currentFigureLabel;
+	QLabel* _magnificationLabel;
 
-    AirfoilTolerancesDialog* _airfoilTolerancesDialog;
-    LoadingCloudWindow *_loadingCloudWindow;
-    FigureEditDialog* _figureEditDialog;
-    TurbineWindow *_turbineWindow;
-    WidthEdgeWindow *_widthEdgeWindow;
-    MergePointCloudsWindow *_mergeCloudsWindow;
-    RadiusCorrectionDialog *_radiusCorrectionDialog;
-    SaveProjectWindow *_saveProjectWindow;
-    CalculateDeviationsDialog *_calculateDeviationsDialog;
-    BestFitDialog *_bestFitDialog;
-    MacrosWindow *_macrosWindow;
-    ExportToFLRDialog *_exportToFLRDialog;
-    ShiftDialog *_shiftDialog;
-    RotateDialog *_rotateDialog;
-    AlignmentDialog *_alignmentDialog;
-    CalculateCurveDialog *_calculatecurvedialog;
-    PartDataDialog *_partDataDialog;
-    InsertTextDialog *_insertTextDialog;
-    PrintPreviewWindow *_printWindow;
-    CompareFLRDialog *_compareFLRDialog;
+	QString _windowTitle;
 
-    QString _windowTitle;
-
-    void changeWindowTitle(const QString &projectPath);
-    void setDefualtWindowTitle();
-    void keyPressEvent(QKeyEvent *event);
+	void connectMenuItems();
+	void changeWindowTitle(const QString& projectPath);
+	void setDefualtWindowTitle();
+	void keyPressEvent(QKeyEvent* event);
 };

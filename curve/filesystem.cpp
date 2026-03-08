@@ -1,5 +1,10 @@
 #include "curve/pch.h"
+
 #include "filesystem.h"
+#include "loadcloudcommand.h"
+#include "loadprojectcommand.h"
+#include "saveprojectcommand.h"
+#include "exporttoflrcommand.h"
 
 Point FileSystem::_offsetPoint = Point(0, 0);
 double FileSystem::_scaleFactor = 1;
@@ -71,13 +76,13 @@ QVector<CurvePoint> FileSystem::parsePointsFromElement(QStringList element, QStr
                 auto resultColumnNames = columnNames.replace(",", "");
                 auto resultNumberOfColumns = numberOfColumns.replace(",", "");
 
-                if(!isColumnsCorrect(resultColumnNames, resultNumberOfColumns) || !hasDecimalSeparator(pointStr, decimal)
+                /*if(!isColumnsCorrect(resultColumnNames, resultNumberOfColumns) || !hasDecimalSeparator(pointStr, decimal)
                     || pointStr.length() < resultNumberOfColumns.length()) {
                     break;
-                } else {
-                    auto point = getPoint(pointStr, order, decimal, resultNumberOfColumns.length());
-                    result.append(point);
-                }
+                } else {*/
+                auto point = getPoint(pointStr, order, decimal, resultNumberOfColumns.length());
+                result.append(point);
+                //}
             } else {
                 auto point = getPoint(pointStr, order, decimal);
                 result.append(point);
@@ -89,7 +94,7 @@ QVector<CurvePoint> FileSystem::parsePointsFromElement(QStringList element, QStr
     return result;
 }
 
-bool FileSystem::isColumnsCorrect(const QString &columnNames, const QString &numberOfColumns) {
+bool FileSystem::isColumnsCorrect(const QString& columnNames, const QString& numberOfColumns) {
     if(columnNames == "XY" && numberOfColumns == "12" || columnNames == "XYZ" && numberOfColumns == "123"
         || columnNames == "XYZIJK" && numberOfColumns == "123456" || columnNames == "XYZIJKD" && numberOfColumns == "1234567"
         || columnNames == "XYZIJKDUTLT" && numberOfColumns == "123456789") {
@@ -99,7 +104,7 @@ bool FileSystem::isColumnsCorrect(const QString &columnNames, const QString &num
     }
 }
 
-bool FileSystem::hasDecimalSeparator(const QStringList &pointStr, const QString &decimal) {
+bool FileSystem::hasDecimalSeparator(const QStringList& pointStr, const QString& decimal) {
     for(auto i = 0; i < pointStr.length(); i++) {
         if(!pointStr[i].contains(decimal)) {
             return false;
@@ -108,7 +113,7 @@ bool FileSystem::hasDecimalSeparator(const QStringList &pointStr, const QString 
     return true;
 }
 
-CurvePoint FileSystem::getPoint(QStringList pointStr, Order order, const QString &decimal, int numberOfColumns) {
+CurvePoint FileSystem::getPoint(QStringList pointStr, Order order, const QString& decimal, int numberOfColumns) {
     auto point = CurvePoint();
     switch(order) {
         case Order::CurveLibrary:
@@ -170,30 +175,26 @@ void FileSystem::fillInputWithMultipleElements(QList<QVector<CurvePoint>> points
     input.close();
 }
 
-void FileSystem::loadCloud(Project *project, QString filePath, QString name, QString sep, int skipStart, int skipAfter,
+void FileSystem::loadCloud(QString filePath, QString name, QString sep, int skipStart, int skipAfter,
     QString columnNames, QString columnNumbers, QString decimal, Order order) {
+
     ARGUMENT_ASSERT(QFile(filePath).exists(), "Load Cloud: could not find such file");
     auto data = readFile(filePath).split("\n");
     auto points = parsePointsFromElement(data, sep, skipStart, skipAfter, order, columnNames, columnNumbers, decimal);
     ARGUMENT_ASSERT(points.length() > 0, "Load Cloud: no data to interprete");
     auto curve = new CurveFigure(name, points, 1);
-    project->safeInsert(name, curve);
-    MacrosManager::log(MacrosManager::LoadCloud, {
-        { "filepath", filePath },
-        { "name", name },
-        { "separator", sep },
-        { "skipStart", QString::number(skipStart) },
-        { "skipAfter", QString::number(skipAfter) },
-        { "columnNames", columnNames },
-        { "columnNumbers", columnNumbers },
-        { "decimal", decimal },
-        });
+    Project::instance().safeInsert(name, curve);
+    MacrosManager::instance().log(std::make_shared<LoadCloudCommand>(
+        filePath, name, sep, skipStart, skipAfter, columnNames, columnNumbers, decimal));
 }
 
-void FileSystem::saveProject(Project *project, QString dir, QString projectName, bool createCRV) {
+void FileSystem::saveProject(QString dir, QString projectName, bool createCRV) {
     QFileInfo dirInfo(dir);
     ARGUMENT_ASSERT(dirInfo.exists() && dirInfo.isDir(), "Save Project: could not find such directory");
+
     auto resultTXT = dir + "/" + projectName + ".txt";
+    auto project = &Project::instance();
+
     QFile input(resultTXT);
     input.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QTextStream stream(&input);
@@ -232,14 +233,10 @@ void FileSystem::saveProject(Project *project, QString dir, QString projectName,
         process.waitForFinished();
     }
     project->setProjectPath(resultTXT);
-    MacrosManager::log(MacrosManager::SaveProject, {
-        { "dirName", dir },
-        { "ProjectName", projectName },
-        { "createCRV", createCRV ? "true" : "false" }
-    });
+    MacrosManager::instance().log(std::make_shared<SaveProjectCommand>(dir, projectName, createCRV));
 }
 
-void FileSystem::inputFigure(QTextStream &stream, FigureSettings *set) {
+void FileSystem::inputFigure(QTextStream& stream, FigureSettings* set) {
     stream << "$POINT SETTINGS\nName=" << set->name;
     stream << "\nEleType=" << set->type << "\n";
     stream << "Rif=" << set->rif << "\nRif1=" << set->rif1 << "\n";
@@ -270,7 +267,7 @@ void FileSystem::inputFigure(QTextStream &stream, FigureSettings *set) {
     stream << "$END POINTS\n";
 }
 
-void FileSystem::fillFileWithPoints(QTextStream &stream, const QVector<CurvePoint> points, int precision, Order order) {
+void FileSystem::fillFileWithPoints(QTextStream& stream, const QVector<CurvePoint> points, int precision, Order order) {
     for(auto i = 0; i < points.length(); i++) {
         switch(order) {
             case Order::Default:
@@ -294,7 +291,9 @@ void FileSystem::fillFileWithPoints(QTextStream &stream, const QVector<CurvePoin
     }
 }
 
-void FileSystem::loadProject(Project *project, const QString &filePath) {
+void FileSystem::loadProject(const QString& filePath) {
+    auto project = &Project::instance();
+
     QElapsedTimer timer;
     timer.start();
     ARGUMENT_ASSERT(!filePath.isEmpty(), "Load Project: File path is empty");
@@ -332,29 +331,34 @@ void FileSystem::loadProject(Project *project, const QString &filePath) {
     auto figures = parts[1].split("$END POINTS");
     figures.removeLast();
 
-    QVector<QFuture<Figure*>> futures;
-    for(const auto &figure : figures) {
+    /*QVector<QFuture<Figure*>> futures;
+    for (const auto& figure : figures) {
         futures.append(QtConcurrent::run([=]() {
             return parseFigureFromCRV(project, figure);
-        }));
+            }));
     }
     QVector<Figure*> results;
-    for(const auto &future : futures) {
+    for (const auto& future : futures) {
         results.append(future.result());
     }
-    for(auto figure : results)
-        project->safeInsert(figure->name(), figure);
+    for (auto figure : results)
+        project->safeInsert(figure->name(), figure);*/
 
-    project->changeScale(scaleFactor, offsetPoint);
-    MacrosManager::executeWithoutLogging([&]() {
+    for(auto& figure : figures) {
+        auto parsedFigure = parseFigureFromCRV(project, figure);
+        project->safeInsert(parsedFigure->name(), parsedFigure);
+    }
+
+    project->zoomToPoint(scaleFactor, offsetPoint);
+    MacrosManager::instance().executeWithoutLogging([&]() {
         project->changePartData(QString(), description, drawing, orderNumber, partNumber, projectOperator, note,
             machine, tool, fixturing, batch, supplier, revision, false);
     });
     project->setProjectPath(filePath);
-    MacrosManager::log(MacrosManager::LoadProject, { { "filepath", filePath } });
+    MacrosManager::instance().log(std::make_shared<LoadProjectCommand>(filePath));
 }
 
-Figure* FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
+Figure* FileSystem::parseFigureFromCRV(Project* project, QString figureText) {
     QElapsedTimer timer;
     timer.start();
     QMap<QString, QString> data;
@@ -418,21 +422,24 @@ Figure* FileSystem::parseFigureFromCRV(Project *project, QString figureText) {
     qDebug() << "Figure FULL parsed: " << data["Name"] << timer.elapsed();
 }
 
-void FileSystem::exportToFLR(Project *project, QString filepath, QStringList *curvesToTake) {
+void FileSystem::exportToFLR(QString filepath, QStringList* curvesToTake) {
+    auto& project = Project::instance();
+
     auto slash1 = filepath.lastIndexOf("/");
     auto slash2 = filepath.lastIndexOf("\\");
     auto slashIndex = slash1 > slash2 ? slash1 : slash2;
     auto dirName = filepath.mid(0, slashIndex);
     QFileInfo dirInfo(dirName);
     ARGUMENT_ASSERT(dirInfo.exists() && dirInfo.isDir(), "Export to FLR: could not find such directory");
+
     QFile input(filepath);
     input.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QTextStream stream(&input);
 
-    stream << "C1=" << project->description() << "\n" << "C2=" << project->drawing() << "\n" << "C3=" << project->orderNumber() << "\n";
-    stream << "C4=" << project->partNumber() << "\n" << "C5=" << project->projectOperator() << "\n" << "C6=" << project->note() << "\n";
-    stream << "C7=" << project->machine() << "\n" << "C8=" << project->tool() << "\n" << "C9=" << project->fixturing() << "\n";
-    stream << "C10=" << project->batch() << "\n" << "C11=" << project->supplier() << "\n" << "C12=" << project->revision();
+    stream << "C1=" << project.description() << "\n" << "C2=" << project.drawing() << "\n" << "C3=" << project.orderNumber() << "\n";
+    stream << "C4=" << project.partNumber() << "\n" << "C5=" << project.projectOperator() << "\n" << "C6=" << project.note() << "\n";
+    stream << "C7=" << project.machine() << "\n" << "C8=" << project.tool() << "\n" << "C9=" << project.fixturing() << "\n";
+    stream << "C10=" << project.batch() << "\n" << "C11=" << project.supplier() << "\n" << "C12=" << project.revision();
     stream << "\n" << "C13=" << "\n" << "C14= \n" << "C15= \n";
 
     auto time = QDateTime::currentDateTime();
@@ -440,23 +447,20 @@ void FileSystem::exportToFLR(Project *project, QString filepath, QStringList *cu
     stream << "C23=" << time.toString("yyyy.MM.dd HH:mm:ss") << "\n";
     stream << "$END$\n";
 
-    auto dims = project->dimFigures();
-    std::sort(dims.begin(), dims.end(), [](const auto &a, const auto &b) { return a->index() < b->index(); });
+    auto dims = project.dimFigures();
+    std::sort(dims.begin(), dims.end(), [](const auto& a, const auto& b) { return a->index() < b->index(); });
     for(auto dim : dims) {
         stream << dim->exportToFLR(4);
     }
     for(auto name : *curvesToTake) {
-        auto curve = dynamic_cast<const CurveFigure*>(project->findFigure(name));
+        auto curve = dynamic_cast<const CurveFigure*>(project.findFigure(name));
         ARGUMENT_ASSERT(curve, "Export to FLR: haven`t found the curve from curvesToTake list");
         stream << curve->exportToFLR(4);
     }
     stream << "$END$\n";
     input.close();
 
-    MacrosManager::log(MacrosManager::ExportToFLR, {
-        { "filepath", filepath },
-        { "curvesToTake", curvesToTake->join(",") }
-    });
+    MacrosManager::instance().log(std::make_shared<ExportToFLRCommand>(filepath, *curvesToTake));
 }
 
 void FileSystem::writeCompareFLR(QString fullFileName, QList<ResultCompare2Params*> result, double precision) {
@@ -468,7 +472,7 @@ void FileSystem::writeCompareFLR(QString fullFileName, QList<ResultCompare2Param
 
     QTextStream out(&file);
     out << QString("%1 %2 %3 %4\n")
-        .arg("Name 1", -25) 
+        .arg("Name 1", -25)
         .arg("Name 2", -25)
         .arg("Difference", -15)
         .arg(QString("Status (%1)").arg(precision), -20);

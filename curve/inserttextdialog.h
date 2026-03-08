@@ -1,32 +1,27 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_inserttextdialog.h"
+namespace Ui {
+	class InsertTextDialog;
+};
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class InsertTextDialogClass; };
-QT_END_NAMESPACE
-
-class InsertTextDialog : public QDialog
-{
-    Q_OBJECT
+class InsertTextDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    InsertTextDialog(Project *project, QWidget *parent = nullptr);
-    ~InsertTextDialog();
+	explicit InsertTextDialog();
+	virtual ~InsertTextDialog();
 
-    void initialization();
+	void initialize() override;
 
 public slots:
-    void onPlotClick(const QPointF &point);
+	void onPlotClick(const QPointF& point);
 
 private:
-    int findFreeIndex();
-    void insertText();
-    void openImage();
-    void selectCoords();
+	int findFreeIndex();
+	void insertText();
+	void openImage();
+	void selectCoords();
 
-    Ui::InsertTextDialogClass *_ui;
-    Project *_project;
-    bool _pointSelecting = false;
+	Ui::InsertTextDialog* _ui;
+	bool _pointSelecting = false;
 };

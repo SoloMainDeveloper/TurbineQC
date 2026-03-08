@@ -1,14 +1,14 @@
 #include "curve/pch.h"
+
 #include "figureeditdialog.h"
+#include "ui_figureeditdialog.h"
 
-FigureEditDialog::FigureEditDialog(Project* mainProject, QWidget *parent) : QDialog(parent),
-    _ui(new Ui::FigureEditDialogClass()) {
-
+FigureEditDialog::FigureEditDialog() : _ui(new Ui::FigureEditDialog()) {
     _ui->setupUi(this);
-    _project = mainProject;
+
+    _project = &Project::instance();
     _doubleValidator = new QDoubleValidator();
 
-    connect(_project, &Project::figureEditDialogRequested, this, &FigureEditDialog::dialogInitialization);
     connect(_ui->applyChangesButton, &QPushButton::clicked, this, &FigureEditDialog::applyChanges);
 
     connect(_ui->colorPB, &QPushButton::clicked, this, &FigureEditDialog::chooseColor);
@@ -20,15 +20,15 @@ FigureEditDialog::FigureEditDialog(Project* mainProject, QWidget *parent) : QDia
     //connect(_project, &Project::dimensionValueChanged, this, &FigureEditDialog::changeDimensionValue);
 }
 
-void FigureEditDialog::dialogInitialization(const QString figureName) {
+void FigureEditDialog::initialize() {
     _ui->nameLE->blockSignals(true);
     _ui->curveTable->blockSignals(true);
     _ui->dimTable->blockSignals(true);
 
-    _figureName = figureName;
-    _figure = _project->findFigure(figureName);
-    setWindowTitle("Edit " + figureName);
-    _ui->nameLE->setText(figureName);
+    _figureName = _project->currentFigureName();
+    _figure = _project->findFigure(_figureName);
+    setWindowTitle("Edit " + _figureName);
+    _ui->nameLE->setText(_figureName);
     auto precision = _project->precision();
     auto &color = _figure->color();
     _ui->colorPB->setStyleSheet("background-color: " + color.name() + ";");
@@ -46,7 +46,7 @@ void FigureEditDialog::dialogInitialization(const QString figureName) {
 
         for(auto i = 0; i < pointsCount; i++) {
             auto currentPoint = points[i];
-            auto parameters = QVector<double>{ currentPoint.x, currentPoint.y, currentPoint.z,
+            auto parameters = QVector<double> { currentPoint.x, currentPoint.y, currentPoint.z,
                 currentPoint.i, currentPoint.j, currentPoint.k, currentPoint.dev, currentPoint.ut, currentPoint.lt };
             for(auto j = 0; j < _ui->curveTable->columnCount(); j++) {
                 auto text = QString::number(parameters[j], 'f', precision);
@@ -91,7 +91,7 @@ void FigureEditDialog::dialogInitialization(const QString figureName) {
 
         auto origin = line->origin();
         auto direction = line->direction();
-        
+
         _ui->lineX->setText(QString::number(origin.x, 'f', precision));
         _ui->lineY->setText(QString::number(origin.y, 'f', precision));
         _ui->lineZ->setText(QString::number(origin.z, 'f', precision));
@@ -209,74 +209,74 @@ void FigureEditDialog::fillDimTable(const QVector<DimFigure::Value> &values) {
 }
 
 void FigureEditDialog::applyChanges() {
-     _paramsChanged.insert("figureName", _figureName);
-     if(const CurveFigure* curve = dynamic_cast<const CurveFigure*>(_figure)) {
-         QString updatedPoint;
-         for(auto pointIndex : _tableCellChanged) {
-             updatedPoint = "";
-             for(auto i = 0; i < _ui->curveTable->columnCount(); i++) {
-                 updatedPoint += (_ui->curveTable->item(pointIndex, i)->text()) + ',';
-             }
-             updatedPoint.removeLast();
-             _paramsChanged.insert(QString("Point %1").arg(pointIndex + 1), updatedPoint);
-         }
-     } else if(const PointFigure* point = dynamic_cast<const PointFigure*>(_figure)) { 
-         _paramsChanged.insert("x", _ui->pointX->text());
-         _paramsChanged.insert("y", _ui->pointY->text());
-         _paramsChanged.insert("z", _ui->pointZ->text());
-         _paramsChanged.insert("i", _ui->pointI->text());
-         _paramsChanged.insert("j", _ui->pointJ->text());
-         _paramsChanged.insert("k", _ui->pointK->text());
-     } else if(const CircleFigure* circle = dynamic_cast<const CircleFigure*>(_figure)) {
-         _paramsChanged.insert("x", _ui->circleX->text());
-         _paramsChanged.insert("y", _ui->circleY->text());
-         _paramsChanged.insert("z", _ui->circleZ->text());
-         _paramsChanged.insert("i", _ui->circleI->text());
-         _paramsChanged.insert("j", _ui->circleJ->text());
-         _paramsChanged.insert("k", _ui->circleK->text());
-     } else if(const LineFigure* line = dynamic_cast<const LineFigure*>(_figure)) {
-         _paramsChanged.insert("x", _ui->lineX->text());
-         _paramsChanged.insert("y", _ui->lineY->text());
-         _paramsChanged.insert("z", _ui->lineZ->text());
-         _paramsChanged.insert("i", _ui->lineI->text());
-         _paramsChanged.insert("j", _ui->lineJ->text());
-         _paramsChanged.insert("k", _ui->lineK->text());
-         _paramsChanged.insert("Radius", _ui->lineLength->text());
-     } else if(const DimFigure* dimension = dynamic_cast<const DimFigure*>(_figure)) {
-         _paramsChanged.insert("x", _ui->dimX->text());
-         _paramsChanged.insert("y", _ui->dimY->text());
-         _paramsChanged.insert("z", _ui->dimZ->text());
-         _paramsChanged.insert("Ref1", _ui->dimRef1->text());
-         _paramsChanged.insert("Ref2", _ui->dimRef2->text());
+    _paramsChanged.insert("figureName", _figureName);
+    if(const CurveFigure* curve = dynamic_cast<const CurveFigure*>(_figure)) {
+        QString updatedPoint;
+        for(auto pointIndex : _tableCellChanged) {
+            updatedPoint = "";
+            for(auto i = 0; i < _ui->curveTable->columnCount(); i++) {
+                updatedPoint += (_ui->curveTable->item(pointIndex, i)->text()) + ',';
+            }
+            updatedPoint.removeLast();
+            _paramsChanged.insert(QString("Point %1").arg(pointIndex + 1), updatedPoint);
+        }
+    } else if(const PointFigure* point = dynamic_cast<const PointFigure*>(_figure)) {
+        _paramsChanged.insert("x", _ui->pointX->text());
+        _paramsChanged.insert("y", _ui->pointY->text());
+        _paramsChanged.insert("z", _ui->pointZ->text());
+        _paramsChanged.insert("i", _ui->pointI->text());
+        _paramsChanged.insert("j", _ui->pointJ->text());
+        _paramsChanged.insert("k", _ui->pointK->text());
+    } else if(const CircleFigure* circle = dynamic_cast<const CircleFigure*>(_figure)) {
+        _paramsChanged.insert("x", _ui->circleX->text());
+        _paramsChanged.insert("y", _ui->circleY->text());
+        _paramsChanged.insert("z", _ui->circleZ->text());
+        _paramsChanged.insert("i", _ui->circleI->text());
+        _paramsChanged.insert("j", _ui->circleJ->text());
+        _paramsChanged.insert("k", _ui->circleK->text());
+    } else if(const LineFigure* line = dynamic_cast<const LineFigure*>(_figure)) {
+        _paramsChanged.insert("x", _ui->lineX->text());
+        _paramsChanged.insert("y", _ui->lineY->text());
+        _paramsChanged.insert("z", _ui->lineZ->text());
+        _paramsChanged.insert("i", _ui->lineI->text());
+        _paramsChanged.insert("j", _ui->lineJ->text());
+        _paramsChanged.insert("k", _ui->lineK->text());
+        _paramsChanged.insert("Radius", _ui->lineLength->text());
+    } else if(const DimFigure* dimension = dynamic_cast<const DimFigure*>(_figure)) {
+        _paramsChanged.insert("x", _ui->dimX->text());
+        _paramsChanged.insert("y", _ui->dimY->text());
+        _paramsChanged.insert("z", _ui->dimZ->text());
+        _paramsChanged.insert("Ref1", _ui->dimRef1->text());
+        _paramsChanged.insert("Ref2", _ui->dimRef2->text());
 
-         QString updatedValue;
-         for(auto valueIndex : _tableCellChanged) {
-             updatedValue = "";
-             updatedValue += "Type:" + convertValueTypeToString(dimension->values()[valueIndex].type) + ",";
-             updatedValue += "Show:";
-             updatedValue += _ui->dimTable->cellWidget(valueIndex, 0)->findChild<QCheckBox*>()->isChecked() ? "true," : "false,";
-             //updatedValue += "Meas:" + _ui->dimTable->item(valueIndex, 2)->text() + ",";
-             updatedValue += "Nom:" + _ui->dimTable->item(valueIndex, 3)->text() + ",";
-             updatedValue += "UT:" + _ui->dimTable->item(valueIndex, 4)->text() + ",";
-             updatedValue += "LT:" + _ui->dimTable->item(valueIndex, 5)->text();
-             _paramsChanged.insert(QString("Dim %1").arg(valueIndex + 1), updatedValue);
-         }
-     } else if(const TextFigure* txt = dynamic_cast<const TextFigure*>(_figure)) {
-         _paramsChanged.insert("text", _ui->txtContent->text());
-         _paramsChanged.insert("x", _ui->txtX->text());
-         _paramsChanged.insert("y", _ui->txtY->text());
-         _paramsChanged.insert("textSize", _ui->zoomSB_2->text());
-         _paramsChanged.insert("imageZoom", _ui->zoomSB->text());
-         _paramsChanged.insert("reference", _ui->txtRef->text());
-     }
-     
-     if(_paramsChanged.size() > 1) {
-         try {
-             _project->editFigure(_figureName, _paramsChanged);
-         } catch(...) {
-         }
-     }
-     close();
+        QString updatedValue;
+        for(auto valueIndex : _tableCellChanged) {
+            updatedValue = "";
+            updatedValue += "Type:" + convertValueTypeToString(dimension->values()[valueIndex].type) + ",";
+            updatedValue += "Show:";
+            updatedValue += _ui->dimTable->cellWidget(valueIndex, 0)->findChild<QCheckBox*>()->isChecked() ? "true," : "false,";
+            //updatedValue += "Meas:" + _ui->dimTable->item(valueIndex, 2)->text() + ",";
+            updatedValue += "Nom:" + _ui->dimTable->item(valueIndex, 3)->text() + ",";
+            updatedValue += "UT:" + _ui->dimTable->item(valueIndex, 4)->text() + ",";
+            updatedValue += "LT:" + _ui->dimTable->item(valueIndex, 5)->text();
+            _paramsChanged.insert(QString("Dim %1").arg(valueIndex + 1), updatedValue);
+        }
+    } else if(const TextFigure* txt = dynamic_cast<const TextFigure*>(_figure)) {
+        _paramsChanged.insert("text", _ui->txtContent->text());
+        _paramsChanged.insert("x", _ui->txtX->text());
+        _paramsChanged.insert("y", _ui->txtY->text());
+        _paramsChanged.insert("textSize", _ui->zoomSB_2->text());
+        _paramsChanged.insert("imageZoom", _ui->zoomSB->text());
+        _paramsChanged.insert("reference", _ui->txtRef->text());
+    }
+
+    if(_paramsChanged.size() > 1) {
+        try {
+            _project->editFigure(_figureName, _paramsChanged);
+        } catch(...) {
+        }
+    }
+    close();
 }
 
 void FigureEditDialog::tableCellChanged(int row, int column) {
