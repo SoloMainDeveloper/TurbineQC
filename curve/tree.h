@@ -2,7 +2,7 @@
 
 #include "figure.h"
 #include "project.h"
-
+#include "dialogservice.h"
 
 class Tree : public QTreeWidget {
 
@@ -17,6 +17,8 @@ public:
     void setProject(Project* mainProject);
 
 private:
+    DialogService* _dialogService;
+
     QTreeWidgetItem* treeCurves;
     QTreeWidgetItem* treeCircles;
     QTreeWidgetItem* treeLines;

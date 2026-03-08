@@ -4,13 +4,12 @@
 
 using TypeOfShowDevs = ReportSettings::TypeOfShowDevs;
 using Axis = ReportSettings::Axis;
-using Position = Plot::Position;
 using CurveType = FigureCreator::CurveType;
 using GlobalCurveMap = QMap<CurveType, QPair<QString, QVector<CurvePoint>>>;
 
-class ScreenshotCreator  {
+class ScreenshotCreator {
 public:
-    explicit ScreenshotCreator(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings);
+    explicit ScreenshotCreator(std::shared_ptr<ReportSettings> reportSettings);
     virtual ~ScreenshotCreator() = default;
 
     void run(const GlobalCurveMap &curvesToMakeScreenshot);
@@ -25,7 +24,7 @@ private:
 
     void makeScreenshotOfGlobal(const QStringList &globalNames);
     void setVisibilityAdditionalFigures();
-    void makeScreenshotOfEdge(const QString &edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType, Plot::Position position);
+    void makeScreenshotOfEdge(const QString &edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType);
     CurveFigure* createNumericalDeviations(const QString &edgeName, TypeOfShowDevs devsType, CurveType curveType);
     void setDefaultVisibilityOnGraphics(const QStringList &visibleFigures);
 };

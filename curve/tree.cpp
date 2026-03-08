@@ -1,11 +1,12 @@
-#include "curve/pch.h"
+﻿#include "curve/pch.h"
 #include "tree.h"
 
 Tree::Tree(QWidget *parent) {
+    _dialogService = &DialogService::instance();
 
-    renameItem = new QAction(QIcon("icons/rename.ico"), "Rename");
-    removeItem = new QAction(QIcon("icons/delete.ico"), "Remove");
-    editItem = new QAction(QIcon("icons/edit.ico"), "Edit");
+    renameItem = new QAction(QIcon("icons/rename.ico"), "Переименовать");
+    removeItem = new QAction(QIcon("icons/delete.ico"), "Удалить");
+    editItem = new QAction(QIcon("icons/edit.ico"), "Редактировать");
 
     connect(renameItem, &QAction::triggered, this, &Tree::onRenameItemTriggered);
     connect(removeItem, &QAction::triggered, this, &Tree::onRemoveItemTriggered);
@@ -15,42 +16,42 @@ Tree::Tree(QWidget *parent) {
     connect(this, &QTreeWidget::itemDoubleClicked, this, &Tree::onItemDoubleClicked);
 
     treeCurves = new QTreeWidgetItem;
-    treeCurves->setText(0, "Curves");
+    treeCurves->setText(0, "Кривые");
     treeCurves->setIcon(0, QIcon("icons/curve.ico"));
     treeCurves->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCurves);
     treeCurves->setExpanded(true);
 
     treeCircles = new QTreeWidgetItem;
-    treeCircles->setText(0, "Circles");
+    treeCircles->setText(0, "Окружности");
     treeCircles->setIcon(0, QIcon("icons/circle.ico"));
     treeCircles->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCircles);
     treeCircles->setExpanded(true);
 
     treeLines = new QTreeWidgetItem;
-    treeLines->setText(0, "Lines");
+    treeLines->setText(0, "Прямые");
     treeLines->setIcon(0, QIcon("icons/line.ico"));
     treeLines->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeLines);
     treeLines->setExpanded(true);
 
     treePoints = new QTreeWidgetItem;
-    treePoints->setText(0, "Points");
+    treePoints->setText(0, "Точки");
     treePoints->setIcon(0, QIcon("icons/point.ico"));
     treePoints->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treePoints);
     treePoints->setExpanded(true);
 
     treeDimensions = new QTreeWidgetItem;
-    treeDimensions->setText(0, "Dimensions");
+    treeDimensions->setText(0, "Измерения");
     treeDimensions->setIcon(0, QIcon("icons/dimension.ico"));
     treeDimensions->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeDimensions);
     treeDimensions->setExpanded(true);
 
     treeTexts = new QTreeWidgetItem;
-    treeTexts->setText(0, "Texts");
+    treeTexts->setText(0, "Текст");
     treeTexts->setIcon(0, QIcon("icons/text.ico"));
     treeTexts->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeTexts);
@@ -62,13 +63,14 @@ void Tree::setProject(Project* mainProject) {
 
     connect(this, &Tree::figureRenameRequested, project, [&](const QString& name, const QString& newName) {
         try {
-            project->renameFigure(name, newName);   
-        } catch(...){ }
+            project->renameFigure(name, newName);
+        } catch(...) {
+        }
     });
     connect(this, &Tree::figureRemoveRequested, project, &Project::removeFigure);
     connect(this, &Tree::currentFigureChanged, project, &Project::changeCurrentFigure);
     connect(this, &Tree::figureToggleVisibilityRequested, project, &Project::toggleFigureVisibility);
-    connect(this, &Tree::figureEditRequested, project, &Project::requestFigureEditDialog);
+    connect(this, &Tree::figureEditRequested, [this]() { _dialogService->show(DialogType::FigureEdit); });
 
     connect(project, &Project::figureAdded, this, &Tree::addFigure);
     connect(project, &Project::figureAboutToBeRemoved, this, &Tree::removeFigure);
@@ -94,22 +96,22 @@ void Tree::addFigure(Figure* figure) {
     child->setText(0, figure->name());
     if(dynamic_cast<CurveFigure*>(figure)) {
         treeCurves->addChild(child);
-        treeCurves->setText(0, "Curves (" + QString::number(treeCurves->childCount()) + ")");
+        treeCurves->setText(0, "Кривые (" + QString::number(treeCurves->childCount()) + ")");
     } else if(dynamic_cast<CircleFigure*>(figure)) {
         treeCircles->addChild(child);
-        treeCircles->setText(0, "Circles (" + QString::number(treeCircles->childCount()) + ")");
+        treeCircles->setText(0, "Окружности (" + QString::number(treeCircles->childCount()) + ")");
     } else if(dynamic_cast<LineFigure*>(figure)) {
         treeLines->addChild(child);
-        treeLines->setText(0, "Lines (" + QString::number(treeLines->childCount()) + ")");
+        treeLines->setText(0, "Прямые (" + QString::number(treeLines->childCount()) + ")");
     } else if(dynamic_cast<PointFigure*>(figure)) {
         treePoints->addChild(child);
-        treePoints->setText(0, "Points (" + QString::number(treePoints->childCount()) + ")");
+        treePoints->setText(0, "Точки (" + QString::number(treePoints->childCount()) + ")");
     } else if(dynamic_cast<DimFigure*>(figure)) {
         treeDimensions->addChild(child);
-        treeDimensions->setText(0, "Dimensions (" + QString::number(treeDimensions->childCount()) + ")");
+        treeDimensions->setText(0, "Измерения (" + QString::number(treeDimensions->childCount()) + ")");
     } else if(dynamic_cast<TextFigure*>(figure)) {
         treeTexts->addChild(child);
-        treeTexts->setText(0, "Texts (" + QString::number(treeTexts->childCount()) + ")");
+        treeTexts->setText(0, "Текст (" + QString::number(treeTexts->childCount()) + ")");
     } else {
         delete child;
     }
@@ -157,14 +159,16 @@ void Tree::onRenameItemTriggered() {
 
 void Tree::onRemoveItemTriggered() {
     auto figureName = currentItem()->text(0);
-    
+
     if(project->confirmRemoveFigure(figureName)) {
-         emit figureRemoveRequested(figureName);
+        emit figureRemoveRequested(figureName);
     }
 }
 
 void Tree::onEditItemTriggered() {
-    emit figureEditRequested(currentItem()->text(0));
+    QString name = currentItem()->text(0);
+    emit currentFigureChanged(name);
+    emit figureEditRequested(name);
 }
 
 void Tree::changeCurrentFigure(const QTreeWidgetItem *item) {
@@ -189,7 +193,7 @@ void Tree::changeCurrentFigureByName(const QString currentFigureName) {
             setCurrentItem(newItem);
             scrollToItem(newItem);
             blockSignals(false);
-        }       
+        }
     }
 
 }

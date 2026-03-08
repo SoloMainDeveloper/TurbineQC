@@ -8,6 +8,7 @@ TurbineParameter::TurbineParameter(double nominal, double UT, double LT, QString
     this->LT = LT;
     this->extraParam1 = extraParam1;
     this->extraParam2 = extraParam2;
+    this->_dimName = nullptr;
 }
 
 QMap<QString, QString> TurbineParameter::toQMap(const TurbineParameter *param, int indexFromList) {
@@ -84,7 +85,7 @@ TurbineParameter::Type TurbineParameter::turbineParamTypeFromQString(const QStri
 
 QString TurbineParameter::createParameterMarkup() const {
     auto &tableRowTemplate = MarkupCreator::tableRowTemplate;
-    auto title = getMarkupTitle();
+    auto title = _dimName;
     auto type = getMarkupType();
     auto oot = QString("<td></td>");
     auto deviation = measured - nominal;
@@ -131,10 +132,8 @@ void MaxDiameter::createMeasured(const QString &nominalCurve, const QString &mea
     dimFigure->setDimType(DimFigure::DimType::Diameter);
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString MaxDiameter::getMarkupTitle() const {
-    return QString("Maximum diameter");
+    _dimName = dimName;
 }
 
 QString MaxDiameter::getMarkupType() const {
@@ -170,10 +169,8 @@ void XMaxDiameter::createMeasured(const QString &nominalCurve, const QString &me
     dimFigure->setDimType(DimFigure::DimType::Position);
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString XMaxDiameter::getMarkupTitle() const {
-    return QString("XDiameter");
+    this->_dimName = dimName;
 }
 
 QString XMaxDiameter::getMarkupType() const {
@@ -209,10 +206,8 @@ void YMaxDiameter::createMeasured(const QString &nominalCurve, const QString &me
     dimFigure->setDimType(DimFigure::DimType::Position);
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString YMaxDiameter::getMarkupTitle() const {
-    return QString("YDiameter");
+    _dimName = dimName;
 }
 
 QString YMaxDiameter::getMarkupType() const {
@@ -254,10 +249,8 @@ void ChordLength::createMeasured(const QString &nominalCurve, const QString &mea
     dimFigure->setDimType(DimFigure::DimType::Distance); //TODO: Need DistanceBetweenPoints
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString ChordLength::getMarkupTitle() const {
-    return QString("Chord length");
+    _dimName = dimName;
 }
 
 QString ChordLength::getMarkupType() const {
@@ -288,7 +281,7 @@ void WidthLE::createMeasured(const QString &nominalCurve, const QString &measure
     auto secondPointFigure = new PointFigure(secondPointName, secondPoint);
     project->safeInsert(secondPointName, secondPointFigure);
 
-    auto value = DimFigure::Value(DimFigure::ValueType::Length); 
+    auto value = DimFigure::Value(DimFigure::ValueType::Length);
     value.nominal = nominal;
     value.measurement = measured;
     value.upperTolerance = UT;
@@ -301,13 +294,11 @@ void WidthLE::createMeasured(const QString &nominalCurve, const QString &measure
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
 
+    _dimName = dimName;
+
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(&params)->toQMap());
     log.insert({ { "figureName", measuredCurve }, { "distanceLE", extraParam1 } });
-    MacrosManager::log(MacrosManager::CreateWidthOfLE, log);
-}
-
-QString WidthLE::getMarkupTitle() const {
-    return QString("LE width");
+    //MacrosManager::log(MacrosManager::CreateWidthOfLE, log);
 }
 
 QString WidthLE::getMarkupType() const {
@@ -351,13 +342,11 @@ void WidthTE::createMeasured(const QString &nominalCurve, const QString &measure
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
 
+    _dimName = dimName;
+
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(&params)->toQMap());
     log.insert({ { "figureName", measuredCurve }, { "distanceTE", extraParam1 } });
-    MacrosManager::log(MacrosManager::CreateWidthOfTE, log);
-}
-
-QString WidthTE::getMarkupTitle() const {
-    return QString("TE width");
+    //MacrosManager::log(MacrosManager::CreateWidthOfTE, log);
 }
 
 QString WidthTE::getMarkupType() const {
@@ -393,10 +382,8 @@ void RadiusLE::createMeasured(const QString &nominalCurve, const QString &measur
     dimFigure->setDimType(DimFigure::DimType::Radius);
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString RadiusLE::getMarkupTitle() const {
-    return QString("LE radius");
+    _dimName = dimName;
 }
 
 QString RadiusLE::getMarkupType() const {
@@ -432,10 +419,8 @@ void RadiusTE::createMeasured(const QString &nominalCurve, const QString &measur
     dimFigure->setDimType(DimFigure::DimType::Radius);
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
-}
 
-QString RadiusTE::getMarkupTitle() const {
-    return QString("TE radius");
+    _dimName = dimName;
 }
 
 QString RadiusTE::getMarkupType() const {
@@ -471,10 +456,8 @@ void MinX::createMeasured(const QString &nominalCurve, const QString &measuredCu
     dimFigure->setDimType(DimFigure::DimType::Position);
     dimFigure->addValue(value);
     project->safeInsert(dimFigure->name(), dimFigure);
-}
 
-QString MinX::getMarkupTitle() const {
-    return QString("MinX");
+    _dimName = dimName;
 }
 
 QString MinX::getMarkupType() const {
