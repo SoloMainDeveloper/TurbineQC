@@ -1,28 +1,22 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_calculatecurvedialog.h"
+namespace Ui {
+	class CalculateCurveDialog;
+};
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class CalculateCurveDialogClass; };
-QT_END_NAMESPACE
-
-class CalculateCurveDialog : public QDialog
-{
-    Q_OBJECT
+class CalculateCurveDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    CalculateCurveDialog(Project *project = nullptr, QWidget *parent = nullptr);
-    ~CalculateCurveDialog();
+	explicit CalculateCurveDialog();
+	virtual ~CalculateCurveDialog();
 
-    void initialization();
+	void initialize();
 
 private slots:
-    void updateResultNameAndClosed(QString curveName);
-    void calculateCurve();
+	void updateResultNameAndClosed(QString curveName);
+	void calculateCurve();
 
 private:
-    Ui::CalculateCurveDialogClass *_ui;
-
-    Project* _project;
+	Ui::CalculateCurveDialog* _ui;
 };
