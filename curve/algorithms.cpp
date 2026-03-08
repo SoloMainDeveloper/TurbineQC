@@ -1,5 +1,10 @@
 #include "curve/pch.h"
+
 #include "algorithms.h"
+#include "regeneratecurvecommand.h"
+#include "bestfitcommand.h"
+#include "mergescanscommand.h"
+#include "radiuscorrectioncommand.h"
 
 void Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params *params, Project *project) {
     auto figure = project->findFigure(figureName);
@@ -28,11 +33,11 @@ void Algorithms::calculateCurve(QString figureName, QString newFigureName, const
 
     auto log = QMap<QString, QString>(const_cast<Function1Params*>(params)->toQMap());
     log.insert({ { "figureName", figureName }, { "newFigureName", newFigureName } });
-    MacrosManager::log(MacrosManager::CalculateCurve, log);
+    //MacrosManager::log(MacrosManager::CalculateCurve, log);
 }
 
-void Algorithms::regenerateCurve(QString figureName, QString newFigureName, const Function19Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
+void Algorithms::regenerateCurve(QString figureName, QString newFigureName, const Function19Params *params) {
+    auto figure = Project::instance().findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Regenerate curve: curve`s not found");
@@ -53,11 +58,9 @@ void Algorithms::regenerateCurve(QString figureName, QString newFigureName, cons
     *resultCurve = *curve;
     resultCurve->changePoints(resultPoints);
     resultCurve->setName(newFigureName);
-    project->safeInsert(newFigureName, resultCurve);
+    Project::instance().safeInsert(newFigureName, resultCurve);
 
-    auto log = QMap<QString, QString>(const_cast<Function19Params*>(params)->toQMap());
-    log.insert({ { "figureName", figureName }, { "newFigureName", newFigureName } });
-    MacrosManager::log(MacrosManager::RegenerateCurve, log);
+    MacrosManager::instance().log(std::make_shared<RegenerateCurveCommand>(figureName, newFigureName, params));
 }
 
 void Algorithms::createMiddleCurve(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
@@ -68,7 +71,7 @@ void Algorithms::createMiddleCurve(QString parentName, QString figureName, const
 
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    MacrosManager::log(MacrosManager::CreateMiddleCurve, log);
+    //MacrosManager::log(MacrosManager::CreateMiddleCurve, log);
 }
 
 CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params *params, Project *project) {
@@ -95,9 +98,9 @@ void Algorithms::createContactLine(QString parentName, QString figureName, const
     lineFigure->setColor(color);
     project->safeInsert(figureName, lineFigure);
 
-    auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
+    auto log = params->toQMap();
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    MacrosManager::log(MacrosManager::CreateContactLine, log);
+    //MacrosManager::log(MacrosManager::CreateContactLine, log);
 }
 
 LineFigure Algorithms::getContactLine(QString curveName, const Function18Params *params, Project *project) {
@@ -117,7 +120,7 @@ void Algorithms::createMaxCircle(QString parentName, QString figureName, const F
 
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    MacrosManager::log(MacrosManager::CreateMaxCircle, log);
+    //MacrosManager::log(MacrosManager::CreateMaxCircle, log);
 }
 
 CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params *params, Project *project) {
@@ -192,8 +195,9 @@ double Algorithms::getMinX(QString figureName, const Function18Params *params, P
     return CurveMachine::getMinX(curve->points(), *params);
 }
 
-void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params, Project *project) {
-    auto figure = project->findFigure(figureName);
+void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params) {
+    auto& project = Project::instance();
+    auto figure = project.findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Radius correction: curve`s not found");
@@ -203,16 +207,15 @@ void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName,
     *resultCurve = *curve;
     resultCurve->changePoints(result.points());
     resultCurve->setName(figureNewName);
-    project->safeInsert(figureNewName, resultCurve);
+    project.safeInsert(figureNewName, resultCurve);
 
-    auto log = QMap<QString, QString>(const_cast<Function3Params*>(params)->toQMap());
-    log.insert({ { "figureName", figureName }, { "newName", figureNewName } });
-    MacrosManager::log(MacrosManager::RadiusCorrection, log);
+    MacrosManager::instance().log(std::make_shared<RadiusCorrectionCommand>(figureName, figureNewName, params));
 }
 
-bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted, Project *project) {
-    auto firstCloud = project->findFigure(firstCurveName);
-    auto secondCloud = project->findFigure(secondCurveName);
+bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted) {
+    auto& project = Project::instance();
+    auto firstCloud = project.findFigure(firstCurveName);
+    auto secondCloud = project.findFigure(secondCurveName);
     auto firstCurve = dynamic_cast<const CurveFigure*>(firstCloud);
     auto secondCurve = dynamic_cast<const CurveFigure*>(secondCloud);
 
@@ -223,24 +226,21 @@ bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurve
         return false;
     }
     auto curve = new CurveFigure(resultName, result);
-    project->safeInsert(resultName, curve);
-    MacrosManager::executeWithoutLogging([&]() {
-        project->removeFigure(firstCurveName);
-        project->removeFigure(secondCurveName);
+    project.safeInsert(resultName, curve);
+    MacrosManager::instance().executeWithoutLogging([&]() {
+        project.removeFigure(firstCurveName);
+        project.removeFigure(secondCurveName);
     });
 
-    MacrosManager::log(MacrosManager::MergeScans, {
-        { "firstName", firstCurveName },
-        { "secondName", secondCurveName },
-        { "resultName", resultName },
-        { "threshold", QString::number(threshold) },
-        { "needSorted", needSorted ? "true" : "false" } });
+    MacrosManager::instance().log(std::make_shared<MergeScansCommand>(firstCurveName,
+        secondCurveName, resultName, threshold, needSorted));
     return true;
 }
 
-void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params, Project *project) {
-    auto measFigure = project->findFigure(measCurveName);
-    auto nomFigure = project->findFigure(nomCurveName);
+void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params) {
+    auto& project = Project::instance();
+    auto measFigure = project.findFigure(measCurveName);
+    auto nomFigure = project.findFigure(nomCurveName);
     auto measCurve = dynamic_cast<const CurveFigure*>(measFigure);
     auto nomCurve = dynamic_cast<const CurveFigure*>(nomFigure);
 
@@ -253,16 +253,17 @@ void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName
     resultCurve->setName(resultCurveName);
     resultCurve->setShowDeviations(true);
     resultCurve->setConnectDeviations(true);
-    project->safeInsert(resultCurveName, resultCurve);
+    project.safeInsert(resultCurveName, resultCurve);
 
     auto log = QMap<QString, QString>(const_cast<Function4Params*>(params)->toQMap());
     log.insert({ { "nominal", nomCurveName }, { "measured", measCurveName }, { "resultName", resultCurveName } });
-    MacrosManager::log(MacrosManager::CalculateDeviations, log);
+    //MacrosManager::log(MacrosManager::CalculateDeviations, log);
 }
 
-void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params *params, Project *project) {
-    auto nominalFigure = project->findFigure(nomCurveName);
-    auto measuredFigure = project->findFigure(measCurveName);
+void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params *params) {
+    auto& project = Project::instance();
+    auto nominalFigure = project.findFigure(nomCurveName);
+    auto measuredFigure = project.findFigure(measCurveName);
     auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
     auto measuredCurve = dynamic_cast<const CurveFigure*>(measuredFigure);
 
@@ -275,22 +276,21 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
     if(measuredCurve->isClosed()) {
         resultCurve->setClosed(true);
     }
-    project->safeInsert(resultCurveName, resultCurve);
+    project.safeInsert(resultCurveName, resultCurve);
 
     auto linePoint = Point(result.offsetX, result.offsetY);
     auto direction = CurveMachine::getDirection(linePoint, result.rotation);
     auto bestFitLine = new LineFigure(bestFitLineName, linePoint, direction, qInf());
     bestFitLine->setVisible(false);
-    project->safeInsert(bestFitLineName, bestFitLine, false);
+    project.safeInsert(bestFitLineName, bestFitLine, false);
 
-    auto log = QMap<QString, QString>(const_cast<Function6Params*>(params)->toQMap());
-    log.insert({ { "nominal", nomCurveName }, { "measured", measCurveName }, { "resultName", resultCurveName }, { "bestFitLineName", bestFitLineName } });
-    MacrosManager::log(MacrosManager::BestFit, log);
+    MacrosManager::instance().log(std::make_shared<BestFitCommand>(nomCurveName, measCurveName, resultCurveName, bestFitLineName, params));
 }
 
-void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params *params, Project *project) {
-    auto nominalFigure = project->findFigure(nomCurveName);
-    auto measuredFigure = project->findFigure(measCurveName);
+void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params *params) {
+    auto& project = Project::instance();
+    auto nominalFigure = project.findFigure(nomCurveName);
+    auto measuredFigure = project.findFigure(measCurveName);
     auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
     auto measuredCurve = dynamic_cast<const CurveFigure*>(measuredFigure);
 
@@ -303,13 +303,13 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
     if(measuredCurve->isClosed()) {
         resultCurve->setClosed(true);
     }
-    project->safeInsert(resultCurveName, resultCurve);
+    project.safeInsert(resultCurveName, resultCurve);
 
     auto linePoint = Point(result.offsetX, result.offsetY);
     auto direction = CurveMachine::getDirection(linePoint, result.rotation);
     auto bestFitLine = new LineFigure(bestFitLineName, linePoint, direction, qInf());
     bestFitLine->setVisible(false);
-    project->safeInsert(bestFitLineName, bestFitLine, false);
+    project.safeInsert(bestFitLineName, bestFitLine, false);
 }
 
 void Algorithms::calculateConstantTolerances(QString figureName, double upperTolerance, double lowerTolerance, Project *project) {
@@ -326,10 +326,10 @@ void Algorithms::calculateConstantTolerances(QString figureName, double upperTol
 
     project->changeCurveTolerance(figureName, f1result.curve.points());
 
-    MacrosManager::log(MacrosManager::ConstantTolerance, {
+    /*MacrosManager::log(MacrosManager::ConstantTolerance, {
         { "figureName", figureName },
         { "upperTolerance", QString::number(upperTolerance) },
-        { "lowerTolerance", QString::number(lowerTolerance) } });
+        { "lowerTolerance", QString::number(lowerTolerance) } });*/
 }
 
 void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDirection, double lEPercent, double tEPercent, double lEUpper, double lELower,
@@ -374,7 +374,7 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
 
     project->changeCurveTolerance(figureName, f1result.curve.points());
 
-    MacrosManager::log(MacrosManager::EdgesTolerance, {
+    /*MacrosManager::log(MacrosManager::EdgesTolerance, {
         { "figureName", figureName },
         { "leadingEdgeDirection", QString::number(leadingEdgeDirection) },
         { "leadingEdgePercent", QString::number(lEPercent) },
@@ -386,7 +386,7 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
         { "highEdgeUpperTolerance", QString::number(highEUpper) },
         { "highEdgeLowerTolerance", QString::number(highELower) },
         { "lowEdgeUpperTolerance", QString::number(lowEUpper) },
-        { "lowEdgeLowerTolerance", QString::number(lowELower) }, });
+        { "lowEdgeLowerTolerance", QString::number(lowELower) }, });*/
 }
 
 void Algorithms::insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR, Project *project) {
@@ -535,13 +535,13 @@ ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathF
 
     if(!resultPath.isEmpty()) {
         FileSystem::writeCompareFLR(resultPath, result, precision);
-        MacrosManager::log(MacrosManager::CompareFLR, {
+        /*MacrosManager::log(MacrosManager::CompareFLR, {
             { "filepathFLR1", filepathFLR1 },
             { "filepathFLR2", filepathFLR2 },
             { "resultPath", resultPath },
             { "pointsStartIndex", QString::number(pointsStartIndex) },
             { "precision", QString::number(precision) }
-            });
+            });*/
     }
     return new ResultCompareFLR(totalParams, dimsFails, dimsFailsDeviationSum, pointsFails, pointsFailsDeviationSum, maxFailDeviation);
 }

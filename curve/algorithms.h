@@ -27,13 +27,13 @@ public:
     static CircleFigure getRadiusOfLeadingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project);
     static CircleFigure getRadiusOfTrailingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project);
     static double getMinX(QString curveName, const Function18Params *params, Project *project);
-    static void makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params, Project *project);
-    static bool tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted, Project *project);
-    static void calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params, Project *project);
-    static void calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params *params, Project *project);
-    static void calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params *params, Project *project);
+    static void makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params);
+    static bool tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted);
+    static void calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params);
+    static void calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params *params);
+    static void calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params *params);
     static void calculateCurve(QString figureName, QString newFigureName, const Function1Params *params, Project *project);
-    static void regenerateCurve(QString figureName, QString newFigureName, const Function19Params *params, Project *project);
+    static void regenerateCurve(QString figureName, QString newFigureName, const Function19Params *params);
     static void calculateConstantTolerances(QString figureName, double upperTolerance, double lowerTolerance, Project *project);
     static void calculateEdgesTolerance(QString figureName, int leadingEdgeDirection, double lEPercent, double tEPercent, double lEUpper, double lELower,
         double tEUpper, double tELower, double highEUpper, double highELower, double lowEUpper, double lowELower, Project *project);
