@@ -9,6 +9,8 @@
 #include "partdatacommand.h"
 #include "shiftfigurecommand.h"
 #include "rotatefigurecommand.h"
+#include "editfigurecommand.h"
+#include "changecurveparameterscommand.h"
 
 Project& Project::instance() {
     static Project instance;
@@ -223,7 +225,8 @@ void Project::editFigure(const QString& name, QMap<QString, QString>& paramsChan
         updateParent(text, paramsChanged["Ref"]);
     }
     figure->edit(paramsChanged);
-    //MacrosManager::instance().log(MacrosManager::instance().EditFigure, paramsChanged);
+
+    MacrosManager::instance().log(std::make_shared<EditFigureCommand>(name, paramsChanged));
     emit figureEdited(figure->name());
 }
 
@@ -238,7 +241,7 @@ void Project::changeFigureVisibility(const QString figureName, bool visible) {
     auto figure = findFigureMutable(figureName);
     figure->setVisible(visible);
     emit figureVisibilityChanged(figureName, visible);
-    //MacrosManager::instance().log(MacrosManager::instance().ChangeFigureVisibility, {
+    //MacrosManager::instance().log(std::make_shared < ChangeFigureVi, {
     //    { "figureName", figureName },
     //    { "visible", visible == true ? "true" : "false" } });
 }
@@ -380,19 +383,21 @@ void Project::changeCurveParameters(const QString figureName, bool showPoints, b
     emit curveParametersChanged(figureName, showPoints, connectPoints,
         showVectors, closed, showNumbering, numberingInterval,
         amplification, showTolerances, showDeviations, connectDeviations, highLightOut);
-    /*MacrosManager::instance().log(MacrosManager::instance().ChangeCurveParameters, {
-        { "figureName", figureName },
-        { "showPoints", showPoints == true ? "true" : "false" },
-        { "connectPoints", connectPoints == true ? "true" : "false" },
-        { "showVectors", showVectors == true ? "true" : "false" },
-        { "closed", closed == true ? "true" : "false" },
-        { "showNumbering", showNumbering == true ? "true" : "false" },
-        { "numberingInterval", QString::number(numberingInterval) },
-        { "amplification", QString::number(amplification) },
-        { "showTolerances", showTolerances == true ? "true" : "false" },
-        { "showDeviations", showDeviations == true ? "true" : "false" },
-        { "connectDeviations", connectDeviations == true ? "true" : "false" },
-        { "highLightOut", highLightOut == true ? "true" : "false" }, });*/
+
+    MacrosManager::instance().log(std::make_shared<ChangeCurveParametersCommand>(
+        figureName,
+        showPoints,
+        connectPoints,
+        showVectors,
+        closed,
+        showNumbering,
+        numberingInterval,
+        amplification,
+        showTolerances,
+        showDeviations,
+        connectDeviations,
+        highLightOut
+    ));
 }
 
 void Project::changeDimensionParameters(const QString dimName, bool onlyLabel, bool showTols, bool freePosition) {
@@ -420,11 +425,11 @@ void Project::changeCurveTolerance(const QString curveName, QVector<CurvePoint> 
     }
 }
 
-Figure* Project::findFigureMutable(const QString &name) {
+Figure* Project::findFigureMutable(const QString & name) {
     return const_cast<Figure*>(findFigure(name));
 }
 
-bool Project::confirmRemoveFigure(const QString &figureName) {
+bool Project::confirmRemoveFigure(const QString & figureName) {
     QMessageBox mBox;
     mBox.setText(QString("Delete %1 and its children?").arg(figureName));
     mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -440,7 +445,7 @@ void Project::requestFigureEditDialog(const QString figureName) {
     emit figureEditDialogRequested(figureName);
 }
 
-void Project::safeInsert(QString figureName, Figure *figure, bool needToChangeCurrentFigure) {
+void Project::safeInsert(QString figureName, Figure * figure, bool needToChangeCurrentFigure) {
     if(containsFigure(figureName)) {
         MacrosManager::instance().executeWithoutLogging([&]() {
             removeFigure(figureName);
@@ -725,7 +730,7 @@ void Project::alignment(QString angle, QString axis, QString offsetX, QString of
     MacrosManager::instance().log(std::make_shared<AlignmentCommand>(angle, axis, offsetX, offsetY));
 }
 
-void Project::changeDimensionValue(const QString &dimName, const DimFigure::Value &value) {
+void Project::changeDimensionValue(const QString & dimName, const DimFigure::Value & value) {
     auto figure = findFigureMutable(dimName);
     if(auto dimFigure = dynamic_cast<DimFigure*>(figure)) {
         dimFigure->addValue(value);

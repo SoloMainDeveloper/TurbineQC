@@ -128,6 +128,7 @@
     <ClCompile Include="bestfitcommand.cpp" />
     <ClCompile Include="bestfitdialog.cpp" />
     <ClCompile Include="calculatecurvedialog.cpp" />
+    <ClCompile Include="changecurveparameterscommand.cpp" />
     <ClCompile Include="clearprojectcommand.cpp" />
     <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
@@ -138,10 +139,12 @@
     <ClCompile Include="createreportcommand.cpp" />
     <ClCompile Include="curveanalyzer.cpp" />
     <ClCompile Include="dialogservice.cpp" />
+    <ClCompile Include="editfigurecommand.cpp" />
     <ClCompile Include="exporttoflrcommand.cpp" />
     <ClCompile Include="figurecreator.cpp" />
     <ClCompile Include="functionparamsgenerator.cpp" />
     <ClCompile Include="icommand.cpp" />
+    <ClCompile Include="insertbestfitpositioncommand.cpp" />
     <ClCompile Include="loadcloudcommand.cpp" />
     <ClCompile Include="loadprojectcommand.cpp" />
     <ClCompile Include="macrostranslator.cpp" />
@@ -188,6 +191,9 @@
     <ClCompile Include="turbinedialog.cpp" />
     <ClCompile Include="widthedgedialog.cpp" />
     <QtMoc Include="macrostranslator.h" />
+    <ClInclude Include="changecurveparameterscommand.h" />
+    <ClInclude Include="editfigurecommand.h" />
+    <ClInclude Include="insertbestfitpositioncommand.h" />
     <ClInclude Include="setprintersettingscommand.h" />
     <ClInclude Include="shiftfigurecommand.h" />
     <QtMoc Include="basedialog.h" />

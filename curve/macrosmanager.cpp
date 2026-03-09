@@ -22,6 +22,9 @@
 #include "saveprojectcommand.h"
 #include "setprintersettingscommand.h"
 #include "shiftfigurecommand.h"
+#include "insertbestfitpositioncommand.h"
+#include "changecurveparameterscommand.h"
+#include "editfigurecommand.h"
 
 MacrosManager::MacrosManager() {
     _recordIndex = 0;
@@ -52,6 +55,9 @@ void MacrosManager::registerAllCommands() {
     commandFactory.registerCommand<SaveProjectCommand>();
     commandFactory.registerCommand<SetPrinterSettingsCommand>();
     commandFactory.registerCommand<ShiftFigureCommand>();
+    commandFactory.registerCommand<InsertBestFitPositionCommand>();
+    commandFactory.registerCommand<ChangeCurveParametersCommand>();
+    commandFactory.registerCommand<EditFigureCommand>();
 }
 
 MacrosManager& MacrosManager::instance() {
@@ -159,32 +165,8 @@ bool MacrosManager::tryExecuteOperation(int index) {
     setRecording(false);
     try {
         _macros->at(index)->run();
-        //switch(type) {
-        //    case LoadCloud:
-        //        FileSystem::loadCloud(project, data["filepath"], data["name"], data["separator"], data["skipStart"].toInt(),
-        //            data["skipAfter"].toInt(), data["columnNames"], data["columnNumbers"], data["decimal"]);
-        //        break;
-        //    case LoadProject:
-        //        FileSystem::loadProject(project, data["filepath"]);
-        //        break;
-        //    case SaveProject:
-        //        FileSystem::saveProject(project, data["dirName"], data["ProjectName"], data["createCRV"] == "true");
-        //        break;
-        //    case ClearProject:
-        //        project->clear();
-        //        break;
-        //    case MergeScans:
-        //        Algorithms::tryMergePointClouds(data["firstName"], data["secondName"], data["resultName"],
-        //            data["threshold"].toDouble(), data["needSorted"] == "true", project);
-        //        break;
-        //    case RadiusCorrection:
-        //        Algorithms::makeRadiusCorrection(data["figureName"], data["newName"], new Function3Params(&data), project);
-        //        break;
         //    case CalculateDeviations:
         //        Algorithms::calculateDeviations(data["nominal"], data["measured"], data["resultName"], new Function4Params(&data), project);
-        //        break;
-        //    case BestFit:
-        //        Algorithms::calculateBestFit(data["nominal"], data["measured"], data["resultName"], data["bestFitLineName"], new Function6Params(&data), project);
         //        break;
         //    case ConstantTolerance:
         //        Algorithms::calculateConstantTolerances(data["figureName"], data["upperTolerance"].toDouble(), data["lowerTolerance"].toDouble(), project);
@@ -196,16 +178,6 @@ bool MacrosManager::tryExecuteOperation(int index) {
         //            data["highEdgeLowerTolerance"].toDouble(), data["lowEdgeUpperTolerance"].toDouble(), data["lowEdgeLowerTolerance"].toDouble(), project);
         //        break;
         //    case CreateDimension:
-        //        break;
-        //    case InsertBestFitPosition:
-        //        Algorithms::insertBestFitDimension(data["figureName"], data["parentName"], data["x"].toDouble(), data["y"].toDouble(),
-        //            data["z"].toDouble(), data["showX"] == "true", data["showY"] == "true", data["showR"] == "true", project);
-        //        break;
-        //    case RenameFigure:
-        //        project->renameFigure(data["figureName"], data["newName"]);
-        //        break;
-        //    case RemoveFigure:
-        //        project->removeFigure(data["figureName"]);
         //        break;
         //    case CreateWidthOfLE:
         //    {
@@ -221,45 +193,15 @@ bool MacrosManager::tryExecuteOperation(int index) {
         //        widthTE.createMeasured(figureName, figureName, Function18Params(&data), project);
         //        break;
         //    }
-        //    case CreateReport:
-        //        ReportGenerator::createReport(project, ReportSettings::convertToSettings(&data));
-        //        break;
         //    case ChangeFigureColor:
         //        project->changeFigureColor(data["figureName"], *ColorTranslator::getColorFromInt(data["color"].toInt()));
-        //        break;
-        //    case ShiftFigure:
-        //        project->shiftFigure(data["figureName"], data["x"], data["y"], data["z"]);
-        //        break;
-        //    case RotateFigure:
-        //        project->rotateFigure(data["figureName"], data["angle"].toDouble(), data["x"], data["y"], data["z"]);
-        //        break;
-        //    case EditFigure:
-        //        project->editFigure(data["figureName"], data);
-        //        break;
-        //    case Alignment:
-        //        project->alignment(data["angle"], data["axis"], data["offsetX"], data["offsetY"]);
         //        break;
         //    case CalculateCurve:
         //        Algorithms::calculateCurve(data["figureName"], data["newFigureName"], new Function1Params(&data), project);
         //        break;
-        //    case RegenerateCurve:
-        //        Algorithms::regenerateCurve(data["figureName"], data["newFigureName"], new Function19Params(&data), project);
-        //        break;
         //    case ChangeFigureVisibility:
         //        project->changeFigureVisibility(data["figureName"], data["visible"] == "true");
         //        break;
-        //    case ChangeCurveParameters:
-        //    {
-        //        if(auto curve = dynamic_cast<const CurveFigure*>(project->findFigure(data["figureName"]))) {
-        //            project->changeCurveParameters(data["figureName"], data["showPoints"] == "true", data["connectPoints"] == "true",
-        //                data["showVectors"] == "true", data["closed"] == "true", data["showNumbering"] == "true", data["numberingInterval"].toInt(),
-        //                data["amplification"].toDouble(), data["showTolerances"] == "true", data["showDeviations"] == "true",
-        //                data["connectDeviations"] == "true", data["highLightOut"] == "true");
-        //        } else {
-        //            project->changeFigureVisibility(data["figureName"], data["isVisible"] == "true"); //isVisible
-        //        }
-        //        break;
-        //    }
         //    case ChangeDimensionParameters:
         //        project->changeDimensionParameters(data["dimName"], data["onlyLabel"] == "true", data["showTols"] == "true",
         //            data["freePosition"] == "true");
@@ -273,35 +215,6 @@ bool MacrosManager::tryExecuteOperation(int index) {
         //    case CreateContactLine:
         //        Algorithms::createContactLine(data["parentName"], data["figureName"], new Function18Params(&data), project);
         //        break;
-        //    case ExportToFLR:
-        //    {
-        //        auto curvesToTake = data["curvesToTake"].split(",");
-        //        FileSystem::exportToFLR(project, data["filepath"], &curvesToTake);
-        //        break;
-        //    }
-        //    case PartData:
-        //        if(data["showPartDataWindowWhenMacroRuns"] == "Yes") {
-        //            project->showPartDataDialogRequested(data["reportTitle"], data["description"], data["drawing"], data["orderNumber"], data["partNumber"], data["projectOperator"], data["note"],
-        //                data["machine"], data["tool"], data["fixturing"], data["batch"], data["supplier"], data["revision"]);
-        //        } else {
-        //            project->changePartData(data["reportTitle"], data["description"], data["drawing"], data["orderNumber"], data["partNumber"], data["projectOperator"], data["note"],
-        //                data["machine"], data["tool"], data["fixturing"], data["batch"], data["supplier"], data["revision"], false);
-        //        }
-        //        break;
-        //    case PrintReport:
-        //    {
-        //        if(data.contains("pagesToTake"))
-        //            Printer::print(data["pagesToTake"].split(","));
-        //        else
-        //            Printer::printAll();
-        //        break;
-        //    }
-        //    case SetPrinterSettings:
-        //    {
-        //        auto printType = Printer::qStringToPrintType(data["printType"]);
-        //        Printer::setPrinterSettings(printType);
-        //        break;
-        //    }
         //    case ClearReport:
         //        Printer::clear();
         //        break;

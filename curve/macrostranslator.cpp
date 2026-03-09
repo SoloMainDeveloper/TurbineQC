@@ -20,6 +20,9 @@
 #include "saveprojectcommand.h"
 #include "setprintersettingscommand.h"
 #include "shiftfigurecommand.h"
+#include "insertbestfitpositioncommand.h"
+#include "changecurveparameterscommand.h"
+#include "editfigurecommand.h"
 
 QStringList MacrosTranslator::splitCRM(const QString &text) {
     QStringList result;
@@ -238,66 +241,86 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<CreateReportCommand>(settings);
         }
-        //case MacrosTranslator::InsertBFPos:
-        //{
-        //    auto firstLine = operationText[1].split(',');
-        //    auto secondLine = operationText[2].split(',');
-        //    params.insert({ { "showX", firstLine[2] == "1" ? "true" : "false" },
-        //        { "showY", firstLine[3] == "1" ? "true" : "false" },
-        //        { "showR", firstLine[4] == "1" ? "true" : "false" },
-        //        { "figureName", secondLine[2] },
-        //        { "parentName", secondLine[9] },
-        //        { "x", secondLine[3] },
-        //        { "y", secondLine[4] },
-        //        { "z", secondLine[5] }
-        //        });
-        //    readyOperations->push_back({ Operation::InsertBestFitPosition, params });
-        //}
-        //case MacrosTranslator::ShowOptions:
-        //{
-        //    auto firstLine = operationText[0].split(',');
-        //    auto secondLine = operationText[1].split(',');
-        //    auto thirdLine = operationText[2].split(',');
-        //    auto fourthLine = operationText[3].split(',');
+        case MacrosTranslator::InsertBFPos:
+        {
+            auto firstLine = operationText[1].split(',');
+            auto secondLine = operationText[2].split(',');
 
-        //    params.insert({ { "figureName", firstLine[2] },
-        //        { "isVisible", secondLine[2] == "1" ? "true" : "false" },
-        //        { "showPoints", thirdLine[2] == "1" ? "true" : "false" },
-        //        { "connectPoints", thirdLine[3] == "1" ? "true" : "false" },
-        //        { "showVectors", thirdLine[4] == "1" ? "true" : "false" },
-        //        { "showNumbering", thirdLine[5] == "1" ? "true" : "false" },
-        //        { "numberingInterval", thirdLine[6] },
-        //        { "closed", thirdLine[7] == "1" ? "true" : "false" },
-        //        { "amplification", fourthLine[2] },
-        //        { "showTolerances", fourthLine[3] == "1" ? "true" : "false" },
-        //        { "showDeviations", fourthLine[7] == "1" ? "true" : "false" },
-        //        { "connectDeviations", fourthLine[8] == "1" ? "true" : "false" },
-        //        { "highLightOut", fourthLine[9] == "1" ? "true" : "false" } });
-        //    readyOperations->push_back({ Operation::ChangeCurveParameters, params });
-        //}
-        //case MacrosTranslator::EditDim:
-        //{
-        //    for(auto j = 5; j < operationText.size() - 1; j++) {
-        //        auto str = operationText[j].split(',');
-        //        QString updatedValue = "";
-        //        updatedValue += "Show:";
-        //        updatedValue += str[2] == "1" ? "true," : "false,";
-        //        updatedValue += "Nom:" + str[3] + ",";
-        //        updatedValue += "UT:" + str[4] + ",";
-        //        updatedValue += "LT:" + str[5];
-        //        params.insert(QString("Dim %1").arg(j - 4), updatedValue);
-        //    }
+            auto showX = firstLine[2] == "1";
+            auto showY = firstLine[3] == "1";
+            auto showR = firstLine[4] == "1";
+            auto figureName = secondLine[2];
+            auto parentName = secondLine[9];
+            auto x = secondLine[3].toDouble();
+            auto y = secondLine[4].toDouble();
+            auto z = secondLine[5].toDouble();
 
-        //    auto secondLine = operationText[1].split(',');
-        //    params.insert({ { "figureName", secondLine[2] },
-        //        { "x", secondLine[3] },
-        //        { "y", secondLine[4] },
-        //        { "z", secondLine[5] },
-        //        { "Ref1", secondLine[6] },
-        //        { "Ref2", secondLine.size() >= 8 ? secondLine[7] : QString() },
-        //        { "newColor", operationText[4].split(',')[2] } });
-        //    readyOperations->push_back({ Operation::EditFigure, params });
-        //}
+            return std::make_shared<InsertBestFitPositionCommand>(
+                figureName, parentName,
+                x, y, z,
+                showX, showY, showR
+            );
+        }
+        case MacrosTranslator::ShowOptions:
+        {
+            auto firstLine = operationText[0].split(',');
+            auto secondLine = operationText[1].split(',');
+            auto thirdLine = operationText[2].split(',');
+            auto fourthLine = operationText[3].split(',');
+
+            auto figureName = firstLine[2];
+            if(true) {
+                auto showPoints = thirdLine[2] == "1";
+                auto connectPoints = thirdLine[3] == "1";
+                auto showVectors = thirdLine[4] == "1";
+                auto showNumbering = thirdLine[5] == "1";
+                auto numberingInterval = thirdLine[6].toInt();
+                auto closed = thirdLine[7] == "1";
+                auto amplification = fourthLine[2].toDouble();
+                auto showTolerances = fourthLine[3] == "1";
+                auto showDeviations = fourthLine[7] == "1";
+                auto connectDeviations = fourthLine[8] == "1";
+                auto highLightOut = fourthLine[9] == "1";
+
+                return std::make_shared<ChangeCurveParametersCommand>(
+                    figureName, showPoints, connectPoints, showVectors,
+                    closed, showNumbering, numberingInterval, amplification,
+                    showTolerances, showDeviations, connectDeviations, highLightOut
+                );
+            } else {
+                auto isVisible = secondLine[2] == "1";
+                //std::make_shared<>();
+            }
+
+        }
+        case MacrosTranslator::EditDim:
+        {
+            QMap<QString, QString> paramsChanged;
+
+            for(auto j = 5; j < operationText.size() - 1; j++) {
+                auto str = operationText[j].split(',');
+                QString updatedValue = "";
+                updatedValue += "Show:";
+                updatedValue += str[2] == "1" ? "true," : "false,";
+                updatedValue += "Nom:" + str[3] + ",";
+                updatedValue += "UT:" + str[4] + ",";
+                updatedValue += "LT:" + str[5];
+                paramsChanged.insert(QString("Dim %1").arg(j - 4), updatedValue);
+            }
+
+            auto secondLine = operationText[1].split(',');
+            auto figureName = secondLine[2];
+
+            paramsChanged.insert({
+                { "x", secondLine[3] },
+                { "y", secondLine[4] },
+                { "z", secondLine[5] },
+                { "Ref1", secondLine[6] },
+                { "Ref2", secondLine.size() >= 8 ? secondLine[7] : QString() },
+                { "newColor", operationText[4].split(',')[2] } });
+
+            return std::make_shared<EditFigureCommand>(figureName, paramsChanged);
+        }
         case MacrosTranslator::SaveFLR:
         {
             auto firstLine = operationText[0].split(',');

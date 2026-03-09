@@ -389,11 +389,12 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
         { "lowEdgeLowerTolerance", QString::number(lowELower) }, });*/
 }
 
-void Algorithms::insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR, Project *project) {
+void Algorithms::insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR) {
     auto labelPoint = Point(x, y, z);
     auto dimension = new DimFigure(figureName, labelPoint);
+    auto& project = Project::instance();
 
-    auto figure = project->findFigure(parentName);
+    auto figure = project.findFigure(parentName);
     auto bestFitLine = dynamic_cast<const LineFigure*>(figure);
     ARGUMENT_ASSERT(bestFitLine, "Insert best fit dimension: best fit line not found");
     auto dx = bestFitLine->origin().x;
@@ -407,7 +408,7 @@ void Algorithms::insertBestFitDimension(const QString &figureName, const QString
     dimension->setDimType(DimFigure::DimType::BestFitData);
     dimension->setFirstReference(parentName);
 
-    project->safeInsert(figureName, dimension, false);
+    project.safeInsert(figureName, dimension, false);
 }
 
 CurveParts Algorithms::divideCurveIntoParts(const QString &figureName, const Function18Params *params, Project *project) {
