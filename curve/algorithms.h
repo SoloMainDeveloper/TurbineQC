@@ -37,7 +37,7 @@ public:
     static void calculateConstantTolerances(QString figureName, double upperTolerance, double lowerTolerance, Project *project);
     static void calculateEdgesTolerance(QString figureName, int leadingEdgeDirection, double lEPercent, double tEPercent, double lEUpper, double lELower,
         double tEUpper, double tELower, double highEUpper, double highELower, double lowEUpper, double lowELower, Project *project);
-    static void insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR, Project *project);
+    static void insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR);
     static CurveParts divideCurveIntoParts(const QString &curveName, const Function18Params *params, Project *project);
     static void calculateStretch(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function31Params *params31, const Function6Params *params6, Project *project);
     static void calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function42Params *params, double radiusCorrection, Project *project);

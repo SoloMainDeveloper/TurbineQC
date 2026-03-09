@@ -313,6 +313,15 @@
     <ClCompile Include="macrostranslator.cpp">
       <Filter>Source Files\Macros</Filter>
     </ClCompile>
+    <ClCompile Include="changecurveparameterscommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="editfigurecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="insertbestfitpositioncommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curvemachine.h">
@@ -433,6 +442,15 @@
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
     <ClInclude Include="shiftfigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="changecurveparameterscommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="editfigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="insertbestfitpositioncommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
   </ItemGroup>
