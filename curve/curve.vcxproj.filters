@@ -75,6 +75,12 @@
     <Filter Include="Header Files\Other">
       <UniqueIdentifier>{c8fd8eea-40f0-4237-bd86-e347f5a9829c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Macros\Commands">
+      <UniqueIdentifier>{fe4fe631-59a3-4dc7-b845-8bdaf5751943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Macros\Commands">
+      <UniqueIdentifier>{6119ba93-0c2d-4042-a6ae-a11b84853c80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="curvewindow.qrc">
@@ -136,19 +142,13 @@
     <ClCompile Include="functionresults.cpp">
       <Filter>Source Files\Curve Library</Filter>
     </ClCompile>
-    <ClCompile Include="loadingcloudwindow.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="macrosmanager.cpp">
-      <Filter>Source Files\Macros</Filter>
-    </ClCompile>
-    <ClCompile Include="macroswindow.cpp">
       <Filter>Source Files\Macros</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="mergepointcloudswindow.cpp">
+    <ClCompile Include="mergepointcloudsdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -172,7 +172,7 @@
     <ClCompile Include="rotatedialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="saveprojectwindow.cpp">
+    <ClCompile Include="saveprojectdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="shiftdialog.cpp">
@@ -181,10 +181,10 @@
     <ClCompile Include="tree.cpp">
       <Filter>Source Files\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="turbinewindow.cpp">
+    <ClCompile Include="turbinedialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="widthedgewindow.cpp">
+    <ClCompile Include="widthedgedialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="partdatadialog.cpp">
@@ -205,7 +205,7 @@
     <ClCompile Include="printer.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
-    <ClCompile Include="printpreviewwindow.cpp">
+    <ClCompile Include="printpreviewdialog.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
     <ClCompile Include="curveanalyzer.cpp">
@@ -231,6 +231,87 @@
     </ClCompile>
     <ClCompile Include="resultcompareflr.cpp">
       <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="basedialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogservice.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogtype.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="loadingclouddialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="macrosdialog.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="icommand.cpp">
+      <Filter>Source Files\Macros</Filter>
+    </ClCompile>
+    <ClCompile Include="commandtype.cpp">
+      <Filter>Source Files\Macros</Filter>
+    </ClCompile>
+    <ClCompile Include="renamefigurecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="commandfactory.cpp">
+      <Filter>Source Files\Macros</Filter>
+    </ClCompile>
+    <ClCompile Include="loadprojectcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="loadcloudcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="alignmentcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="bestfitcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="clearprojectcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="createreportcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="exporttoflrcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="mergescanscommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="partdatacommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="printreportcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="radiuscorrectioncommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="regeneratecurvecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="removefigurecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="rotatefigurecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="saveprojectcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="setprintersettingscommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="shiftfigurecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="macrostranslator.cpp">
+      <Filter>Source Files\Macros</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -285,6 +366,75 @@
     <ClInclude Include="resultcompareflr.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
+    <ClInclude Include="dialogservice.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="dialogtype.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="icommand.h">
+      <Filter>Header Files\Macros</Filter>
+    </ClInclude>
+    <ClInclude Include="commandtype.h">
+      <Filter>Header Files\Macros</Filter>
+    </ClInclude>
+    <ClInclude Include="renamefigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="commandfactory.h">
+      <Filter>Header Files\Macros</Filter>
+    </ClInclude>
+    <ClInclude Include="loadprojectcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="loadcloudcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="alignmentcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="bestfitcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="clearprojectcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="createreportcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="exporttoflrcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="mergescanscommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="partdatacommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="printreportcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="radiuscorrectioncommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="regeneratecurvecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="removefigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="rotatefigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="saveprojectcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="setprintersettingscommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="shiftfigurecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="airfoiltolerancesdialog.h">
@@ -314,16 +464,10 @@
     <QtMoc Include="figureeditdialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="loadingcloudwindow.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </QtMoc>
     <QtMoc Include="macrosmanager.h">
       <Filter>Header Files\Macros</Filter>
     </QtMoc>
-    <QtMoc Include="macroswindow.h">
-      <Filter>Header Files\Macros</Filter>
-    </QtMoc>
-    <QtMoc Include="mergepointcloudswindow.h">
+    <QtMoc Include="mergepointcloudsdialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
     <QtMoc Include="plot.h">
@@ -344,13 +488,13 @@
     <QtMoc Include="tree.h">
       <Filter>Header Files\Interface</Filter>
     </QtMoc>
-    <QtMoc Include="saveprojectwindow.h">
+    <QtMoc Include="saveprojectdialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="turbinewindow.h">
+    <QtMoc Include="turbinedialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
-    <QtMoc Include="widthedgewindow.h">
+    <QtMoc Include="widthedgedialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
     <QtMoc Include="partdatadialog.h">
@@ -368,7 +512,7 @@
     <QtMoc Include="printer.h">
       <Filter>Header Files\Report</Filter>
     </QtMoc>
-    <QtMoc Include="printpreviewwindow.h">
+    <QtMoc Include="printpreviewdialog.h">
       <Filter>Header Files\Report</Filter>
     </QtMoc>
     <QtMoc Include="turbineparameter.h">
@@ -376,6 +520,18 @@
     </QtMoc>
     <QtMoc Include="compareflrdialog.h">
       <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="macrosdialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="basedialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="loadingclouddialog.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </QtMoc>
+    <QtMoc Include="macrostranslator.h">
+      <Filter>Header Files\Macros</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -397,25 +553,22 @@
     <QtUic Include="figureeditdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="loadingcloudwindow.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
-    <QtUic Include="mergepointcloudswindow.ui">
+    <QtUic Include="mergepointcloudsdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="rotatedialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="turbinewindow.ui">
+    <QtUic Include="turbinedialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="widthedgewindow.ui">
+    <QtUic Include="widthedgedialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="shiftdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="saveprojectwindow.ui">
+    <QtUic Include="saveprojectdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="radiuscorrectiondialog.ui">
@@ -425,9 +578,6 @@
       <Filter>Form Files\Other</Filter>
     </QtUic>
     <QtUic Include="curvewindow.ui">
-      <Filter>Form Files\Other</Filter>
-    </QtUic>
-    <QtUic Include="macroswindow.ui">
       <Filter>Form Files\Other</Filter>
     </QtUic>
     <QtUic Include="shiftdialog.ui">
@@ -454,10 +604,16 @@
     <QtUic Include="inserttextdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="printpreviewwindow.ui">
-      <Filter>Form Files\Other</Filter>
-    </QtUic>
     <QtUic Include="compareflrdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="loadingclouddialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="macrosdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="printpreviewdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
   </ItemGroup>

@@ -1,32 +1,26 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_exporttoFLRdialog.h"
-#include "filesystem.h"
-
 namespace Ui {
-    class ExportToFLRDialog;
+	class ExportToFLRDialog;
 };
 
-class ExportToFLRDialog : public QDialog
-{
-    Q_OBJECT
+class ExportToFLRDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    ExportToFLRDialog(Project *project, QWidget *parent = nullptr);
-    ~ExportToFLRDialog();
+	explicit ExportToFLRDialog();
+	virtual ~ExportToFLRDialog();
 
 public slots:
-    void initialization();
+	void initialize() override;
 
 private slots:
-    void exportToFLR();
-    void chooseFilePath();
-    void closeWindow();
-    void closeEvent(QCloseEvent *event);
-    void onChooseAllStateChanged();
+	void exportToFLR();
+	void chooseFilePath();
+	void closeWindow();
+	void closeEvent(QCloseEvent* event);
+	void onChooseAllStateChanged();
 
 private:
-    Ui::ExportToFLRDialog *_ui;
-    Project *_project;
+	Ui::ExportToFLRDialog* _ui;
 };

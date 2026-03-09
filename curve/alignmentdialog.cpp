@@ -1,13 +1,12 @@
 #include "curve/pch.h"
+
+#include "ui_alignmentdialog.h"
 #include "alignmentdialog.h"
 
-AlignmentDialog::AlignmentDialog(Project *project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::AlignmentDialogClass())
-{
+AlignmentDialog::AlignmentDialog() : _ui(new Ui::AlignmentDialog()) {
     _ui->setupUi(this);
 
-    _project = project; 
+    _project = &Project::instance();
 
     _ui->axisCB->addItem("+X");
     _ui->axisCB->addItem("-X");
@@ -34,7 +33,7 @@ AlignmentDialog::AlignmentDialog(Project *project, QWidget *parent)
     connect(_ui->offsetYLE, &QLineEdit::textChanged, this, [&] {_offsetYMacrosFlag = false; _ui->originYCB->setCurrentIndex(-1); });
 }
 
-void AlignmentDialog::initialization() {
+void AlignmentDialog::initialize() {
     _ui->rotateLineCB->blockSignals(true);
     _ui->axisCB->blockSignals(true);
     _ui->originXCB->blockSignals(true);
@@ -48,7 +47,7 @@ void AlignmentDialog::initialization() {
     _ui->offsetYLE->setText("0");
 
     auto figures = _project->figures();
-    for(auto &figure : figures) {
+    for(auto& figure : figures) {
         if(dynamic_cast<LineFigure*>(figure)) {
             _ui->rotateLineCB->addItem(figure->name());
             _ui->originXCB->addItem(figure->name());
@@ -81,7 +80,7 @@ void AlignmentDialog::applyAlignment() {
     auto offsetX = _offsetXMacrosFlag ? _ui->originXCB->currentText() : _ui->offsetXLE->text();
     auto offsetY = _offsetYMacrosFlag ? _ui->originYCB->currentText() : _ui->offsetYLE->text();
 
-    emit alignmentRequested(angle, axis, offsetX, offsetY);
+    Project::instance().alignment(angle, axis, offsetX, offsetY);
 }
 
 void AlignmentDialog::changeAngle() {
@@ -170,7 +169,6 @@ void AlignmentDialog::changeOffsetY() {
     _offsetYMacrosFlag = true;
 }
 
-AlignmentDialog::~AlignmentDialog()
-{
+AlignmentDialog::~AlignmentDialog() {
     delete _ui;
 }

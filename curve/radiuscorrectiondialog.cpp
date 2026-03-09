@@ -1,12 +1,12 @@
 #include "curve/pch.h"
-#include "radiuscorrectiondialog.h"
 
-RadiusCorrectionDialog::RadiusCorrectionDialog(Project *project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::RadiusCorrectionDialogClass())
-{
+#include "radiuscorrectiondialog.h"
+#include "ui_radiuscorrectiondialog.h"
+#include "algorithms.h"
+
+RadiusCorrectionDialog::RadiusCorrectionDialog() : _ui(new Ui::RadiusCorrectionDialog()) {
     _ui->setupUi(this);
-    _project = project;
+    _project = &Project::instance();
 
     connect(_ui->buttonBox, &QDialogButtonBox::accepted, this, &RadiusCorrectionDialog::calculateOffsetCurve);
     connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &RadiusCorrectionDialog::resetDialog);
@@ -19,7 +19,7 @@ RadiusCorrectionDialog::RadiusCorrectionDialog(Project *project, QWidget *parent
     _ui->offsetLineEdit->setValidator(new QDoubleValidator(0, INFINITY, -1));
 }
 
-void RadiusCorrectionDialog::initialization() {
+void RadiusCorrectionDialog::initialize() {
     auto figures = _project->figures();
     for(auto figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
@@ -46,7 +46,7 @@ void RadiusCorrectionDialog::devOffsetByTwo() {
 }
 
 void RadiusCorrectionDialog::changeCurveType() {
-    if (_ui->closedRadioButton->isChecked()) {
+    if(_ui->closedRadioButton->isChecked()) {
         _ui->direction1RadioButton->setText("External");
         _ui->direction2RadioButton->setText("Internal");
     } else {
@@ -74,8 +74,8 @@ void RadiusCorrectionDialog::calculateOffsetCurve() {
         direction = FunctionParams::Direction::Left;
     }
 
-    const Function3Params *params = new Function3Params(offset, isClosed, isExternal, direction, needSort);
-    Algorithms::makeRadiusCorrection(curveName, newCurveName, params, _project);
+    const Function3Params* params = new Function3Params(offset, isClosed, isExternal, direction, needSort);
+    Algorithms::makeRadiusCorrection(curveName, newCurveName, params);
 
     resetDialog();
     accept();
@@ -105,12 +105,11 @@ void RadiusCorrectionDialog::resetDialog() {
     _ui->sortCheckBox->setChecked(false);
 }
 
-void RadiusCorrectionDialog::closeEvent(QCloseEvent *event) {
+void RadiusCorrectionDialog::closeEvent(QCloseEvent* event) {
     resetDialog();
     reject();
 }
 
-RadiusCorrectionDialog::~RadiusCorrectionDialog()
-{
+RadiusCorrectionDialog::~RadiusCorrectionDialog() {
     delete _ui;
 }

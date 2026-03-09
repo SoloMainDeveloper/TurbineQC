@@ -1,13 +1,10 @@
 #include "curve/pch.h"
+
+#include "ui_calculatecurvedialog.h"
 #include "calculatecurvedialog.h"
 
-CalculateCurveDialog::CalculateCurveDialog(Project *project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::CalculateCurveDialogClass())
-{
+CalculateCurveDialog::CalculateCurveDialog() : _ui(new Ui::CalculateCurveDialog()) {
     _ui->setupUi(this);
-
-    _project = project;
 
     _ui->valueLE->setValidator(new QIntValidator);
 
@@ -38,10 +35,10 @@ CalculateCurveDialog::CalculateCurveDialog(Project *project, QWidget *parent)
     });
     connect(_ui->initialCurveCBox, &QComboBox::textActivated, this, &CalculateCurveDialog::updateResultNameAndClosed);
     connect(_ui->buttonBox, &QDialogButtonBox::accepted, this, &CalculateCurveDialog::calculateCurve);
-    connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &CalculateCurveDialog::close);     
+    connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &CalculateCurveDialog::close);
 }
 
-void CalculateCurveDialog::initialization() {
+void CalculateCurveDialog::initialize() {
     _ui->initialCurveCBox->clear();
     _ui->resultCurveLE->setText("");
     _ui->closedRB->setChecked(true);
@@ -55,15 +52,16 @@ void CalculateCurveDialog::initialization() {
     _ui->valueLE->setText("10");
     setWindowTitle("Calculate 2D Curve");
 
-    auto figures = _project->figures();
-    for(auto &figure : figures) {
+    auto project = &Project::instance();
+    auto figures = project->figures();
+    for(auto& figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
             _ui->initialCurveCBox->addItem(figure->name());
         }
     }
-    if(_ui->initialCurveCBox->findText(_project->currentFigureName(), Qt::MatchExactly) != -1) {
-        _ui->initialCurveCBox->setCurrentIndex(_ui->initialCurveCBox->findText(_project->currentFigureName(), Qt::MatchExactly));
-        updateResultNameAndClosed(_project->currentFigureName());
+    if(_ui->initialCurveCBox->findText(project->currentFigureName(), Qt::MatchExactly) != -1) {
+        _ui->initialCurveCBox->setCurrentIndex(_ui->initialCurveCBox->findText(project->currentFigureName(), Qt::MatchExactly));
+        updateResultNameAndClosed(project->currentFigureName());
     } else {
         _ui->initialCurveCBox->setCurrentIndex(-1);
     }
@@ -75,7 +73,7 @@ void CalculateCurveDialog::updateResultNameAndClosed(QString curveName) {
     if(!curveName.isEmpty()) {
         _ui->resultCurveLE->setText(curveName + "_Recalculated");
         setWindowTitle("Calculate " + curveName);
-        auto isClosed = dynamic_cast<const CurveFigure*>(_project->findFigure(curveName))->isClosed();
+        auto isClosed = dynamic_cast<const CurveFigure*>(Project::instance().findFigure(curveName))->isClosed();
         if(isClosed) {
             _ui->closedRB->setChecked(true);
         } else {
@@ -111,22 +109,20 @@ void CalculateCurveDialog::calculateCurve() {
         auto minline = _ui->minlineSB->value();
         auto intermediate = _ui->intermediateSB->value();
 
-        const Function1Params *params = new Function1Params(intermediate, eliminate, minline, isClosed, isExternal, material, needSort);
-        Algorithms::calculateCurve(curveName, newCurveName, params, _project);
+        const Function1Params* params = new Function1Params(intermediate, eliminate, minline, isClosed, isExternal, material, needSort);
+        Algorithms::calculateCurve(curveName, newCurveName, params, &Project::instance());
     } else if(_ui->regenerateRB->isChecked()) {
         auto value = _ui->valueLE->text().toInt();
         auto mode = _ui->numberRB->isChecked() ? "number" : "density";
 
-        const Function19Params *params = new Function19Params(isClosed, isExternal, material, mode, value);
-        Algorithms::regenerateCurve(curveName, newCurveName, params, _project);
+        const Function19Params* params = new Function19Params(isClosed, isExternal, material, mode, value);
+        Algorithms::regenerateCurve(curveName, newCurveName, params);
     }
-
 
     accept();
 
 }
 
-CalculateCurveDialog::~CalculateCurveDialog()
-{
+CalculateCurveDialog::~CalculateCurveDialog() {
     delete _ui;
 }

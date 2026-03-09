@@ -1,39 +1,38 @@
 #pragma once
 
-#include "ui_figureeditdialog.h"
 #include "project.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class FigureEditDialogClass; };
-QT_END_NAMESPACE
+namespace Ui {
+    class FigureEditDialog;
+};
 
-class FigureEditDialog : public QDialog
-{
+class FigureEditDialog : public BaseDialog {
     Q_OBJECT
 
 public:
-    FigureEditDialog(Project* mainProject, QWidget *parent = nullptr);
-    ~FigureEditDialog();
+    explicit FigureEditDialog();
+    virtual ~FigureEditDialog();
 
-//signals:
-//    void dimensionValueChanged(const QString &dimName, const DimFigure::Value &value);
+    void initialize() override;
+
+    //signals:
+    //    void dimensionValueChanged(const QString &dimName, const DimFigure::Value &value);
 
 public slots:
-    void dialogInitialization(const QString figureName);
     void chooseColor();
 
 private:
-    Ui::FigureEditDialogClass *_ui;
-    Project *_project;
+    Ui::FigureEditDialog* _ui;
+    Project* _project;
     QString _figureName;
     const Figure* _figure;
     QSet<int> _tableCellChanged;
     QMap<QString, QString> _paramsChanged;
-    QDoubleValidator *_doubleValidator;
+    QDoubleValidator* _doubleValidator;
 
-    void validateFields(const QList<QLineEdit*> &fields, const QValidator* validator = nullptr);
-    const QString convertValueTypeToString(const DimFigure::ValueType &value);
-    void fillDimTable(const QVector<DimFigure::Value> &values);
+    void validateFields(const QList<QLineEdit*>& fields, const QValidator* validator = nullptr);
+    const QString convertValueTypeToString(const DimFigure::ValueType& value);
+    void fillDimTable(const QVector<DimFigure::Value>& values);
     void applyChanges();
     void tableCellChanged(int row, int column);
     void figureNameChanged();

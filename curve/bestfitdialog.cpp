@@ -1,7 +1,7 @@
 #include "curve/pch.h"
 #include "bestfitdialog.h"
 
-BestFitDialog::BestFitDialog(Project *project) : _project(project), _ui(new Ui::BestFitDialog) {
+BestFitDialog::BestFitDialog() : _ui(new Ui::BestFitDialog) {
     _ui->setupUi(this);
     _errorMessage = new QMessageBox(this);
     _errorMessage->setWindowTitle("Error");
@@ -40,8 +40,8 @@ BestFitDialog::BestFitDialog(Project *project) : _project(project), _ui(new Ui::
     connect(_ui->closeBtn, &QPushButton::clicked, this, &BestFitDialog::closeDialog);
 }
 
-void BestFitDialog::initialization() {
-    auto figures = _project->figures();
+void BestFitDialog::initialize() {
+    auto figures = Project::instance().figures();
 
     for(auto figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
@@ -192,10 +192,11 @@ void BestFitDialog::checkSettings() {
 
     auto measuredCurveName = currentItemOfListMeasured->text();
     auto nominalCurveName = currentItemOfListNominal->text();
+    auto project = &Project::instance();
 
     if(_algorithm == Function6Params::Algorithm::Point) {
-        auto nominalFigure = _project->findFigure(nominalCurveName);
-        auto measuredFigure = _project->findFigure(measuredCurveName);
+        auto nominalFigure = project->findFigure(nominalCurveName);
+        auto measuredFigure = project->findFigure(measuredCurveName);
         auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
         auto measuredCurve = dynamic_cast<const CurveFigure*>(measuredFigure);
 
@@ -211,7 +212,7 @@ void BestFitDialog::checkSettings() {
         }
     }
 
-    if(_project->findFigure(resultCurveName)) {
+    if(project->findFigure(resultCurveName)) {
         _questionMessage->exec();
         if(_questionMessage->result() == QMessageBox::Yes) {
             calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName);
@@ -235,7 +236,7 @@ void BestFitDialog::calculateBestFit(const QString &nominalCurveName, const QStr
         _needHConstraint, xShiftFrom, xShiftTo, _needVConstraint, yShiftFrom, yShiftTo, _needRConstraint,
         rotationFrom, rotationTo);
 
-    Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params, _project);
+    Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params);
     QApplication::restoreOverrideCursor();
 }
 

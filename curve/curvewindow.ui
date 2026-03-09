@@ -120,7 +120,7 @@
               <enum>QComboBox::NoInsert</enum>
              </property>
              <property name="placeholderText">
-              <string>Search figure</string>
+              <string>Поиск фигуры...</string>
              </property>
              <property name="frame">
               <bool>true</bool>
@@ -194,26 +194,26 @@
      <x>0</x>
      <y>0</y>
      <width>659</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAirfoil">
     <property name="title">
-     <string>Airfoil</string>
+     <string>Профиль</string>
     </property>
     <addaction name="actionAssignTolerancesToNominal"/>
+    <addaction name="actionCalculateTurbineParameters"/>
    </widget>
    <widget class="QMenu" name="menuCalculate">
     <property name="title">
-     <string>Calculate</string>
+     <string>Вычисления</string>
     </property>
-    <addaction name="actionCalculateTurbineParameters"/>
     <addaction name="actionCalculateEdgeWidth"/>
     <addaction name="actionCurve_2D_calculation"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Файл</string>
     </property>
     <addaction name="actionLoadFile"/>
     <addaction name="actionLoadProject"/>
@@ -225,7 +225,7 @@
    </widget>
    <widget class="QMenu" name="menuCurve">
     <property name="title">
-     <string>Curve</string>
+     <string>Кривая</string>
     </property>
     <addaction name="actionMergeClouds"/>
     <addaction name="actionRadiusCorrection"/>
@@ -234,14 +234,14 @@
    </widget>
    <widget class="QMenu" name="menuDimensions">
     <property name="title">
-     <string>Dimensions</string>
+     <string>Измерения</string>
     </property>
     <widget class="QMenu" name="menuAngle">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="title">
-      <string>Angle</string>
+      <string>Угол</string>
      </property>
      <addaction name="actionAngle"/>
      <addaction name="actionAngle_To_Main_Axes"/>
@@ -253,7 +253,7 @@
       <bool>false</bool>
      </property>
      <property name="title">
-      <string>Form</string>
+      <string>Форма</string>
      </property>
      <addaction name="actionForm_Max_Min"/>
      <addaction name="actionMin_Dev"/>
@@ -279,7 +279,7 @@
    </widget>
    <widget class="QMenu" name="menuScreen">
     <property name="title">
-     <string>Screen</string>
+     <string>Экран</string>
     </property>
     <addaction name="actionZoomExtents"/>
     <addaction name="actionZoomPlus"/>
@@ -287,13 +287,13 @@
    </widget>
    <widget class="QMenu" name="menuMacros">
     <property name="title">
-     <string>Macros</string>
+     <string>Макросы</string>
     </property>
     <addaction name="actionShowMacrosWindow"/>
    </widget>
    <widget class="QMenu" name="menuTransform">
     <property name="title">
-     <string>Transform</string>
+     <string>Трансформация</string>
     </property>
     <addaction name="actionShift"/>
     <addaction name="actionRotate"/>
@@ -301,25 +301,25 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>Деталь</string>
     </property>
     <addaction name="actionEdit_Part_Data"/>
    </widget>
    <widget class="QMenu" name="menuConstruct">
     <property name="title">
-     <string>Construct</string>
+     <string>Создать</string>
     </property>
     <addaction name="actionText"/>
    </widget>
    <widget class="QMenu" name="menuReport">
     <property name="title">
-     <string>Print</string>
+     <string>Печать</string>
     </property>
     <addaction name="actionShowPrintViewer"/>
    </widget>
    <widget class="QMenu" name="menuTest">
     <property name="title">
-     <string>Test</string>
+     <string>Тест</string>
     </property>
     <addaction name="actionCompareFLR"/>
    </widget>
@@ -338,37 +338,37 @@
   </widget>
   <action name="actionAssignTolerancesToNominal">
    <property name="text">
-    <string>Assign tolerances to nominal</string>
+    <string>Задать допуски</string>
    </property>
   </action>
   <action name="actionCalculateTurbineParameters">
    <property name="text">
-    <string>Airfoil evaluations</string>
+    <string>Анализ профиля</string>
    </property>
   </action>
   <action name="actionCalculateEdgeWidth">
    <property name="text">
-    <string>Calculate edge width</string>
+    <string>Ширина кромок</string>
    </property>
   </action>
   <action name="actionLoadFile">
    <property name="text">
-    <string>Load File</string>
+    <string>Загрузить точки</string>
    </property>
   </action>
   <action name="actionMergeClouds">
    <property name="text">
-    <string>Merge scans</string>
+    <string>Объединение сканов</string>
    </property>
   </action>
   <action name="actionRadiusCorrection">
    <property name="text">
-    <string>Radius correction</string>
+    <string>Радиус-коррекция</string>
    </property>
   </action>
   <action name="actionSaveProject">
    <property name="text">
-    <string>Save Project</string>
+    <string>Сохранить проект</string>
    </property>
   </action>
   <action name="actionNotepad">
@@ -378,22 +378,22 @@
   </action>
   <action name="actionCalculateDeviations">
    <property name="text">
-    <string>Calculate deviations</string>
+    <string>Вычисление отклонений</string>
    </property>
   </action>
   <action name="actionLoadProject">
    <property name="text">
-    <string>Load Project</string>
+    <string>Загрузить проект</string>
    </property>
   </action>
   <action name="actionClearProject">
    <property name="text">
-    <string>Clear Project</string>
+    <string>Очистить проект</string>
    </property>
   </action>
   <action name="actionBestFit">
    <property name="text">
-    <string>Best-fit</string>
+    <string>Подгонка кривых</string>
    </property>
   </action>
   <action name="actionPosition">
@@ -417,7 +417,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Distance</string>
+    <string>Дистанция</string>
    </property>
   </action>
   <action name="actionRadius">
@@ -425,7 +425,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Radius</string>
+    <string>Радиус</string>
    </property>
   </action>
   <action name="actionDiameter">
@@ -433,7 +433,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Diameter</string>
+    <string>Диаметр</string>
    </property>
   </action>
   <action name="actionAngle">
@@ -461,7 +461,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Perimeter</string>
+    <string>Периметр</string>
    </property>
   </action>
   <action name="actionBestFitData">
@@ -469,7 +469,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Best-fit data</string>
+    <string>Данные подгонки</string>
    </property>
   </action>
   <action name="actionMeasureOnScreen">
@@ -477,7 +477,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Measure on screen</string>
+    <string>Измерить на экране</string>
    </property>
   </action>
   <action name="actionForm_Max_Min">
@@ -522,17 +522,17 @@
   </action>
   <action name="actionZoomExtents">
    <property name="text">
-    <string>Zoom extents</string>
+    <string>Вписать фигуру в экран</string>
    </property>
   </action>
   <action name="actionZoomPlus">
    <property name="text">
-    <string>Zoom +</string>
+    <string>Приблизить</string>
    </property>
   </action>
   <action name="actionZoomMinus">
    <property name="text">
-    <string>Zoom -</string>
+    <string>Отдалить</string>
    </property>
   </action>
   <action name="actionZoomToCurrent">
@@ -573,52 +573,52 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Macros Window</string>
+    <string>Окно макросов</string>
    </property>
   </action>
   <action name="actionExportToFLR">
    <property name="text">
-    <string>Export to FLR</string>
+    <string>Экспортировать в FLR</string>
    </property>
   </action>
   <action name="actionShift">
    <property name="text">
-    <string>Shift</string>
+    <string>Смещение</string>
    </property>
   </action>
   <action name="actionRotate">
    <property name="text">
-    <string>Rotate</string>
+    <string>Вращение</string>
    </property>
   </action>
   <action name="actionAlignment">
    <property name="text">
-    <string>Alignment</string>
+    <string>Выравнивание</string>
    </property>
   </action>
   <action name="actionCurve_2D_calculation">
    <property name="text">
-    <string>Curve 2D calculation</string>
+    <string>Расчёт 2D-кривых</string>
    </property>
   </action>
   <action name="actionEdit_Part_Data">
    <property name="text">
-    <string>Edit Part Data</string>
+    <string>Данные детали</string>
    </property>
   </action>
   <action name="actionText">
    <property name="text">
-    <string>Text/Image</string>
+    <string>Текст/Картинка</string>
    </property>
   </action>
   <action name="actionShowPrintViewer">
    <property name="text">
-    <string>Show Print Viewer</string>
+    <string>Окно печати</string>
    </property>
   </action>
   <action name="actionCompareFLR">
    <property name="text">
-    <string>Compare FLR</string>
+    <string>Сравнение FLR</string>
    </property>
   </action>
  </widget>

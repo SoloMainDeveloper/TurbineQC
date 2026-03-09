@@ -40,6 +40,8 @@
     <QtInstall>6.5.1</QtInstall>
     <QtModules>core;gui;widgets;concurrent;printsupport</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
+    <QMakeExtraArgs>
+    </QMakeExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.5.1</QtInstall>
@@ -121,55 +123,105 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="alignmentcommand.cpp" />
     <ClCompile Include="alignmentdialog.cpp" />
+    <ClCompile Include="bestfitcommand.cpp" />
     <ClCompile Include="bestfitdialog.cpp" />
     <ClCompile Include="calculatecurvedialog.cpp" />
+    <ClCompile Include="clearprojectcommand.cpp" />
     <ClCompile Include="colortranslator.cpp" />
     <ClCompile Include="calculatedeviationsdialog.cpp" />
+    <ClCompile Include="commandfactory.cpp" />
+    <ClCompile Include="commandtype.cpp" />
     <ClCompile Include="compareflrdialog.cpp" />
     <ClCompile Include="continuableexception.cpp" />
+    <ClCompile Include="createreportcommand.cpp" />
     <ClCompile Include="curveanalyzer.cpp" />
+    <ClCompile Include="dialogservice.cpp" />
+    <ClCompile Include="exporttoflrcommand.cpp" />
     <ClCompile Include="figurecreator.cpp" />
     <ClCompile Include="functionparamsgenerator.cpp" />
+    <ClCompile Include="icommand.cpp" />
+    <ClCompile Include="loadcloudcommand.cpp" />
+    <ClCompile Include="loadprojectcommand.cpp" />
+    <ClCompile Include="macrostranslator.cpp" />
     <ClCompile Include="markupcreator.cpp" />
     <ClCompile Include="curvegraphicswidget.cpp" />
     <ClCompile Include="exporttoFLRdialog.cpp" />
     <ClCompile Include="figureeditdialog.cpp" />
     <ClCompile Include="inserttextdialog.cpp" />
-    <ClCompile Include="loadingcloudwindow.cpp" />
+    <ClCompile Include="loadingclouddialog.cpp" />
     <ClCompile Include="airfoiltolerancesdialog.cpp" />
     <ClCompile Include="macrosmanager.cpp" />
-    <ClCompile Include="macroswindow.cpp" />
-    <ClCompile Include="mergepointcloudswindow.cpp" />
+    <ClCompile Include="macrosdialog.cpp" />
+    <ClCompile Include="mergepointcloudsdialog.cpp" />
+    <ClCompile Include="mergescanscommand.cpp" />
+    <ClCompile Include="partdatacommand.cpp" />
     <ClCompile Include="partdatadialog.cpp" />
     <ClCompile Include="plot.cpp" />
     <ClCompile Include="curvelibrary.cpp" />
     <ClCompile Include="functionresults.cpp" />
     <ClCompile Include="printer.cpp" />
-    <ClCompile Include="printpreviewwindow.cpp" />
+    <ClCompile Include="printpreviewdialog.cpp" />
+    <ClCompile Include="printreportcommand.cpp" />
     <ClCompile Include="project.cpp" />
+    <ClCompile Include="radiuscorrectioncommand.cpp" />
     <ClCompile Include="radiuscorrectiondialog.cpp" />
+    <ClCompile Include="regeneratecurvecommand.cpp" />
+    <ClCompile Include="removefigurecommand.cpp" />
+    <ClCompile Include="renamefigurecommand.cpp" />
     <ClCompile Include="reportsettings.cpp" />
     <ClCompile Include="reportgenerator.cpp" />
     <ClCompile Include="resultcompareflr.cpp" />
     <ClCompile Include="rotatedialog.cpp" />
-    <ClCompile Include="saveprojectwindow.cpp" />
+    <ClCompile Include="rotatefigurecommand.cpp" />
+    <ClCompile Include="saveprojectcommand.cpp" />
+    <ClCompile Include="saveprojectdialog.cpp" />
     <ClCompile Include="screenshotcreator.cpp" />
+    <ClCompile Include="setprintersettingscommand.cpp" />
     <ClCompile Include="shiftdialog.cpp" />
+    <ClCompile Include="basedialog.cpp" />
+    <ClCompile Include="dialogtype.cpp" />
+    <ClCompile Include="shiftfigurecommand.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="turbineparameter.cpp" />
-    <ClCompile Include="turbinewindow.cpp" />
-    <ClCompile Include="widthedgewindow.cpp" />
+    <ClCompile Include="turbinedialog.cpp" />
+    <ClCompile Include="widthedgedialog.cpp" />
+    <QtMoc Include="macrostranslator.h" />
+    <ClInclude Include="setprintersettingscommand.h" />
+    <ClInclude Include="shiftfigurecommand.h" />
+    <QtMoc Include="basedialog.h" />
+    <ClInclude Include="alignmentcommand.h" />
+    <ClInclude Include="bestfitcommand.h" />
+    <ClInclude Include="clearprojectcommand.h" />
+    <ClInclude Include="commandfactory.h" />
+    <ClInclude Include="commandtype.h" />
+    <ClInclude Include="createreportcommand.h" />
+    <ClInclude Include="dialogtype.h" />
     <QtMoc Include="compareflrdialog.h" />
+    <ClInclude Include="dialogservice.h" />
+    <ClInclude Include="exporttoflrcommand.h" />
     <ClInclude Include="figurecreator.h" />
     <ClInclude Include="functionparamsgenerator.h" />
+    <ClInclude Include="icommand.h" />
+    <ClInclude Include="loadcloudcommand.h" />
+    <ClInclude Include="loadprojectcommand.h" />
+    <ClInclude Include="mergescanscommand.h" />
+    <ClInclude Include="partdatacommand.h" />
+    <ClInclude Include="printreportcommand.h" />
+    <ClInclude Include="radiuscorrectioncommand.h" />
+    <ClInclude Include="regeneratecurvecommand.h" />
+    <ClInclude Include="removefigurecommand.h" />
+    <ClInclude Include="renamefigurecommand.h" />
     <ClInclude Include="resultcompareflr.h" />
+    <ClInclude Include="rotatefigurecommand.h" />
+    <ClInclude Include="saveprojectcommand.h" />
     <ClInclude Include="screenshotcreator.h" />
     <QtMoc Include="turbineparameter.h" />
     <QtMoc Include="rotatedialog.h" />
     <QtMoc Include="shiftdialog.h" />
     <QtMoc Include="macrosmanager.h" />
-    <QtMoc Include="macroswindow.h" />
+    <QtMoc Include="macrosdialog.h" />
     <QtMoc Include="alignmentdialog.h" />
     <QtMoc Include="calculatecurvedialog.h" />
     <ClInclude Include="markupcreator.h" />
@@ -177,15 +229,15 @@
     <ClInclude Include="continuableexception.h" />
     <QtMoc Include="inserttextdialog.h" />
     <QtMoc Include="printer.h" />
-    <QtMoc Include="printpreviewwindow.h" />
+    <QtMoc Include="printpreviewdialog.h" />
     <ClInclude Include="curveanalyzer.h" />
     <ClInclude Include="reportsettings.h" />
     <QtMoc Include="exporttoFLRdialog.h" />
     <ClInclude Include="reportgenerator.h" />
-    <QtMoc Include="saveprojectwindow.h" />
+    <QtMoc Include="saveprojectdialog.h" />
     <QtMoc Include="radiuscorrectiondialog.h" />
-    <QtMoc Include="widthedgewindow.h" />
-    <QtMoc Include="turbinewindow.h" />
+    <QtMoc Include="widthedgedialog.h" />
+    <QtMoc Include="turbinedialog.h" />
     <QtMoc Include="airfoiltolerancesdialog.h" />
     <QtMoc Include="calculatedeviationsdialog.h" />
     <ClInclude Include="colortranslator.h" />
@@ -221,8 +273,8 @@
     <QtMoc Include="figure.h" />
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="functionparams.h" />
-    <QtMoc Include="loadingcloudwindow.h" />
-    <QtMoc Include="mergepointcloudswindow.h" />
+    <QtMoc Include="loadingclouddialog.h" />
+    <QtMoc Include="mergepointcloudsdialog.h" />
     <ClInclude Include="pch.h" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
@@ -231,17 +283,17 @@
     <QtUic Include="exporttoFLRdialog.ui" />
     <QtUic Include="figureeditdialog.ui" />
     <QtUic Include="inserttextdialog.ui" />
-    <QtUic Include="loadingcloudwindow.ui" />
-    <QtUic Include="macroswindow.ui" />
+    <QtUic Include="loadingclouddialog.ui" />
+    <QtUic Include="macrosdialog.ui" />
     <QtUic Include="partdatadialog.ui" />
-    <QtUic Include="printpreviewwindow.ui" />
+    <QtUic Include="printpreviewdialog.ui" />
     <QtUic Include="radiuscorrectiondialog.ui" />
-    <QtUic Include="mergepointcloudswindow.ui" />
+    <QtUic Include="mergepointcloudsdialog.ui" />
     <QtUic Include="rotatedialog.ui" />
-    <QtUic Include="saveprojectwindow.ui" />
+    <QtUic Include="saveprojectdialog.ui" />
     <QtUic Include="shiftdialog.ui" />
-    <QtUic Include="turbinewindow.ui" />
-    <QtUic Include="widthedgewindow.ui" />
+    <QtUic Include="turbinedialog.ui" />
+    <QtUic Include="widthedgedialog.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

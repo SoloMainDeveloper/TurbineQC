@@ -1,24 +1,19 @@
 #pragma once
 
-#include <QDialog>
-#include "ui_compareflrdialog.h"
-
-QT_BEGIN_NAMESPACE
 namespace Ui {
-    class CompareFLRDialogClass;
+	class CompareFLRDialog;
 };
-QT_END_NAMESPACE
 
-class CompareFLRDialog : public QDialog
-{
-    Q_OBJECT
+class CompareFLRDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    CompareFLRDialog(QWidget *parent = nullptr);
-    ~CompareFLRDialog();
-    void initialization();
-    void compare();
+	explicit CompareFLRDialog();
+	virtual ~CompareFLRDialog();
+
+	void initialize() override;
+	void compare();
 
 private:
-    Ui::CompareFLRDialogClass *_ui;
+	Ui::CompareFLRDialog* _ui;
 };

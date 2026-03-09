@@ -52,7 +52,10 @@ public:
 
     virtual void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) = 0;
     virtual void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) = 0;
-    virtual QString getMarkupTitle() const = 0;
+
+protected:
+    QString _dimName;
+
     virtual QString getMarkupType() const = 0;
 };
 
@@ -62,7 +65,6 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
     QString getMarkupType() const override;
 };
 
@@ -72,7 +74,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -82,7 +85,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -92,7 +96,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -102,7 +107,6 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
     QString getMarkupType() const override;
 };
 
@@ -112,7 +116,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -122,7 +127,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -132,7 +138,8 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };
 
@@ -142,6 +149,7 @@ public:
 
     void calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) override;
     void createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) override;
-    QString getMarkupTitle() const override;
+    
+private:
     QString getMarkupType() const override;
 };

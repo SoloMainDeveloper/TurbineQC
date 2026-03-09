@@ -1,22 +1,25 @@
 #include "curve/pch.h"
-#include "reportgenerator.h"
 
-void ReportGenerator::createReport(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings) {
-    auto nominalCurve = dynamic_cast<const CurveFigure*>(project->findFigure(reportSettings->nominalName()));
-    auto measuredCurve = dynamic_cast<const CurveFigure*>(project->findFigure(reportSettings->measuredName()));
+#include "reportgenerator.h"
+#include "createreportcommand.h"
+
+void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSettings) {
+    auto& project = Project::instance();
+    auto nominalCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->nominalName()));
+    auto measuredCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->measuredName()));
     ARGUMENT_ASSERT(nominalCurve && measuredCurve, "Report generator: curve's not found");
 
-    MacrosManager::executeWithoutLogging([&]() {
-        auto curveAnalyzer = CurveAnalyzer(project, reportSettings);
-        auto figureCreator = FigureCreator(project, reportSettings);
-        auto screenshotCreator = ScreenshotCreator(project, plot, reportSettings);
+    MacrosManager::instance().executeWithoutLogging([&]() {
+        auto curveAnalyzer = CurveAnalyzer(reportSettings);
+        auto figureCreator = FigureCreator(reportSettings);
+        auto screenshotCreator = ScreenshotCreator(reportSettings);
 
         auto analyzedGlobalCurves = curveAnalyzer.run();
         figureCreator.run(analyzedGlobalCurves);
         screenshotCreator.run(analyzedGlobalCurves);
 
         if(reportSettings->needPrintWithTemplate()) {
-            auto creatingMarkup = MarkupCreator(project, reportSettings);
+            auto creatingMarkup = MarkupCreator(reportSettings);
             auto reportMarkup = creatingMarkup.run(analyzedGlobalCurves);
             auto time = creatingMarkup.reportCreationTime();
             Printer::addPage(reportMarkup, {
@@ -26,7 +29,7 @@ void ReportGenerator::createReport(Project *project, Plot *plot, std::shared_ptr
                 { "time", time } });
         }
     });
-    MacrosManager::log(MacrosManager::CreateReport, ReportSettings::convertToQMap(reportSettings));
+    MacrosManager::instance().log(std::make_shared<CreateReportCommand>(reportSettings));
 }
 
 QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString &nominalName, const QString &measuredName) {

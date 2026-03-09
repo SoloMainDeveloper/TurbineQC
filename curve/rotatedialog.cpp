@@ -1,12 +1,10 @@
 #include "curve/pch.h"
+
 #include "rotatedialog.h"
+#include "ui_rotatedialog.h"
 
-RotateDialog::RotateDialog(Project* project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::RotateDialogClass()) {
+RotateDialog::RotateDialog() : _ui(new Ui::RotateDialog()) {
     _ui->setupUi(this);
-
-    _project = project;
 
     _ui->angleLE->setValidator(new QDoubleValidator);
     _ui->xLE->setValidator(new QDoubleValidator);
@@ -45,16 +43,16 @@ RotateDialog::RotateDialog(Project* project, QWidget *parent)
     connect(_ui->plus90PB, &QPushButton::clicked, this, &RotateDialog::plus90);
     connect(_ui->minus90PB, &QPushButton::clicked, this, &RotateDialog::minus90);
 
-    connect(this, &RotateDialog::figureRotateRequested, _project, static_cast<void(Project::*)(QString, double, QString, QString, QString)>(&Project::rotateFigure));
+    connect(this, &RotateDialog::figureRotateRequested, &Project::instance(), static_cast<void(Project::*)(QString, double, QString, QString, QString)>(&Project::rotateFigure));
 }
 
-void RotateDialog::initialization() {
+void RotateDialog::initialize() {
     _treeCurves->removeRows(0, _treeCurves->rowCount());
     _treeCircles->removeRows(0, _treeCircles->rowCount());
     _treeLines->removeRows(0, _treeLines->rowCount());
     _treePoints->removeRows(0, _treePoints->rowCount());
 
-    auto figures = _project->figures();
+    auto figures = Project::instance().figures();
     for(auto &figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
             _treeCurves->appendRow(new QStandardItem(figure->name()));
@@ -69,7 +67,7 @@ void RotateDialog::initialization() {
         }
     }
 
-    auto currentFigure = _project->currentFigureName();
+    auto currentFigure = Project::instance().currentFigureName();
     if(!_treeModel->findItems(currentFigure, Qt::MatchExactly | Qt::MatchRecursive).isEmpty()) {
         _ui->figuresTree->setCurrentIndex(_treeModel->indexFromItem(_treeModel->findItems(currentFigure, Qt::MatchExactly | Qt::MatchRecursive)[0]));
     }
@@ -126,7 +124,6 @@ void RotateDialog::updateXYZ(QString figureName) {
     }*/
 }
 
-RotateDialog::~RotateDialog()
-{
+RotateDialog::~RotateDialog() {
     delete _ui;
 }

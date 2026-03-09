@@ -21,7 +21,7 @@ public:
     static void createAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings);
     static void alignAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings);
 
-    explicit FigureCreator(Project *project, std::shared_ptr<ReportSettings> reportSettings);
+    explicit FigureCreator(std::shared_ptr<ReportSettings> reportSettings);
     virtual ~FigureCreator() = default;
 
     void run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>>> &globalCurvesToCreate);

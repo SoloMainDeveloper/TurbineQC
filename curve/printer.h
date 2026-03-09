@@ -10,9 +10,9 @@ public:
     };
     Q_ENUM(PrintType)
 
-    static Printer& instance();
+        static Printer& instance();
 
-    static void print(const QStringList &pagesToTake);
+    static void print(const QList<int> &pagesToTake);
     static void printAll();
     static void addPage(const QString &page, const QMap<QString, QString> &information);
     static void removePage(int index);

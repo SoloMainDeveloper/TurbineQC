@@ -1,12 +1,12 @@
 #include "curve/pch.h"
-#include "calculatedeviationsdialog.h"
 
-CalculateDeviationsDialog::CalculateDeviationsDialog(Project *project, QWidget *parent)
-    : QDialog(parent)
-    , _ui(new Ui::CalculateDeviationsDialogClass())
-{
+#include "ui_calculatedeviationsdialog.h"
+#include "calculatedeviationsdialog.h"
+#include "algorithms.h"
+#include "project.h"
+
+CalculateDeviationsDialog::CalculateDeviationsDialog() : _ui(new Ui::CalculateDeviationsDialog()) {
     _ui->setupUi(this);
-    _project = project;
 
     connect(_ui->saveDevInNomCheckBox, &QCheckBox::stateChanged, this, &CalculateDeviationsDialog::switchResultNameLineEdit);
     connect(_ui->advSettingsCheckBox, &QCheckBox::stateChanged, this, &CalculateDeviationsDialog::switchAdvancedSettings);
@@ -19,16 +19,17 @@ CalculateDeviationsDialog::CalculateDeviationsDialog(Project *project, QWidget *
     _ui->nomTolLineEdit->setValidator(new QIntValidator);
 }
 
-void CalculateDeviationsDialog::initialization() {
+void CalculateDeviationsDialog::initialize() {
     resetDialog();
-    auto figures = _project->figures();
+    auto project = &Project::instance();
+    auto figures = project->figures();
     for(auto figure : figures) {
         if(dynamic_cast<CurveFigure*>(figure)) {
             _ui->measCurvesComboBox->addItem(figure->name());
             _ui->nomCurvesComboBox->addItem(figure->name());
         }
     }
-    _ui->measCurvesComboBox->setCurrentIndex(_ui->measCurvesComboBox->findText(_project->currentFigureName(), Qt::MatchExactly));
+    _ui->measCurvesComboBox->setCurrentIndex(_ui->measCurvesComboBox->findText(project->currentFigureName(), Qt::MatchExactly));
     _ui->nomCurvesComboBox->setCurrentIndex(-1);
 
     adjustSize();
@@ -36,14 +37,15 @@ void CalculateDeviationsDialog::initialization() {
 }
 
 void CalculateDeviationsDialog::calculateDeviations() {
+    auto project = &Project::instance();
     if(_ui->measCurvesComboBox->currentText().isEmpty()) {
         auto text = QMessageBox::warning(this, "No measured curve selected", "Select measured curve", "Ok");
     } else if(_ui->nomCurvesComboBox->currentText().isEmpty()) {
         auto text = QMessageBox::warning(this, "No nominal curve selected", "Select nominal curve", "Ok");
     } else {
-        auto measFigure = _project->findFigure(_ui->measCurvesComboBox->currentText());
+        auto measFigure = project->findFigure(_ui->measCurvesComboBox->currentText());
         auto measCurve = dynamic_cast<const CurveFigure*>(measFigure);
-        auto nomFigure = _project->findFigure(_ui->nomCurvesComboBox->currentText());
+        auto nomFigure = project->findFigure(_ui->nomCurvesComboBox->currentText());
         auto nomCurve = dynamic_cast<const CurveFigure*>(nomFigure);
 
         QString resultName;
@@ -83,7 +85,7 @@ void CalculateDeviationsDialog::calculateDeviations() {
             params = Function4Params(0, 1, 1, true, true, FunctionParams::Direction::Left, false);
         }
 
-        Algorithms::calculateDeviations(nomCurve->name(), measCurve->name(), resultName, &params, _project);
+        Algorithms::calculateDeviations(nomCurve->name(), measCurve->name(), resultName, &params);
 
         //resetDialog();
         //accept();
@@ -119,7 +121,7 @@ void CalculateDeviationsDialog::changeCurveType() {
 void CalculateDeviationsDialog::updateResultNameAndClosed(QString curveName) {
     if(!curveName.isEmpty()) {
         _ui->resultNameLineEdit->setText(_ui->measCurvesComboBox->currentText() + "_Deviations");
-        auto isClosed = dynamic_cast<const CurveFigure*>(_project->findFigure(curveName))->isClosed();
+        auto isClosed = dynamic_cast<const CurveFigure*>(Project::instance().findFigure(curveName))->isClosed();
         if(isClosed) {
             _ui->closedRadioButton->setChecked(true);
         } else {
@@ -144,12 +146,11 @@ void CalculateDeviationsDialog::resetDialog() {
     _ui->sortCheckBox->setChecked(false);
 }
 
-void CalculateDeviationsDialog::closeEvent(QCloseEvent *event) {
+void CalculateDeviationsDialog::closeEvent(QCloseEvent* event) {
     resetDialog();
     reject();
 }
 
-CalculateDeviationsDialog::~CalculateDeviationsDialog()
-{
+CalculateDeviationsDialog::~CalculateDeviationsDialog() {
     delete _ui;
 }

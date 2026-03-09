@@ -1,5 +1,8 @@
 #include "curve/pch.h"
+
 #include "printer.h"
+#include "printreportcommand.h"
+#include "setprintersettingscommand.h"
 
 QStringList Printer::_printPages;
 Printer::PrintType Printer::_printType = PrintType::HTML; //add UI to choose printType
@@ -17,13 +20,13 @@ void Printer::addPage(const QString &page, const QMap<QString, QString> &informa
 void Printer::removePage(int index) {
     _printPages.removeAt(index);
     emit instance().pageRemoved(index);
-    MacrosManager::log(MacrosManager::RemovePage, { { "index", QString::number(index) } });
+    //MacrosManager::log(MacrosManager::RemovePage, { { "index", QString::number(index) } });
 }
 
 void Printer::clear() {
     _printPages.clear();
     emit instance().printerPagesCleared();
-    MacrosManager::log(MacrosManager::ClearReport);
+    //MacrosManager::log(MacrosManager::ClearReport);
 }
 
 QString Printer::printTypeToQString(PrintType type) {
@@ -37,18 +40,18 @@ Printer::PrintType Printer::qStringToPrintType(const QString &type) {
 void Printer::setPrinterSettings(const PrintType type) {
     //_printType = type;
     _printType = PrintType::HTML;
-    MacrosManager::log(MacrosManager::SetPrinterSettings, { { "printType", printTypeToQString(type) } });
+    MacrosManager::instance().log(std::make_shared<SetPrinterSettingsCommand>(type));
 }
 
 void Printer::printAll() {
-    QStringList pagesToTake;
+    QList<int> pagesToTake;
     for(auto i = 0; i < _printPages.length(); i++) {
-        pagesToTake.append(QString::number(i));
+        pagesToTake.append(i);
     }
     print(pagesToTake);
 }
 
-void Printer::print(const QStringList &pagesToTake) {
+void Printer::print(const QList<int> &pagesToTake) {
     auto filePath = QFileDialog::getSaveFileName(nullptr, "Save report", "", "HTML Files (*.html)");
     if(filePath.isEmpty()) return;
 
@@ -60,7 +63,7 @@ void Printer::print(const QStringList &pagesToTake) {
             QTextStream in(&file);
             QStringList fullMarkup;
             for(auto i = 0; i < pagesToTake.size(); i++) {
-                auto index = pagesToTake[i].toInt();
+                auto index = pagesToTake[i];
                 fullMarkup.append(_printPages[index]);
             }
             in << MarkupCreator::index.arg(fullMarkup.join(""));
@@ -72,5 +75,5 @@ void Printer::print(const QStringList &pagesToTake) {
         default:
             break;
     }
-    MacrosManager::log(MacrosManager::PrintReport, { { "pagesToTake" , pagesToTake.join(",")} });
+    MacrosManager::instance().log(std::make_shared<PrintReportCommand>(pagesToTake));
 }

@@ -73,8 +73,9 @@ void FigureCreator::alignAdditionalFigures(Project *project, std::shared_ptr<Rep
     }
 }
 
-FigureCreator::FigureCreator(Project * project, std::shared_ptr<ReportSettings> reportSettings) 
-    : _project(project), _reportSettings(reportSettings) {
+FigureCreator::FigureCreator(std::shared_ptr<ReportSettings> reportSettings)
+    : _reportSettings(reportSettings) {
+    _project = &Project::instance();
 }
 
 void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>>> &globalCurvesToCreate) {

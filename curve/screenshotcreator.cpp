@@ -1,7 +1,9 @@
 #include "curve/pch.h"
 #include "screenshotcreator.h"
 
-ScreenshotCreator::ScreenshotCreator(Project *project, Plot *plot, std::shared_ptr<ReportSettings> reportSettings) : _project(project), _plot(plot), _reportSettings(reportSettings) {
+ScreenshotCreator::ScreenshotCreator(std::shared_ptr<ReportSettings> reportSettings) : _reportSettings(reportSettings) {
+    _project = &Project::instance();
+    _plot = &Plot::instance();
     _nominalName = _reportSettings->nominalName();
     _measuredName = _reportSettings->measuredName();
 }
@@ -34,11 +36,11 @@ void ScreenshotCreator::run(const GlobalCurveMap &curvesToMakeScreenshot) {
     }
     if(curvesToMakeScreenshot.contains(CurveType::GlobalLE) && _reportSettings->isLEVisible()) {
         auto [name, points] = curvesToMakeScreenshot[CurveType::GlobalLE];
-        makeScreenshotOfEdge(name, CurveType::GlobalLE, _reportSettings->typeOfShowDevsLE(), _reportSettings->axisTypeOfLE(), Position::Right);
+        makeScreenshotOfEdge(name, CurveType::GlobalLE, _reportSettings->typeOfShowDevsLE(), _reportSettings->axisTypeOfLE());
     }
     if(curvesToMakeScreenshot.contains(CurveType::GlobalTE) && _reportSettings->isTEVisible()) {
         auto [name, points] = curvesToMakeScreenshot[CurveType::GlobalTE];
-        makeScreenshotOfEdge(name, CurveType::GlobalTE, _reportSettings->typeOfShowDevsTE(), _reportSettings->axisTypeOfTE(), Position::Left);
+        makeScreenshotOfEdge(name, CurveType::GlobalTE, _reportSettings->typeOfShowDevsTE(), _reportSettings->axisTypeOfTE());
     }
     setDefaultVisibilityOnGraphics(defaultCurvesToVisible);
 }
@@ -48,7 +50,7 @@ void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList &globalNames) {
     _project->setVisibility({ globalNames });
     setVisibilityAdditionalFigures();
 
-    _plot->rescale(Position::Center);
+    _plot->zoomExtents();
     _project->setCurrentFigure(_nominalName);
     auto screenshot = _plot->getScreenshot(800, 450, _reportSettings->globalAxisType());
     _reportSettings->setScreenshotOfGlobal(screenshot);
@@ -77,11 +79,11 @@ void ScreenshotCreator::setVisibilityAdditionalFigures() {
     _project->setVisibility(figuresToVisible);
 }
 
-void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType, Position position) {
+void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType) {
     _project->resetVisibilityForAllFigures();
     _project->setVisibility({ edgeName });
     auto curveDevs = createNumericalDeviations(edgeName, devsType, curveType);
-    _plot->rescale(position);
+    _plot->zoomExtents();
 
     if(_reportSettings->needMCL()) {
         auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
@@ -133,7 +135,7 @@ CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString &edgeNam
 void ScreenshotCreator::setDefaultVisibilityOnGraphics(const QStringList &visibleFigures) {
     _project->resetVisibilityForAllFigures();
     _project->setVisibility(visibleFigures);
-    _plot->rescale(Position::Center);
+    _plot->zoomExtents();
     setVisibilityAdditionalFigures();
     _project->setVisibility({ _nominalName });
     _project->setCurrentFigure(_nominalName);

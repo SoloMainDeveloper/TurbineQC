@@ -1,31 +1,26 @@
 #pragma once
 
-#include "ui_calculatedeviationsdialog.h"
-#include "project.h"
-#include "algorithms.h"
+namespace Ui {
+	class CalculateDeviationsDialog;
+};
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class CalculateDeviationsDialogClass; };
-QT_END_NAMESPACE
-
-class CalculateDeviationsDialog : public QDialog
-{
-    Q_OBJECT
+class CalculateDeviationsDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    CalculateDeviationsDialog(Project *project, QWidget *parent = nullptr);
-    ~CalculateDeviationsDialog();
+	explicit CalculateDeviationsDialog();
+	virtual ~CalculateDeviationsDialog();
 
-    void initialization();
-    void switchResultNameLineEdit();
-    void switchAdvancedSettings();
-    void changeCurveType();
-    void resetDialog();
-    void closeEvent(QCloseEvent *event);
-    void calculateDeviations();
-    void updateResultNameAndClosed(QString curveName);
+	void initialize() override;
+
+	void switchResultNameLineEdit();
+	void switchAdvancedSettings();
+	void changeCurveType();
+	void resetDialog();
+	void closeEvent(QCloseEvent* event);
+	void calculateDeviations();
+	void updateResultNameAndClosed(QString curveName);
 
 private:
-    Ui::CalculateDeviationsDialogClass *_ui;
-    Project *_project;
+	Ui::CalculateDeviationsDialog* _ui;
 };

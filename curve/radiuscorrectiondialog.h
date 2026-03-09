@@ -1,33 +1,30 @@
 #pragma once
 
-#include "ui_radiuscorrectiondialog.h"
 #include "project.h"
-#include "algorithms.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class RadiusCorrectionDialogClass; };
-QT_END_NAMESPACE
+namespace Ui {
+	class RadiusCorrectionDialog;
+};
 
-class RadiusCorrectionDialog : public QDialog
-{
-    Q_OBJECT
+class RadiusCorrectionDialog : public BaseDialog {
+	Q_OBJECT
 
 public:
-    RadiusCorrectionDialog(Project *project = nullptr, QWidget *parent = nullptr);
-    ~RadiusCorrectionDialog();
+	explicit RadiusCorrectionDialog();
+	virtual ~RadiusCorrectionDialog();
 
-    void initialization();
+	void initialize() override;
 
 private slots:
-    void resetDialog();
-    void closeEvent(QCloseEvent *event);
-    void equalizeResultToInitial();
-    void devOffsetByTwo();
-    void changeCurveType();
-    void calculateOffsetCurve();
-    void updateResultNameAndClosed(QString curveName);
+	void resetDialog();
+	void closeEvent(QCloseEvent* event);
+	void equalizeResultToInitial();
+	void devOffsetByTwo();
+	void changeCurveType();
+	void calculateOffsetCurve();
+	void updateResultNameAndClosed(QString curveName);
 
 private:
-    Ui::RadiusCorrectionDialogClass *_ui;
-    Project* _project;
+	Ui::RadiusCorrectionDialog* _ui;
+	Project* _project;
 };

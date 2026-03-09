@@ -6,8 +6,8 @@ public:
         Right, Left
     };
 
-    virtual QString toQString() = 0;
-    QMap<QString, QString> toQMap();
+    virtual QString toQString() const = 0;
+    QMap<QString, QString> toQMap() const;
 };
 
 class Function1Params : public FunctionParams {
@@ -15,7 +15,7 @@ public:
     Function1Params(int intermediate, double threshold = 0, double minline = 0, bool isClosed = false,
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
     Function1Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -31,7 +31,7 @@ private:
 class Function2Params : public FunctionParams {
 public:
     Function2Params(bool isInvertSequence = false, bool isInvertDirection = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _needInvertSequence;
@@ -40,10 +40,10 @@ private:
 
 class Function3Params : public FunctionParams {
 public:
-    Function3Params(double radiusCorrection, bool isClosed = false, 
+    Function3Params(double radiusCorrection, bool isClosed = false,
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
     Function3Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -55,25 +55,25 @@ private:
 
 class Function4Params : public FunctionParams {
 public:
-    Function4Params(float nominalTolerance = 0, int evaluationPlace = 1, int evaluationDirection = 1, 
+    Function4Params(float nominalTolerance = 0, int evaluationPlace = 1, int evaluationDirection = 1,
         bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
     Function4Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
     bool _isExternal;
     bool _needSort;
     int _evaluationPlace;
-    int _evaluationDirection; 
-    float _nominalTolerance; 
+    int _evaluationDirection;
+    float _nominalTolerance;
     Direction _material;
 };
 
 class Function5Params : public FunctionParams {
 public:
     Function5Params(double scale, double magnification, bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -87,12 +87,12 @@ public:
         Curve, Point
     };
 
-    Function6Params(bool needMinimize = true, Algorithm method  = Algorithm::Curve, bool isClosed = true, bool needXShift = true, 
-        bool needYShift = true, bool needRotation = true, bool needHConstraint = false, double xShiftFrom = 0, double xShiftTo = 0, 
-        bool needVConstraint = false, double yShiftFrom = 0, double yShiftTo = 0, bool needRConstraint = false, double rotationFrom = 0, 
+    Function6Params(bool needMinimize = true, Algorithm method = Algorithm::Curve, bool isClosed = true, bool needXShift = true,
+        bool needYShift = true, bool needRotation = true, bool needHConstraint = false, double xShiftFrom = 0, double xShiftTo = 0,
+        bool needVConstraint = false, double yShiftFrom = 0, double yShiftTo = 0, bool needRConstraint = false, double rotationFrom = 0,
         double rotationTo = 0);
     Function6Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     double _xShiftFrom;
@@ -119,7 +119,7 @@ private:
 class Function7Params : public FunctionParams {
 public:
     Function7Params(double angle, double xLine, double yLine, double zLine = 0, bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -132,7 +132,7 @@ private:
 class Function8Params : public FunctionParams {
 public:
     Function8Params(double diameter, double xCircle, double yCircle, double zCircle = 0, bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -145,7 +145,7 @@ private:
 class Function9Params : public FunctionParams {
 public:
     Function9Params(bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -154,7 +154,7 @@ private:
 class Function10Params : public FunctionParams {
 public:
     Function10Params(double xStart, double yStart, double zStart, double diameter, double angle, int centerType = 0);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     double _xStart;
@@ -168,7 +168,7 @@ private:
 class Function11Params : public FunctionParams {
 public:
     Function11Params(Direction material = Direction::Right);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     Direction _material;
@@ -177,7 +177,7 @@ private:
 class Function12Params : public FunctionParams {
 public:
     Function12Params(QString algorithm = "Gauss", bool isExternal = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     QString _algorithm;
@@ -194,7 +194,7 @@ public:
     };
 
     Function13Params(Filter filter, FilterType filterType, double filterFactor, bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -206,7 +206,7 @@ private:
 class Function14Params : public FunctionParams {
 public:
     Function14Params(bool isClosed1 = false, bool isClosed2 = false, int mode = 1);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed1;
@@ -217,7 +217,7 @@ private:
 class Function15Params : public FunctionParams {
 public:
     Function15Params(bool isClosed = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -226,7 +226,7 @@ private:
 class Function16Params : public FunctionParams {
 public:
     Function16Params(double maxFormError, double maxCircleRadius, int algorithm = 1);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     int _algorithm;
@@ -241,7 +241,7 @@ public:
     };
 
     Function17Params(double diameter, Sorter sortZ = Sorter::NotSort);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     double _diameter;
@@ -252,7 +252,7 @@ class Function18Params : public FunctionParams {
 public:
     Function18Params(int directionLE = 0, double percentLE = 5, double percentTE = 5, int joinedSegments = 1);
     Function18Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
     int getLEDirection() const;
 
 private:
@@ -266,7 +266,7 @@ class Function19Params : public FunctionParams {
 public:
     Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, QString mode = "number", int value = 500);
     Function19Params(const QMap<QString, QString> *data);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
@@ -279,7 +279,7 @@ private:
 class Function21Params : public FunctionParams {
 public:
     Function21Params(int limInterpMethod = 0, bool needXSift = true, bool needYShift = true, bool needRotation = true, bool isClosed = false);
-    QString toQString();
+    QString toQString() const override;
     bool isClosedCurve() const;
 
 private:
@@ -293,7 +293,7 @@ private:
 class Function31Params : public FunctionParams {
 public:
     Function31Params(bool isLEStretch, bool isTEStretch, int leadingEdgeDirection = 0);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     int _leadingEdgeDirection;
@@ -303,9 +303,9 @@ private:
 
 class Function42Params : public FunctionParams {
 public:
-    Function42Params(bool isClosed = true, bool needVectors = true, 
+    Function42Params(bool isClosed = true, bool needVectors = true,
         bool needColumnA = false, bool needColumnR = false, bool needColumnD = false);
-    QString toQString() override;
+    QString toQString() const override;
 
 private:
     bool _isClosed;
