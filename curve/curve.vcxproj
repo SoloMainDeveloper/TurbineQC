@@ -301,6 +301,9 @@
     <QtUic Include="turbinedialog.ui" />
     <QtUic Include="widthedgedialog.ui" />
   </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="main_ru.ts" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

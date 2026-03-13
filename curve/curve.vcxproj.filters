@@ -635,4 +635,9 @@
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
   </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="main_ru.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+  </ItemGroup>
 </Project>
