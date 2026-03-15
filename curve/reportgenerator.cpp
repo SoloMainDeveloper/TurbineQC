@@ -22,7 +22,7 @@ void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSetting
             auto creatingMarkup = MarkupCreator(reportSettings);
             auto reportMarkup = creatingMarkup.run(analyzedGlobalCurves);
             auto time = creatingMarkup.reportCreationTime();
-            Printer::addPage(reportMarkup, {
+            Printer::instance().addPage(reportMarkup, {
                 { "markup", reportMarkup },
                 { "nominalCurve", nominalCurve->name() },
                 { "measuredCurve", measuredCurve->name() },

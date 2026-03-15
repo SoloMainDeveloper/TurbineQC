@@ -1,10 +1,12 @@
 #include "curve/pch.h"
+
 #include "printpreviewdialog.h"
 
 PrintPreviewDialog::PrintPreviewDialog() : _ui(new Ui::PrintPreviewDialog) {
     _ui->setupUi(this);
 
     this->setWindowTitle("Print Viewer");
+    _printer = &Printer::instance();
 
     _ui->pageList->setHeaderHidden(true);
     _printItem = new QAction(QIcon("icons/printer.ico"), "Print Current");
@@ -14,9 +16,9 @@ PrintPreviewDialog::PrintPreviewDialog() : _ui(new Ui::PrintPreviewDialog) {
     connect(_ui->clearBtn, &QPushButton::clicked, this, &PrintPreviewDialog::clearHandler);
     connect(_printItem, &QAction::triggered, this, &PrintPreviewDialog::printItemTriggered);
     connect(_deleteItem, &QAction::triggered, this, &PrintPreviewDialog::deleteItemTriggered);
-    connect(&Printer::instance(), &Printer::pageAdded, this, &PrintPreviewDialog::addPage);
-    connect(&Printer::instance(), &Printer::pageRemoved, this, &PrintPreviewDialog::removePage);
-    connect(&Printer::instance(), &Printer::printerPagesCleared, this->_ui->pageList, &QTreeWidget::clear);
+    connect(_printer, &Printer::pageAdded, this, &PrintPreviewDialog::addPage);
+    connect(_printer, &Printer::pageRemoved, this, &PrintPreviewDialog::removePage);
+    connect(_printer, &Printer::printerPagesCleared, this->_ui->pageList, &QTreeWidget::clear);
 }
 
 void PrintPreviewDialog::initialize() {
@@ -35,22 +37,22 @@ void PrintPreviewDialog::printHandler() {
             pagesToTake.append(index);
         }
     }
-    Printer::print(pagesToTake);
+    _printer->print(pagesToTake);
 }
 
 void PrintPreviewDialog::clearHandler() {
-    Printer::clear();
+    _printer->clear();
 }
 
 void PrintPreviewDialog::printItemTriggered() {
     auto currentItem = _ui->pageList->currentItem();
     auto index = currentItem->text(0).split("Page ")[1].toInt() - 1;
-    Printer::print({ index });
+    _printer->print({ index });
 }
 
 void PrintPreviewDialog::deleteItemTriggered() {
     auto currentIndex = _ui->pageList->currentIndex().row();
-    Printer::removePage(currentIndex);
+    _printer->removePage(currentIndex);
 }
 
 void PrintPreviewDialog::addPage(const QMap<QString, QString> &information) {

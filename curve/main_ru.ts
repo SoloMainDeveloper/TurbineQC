@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>AirfoilTolerancesDialog</name>
     <message>
         <location filename="airfoiltolerancesdialog.ui" line="14"/>
         <source>AirfoilTolerancesDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно задания допусков</translation>
     </message>
 </context>
 <context>
@@ -14,52 +14,52 @@
     <message>
         <location filename="alignmentdialog.ui" line="14"/>
         <source>Alignment</source>
-        <translation type="unfinished"></translation>
+        <translation>Выравнивание</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="20"/>
         <source>Rotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращение</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="26"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="33"/>
         <source>to</source>
-        <translation type="unfinished"></translation>
+        <translation>к</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="40"/>
         <source>Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращать</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="59"/>
         <source>Origins</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальные</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="65"/>
         <source>Offset X</source>
-        <translation type="unfinished"></translation>
+        <translation>Отступ X</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="78"/>
         <source>Origin Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальный Y</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="85"/>
         <source>Offset Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Отступ Y</translation>
     </message>
     <message>
         <location filename="alignmentdialog.ui" line="92"/>
         <source>Origin X</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальный X</translation>
     </message>
 </context>
 <context>
@@ -67,117 +67,117 @@
     <message>
         <location filename="bestfitdialog.ui" line="14"/>
         <source>BestFitDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно припасовки</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="23"/>
         <source>Closed</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрытая</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="30"/>
         <source>Nominal curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Номинальная кривая</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="49"/>
         <source>Write result name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Напишите имя результирующей кривой...</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="72"/>
         <source>Measured curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Измеренная кривая</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="98"/>
         <source>Conditions</source>
-        <translation type="unfinished"></translation>
+        <translation>Условия</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="130"/>
         <source>Allow X shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить смещение по X</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="143"/>
         <source>Allow Y shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить смещение по Y</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="156"/>
         <source>Allow rotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить вращение</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="169"/>
         <source>Use numerical constraints</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать числовые ограничения</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="176"/>
         <source>Constraints</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограничения</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="182"/>
         <source>Y shift to</source>
-        <translation type="unfinished"></translation>
+        <translation>Сместить Y к</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="228"/>
         <source>X shift to</source>
-        <translation type="unfinished"></translation>
+        <translation>Сместить X к</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="235"/>
         <source>X shift from</source>
-        <translation type="unfinished"></translation>
+        <translation>Смещение X от</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="245"/>
         <source>Use horizontal constraint (mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать горизонтальные ограничения (мм)</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="255"/>
         <source>Rotation from</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращение от</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="262"/>
         <source>Rotation to</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращать к</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="272"/>
         <source>Use vertical constraint (mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать вертикальные ограничения (мм)</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="282"/>
         <source>Y shift from</source>
-        <translation type="unfinished"></translation>
+        <translation>Смещение Y от</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="318"/>
         <source>Use rotation constraint (deg)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать ограничения вращения (град)</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="360"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="370"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="377"/>
         <source>Result curve name</source>
-        <translation type="unfinished"></translation>
+        <translation>Результирующая кривая</translation>
     </message>
 </context>
 <context>
@@ -185,113 +185,113 @@
     <message>
         <location filename="calculatecurvedialog.ui" line="14"/>
         <source>CalculateCurveDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Расчёт кривой</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="20"/>
         <source>Names</source>
-        <translation type="unfinished"></translation>
+        <translation>Имена</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="36"/>
         <source>Result curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Результирующая кривая</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="53"/>
         <source>Initial curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальная кривая</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="66"/>
         <source>Equalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнять</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="78"/>
         <source>Curve Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип кривой</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="84"/>
         <source>Closed</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрытая</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="91"/>
         <source>Opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Открытая</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="101"/>
         <source>Material Side</source>
-        <translation type="unfinished"></translation>
+        <translation>Сторона материала</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="107"/>
         <source>External</source>
-        <translation type="unfinished"></translation>
+        <translation>Внутреннее</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="114"/>
         <source>Internal</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешнее</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="126"/>
         <source>Points processing options</source>
-        <translation type="unfinished"></translation>
+        <translation>Варианты обработки точек</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="134"/>
         <source>Common</source>
-        <translation type="unfinished"></translation>
+        <translation>Обычное</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="141"/>
         <source>Re-generate</source>
-        <translation type="unfinished"></translation>
+        <translation>Регенерация</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="157"/>
         <source>Number of points</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество точек</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="164"/>
         <source>Density (points / mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность (точки / мм)</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="179"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="215"/>
         <source>Sort</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="224"/>
         <source>Eliminate points closer than</source>
-        <translation type="unfinished"></translation>
+        <translation>Уничтожить точки ближе чем</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="234"/>
         <location filename="calculatecurvedialog.ui" line="255"/>
         <source>mm</source>
-        <translation type="unfinished"></translation>
+        <translation>мм</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="245"/>
         <source>Minimal line</source>
-        <translation type="unfinished"></translation>
+        <translation>Минимальная линия</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="266"/>
         <source>Generate intermediate points</source>
-        <translation type="unfinished"></translation>
+        <translation>Сгенерировать промежуточные точки</translation>
     </message>
 </context>
 <context>
@@ -299,42 +299,43 @@
     <message>
         <location filename="calculatedeviationsdialog.ui" line="14"/>
         <source>Calculate deviations</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Расчёт отклонений</translatorcomment>
+        <translation></translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="20"/>
         <source>Names</source>
-        <translation type="unfinished"></translation>
+        <translation>Имена</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="61"/>
         <source>Result curve name</source>
-        <translation type="unfinished"></translation>
+        <translation>Результирующая кривая</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="84"/>
         <source>Nominal curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Номинальная кривая</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="97"/>
         <source>Measured curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Измеренная кривая</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="123"/>
         <source>Save deviations here</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить отклонения тут</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="163"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Расширенные настройки</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="175"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="181"/>
@@ -344,69 +345,69 @@
     <message>
         <location filename="calculatedeviationsdialog.ui" line="193"/>
         <source>Deviation limit</source>
-        <translation type="unfinished"></translation>
+        <translation>Лимит отклонений</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="206"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="222"/>
         <source>Sort points</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать точки</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="246"/>
         <source>Curve type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип кривой</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="252"/>
         <source>Closed</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрытая</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="262"/>
         <source>Opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Открытая</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="272"/>
         <source>Measurement side</source>
-        <translation type="unfinished"></translation>
+        <translation>Сторона измерения</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="278"/>
         <source>External</source>
-        <translation type="unfinished"></translation>
+        <translation>Внутреннее</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="288"/>
         <source>Internal</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешнее</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="314"/>
         <source>Evaluation place</source>
-        <translation type="unfinished"></translation>
+        <translation>Место анализа</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="320"/>
         <location filename="calculatedeviationsdialog.ui" line="349"/>
         <source>Nominal</source>
-        <translation type="unfinished"></translation>
+        <translation>Номинал</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="330"/>
         <location filename="calculatedeviationsdialog.ui" line="359"/>
         <source>Measured</source>
-        <translation type="unfinished"></translation>
+        <translation>Измеренная</translation>
     </message>
     <message>
         <location filename="calculatedeviationsdialog.ui" line="343"/>
         <source>Evaluation direction</source>
-        <translation type="unfinished"></translation>
+        <translation>Направление анализа</translation>
     </message>
 </context>
 <context>
@@ -414,122 +415,122 @@
     <message>
         <location filename="compareflrdialog.ui" line="14"/>
         <source>CompareFLRDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Сравнение FLR</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="30"/>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="45"/>
         <source>0.001</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="54"/>
         <source>Set precision</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить точность</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="67"/>
         <source>Precision</source>
-        <translation type="unfinished"></translation>
+        <translation>Точность</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="86"/>
         <source>304</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="95"/>
         <source>Set index</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить индекс</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="108"/>
         <location filename="compareflrdialog.ui" line="218"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="121"/>
         <source>Save result to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить результат в файл</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="137"/>
         <source>Open first FLR </source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть первый FLR</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="150"/>
         <source>Points start line - END line</source>
-        <translation type="unfinished"></translation>
+        <translation>Точки начинаются со строки</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="166"/>
         <source>Open secondst FLR </source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть второй FLR</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="179"/>
         <source>Second FLR</source>
-        <translation type="unfinished"></translation>
+        <translation>Второй FLR</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="192"/>
         <source>Compare</source>
-        <translation type="unfinished"></translation>
+        <translation>Сравнить</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="205"/>
         <source>First FLR</source>
-        <translation type="unfinished"></translation>
+        <translation>Первый FLR</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="224"/>
         <source>Result</source>
-        <translation type="unfinished"></translation>
+        <translation>Результат</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="236"/>
         <source>Total Fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Всего ошибок</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="275"/>
         <source>Max Fail</source>
-        <translation type="unfinished"></translation>
+        <translation>Макс. ошибка</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="288"/>
         <source>Dims Fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибки измерений</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="300"/>
         <location filename="compareflrdialog.ui" line="391"/>
         <source>Avg. Fail</source>
-        <translation type="unfinished"></translation>
+        <translation>Средняя ошибка</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="339"/>
         <location filename="compareflrdialog.ui" line="430"/>
         <source>Fail Sum</source>
-        <translation type="unfinished"></translation>
+        <translation>Сумма ошибок</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="352"/>
         <location filename="compareflrdialog.ui" line="443"/>
         <location filename="compareflrdialog.ui" line="486"/>
         <source>Total</source>
-        <translation type="unfinished"></translation>
+        <translation>Всего</translation>
     </message>
     <message>
         <location filename="compareflrdialog.ui" line="379"/>
         <source>Points Fails</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибки точек</translation>
     </message>
 </context>
 <context>
@@ -537,165 +538,36 @@
     <message>
         <location filename="curvegraphicswidget.ui" line="14"/>
         <source>CurveGraphicsWidget</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>CurveWindow</name>
     <message>
         <location filename="curvewindow.ui" line="14"/>
+        <location filename="curvewindow.ui" line="228"/>
         <source>Curve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="61"/>
         <source>Show figures</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать фигуры</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="64"/>
         <location filename="curvewindow.ui" line="84"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="81"/>
         <source>Hide figures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="123"/>
-        <source>Поиск фигуры...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="202"/>
-        <source>Профиль</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="209"/>
-        <source>Вычисления</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="216"/>
-        <source>Файл</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="228"/>
-        <source>Кривая</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="237"/>
-        <source>Измерения</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="244"/>
-        <source>Угол</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="256"/>
-        <source>Форма</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="282"/>
-        <source>Экран</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="290"/>
-        <source>Макросы</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="296"/>
-        <source>Трансформация</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="304"/>
-        <source>Деталь</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="310"/>
-        <source>Создать</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="316"/>
-        <source>Печать</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="322"/>
-        <source>Тест</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="341"/>
-        <source>Задать допуски</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="346"/>
-        <source>Анализ профиля</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="351"/>
-        <source>Ширина кромок</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="356"/>
-        <source>Загрузить точки</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="361"/>
-        <source>Объединение сканов</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="366"/>
-        <source>Радиус-коррекция</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="371"/>
-        <source>Сохранить проект</source>
-        <translation type="unfinished"></translation>
+        <translation>Спрятать фигуры</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="376"/>
         <source>Запустить блокнот</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="381"/>
-        <source>Вычисление отклонений</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="386"/>
-        <source>Загрузить проект</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="391"/>
-        <source>Очистить проект</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="396"/>
-        <source>Подгонка кривых</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -709,84 +581,205 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="curvewindow.ui" line="420"/>
-        <source>Дистанция</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="428"/>
-        <source>Радиус</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="436"/>
-        <source>Диаметр</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location filename="curvewindow.ui" line="244"/>
         <location filename="curvewindow.ui" line="441"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="446"/>
         <source>Angle to Main Axis</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол к главной оси</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="451"/>
         <source>Angle to Sec. Axis</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол к второстепенной оси</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="456"/>
         <source>Angle betw. 2 lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол между 2 линиями</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="123"/>
+        <source>Search figure</source>
+        <translation>Найти фигуру</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="202"/>
+        <source>Airfoil</source>
+        <translation>Профиль</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="208"/>
+        <source>Calculate</source>
+        <translation>Расчёт</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="216"/>
+        <source>File</source>
+        <translation>Файл</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="237"/>
+        <source>Dimensions</source>
+        <translation>Измерения</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="256"/>
+        <source>Form</source>
+        <translation>Форма</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="282"/>
+        <source>Screen</source>
+        <translation>Экран</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="290"/>
+        <source>Macros</source>
+        <translation>Макрос</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="296"/>
+        <source>Transform</source>
+        <translation>Трансформация</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="304"/>
+        <source>Edit</source>
+        <translation>Редактировать</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="310"/>
+        <source>Construct</source>
+        <translation>Создать</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="316"/>
+        <source>Print</source>
+        <translation>Печать</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="322"/>
+        <source>Test</source>
+        <translation>Тест</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="341"/>
+        <source>Assign tolerances to nominal</source>
+        <translation>Назначить допуски номиналу</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="346"/>
+        <source>Airfoil evaluations</source>
+        <translation>Анализ профиля</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="351"/>
+        <source>Calculate edge width</source>
+        <translation>Расчёт ширины кромок</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="356"/>
+        <source>Load File</source>
+        <translation>Загрузить файл</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="361"/>
+        <source>Merge scans</source>
+        <translation>Объединение сканов</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="366"/>
+        <source>Radius correction</source>
+        <translation>Радиус-коррекция</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="371"/>
+        <source>Save Project</source>
+        <translation>Сохранить проект</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="381"/>
+        <source>Calculate deviations</source>
+        <translation>Расчёт отклонений</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="386"/>
+        <source>Load Project</source>
+        <translation>Загрузить проект</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="391"/>
+        <source>Clear Project</source>
+        <translation>Очистить проект</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="396"/>
+        <source>Best-fit</source>
+        <translation>Припасовка</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="420"/>
+        <source>Distance</source>
+        <translation>Дистанция</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="428"/>
+        <source>Radius</source>
+        <translation>Радиус</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="436"/>
+        <source>Diameter</source>
+        <translation>Диаметр</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="464"/>
-        <source>Периметр</source>
-        <translation type="unfinished"></translation>
+        <source>Perimeter</source>
+        <translation>Периметр</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="472"/>
-        <source>Данные подгонки</source>
-        <translation type="unfinished"></translation>
+        <source>Best-fit data</source>
+        <translation>Данные припасовки</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="480"/>
-        <source>Измерить на экране</source>
-        <translation type="unfinished"></translation>
+        <source>Measure on screen</source>
+        <translation>Измерить на экране</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="485"/>
         <source>Form (Max - Min)</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма (Макс - мин)</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="490"/>
         <source>Min. Dev.</source>
-        <translation type="unfinished"></translation>
+        <translation>Мин. Отклон.</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="495"/>
         <source>Max. Dev.</source>
-        <translation type="unfinished"></translation>
+        <translation>Макс. Отклон.</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="500"/>
         <source>Max. Dev. (Absolute)</source>
-        <translation type="unfinished"></translation>
+        <translation>Макс. Отклон. (Абсолютное)</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="505"/>
         <source>Form (All)</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма (Вся)</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="510"/>
         <source>Average Dev</source>
-        <translation type="unfinished"></translation>
+        <translation>Среднее Отклон.</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="515"/>
@@ -800,98 +793,99 @@
     </message>
     <message>
         <location filename="curvewindow.ui" line="525"/>
-        <source>Вписать фигуру в экран</source>
+        <source>Zoom extents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="530"/>
-        <source>Приблизить</source>
-        <translation type="unfinished"></translation>
+        <source>Zoom +</source>
+        <translation>Приблизить</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="576"/>
+        <source>Show Macros Window</source>
+        <translation>Показать окно макросов</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="581"/>
+        <source>Export to FLR</source>
+        <translation>Экспорт в FLR</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="586"/>
+        <source>Shift</source>
+        <translation>Смещение</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="591"/>
+        <source>Rotate</source>
+        <translation>Вращение</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="596"/>
+        <source>Alignment</source>
+        <translation>Выравнивание</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="601"/>
+        <source>Curve 2D calculation</source>
+        <translation>Расчёт кривых 2D</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="606"/>
+        <source>Edit Part Data</source>
+        <translation>Изменить настройки детали</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="611"/>
+        <source>Text/Image</source>
+        <translation>Текст/картинка</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="616"/>
+        <source>Show Print Viewer</source>
+        <translation>Показать окно печати</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.ui" line="621"/>
+        <source>Compare FLR</source>
+        <translation>Сравнить FLR</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="535"/>
-        <source>Отдалить</source>
-        <translation type="unfinished"></translation>
+        <source>Zoom -</source>
+        <oldsource>Отдалить</oldsource>
+        <translation>Отдалить</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="540"/>
         <source>Zoom to current</source>
-        <translation type="unfinished"></translation>
+        <translation>Вписать в экран</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="545"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Таблица</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="550"/>
         <source>Start Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Начать запись</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="555"/>
         <source>Save Macros As</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить макрос как</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="560"/>
         <source>Load Macros</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить макрос</translation>
     </message>
     <message>
         <location filename="curvewindow.ui" line="568"/>
         <source>Stop Record</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="576"/>
-        <source>Окно макросов</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="581"/>
-        <source>Экспортировать в FLR</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="586"/>
-        <source>Смещение</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="591"/>
-        <source>Вращение</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="596"/>
-        <source>Выравнивание</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="601"/>
-        <source>Расчёт 2D-кривых</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="606"/>
-        <source>Данные детали</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="611"/>
-        <source>Текст/Картинка</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="616"/>
-        <source>Окно печати</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="curvewindow.ui" line="621"/>
-        <source>Сравнение FLR</source>
-        <translation type="unfinished"></translation>
+        <translation>Остановить запись</translation>
     </message>
 </context>
 <context>
@@ -899,37 +893,37 @@
     <message>
         <location filename="exporttoFLRdialog.ui" line="20"/>
         <source>ExportToFLRDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно экспорта в FLR</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="32"/>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="45"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="58"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="74"/>
         <source>Merge mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Метод слияния</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="87"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="exporttoFLRdialog.ui" line="123"/>
         <source>Choose all</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать все</translation>
     </message>
 </context>
 <context>
@@ -937,27 +931,27 @@
     <message>
         <location filename="figureeditdialog.ui" line="20"/>
         <source>FigureEditDialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно редактирования фигуры</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="41"/>
         <source>Apply changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="56"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="77"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="107"/>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="175"/>
@@ -965,89 +959,89 @@
         <location filename="figureeditdialog.ui" line="347"/>
         <location filename="figureeditdialog.ui" line="378"/>
         <source>X,Y,Z:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="185"/>
         <location filename="figureeditdialog.ui" line="273"/>
         <location filename="figureeditdialog.ui" line="354"/>
         <source>I,J,K:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="204"/>
         <source>Radius:</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиус:</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="257"/>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Длина:</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="394"/>
         <source>Ref. 1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="401"/>
         <source>Ref. 2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="444"/>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="464"/>
         <source>Text/Image path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к тексту/картинке</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="471"/>
         <source>Image Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Высота картинки</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="481"/>
         <source>Image Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина картинки</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="488"/>
         <source>Text size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер текста</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="501"/>
         <source>Image Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштаб картинки</translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="511"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="544"/>
         <source>Reference</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="554"/>
         <source>4.5</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.ui" line="561"/>
         <source>6</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="figureeditdialog.cpp" line="161"/>
         <source>Choose Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать цвет</translation>
     </message>
 </context>
 <context>
@@ -1055,67 +1049,67 @@
     <message>
         <location filename="inserttextdialog.ui" line="14"/>
         <source>Insert Text/Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить текст/картинку</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="20"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="43"/>
         <source>Text name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="55"/>
         <source>Text or image path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="82"/>
         <source>Select Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать картинку</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="108"/>
         <source>Text size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер текста</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="150"/>
         <source>Image zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштаб картинки</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="180"/>
         <source>Image Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Высота картинки</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="187"/>
         <source>Image Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина картинки</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="213"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="223"/>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="233"/>
         <source>Select in workspace</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать на графике</translation>
     </message>
     <message>
         <location filename="inserttextdialog.ui" line="255"/>
         <source>Leader line to:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1123,52 +1117,52 @@
     <message>
         <location filename="loadingclouddialog.ui" line="14"/>
         <source>LoadingCloudWindow</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка облака точек</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="36"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="43"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="50"/>
         <source>Interpretation</source>
-        <translation type="unfinished"></translation>
+        <translation>Интерпретация</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="102"/>
         <source>Finish on</source>
-        <translation type="unfinished"></translation>
+        <translation>Закончить на</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="109"/>
         <source>Start with</source>
-        <translation type="unfinished"></translation>
+        <translation>Начать с</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="140"/>
         <source>Separator</source>
-        <translation type="unfinished"></translation>
+        <translation>Разделитель</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="147"/>
         <source>Decimal</source>
-        <translation type="unfinished"></translation>
+        <translation>Десятич. разд.</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="164"/>
         <source>Column numbers</source>
-        <translation type="unfinished"></translation>
+        <translation>Номера столбцов</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="171"/>
         <source>Column names</source>
-        <translation type="unfinished"></translation>
+        <translation>Имена столбцов</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="251"/>
@@ -1178,38 +1172,38 @@
     <message>
         <location filename="loadingclouddialog.ui" line="261"/>
         <source>Load</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="271"/>
         <location filename="loadingclouddialog.ui" line="332"/>
         <source>ASCII-file</source>
-        <translation type="unfinished"></translation>
+        <translation>ASCII-файл</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="277"/>
         <source>File path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь к файлу</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="296"/>
         <source>Write file path...</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите путь к файлу</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="306"/>
         <source>Find file</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти файл</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="316"/>
         <source>Open File</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="loadingclouddialog.ui" line="342"/>
         <source>From clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Из буфера обмена</translation>
     </message>
 </context>
 <context>
@@ -1217,62 +1211,62 @@
     <message>
         <location filename="macrosdialog.ui" line="20"/>
         <source>Macros</source>
-        <translation type="unfinished"></translation>
+        <translation>Макрос</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="96"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="114"/>
         <source>Debug</source>
-        <translation type="unfinished"></translation>
+        <translation>Отладка</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="132"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="150"/>
         <source>Load</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="168"/>
         <source>Recording after</source>
-        <translation type="unfinished"></translation>
+        <translation>Каретка записи</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="189"/>
         <source>Run</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="207"/>
         <source>Move record</source>
-        <translation type="unfinished"></translation>
+        <translation>Сдвинуть</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="247"/>
         <source>Start record</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="267"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Следующая</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="285"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Остановить</translation>
     </message>
     <message>
         <location filename="macrosdialog.ui" line="303"/>
         <source>Skip</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропустить</translation>
     </message>
 </context>
 <context>
@@ -1280,57 +1274,57 @@
     <message>
         <location filename="mergepointcloudsdialog.ui" line="14"/>
         <source>Merge clouds</source>
-        <translation type="unfinished"></translation>
+        <translation>Объединение сканов</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="23"/>
         <source>Merge</source>
-        <translation type="unfinished"></translation>
+        <translation>Объединить</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="33"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="40"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Возможности</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="46"/>
         <source>Threshold for equal points</source>
-        <translation type="unfinished"></translation>
+        <translation>Порог для одинаковых точек</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="56"/>
         <source>Sort</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="69"/>
         <source>0.02</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="101"/>
         <source>Result name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя результата</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="111"/>
         <source>First curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Первая кривая</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="124"/>
         <source>Write result name...</source>
-        <translation type="unfinished"></translation>
+        <translation>Напишите имя результирующей кривой...</translation>
     </message>
     <message>
         <location filename="mergepointcloudsdialog.ui" line="141"/>
         <source>Second curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Вторая кривая</translation>
     </message>
 </context>
 <context>
@@ -1338,87 +1332,87 @@
     <message>
         <location filename="partdatadialog.ui" line="17"/>
         <source>Part Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Данные детали</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="23"/>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Проект</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="29"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="36"/>
         <source>Drawing</source>
-        <translation type="unfinished"></translation>
+        <translation>Чертёж</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="43"/>
         <source>Order number</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядковый номер</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="50"/>
         <source>Part number</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер детали</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="57"/>
         <source>Operator</source>
-        <translation type="unfinished"></translation>
+        <translation>Оператор</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="64"/>
         <source>Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Заметка</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="71"/>
         <source>Report title</source>
-        <translation type="unfinished"></translation>
+        <translation>Заголовок отчёта</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="130"/>
         <source>Equipment</source>
-        <translation type="unfinished"></translation>
+        <translation>Оборудование</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="136"/>
         <source>Machine</source>
-        <translation type="unfinished"></translation>
+        <translation>Машина</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="143"/>
         <source>Tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструмент</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="150"/>
         <source>Fixturing</source>
-        <translation type="unfinished"></translation>
+        <translation>Крепление</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="157"/>
         <source>Batch</source>
-        <translation type="unfinished"></translation>
+        <translation>Партия</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="164"/>
         <source>Supplier</source>
-        <translation type="unfinished"></translation>
+        <translation>Поставщик</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="171"/>
         <source>Revision</source>
-        <translation type="unfinished"></translation>
+        <translation>Ревизия</translation>
     </message>
     <message>
         <location filename="partdatadialog.ui" line="223"/>
         <source>Show this window when macro runs</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать это окно во время выполнения макроса</translation>
     </message>
 </context>
 <context>
@@ -1426,17 +1420,17 @@
     <message>
         <location filename="printpreviewdialog.ui" line="14"/>
         <source>macrosdialogg</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно печати</translation>
     </message>
     <message>
         <location filename="printpreviewdialog.ui" line="44"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать</translation>
     </message>
     <message>
         <location filename="printpreviewdialog.ui" line="54"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить</translation>
     </message>
 </context>
 <context>
@@ -1444,7 +1438,7 @@
     <message>
         <location filename="radiuscorrectiondialog.ui" line="14"/>
         <source>Radius correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиус-коррекция</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="20"/>
@@ -1454,82 +1448,82 @@
     <message>
         <location filename="radiuscorrectiondialog.ui" line="46"/>
         <source>Initial curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальная кривая</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="86"/>
         <source>Equalize</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнять</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="115"/>
         <source>Result curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Результирующая кривая</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="140"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Отступ</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="146"/>
         <source>Offset value (Radius of the probe)</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение отступа (Радиус щупа)</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="153"/>
         <source>0.5</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="160"/>
         <source>Divide by 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Разделить на 2</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="176"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="188"/>
         <source>Curve type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип кривой</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="194"/>
         <source>Closed</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрытая</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="204"/>
         <source>Opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Открытая</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="220"/>
         <source>Direction</source>
-        <translation type="unfinished"></translation>
+        <translation>Направление</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="226"/>
         <source>Internal</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешнее</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="236"/>
         <source>External</source>
-        <translation type="unfinished"></translation>
+        <translation>Внутреннее</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="255"/>
         <source>Sort</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать</translation>
     </message>
     <message>
         <location filename="radiuscorrectiondialog.ui" line="261"/>
         <source>Sort points</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать точки</translation>
     </message>
 </context>
 <context>
@@ -1537,42 +1531,42 @@
     <message>
         <location filename="rotatedialog.ui" line="14"/>
         <source>Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращать</translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="31"/>
         <source>Parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="45"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол</translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="57"/>
         <source>Select in workspace (To do)</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать на графике</translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="66"/>
         <source>+90</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="73"/>
         <source>-90</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="88"/>
         <source>Rotation center (X, Y, Z)</source>
-        <translation type="unfinished"></translation>
+        <translation>Центр вращения (X, Y, Z)</translation>
     </message>
     <message>
         <location filename="rotatedialog.ui" line="116"/>
         <source>XYZ from</source>
-        <translation type="unfinished"></translation>
+        <translation>XYZ из</translation>
     </message>
 </context>
 <context>
@@ -1580,52 +1574,52 @@
     <message>
         <location filename="saveprojectdialog.ui" line="20"/>
         <source>SaveProjectWindow</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранение проекта</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="50"/>
         <source>Directory path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь до папки</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="66"/>
         <source>Write project name (without file extension)</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите название проекта</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="82"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="95"/>
         <source>Enter project name</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите название проекта</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="108"/>
         <source>Create CRV-file</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать CRV-файл</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="130"/>
         <source>Choose directory path...</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать путь до папки...</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="161"/>
         <source>Result name</source>
-        <translation type="unfinished"></translation>
+        <translation>Полное имя</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.ui" line="194"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить</translation>
     </message>
     <message>
         <location filename="saveprojectdialog.cpp" line="77"/>
         <source>Open Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть директорию</translation>
     </message>
 </context>
 <context>
@@ -1633,37 +1627,115 @@
     <message>
         <location filename="shiftdialog.ui" line="14"/>
         <source>Shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Смещение</translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="37"/>
         <source>Shift parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры</translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="45"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="52"/>
         <source>Y</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="59"/>
         <source>Z</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="77"/>
         <source>Select in workspace (To do)</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать на графике</translation>
     </message>
     <message>
         <location filename="shiftdialog.ui" line="84"/>
         <source>Snap to point (To do)</source>
-        <translation type="unfinished"></translation>
+        <translation>Привязать к точке</translation>
+    </message>
+</context>
+<context>
+    <name>Tree</name>
+    <message>
+        <location filename="tree.cpp" line="8"/>
+        <source>Rename</source>
+        <translation>Переименовать</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="9"/>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="10"/>
+        <source>Edit</source>
+        <translation>Редактировать</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="20"/>
+        <source>Curves</source>
+        <translation>Кривые</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="27"/>
+        <source>Circles</source>
+        <translation>Окружности</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="34"/>
+        <source>Lines</source>
+        <translation>Прямые</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="41"/>
+        <source>Points</source>
+        <translation>Точки</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="48"/>
+        <source>Dimensions</source>
+        <translation>Измерения</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="55"/>
+        <source>Text</source>
+        <translation>Текст</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="100"/>
+        <source>Curves (</source>
+        <translation>Кривые (</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="103"/>
+        <source>Circles (</source>
+        <translation>Окружности (</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="106"/>
+        <source>Lines (</source>
+        <translation>Прямые (</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="109"/>
+        <source>Points (</source>
+        <translation>Точки (</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="112"/>
+        <source>Dimensions (</source>
+        <translation>Измерения (</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="115"/>
+        <source>Text (</source>
+        <translation>Текст (</translation>
     </message>
 </context>
 <context>
@@ -2532,7 +2604,7 @@
     <message>
         <location filename="widthedgedialog.ui" line="14"/>
         <source>WidthEdgeWindow</source>
-        <translation type="unfinished"></translation>
+        <translation>Расчёт ширины кромок</translation>
     </message>
     <message>
         <location filename="widthedgedialog.ui" line="48"/>

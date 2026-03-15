@@ -29,6 +29,7 @@ private slots:
 private:
     Ui::PrintPreviewDialog *_ui;
 
+    Printer *_printer;
     QAction *_printItem;
     QAction *_deleteItem;
 

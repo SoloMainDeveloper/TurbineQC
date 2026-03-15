@@ -6,6 +6,7 @@ class PrintReportCommand : public ICommand {
 public:
     PrintReportCommand() = default;
     PrintReportCommand(const QList<int> pagesToTake);
+    PrintReportCommand(bool printAll);
 
     void run() override;
     CommandType getType() const override;
@@ -16,4 +17,5 @@ public:
 
 private:
     QList<int> _pagesToTake;
+    bool _printAll;
 };
