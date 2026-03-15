@@ -46,6 +46,13 @@ MacrosDialog::MacrosDialog() : _ui(new Ui::MacrosDialog()) {
 void MacrosDialog::initialize() {
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     onRecordIndexChanged(_macrosManager->recordIndex());
+
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int x = screenGeometry.width() - width() - 20;
+    int y = 50;
+
+    move(x, y);
     show();
 }
 
@@ -103,6 +110,7 @@ void MacrosDialog::load() {
 
             QByteArray data = file.readAll();
             QString operationText = QString::fromUtf8(data);
+            operationText.remove('\r');
 
             QList<std::shared_ptr<ICommand>>* commands = MacrosTranslator::translateCRM(operationText);
 
@@ -119,8 +127,10 @@ void MacrosDialog::load() {
                 return;
             }
 
-            QByteArray data = file.readAll();
-            QJsonDocument doc = QJsonDocument::fromJson(data);
+            QString content = QString::fromUtf8(file.readAll());
+            content.remove('\r');
+
+            QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8());
 
             if(doc.isArray()) {
                 _macrosManager->fromJson(doc.array());

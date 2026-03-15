@@ -12,15 +12,15 @@ public:
 
         static Printer& instance();
 
-    static void print(const QList<int> &pagesToTake);
-    static void printAll();
-    static void addPage(const QString &page, const QMap<QString, QString> &information);
-    static void removePage(int index);
-    static void clear();
+    void print(const QList<int> &pagesToTake);
+    void printAll();
+    void addPage(const QString &page, const QMap<QString, QString> &information);
+    void removePage(int index);
+    void clear();
 
     static QString printTypeToQString(PrintType type);
     static PrintType qStringToPrintType(const QString &type);
-    static void setPrinterSettings(const PrintType type);
+    void setPrinterSettings(const PrintType type);
 
 signals:
     void pageAdded(const QMap<QString, QString> &information);
@@ -28,6 +28,6 @@ signals:
     void printerPagesCleared();
 
 private:
-    static QStringList _printPages;
-    static PrintType _printType;
+    QStringList _printPages;
+    PrintType _printType;
 };

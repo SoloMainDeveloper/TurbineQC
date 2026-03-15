@@ -4,8 +4,8 @@
 #include "printreportcommand.h"
 #include "setprintersettingscommand.h"
 
-QStringList Printer::_printPages;
-Printer::PrintType Printer::_printType = PrintType::HTML; //add UI to choose printType
+//QStringList Printer::_printPages;
+//Printer::PrintType Printer::_printType = PrintType::HTML; //add UI to choose printType
 
 Printer& Printer::instance() {
     static Printer printer;

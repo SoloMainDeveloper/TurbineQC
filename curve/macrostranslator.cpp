@@ -342,7 +342,8 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
         }
         case MacrosTranslator::PrintFromViewer:
         {
-            return std::make_shared<PrintReportCommand>();
+            auto printAll = true;
+            return std::make_shared<PrintReportCommand>(printAll);
         }
         case MacrosTranslator::ImportQDS:
         {

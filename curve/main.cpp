@@ -5,6 +5,11 @@
 int main(int argc, char *argv[]) {
     QApplication application(argc, argv);
 
+    QTranslator translator;
+    if(translator.load("main_ru.qm")) {
+        application.installTranslator(&translator);
+    }
+
     CurveWindow curveWindow;
     curveWindow.setWindowState(Qt::WindowState::WindowMaximized);
     curveWindow.show();

@@ -7,8 +7,17 @@ PrintReportCommand::PrintReportCommand(const QList<int> pagesToTake) {
     _pagesToTake = pagesToTake;
 }
 
+PrintReportCommand::PrintReportCommand(bool printAll) {
+    _printAll = printAll;
+}
+
 void PrintReportCommand::run() {
-    Printer::instance().print(_pagesToTake);
+    auto& printer = Printer::instance();
+    if(_printAll) {
+        printer.printAll();
+    } else {
+        printer.print(_pagesToTake);
+    }
 }
 
 CommandType PrintReportCommand::getType() const {
@@ -20,7 +29,10 @@ QMap<QString, QVariant> PrintReportCommand::getParameters() const {
     for(int page : _pagesToTake) {
         pages.append(page);
     }
-    return { { "pages", pages } };
+    return {
+        { "pages", pages },
+        { "printAll", _printAll }
+    };
 }
 
 void PrintReportCommand::setParameters(QMap<QString, QVariant> params) {
@@ -31,6 +43,7 @@ void PrintReportCommand::setParameters(QMap<QString, QVariant> params) {
             _pagesToTake.append(v.toInt());
         }
     }
+    _printAll = params["printAll"].toBool();
 }
 
 QString PrintReportCommand::getName() const {

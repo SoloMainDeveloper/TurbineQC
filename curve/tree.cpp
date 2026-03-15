@@ -1,12 +1,13 @@
 ﻿#include "curve/pch.h"
+
 #include "tree.h"
 
 Tree::Tree(QWidget *parent) {
     _dialogService = &DialogService::instance();
 
-    renameItem = new QAction(QIcon("icons/rename.ico"), "Переименовать");
-    removeItem = new QAction(QIcon("icons/delete.ico"), "Удалить");
-    editItem = new QAction(QIcon("icons/edit.ico"), "Редактировать");
+    renameItem = new QAction(QIcon("icons/rename.ico"), tr("Rename"));
+    removeItem = new QAction(QIcon("icons/delete.ico"), tr("Delete"));
+    editItem = new QAction(QIcon("icons/edit.ico"), tr("Edit"));
 
     connect(renameItem, &QAction::triggered, this, &Tree::onRenameItemTriggered);
     connect(removeItem, &QAction::triggered, this, &Tree::onRemoveItemTriggered);
@@ -16,42 +17,42 @@ Tree::Tree(QWidget *parent) {
     connect(this, &QTreeWidget::itemDoubleClicked, this, &Tree::onItemDoubleClicked);
 
     treeCurves = new QTreeWidgetItem;
-    treeCurves->setText(0, "Кривые");
+    treeCurves->setText(0, tr("Curves"));
     treeCurves->setIcon(0, QIcon("icons/curve.ico"));
     treeCurves->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCurves);
     treeCurves->setExpanded(true);
 
     treeCircles = new QTreeWidgetItem;
-    treeCircles->setText(0, "Окружности");
+    treeCircles->setText(0, tr("Circles"));
     treeCircles->setIcon(0, QIcon("icons/circle.ico"));
     treeCircles->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeCircles);
     treeCircles->setExpanded(true);
 
     treeLines = new QTreeWidgetItem;
-    treeLines->setText(0, "Прямые");
+    treeLines->setText(0, tr("Lines"));
     treeLines->setIcon(0, QIcon("icons/line.ico"));
     treeLines->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeLines);
     treeLines->setExpanded(true);
 
     treePoints = new QTreeWidgetItem;
-    treePoints->setText(0, "Точки");
+    treePoints->setText(0, tr("Points"));
     treePoints->setIcon(0, QIcon("icons/point.ico"));
     treePoints->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treePoints);
     treePoints->setExpanded(true);
 
     treeDimensions = new QTreeWidgetItem;
-    treeDimensions->setText(0, "Измерения");
+    treeDimensions->setText(0, tr("Dimensions"));
     treeDimensions->setIcon(0, QIcon("icons/dimension.ico"));
     treeDimensions->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeDimensions);
     treeDimensions->setExpanded(true);
 
     treeTexts = new QTreeWidgetItem;
-    treeTexts->setText(0, "Текст");
+    treeTexts->setText(0, tr("Text"));
     treeTexts->setIcon(0, QIcon("icons/text.ico"));
     treeTexts->setBackground(0, QBrush("#f7f7f7"));
     addTopLevelItem(treeTexts);
@@ -96,22 +97,22 @@ void Tree::addFigure(Figure* figure) {
     child->setText(0, figure->name());
     if(dynamic_cast<CurveFigure*>(figure)) {
         treeCurves->addChild(child);
-        treeCurves->setText(0, "Кривые (" + QString::number(treeCurves->childCount()) + ")");
+        treeCurves->setText(0, tr("Curves (") + QString::number(treeCurves->childCount()) + ")");
     } else if(dynamic_cast<CircleFigure*>(figure)) {
         treeCircles->addChild(child);
-        treeCircles->setText(0, "Окружности (" + QString::number(treeCircles->childCount()) + ")");
+        treeCircles->setText(0, tr("Circles (") + QString::number(treeCircles->childCount()) + ")");
     } else if(dynamic_cast<LineFigure*>(figure)) {
         treeLines->addChild(child);
-        treeLines->setText(0, "Прямые (" + QString::number(treeLines->childCount()) + ")");
+        treeLines->setText(0, tr("Lines (") + QString::number(treeLines->childCount()) + ")");
     } else if(dynamic_cast<PointFigure*>(figure)) {
         treePoints->addChild(child);
-        treePoints->setText(0, "Точки (" + QString::number(treePoints->childCount()) + ")");
+        treePoints->setText(0, tr("Points (") + QString::number(treePoints->childCount()) + ")");
     } else if(dynamic_cast<DimFigure*>(figure)) {
         treeDimensions->addChild(child);
-        treeDimensions->setText(0, "Измерения (" + QString::number(treeDimensions->childCount()) + ")");
+        treeDimensions->setText(0, tr("Dimensions (") + QString::number(treeDimensions->childCount()) + ")");
     } else if(dynamic_cast<TextFigure*>(figure)) {
         treeTexts->addChild(child);
-        treeTexts->setText(0, "Текст (" + QString::number(treeTexts->childCount()) + ")");
+        treeTexts->setText(0, tr("Text (") + QString::number(treeTexts->childCount()) + ")");
     } else {
         delete child;
     }
