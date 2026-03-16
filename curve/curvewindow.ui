@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>659</width>
+    <width>655</width>
     <height>463</height>
    </rect>
   </property>
@@ -193,21 +193,21 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>659</width>
-     <height>21</height>
+     <width>655</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAirfoil">
     <property name="title">
      <string>Airfoil</string>
     </property>
+    <addaction name="actionCalculateTurbineParameters"/>
     <addaction name="actionAssignTolerancesToNominal"/>
    </widget>
    <widget class="QMenu" name="menuCalculate">
     <property name="title">
      <string>Calculate</string>
     </property>
-    <addaction name="actionCalculateTurbineParameters"/>
     <addaction name="actionCalculateEdgeWidth"/>
     <addaction name="actionCurve_2D_calculation"/>
    </widget>
@@ -342,16 +342,28 @@
    </property>
   </action>
   <action name="actionCalculateTurbineParameters">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-вычислить-16.png</normaloff>icons/icons8-вычислить-16.png</iconset>
+   </property>
    <property name="text">
     <string>Airfoil evaluations</string>
    </property>
   </action>
   <action name="actionCalculateEdgeWidth">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-ширина-16.png</normaloff>icons/icons8-ширина-16.png</iconset>
+   </property>
    <property name="text">
     <string>Calculate edge width</string>
    </property>
   </action>
   <action name="actionLoadFile">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/import-line.svg</normaloff>icons/import-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Load File</string>
    </property>
@@ -367,6 +379,10 @@
    </property>
   </action>
   <action name="actionSaveProject">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/save-3-line.svg</normaloff>icons/save-3-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Save Project</string>
    </property>
@@ -382,11 +398,19 @@
    </property>
   </action>
   <action name="actionLoadProject">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/folder-download-line.svg</normaloff>icons/folder-download-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Load Project</string>
    </property>
   </action>
   <action name="actionClearProject">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/eraser-line.svg</normaloff>icons/eraser-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Clear Project</string>
    </property>
@@ -424,6 +448,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-радиус-16.png</normaloff>icons/icons8-радиус-16.png</iconset>
+   </property>
    <property name="text">
     <string>Radius</string>
    </property>
@@ -431,6 +459,10 @@
   <action name="actionDiameter">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-диаметр-16.png</normaloff>icons/icons8-диаметр-16.png</iconset>
    </property>
    <property name="text">
     <string>Diameter</string>
@@ -521,16 +553,28 @@
    </property>
   </action>
   <action name="actionZoomExtents">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/fullscreen-line.svg</normaloff>icons/fullscreen-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom extents</string>
    </property>
   </action>
   <action name="actionZoomPlus">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/add-line.svg</normaloff>icons/add-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom +</string>
    </property>
   </action>
   <action name="actionZoomMinus">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/subtract-fill.svg</normaloff>icons/subtract-fill.svg</iconset>
+   </property>
    <property name="text">
     <string>Zoom -</string>
    </property>
@@ -572,11 +616,19 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/slash-commands-2.svg</normaloff>icons/slash-commands-2.svg</iconset>
+   </property>
    <property name="text">
     <string>Show Macros Window</string>
    </property>
   </action>
   <action name="actionExportToFLR">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/export-line.svg</normaloff>icons/export-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Export to FLR</string>
    </property>
@@ -587,6 +639,10 @@
    </property>
   </action>
   <action name="actionRotate">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/icons8-азимут-16.png</normaloff>icons/icons8-азимут-16.png</iconset>
+   </property>
    <property name="text">
     <string>Rotate</string>
    </property>
@@ -602,16 +658,28 @@
    </property>
   </action>
   <action name="actionEdit_Part_Data">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/edit-box-line.svg</normaloff>icons/edit-box-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Edit Part Data</string>
    </property>
   </action>
   <action name="actionText">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/image-add-line.svg</normaloff>icons/image-add-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Text/Image</string>
    </property>
   </action>
   <action name="actionShowPrintViewer">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/printer-line.svg</normaloff>icons/printer-line.svg</iconset>
+   </property>
    <property name="text">
     <string>Show Print Viewer</string>
    </property>

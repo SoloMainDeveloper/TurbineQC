@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "figurecontrols.h"
 
 FigureControls::FigureControls(Project* mainProject, QWidget *parent) {
@@ -26,7 +27,7 @@ FigureControls::FigureControls(Project* mainProject, QWidget *parent) {
 
 void FigureControls::changeCurrentItem(const QString &currentFigureName) {
 
-     visibilityCheckBox->hide();
+    visibilityCheckBox->hide();
     setVisibleCurveLayout(false);
     setVisibleDimensionLayout(false);
 
@@ -46,7 +47,7 @@ void FigureControls::changeCurrentItem(const QString &currentFigureName) {
         connectPointsCheckBox->setChecked(currentCurve->isConnectPoints());
         showVectorsCheckBox->setChecked(currentCurve->isShowVectors());
         closedCheckBox->setChecked(currentCurve->isClosed());
-        numbersCheckBox->setChecked(currentCurve->isShowNumbering());        
+        numbersCheckBox->setChecked(currentCurve->isShowNumbering());
         numbersLineEdit->setText(QString::number(currentCurve->numberingInterval()));
         amplificationLineEdit->setText(QString::number(currentCurve->amplification()));
         showTolsCheckBox->setChecked(currentCurve->isShowTolerances());
@@ -109,33 +110,33 @@ void FigureControls::curveParametersSwitched() {
 }
 
 void FigureControls::dimensionParametersSwitched() {
-    emit dimensionChangeParametersRequested(currentFigure->name(), dimLabelOnlyCheckBox->isChecked(), 
+    emit dimensionChangeParametersRequested(currentFigure->name(), dimLabelOnlyCheckBox->isChecked(),
         dimShowTolsCheckBox->isChecked(), dimFreePositionCheckBox->isChecked());
 }
 
 void FigureControls::addCurveLayout() {
-    visibilityCheckBox = new QCheckBox("Visible");
+    visibilityCheckBox = new QCheckBox(tr("Visible"));
     connect(visibilityCheckBox, &QCheckBox::clicked, this, &FigureControls::visibilitySwitched);
     layout->addWidget(visibilityCheckBox);
 
-    showPointsCheckBox = new QCheckBox("Show points");
+    showPointsCheckBox = new QCheckBox(tr("Show points"));
     connect(showPointsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(showPointsCheckBox);
 
-    connectPointsCheckBox = new QCheckBox("Connect points");
+    connectPointsCheckBox = new QCheckBox(tr("Connect points"));
     connect(connectPointsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(connectPointsCheckBox);
 
-    showVectorsCheckBox = new QCheckBox("Show vectors");
+    showVectorsCheckBox = new QCheckBox(tr("Show vectors"));
     connect(showVectorsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(showVectorsCheckBox);
 
-    closedCheckBox = new QCheckBox("Closed");
+    closedCheckBox = new QCheckBox(tr("Closed"));
     connect(closedCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(closedCheckBox);
 
     auto numberLayout = new QHBoxLayout;
-    numbersCheckBox = new QCheckBox("Numbers");
+    numbersCheckBox = new QCheckBox(tr("Numbers"));
     connect(numbersCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     numberLayout->addWidget(numbersCheckBox);
     numbersLineEdit = new QLineEdit;
@@ -148,7 +149,7 @@ void FigureControls::addCurveLayout() {
 
     // Dev & Tols
     auto layoutAmplification = new QHBoxLayout;
-    amplificationLabel = new QLabel("Amplification");
+    amplificationLabel = new QLabel(tr("Amplification"));
     amplificationLineEdit = new QLineEdit;
     amplificationLineEdit->setValidator(new QDoubleValidator);
     amplificationLineEdit->setMaximumWidth(50);
@@ -158,32 +159,32 @@ void FigureControls::addCurveLayout() {
     layoutAmplification->addWidget(amplificationLineEdit);
     layout->addLayout(layoutAmplification);
 
-    showTolsCheckBox = new QCheckBox("Show tols");
+    showTolsCheckBox = new QCheckBox(tr("Show tols"));
     connect(showTolsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(showTolsCheckBox);
 
-    showDevsCheckBox = new QCheckBox("Show devs");
+    showDevsCheckBox = new QCheckBox(tr("Show devs"));
     connect(showDevsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(showDevsCheckBox);
 
-    connectDevsCheckBox = new QCheckBox("Connect devs");
+    connectDevsCheckBox = new QCheckBox(tr("Connect devs"));
     connect(connectDevsCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(connectDevsCheckBox);
 
-    highLightOutCheckBox = new QCheckBox("Highlight out");
+    highLightOutCheckBox = new QCheckBox(tr("Highlight out"));
     connect(highLightOutCheckBox, &QCheckBox::clicked, this, &FigureControls::curveParametersSwitched);
     layout->addWidget(highLightOutCheckBox);
     setVisibleCurveLayout(false);
 }
 
 void FigureControls::addDimensionLayout() {
-    dimLabelOnlyCheckBox = new QCheckBox("Label only");
+    dimLabelOnlyCheckBox = new QCheckBox(tr("Label only"));
     connect(dimLabelOnlyCheckBox, &QCheckBox::clicked, this, &FigureControls::dimensionParametersSwitched);
     layout->addWidget(dimLabelOnlyCheckBox);
-    dimShowTolsCheckBox = new QCheckBox("Show Tols");
+    dimShowTolsCheckBox = new QCheckBox(tr("Show Tols"));
     connect(dimShowTolsCheckBox, &QCheckBox::clicked, this, &FigureControls::dimensionParametersSwitched);
     layout->addWidget(dimShowTolsCheckBox);
-    dimFreePositionCheckBox = new QCheckBox("Free position");
+    dimFreePositionCheckBox = new QCheckBox(tr("Free position"));
     connect(dimFreePositionCheckBox, &QCheckBox::clicked, this, &FigureControls::dimensionParametersSwitched);
     layout->addWidget(dimFreePositionCheckBox);
     setVisibleDimensionLayout(false);

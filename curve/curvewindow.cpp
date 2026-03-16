@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "curvewindow.h"
 #include "reportgenerator.h"
 
@@ -19,7 +20,6 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     connect(_ui->actionCalculateEdgeWidth, &QAction::triggered, [this]() { _dialogService->show(DialogType::WidthEdge); });
     connect(_ui->actionMergeClouds, &QAction::triggered, [this]() { _dialogService->show(DialogType::MergePointCloud); });
     connect(_ui->actionRadiusCorrection, &QAction::triggered, [this]() { _dialogService->show(DialogType::RadiusCorrection); });
-    connect(_ui->actionSaveProject, &QAction::triggered, [this]() { _dialogService->show(DialogType::SaveProject); });
     connect(_ui->actionExportToFLR, &QAction::triggered, [this]() { _dialogService->show(DialogType::ExportToFLR); });
     connect(_ui->actionShowPrintViewer, &QAction::triggered, [this]() { _dialogService->show(DialogType::PrintPreview); });
     connect(_ui->actionBestFit, &QAction::triggered, [this]() { _dialogService->show(DialogType::BestFit); });
@@ -33,6 +33,8 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     connect(_ui->actionText, &QAction::triggered, [this]() { _dialogService->show(DialogType::InsertText); });
     connect(_ui->actionCompareFLR, &QAction::triggered, [this]() { _dialogService->show(DialogType::CompareFLR); });
 
+    connect(_ui->actionSaveProject, &QAction::triggered, this, &CurveWindow::onSaveProject);
+
     //connect(&_project, &Project::showPartDataDialogRequested, _dialogService, &PartDataDialog::initializationByMacros);
     connect(_ui->actionLoadProject, &QAction::triggered, this, [&]() {
         auto projectPath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt *.crv)");
@@ -43,11 +45,9 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     });
     connect(_project, &Project::projectPathChanged, this, &CurveWindow::changeWindowTitle);
 
-    //connect(_printWindow, &PrintPreviewWindow::needShow, _ui->actionShowPrintViewer, &QAction::setEnabled);
-
     connect(_ui->actionClearProject, &QAction::triggered, [this]() {
         Project::instance().clear();
-        //_printWindow->clearHandler();
+        Printer::instance().clear();
         setDefualtWindowTitle();
     });
 
@@ -58,7 +58,11 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     _plot = &Plot::instance();
     _plot->setProject(_project);
 
-    connect(_ui->menuDimensions, &QMenu::aboutToShow, this, &CurveWindow::dimensionMenuInit);
+    //connect(_ui->menuDimensions, &QMenu::aboutToShow, this, &CurveWindow::dimensionMenuInit);
+    delete _ui->menuDimensions;
+    delete _ui->menuTest;
+    delete _ui->menuConstruct;
+
     connect(_ui->actionRadius, &QAction::triggered, _plot, &Plot::createRadiusDimension);
     connect(_ui->actionDiameter, &QAction::triggered, _plot, &Plot::createDiameterDimension);
     connect(_ui->actionPerimeter, &QAction::triggered, [&] {
@@ -83,38 +87,9 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     //    const auto y = _plot->yAxis->pixelToCoord(pixelPosition.y());
     //    _insertTextDialog->onPlotClick(QPointF(x, y));
     //});
+    createShowHideActions();
 
-    QAction* showAllAction = _ui->visibilityOnTB->addAction(QIcon("icons/all.ico"), QString("All figures"));
-    connect(showAllAction, &QAction::triggered, [&]() { _project->showAllFigures("ANY"); });
-    QAction* showCRVAction = _ui->visibilityOnTB->addAction(QIcon("icons/curve.ico"), QString("Curves"));
-    connect(showCRVAction, &QAction::triggered, [&]() { _project->showAllFigures("CRV"); });
-    QAction* showCIRAction = _ui->visibilityOnTB->addAction(QIcon("icons/circle.ico"), QString("Circles"));
-    connect(showCIRAction, &QAction::triggered, [&]() { _project->showAllFigures("CIR"); });
-    QAction* showLINAction = _ui->visibilityOnTB->addAction(QIcon("icons/line.ico"), QString("Lines"));
-    connect(showLINAction, &QAction::triggered, [&]() { _project->showAllFigures("LIN"); });
-    QAction* showPNTAction = _ui->visibilityOnTB->addAction(QIcon("icons/point.ico"), QString("Points"));
-    connect(showPNTAction, &QAction::triggered, [&]() { _project->showAllFigures("PNT"); });
-    QAction* showDIMAction = _ui->visibilityOnTB->addAction(QIcon("icons/dimension.ico"), QString("Dimensions"));
-    connect(showDIMAction, &QAction::triggered, [&]() { _project->showAllFigures("DIM"); });
-    QAction* showTXTAction = _ui->visibilityOnTB->addAction(QIcon("icons/text.ico"), QString("Texts"));
-    connect(showTXTAction, &QAction::triggered, [&]() { _project->showAllFigures("TXT"); });
-
-    QAction* hideAllAction = _ui->visibilityOffTB->addAction(QIcon("icons/all.ico"), QString("All figures"));
-    connect(hideAllAction, &QAction::triggered, [&]() { _project->hideAllFigures("ANY"); });
-    QAction* hideCRVAction = _ui->visibilityOffTB->addAction(QIcon("icons/curve.ico"), QString("Curves"));
-    connect(hideCRVAction, &QAction::triggered, [&]() { _project->hideAllFigures("CRV"); });
-    QAction* hideCIRAction = _ui->visibilityOffTB->addAction(QIcon("icons/circle.ico"), QString("Circles"));
-    connect(hideCIRAction, &QAction::triggered, [&]() { _project->hideAllFigures("CIR"); });
-    QAction* hideLINAction = _ui->visibilityOffTB->addAction(QIcon("icons/line.ico"), QString("Lines"));
-    connect(hideLINAction, &QAction::triggered, [&]() { _project->hideAllFigures("LIN"); });
-    QAction* hidePNTAction = _ui->visibilityOffTB->addAction(QIcon("icons/point.ico"), QString("Points"));
-    connect(hidePNTAction, &QAction::triggered, [&]() { _project->hideAllFigures("PNT"); });
-    QAction* hideDIMAction = _ui->visibilityOffTB->addAction(QIcon("icons/dimension.ico"), QString("Dimensions"));
-    connect(hideDIMAction, &QAction::triggered, [&]() { _project->hideAllFigures("DIM"); });
-    QAction* hideTXTAction = _ui->visibilityOffTB->addAction(QIcon("icons/text.ico"), QString("Texts"));
-    connect(hideTXTAction, &QAction::triggered, [&]() { _project->hideAllFigures("TXT"); });
-
-    _ui->searchCB->lineEdit()->setPlaceholderText("Search figure");
+    _ui->searchCB->lineEdit()->setPlaceholderText(tr("Search figure"));
     _ui->searchCB->completer()->setCompletionMode(QCompleter::PopupCompletion);
     _ui->searchCB->completer()->setFilterMode(Qt::MatchContains);
     connect(_ui->searchCB, &QComboBox::currentTextChanged, [&](QString text) {
@@ -241,6 +216,38 @@ void CurveWindow::disableDimensionMenu() {
     _ui->actionMeasureOnScreen->setEnabled(false);
 }
 
+void CurveWindow::createShowHideActions() {
+    QAction* showAllAction = _ui->visibilityOnTB->addAction(QIcon("icons/all.ico"), QString(tr("All figures")));
+    connect(showAllAction, &QAction::triggered, [&]() { _project->showAllFigures("ANY"); });
+    QAction* showCRVAction = _ui->visibilityOnTB->addAction(QIcon("icons/curve.ico"), QString(tr("Curves")));
+    connect(showCRVAction, &QAction::triggered, [&]() { _project->showAllFigures("CRV"); });
+    QAction* showCIRAction = _ui->visibilityOnTB->addAction(QIcon("icons/circle.ico"), QString(tr("Circles")));
+    connect(showCIRAction, &QAction::triggered, [&]() { _project->showAllFigures("CIR"); });
+    QAction* showLINAction = _ui->visibilityOnTB->addAction(QIcon("icons/line.ico"), QString(tr("Lines")));
+    connect(showLINAction, &QAction::triggered, [&]() { _project->showAllFigures("LIN"); });
+    QAction* showPNTAction = _ui->visibilityOnTB->addAction(QIcon("icons/point.ico"), QString(tr("Points")));
+    connect(showPNTAction, &QAction::triggered, [&]() { _project->showAllFigures("PNT"); });
+    QAction* showDIMAction = _ui->visibilityOnTB->addAction(QIcon("icons/dimension.ico"), QString(tr("Dimensions")));
+    connect(showDIMAction, &QAction::triggered, [&]() { _project->showAllFigures("DIM"); });
+    QAction* showTXTAction = _ui->visibilityOnTB->addAction(QIcon("icons/text.ico"), QString(tr("Texts")));
+    connect(showTXTAction, &QAction::triggered, [&]() { _project->showAllFigures("TXT"); });
+
+    QAction* hideAllAction = _ui->visibilityOffTB->addAction(QIcon("icons/all.ico"), QString(tr("All figures")));
+    connect(hideAllAction, &QAction::triggered, [&]() { _project->hideAllFigures("ANY"); });
+    QAction* hideCRVAction = _ui->visibilityOffTB->addAction(QIcon("icons/curve.ico"), QString(tr("Curves")));
+    connect(hideCRVAction, &QAction::triggered, [&]() { _project->hideAllFigures("CRV"); });
+    QAction* hideCIRAction = _ui->visibilityOffTB->addAction(QIcon("icons/circle.ico"), QString(tr("Circles")));
+    connect(hideCIRAction, &QAction::triggered, [&]() { _project->hideAllFigures("CIR"); });
+    QAction* hideLINAction = _ui->visibilityOffTB->addAction(QIcon("icons/line.ico"), QString(tr("Lines")));
+    connect(hideLINAction, &QAction::triggered, [&]() { _project->hideAllFigures("LIN"); });
+    QAction* hidePNTAction = _ui->visibilityOffTB->addAction(QIcon("icons/point.ico"), QString(tr("Points")));
+    connect(hidePNTAction, &QAction::triggered, [&]() { _project->hideAllFigures("PNT"); });
+    QAction* hideDIMAction = _ui->visibilityOffTB->addAction(QIcon("icons/dimension.ico"), QString(tr("Dimensions")));
+    connect(hideDIMAction, &QAction::triggered, [&]() { _project->hideAllFigures("DIM"); });
+    QAction* hideTXTAction = _ui->visibilityOffTB->addAction(QIcon("icons/text.ico"), QString(tr("Texts")));
+    connect(hideTXTAction, &QAction::triggered, [&]() { _project->hideAllFigures("TXT"); });
+}
+
 void CurveWindow::connectMenuItems() {
 }
 
@@ -265,6 +272,23 @@ void CurveWindow::keyPressEvent(QKeyEvent* event) {
         if(dialogResponse == QMessageBox::Ok) {
             _project->removeFigure(name);
         }
+    }
+}
+
+void CurveWindow::onSaveProject() {
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        tr("Save project"),
+        QDir::homePath(),
+        tr("CRV files (*.crv);")
+    );
+
+    if(!fileName.isEmpty()) {
+        if(fileName.endsWith(".crv", Qt::CaseInsensitive)) {
+            fileName.chop(4);
+        }
+
+        FileSystem::saveProject(fileName);
     }
 }
 

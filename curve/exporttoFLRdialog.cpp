@@ -7,7 +7,6 @@
 ExportToFLRDialog::ExportToFLRDialog() : _ui(new Ui::ExportToFLRDialog) {
     _ui->setupUi(this);
 
-    setWindowTitle("Export to FLR");
     setFixedSize(350, 420);
 
     connect(_ui->choosePathButton, &QPushButton::clicked, this, &ExportToFLRDialog::chooseFilePath);
@@ -45,7 +44,7 @@ void ExportToFLRDialog::exportToFLR() {
 }
 
 void ExportToFLRDialog::chooseFilePath() {
-    QString fileName = QFileDialog::getSaveFileName(nullptr, "Choose filepath", "", "FLR Files (*.flr)");
+    QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Choose filepath"), "", "FLR Files (*.flr)");
     if(!fileName.isEmpty()) {
         _ui->filePathLineEdit->setText(fileName);
     }

@@ -172,9 +172,6 @@
     <ClCompile Include="rotatedialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="saveprojectdialog.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="shiftdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -506,9 +503,6 @@
     <QtMoc Include="tree.h">
       <Filter>Header Files\Interface</Filter>
     </QtMoc>
-    <QtMoc Include="saveprojectdialog.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </QtMoc>
     <QtMoc Include="turbinedialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
@@ -584,9 +578,6 @@
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="shiftdialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
-    <QtUic Include="saveprojectdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="radiuscorrectiondialog.ui">

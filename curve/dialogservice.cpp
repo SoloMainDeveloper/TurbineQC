@@ -9,7 +9,6 @@
 #include "widthedgedialog.h"
 #include "radiuscorrectiondialog.h"
 #include "mergepointcloudsdialog.h"
-#include "saveprojectdialog.h"
 #include "calculatedeviationsdialog.h"
 #include "bestfitdialog.h"
 #include "macrosdialog.h"
@@ -43,7 +42,6 @@ DialogService::DialogService() {
     _dialogs[DialogType::PartData] = new PartDataDialog();
     _dialogs[DialogType::RadiusCorrection] = new RadiusCorrectionDialog();
     _dialogs[DialogType::Rotate] = new RotateDialog();
-    _dialogs[DialogType::SaveProject] = new SaveProjectDialog();
     _dialogs[DialogType::Shift] = new ShiftDialog();
     _dialogs[DialogType::Turbine] = new TurbineDialog();
     _dialogs[DialogType::WidthEdge] = new WidthEdgeDialog();

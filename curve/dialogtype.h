@@ -17,7 +17,6 @@ enum class DialogType {
     PrintPreview,
     RadiusCorrection,
     Rotate,
-    SaveProject,
     Shift,
     Turbine,
     WidthEdge

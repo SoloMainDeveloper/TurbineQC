@@ -13,19 +13,19 @@ RotateDialog::RotateDialog() : _ui(new Ui::RotateDialog()) {
 
     _treeModel = new QStandardItemModel;
 
-    _treeCurves = new QStandardItem("Curves");
+    _treeCurves = new QStandardItem(tr("Curves"));
     _treeCurves->setIcon(QIcon("icons/curve.png"));
     addTreeTab(_treeCurves);
 
-    _treeCircles = new QStandardItem("Circles");
+    _treeCircles = new QStandardItem(tr("Circles"));
     _treeCircles->setIcon(QIcon("icons/circle.png"));
     addTreeTab(_treeCircles);
 
-    _treeLines = new QStandardItem("Lines");
+    _treeLines = new QStandardItem(tr("Lines"));
     _treeLines->setIcon(QIcon("icons/line.png"));
     addTreeTab(_treeLines);
 
-    _treePoints = new QStandardItem("Points");
+    _treePoints = new QStandardItem(tr("Points"));
     _treePoints->setIcon(QIcon("icons/point.png"));
     addTreeTab(_treePoints);
 
