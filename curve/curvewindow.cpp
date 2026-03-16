@@ -53,7 +53,9 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
 
     _tree = _ui->tree;
     _tree->setProject(_project);
-    _plot = _ui->plot;
+
+    Plot::initialize(_ui->plot);
+    _plot = &Plot::instance();
     _plot->setProject(_project);
 
     connect(_ui->menuDimensions, &QMenu::aboutToShow, this, &CurveWindow::dimensionMenuInit);

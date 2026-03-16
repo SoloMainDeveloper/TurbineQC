@@ -10,6 +10,7 @@ public:
     explicit Plot(QWidget *parent = nullptr);
 
     static Plot& instance();
+    static void initialize(Plot *plot);
 
     void setProject(Project *project);
     QImage getScreenshot(int width, int height, ReportSettings::Axis axisType);
@@ -107,6 +108,7 @@ private:
     bool _isBuffering = false;
     QSet<QString> _buffer;
 
+    static Plot* _instance;
     Project *_project;
     DimFigure *_calloutDimension = nullptr;
 
