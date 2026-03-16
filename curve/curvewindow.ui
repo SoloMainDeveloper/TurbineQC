@@ -194,7 +194,7 @@
      <x>0</x>
      <y>0</y>
      <width>655</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAirfoil">
@@ -202,14 +202,13 @@
      <string>Airfoil</string>
     </property>
     <addaction name="actionCalculateTurbineParameters"/>
-    <addaction name="actionAssignTolerancesToNominal"/>
    </widget>
    <widget class="QMenu" name="menuCalculate">
     <property name="title">
      <string>Calculate</string>
     </property>
-    <addaction name="actionCalculateEdgeWidth"/>
     <addaction name="actionCurve_2D_calculation"/>
+    <addaction name="actionCalculateEdgeWidth"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -227,10 +226,11 @@
     <property name="title">
      <string>Curve</string>
     </property>
+    <addaction name="actionAssignTolerancesToNominal"/>
     <addaction name="actionMergeClouds"/>
     <addaction name="actionRadiusCorrection"/>
-    <addaction name="actionCalculateDeviations"/>
     <addaction name="actionBestFit"/>
+    <addaction name="actionCalculateDeviations"/>
    </widget>
    <widget class="QMenu" name="menuDimensions">
     <property name="title">
