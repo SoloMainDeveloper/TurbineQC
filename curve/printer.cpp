@@ -14,18 +14,18 @@ Printer& Printer::instance() {
 
 void Printer::addPage(const QString &page, const QMap<QString, QString> &information) {
     _printPages.append(page);
-    emit instance().pageAdded(information);
+    emit pageAdded(information);
 }
 
 void Printer::removePage(int index) {
     _printPages.removeAt(index);
-    emit instance().pageRemoved(index);
+    emit pageRemoved(index);
     //MacrosManager::log(MacrosManager::RemovePage, { { "index", QString::number(index) } });
 }
 
 void Printer::clear() {
     _printPages.clear();
-    emit instance().printerPagesCleared();
+    emit printerPagesCleared();
     //MacrosManager::log(MacrosManager::ClearReport);
 }
 
