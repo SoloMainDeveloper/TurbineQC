@@ -3,14 +3,12 @@
 #include "saveprojectcommand.h"
 #include "filesystem.h"
 
-SaveProjectCommand::SaveProjectCommand(QString directory, QString projectName, bool needCRV) {
-    _directory = directory;
-    _projectName = projectName;
-    _needCRV = needCRV;
+SaveProjectCommand::SaveProjectCommand(QString fileNameWithoutExtension) {
+    _fileNameWithoutExtension = fileNameWithoutExtension;
 }
 
 void SaveProjectCommand::run() {
-    FileSystem::saveProject(_directory, _projectName, _needCRV);
+    FileSystem::saveProject(_fileNameWithoutExtension);
 }
 
 CommandType SaveProjectCommand::getType() const {
@@ -19,16 +17,12 @@ CommandType SaveProjectCommand::getType() const {
 
 QMap<QString, QVariant> SaveProjectCommand::getParameters() const {
     return {
-        { "directoryName", _directory },
-        { "projectName", _projectName },
-        { "needCRV", _needCRV }
+        { "fileNameWithoutExtension", _fileNameWithoutExtension },
     };
 }
 
 void SaveProjectCommand::setParameters(QMap<QString, QVariant> params) {
-    _directory = params["directoryName"].toString();
-    _projectName = params["projectName"].toString();
-    _needCRV = params["needCRV"].toBool();
+    _fileNameWithoutExtension = params["fileNameWithoutExtension"].toString();
 }
 
 QString SaveProjectCommand::getName() const {

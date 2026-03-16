@@ -114,10 +114,12 @@ void MacrosDialog::load() {
 
             QList<std::shared_ptr<ICommand>>* commands = MacrosTranslator::translateCRM(operationText);
 
-            // Здесь нужно обработать полученные команды
+            auto isRecording = _macrosManager->isRecording();
+            _macrosManager->setRecording(true);
             for(auto command : *commands) {
                 _macrosManager->log(command);
             }
+            _macrosManager->setRecording(isRecording);
 
             file.close();
         } else if(extension == "json") {
@@ -163,9 +165,9 @@ void MacrosDialog::debugNext() {
 
 void MacrosDialog::updateRecordingButton() {
     if(_macrosManager->isRecording()) {
-        _ui->toggleRecordButton->setText("Стоп");
+        _ui->toggleRecordButton->setText(tr("Stop"));
     } else {
-        _ui->toggleRecordButton->setText("Начать запись");
+        _ui->toggleRecordButton->setText(tr("Record"));
     }
 }
 
@@ -193,7 +195,7 @@ void MacrosDialog::contextMenuEvent(QContextMenuEvent * event) {
 
 void MacrosDialog::onRemoveItemTriggered() {
     QMessageBox mBox;
-    mBox.setText("Удалить выбранную команду?");
+    mBox.setText(tr("Remove command?"));
     mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     auto dialogWindow = mBox.exec();
     switch(dialogWindow) {
@@ -233,7 +235,7 @@ void MacrosDialog::onMoveOperationDownItemTriggered() {
 
 void MacrosDialog::onEditItemTriggered() {
     auto* dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
-    dialog->setWindowTitle("Редактировать команду");
+    dialog->setWindowTitle(tr("Edit command"));
     dialog->setFixedSize(420, 470);
 
     int index = _operationList->currentItem()->text(0).split(".")[0].toInt() - 1;
@@ -245,11 +247,11 @@ void MacrosDialog::onEditItemTriggered() {
     edit->setText(QString::fromUtf8(paramsJson.toJson(QJsonDocument::Indented)));
     edit->setGeometry(10, 10, 400, 400);
 
-    auto* cancelBtn = new QPushButton("Отмена", dialog);
+    auto* cancelBtn = new QPushButton(tr("Cancel"), dialog);
     cancelBtn->setGeometry(10, 420, 195, 40);
     connect(cancelBtn, &QPushButton::clicked, dialog, &QDialog::close);
 
-    auto* acceptBtn = new QPushButton("Применить", dialog);
+    auto* acceptBtn = new QPushButton(tr("Apply"), dialog);
     acceptBtn->setGeometry(215, 420, 195, 40);
     connect(acceptBtn, &QPushButton::clicked, this, [&]() {
         commandJson["parameters"] = QJsonDocument::fromJson(edit->toPlainText().toUtf8()).object();
@@ -350,9 +352,6 @@ void MacrosDialog::reindex(int indexFrom) {
 QTreeWidgetItem* MacrosDialog::createOperationItem(int index, QString operation, QString comment) {
     auto root = new QTreeWidgetItem(_operationList);
     root->setText(0, QString("%1. %2").arg(index).arg(operation));
-    //auto commentItem = new QTreeWidgetItem(root);
-    //auto commentList = comment.trimmed();
-    //commentItem->setText(0, commentList);
     return root;
 }
 

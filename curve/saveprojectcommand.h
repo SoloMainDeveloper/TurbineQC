@@ -5,7 +5,7 @@
 class SaveProjectCommand : public ICommand {
 public:
     SaveProjectCommand() = default;
-    SaveProjectCommand(QString directory, QString projectName, bool needCRV);
+    SaveProjectCommand(QString fileNameWithoutExtension);
 
     void run() override;
     CommandType getType() const override;
@@ -15,7 +15,5 @@ public:
     QString getDescription() const override;
 
 private:
-    QString _directory;
-    QString _projectName;
-    bool _needCRV;
+    QString _fileNameWithoutExtension;
 };

@@ -179,7 +179,6 @@
     <ClCompile Include="rotatedialog.cpp" />
     <ClCompile Include="rotatefigurecommand.cpp" />
     <ClCompile Include="saveprojectcommand.cpp" />
-    <ClCompile Include="saveprojectdialog.cpp" />
     <ClCompile Include="screenshotcreator.cpp" />
     <ClCompile Include="setprintersettingscommand.cpp" />
     <ClCompile Include="shiftdialog.cpp" />
@@ -240,7 +239,6 @@
     <ClInclude Include="reportsettings.h" />
     <QtMoc Include="exporttoFLRdialog.h" />
     <ClInclude Include="reportgenerator.h" />
-    <QtMoc Include="saveprojectdialog.h" />
     <QtMoc Include="radiuscorrectiondialog.h" />
     <QtMoc Include="widthedgedialog.h" />
     <QtMoc Include="turbinedialog.h" />
@@ -296,7 +294,6 @@
     <QtUic Include="radiuscorrectiondialog.ui" />
     <QtUic Include="mergepointcloudsdialog.ui" />
     <QtUic Include="rotatedialog.ui" />
-    <QtUic Include="saveprojectdialog.ui" />
     <QtUic Include="shiftdialog.ui" />
     <QtUic Include="turbinedialog.ui" />
     <QtUic Include="widthedgedialog.ui" />

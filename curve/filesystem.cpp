@@ -188,16 +188,17 @@ void FileSystem::loadCloud(QString filePath, QString name, QString sep, int skip
         filePath, name, sep, skipStart, skipAfter, columnNames, columnNumbers, decimal));
 }
 
-void FileSystem::saveProject(QString dir, QString projectName, bool createCRV) {
-    QFileInfo dirInfo(dir);
-    ARGUMENT_ASSERT(dirInfo.exists() && dirInfo.isDir(), "Save Project: could not find such directory");
-
-    auto resultTXT = dir + "/" + projectName + ".txt";
+void FileSystem::saveProject(QString fileNameWithoutExtension) {
+    //QFileInfo fileInfo(fileName);
+    //ARGUMENT_ASSERT(fileInfo.exists(), "Save Project: could not create a file with such name");
     auto project = &Project::instance();
+    auto fileNameTXT = fileNameWithoutExtension + ".txt";
+    auto fileNameCRV = fileNameWithoutExtension + ".crv";
 
-    QFile input(resultTXT);
+    QFile input(fileNameTXT);
     input.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QTextStream stream(&input);
+
     stream << "$GENERAL\n" << "WPlane=XY\n";
     stream << "ScaleFac=" << project->scaleFactor() << "\n";
     stream << "DMovX=" << project->centerPoint().x << "\n";
@@ -224,16 +225,20 @@ void FileSystem::saveProject(QString dir, QString projectName, bool createCRV) {
         inputFigure(stream, figure->settings());
     }
     input.close();
-    if(createCRV) {
-        auto command = QString("Get-Content '%1' | Set-Content -Path '%2/%3.crv'").arg(resultTXT, dir, projectName);
 
-        QProcess process;
-        process.setProcessChannelMode(QProcess::MergedChannels);
-        process.start("powershell.exe", QStringList() << "-Command" << command);
-        process.waitForFinished();
+    auto command = QString("Get-Content '%1' | Set-Content -Path '%2'").arg(fileNameTXT, fileNameCRV);
+    QProcess process;
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start("powershell.exe", QStringList() << "-Command" << command);
+    process.waitForFinished();
+
+    QFile file(fileNameTXT);
+    if(file.exists()) {
+        file.remove();
     }
-    project->setProjectPath(resultTXT);
-    MacrosManager::instance().log(std::make_shared<SaveProjectCommand>(dir, projectName, createCRV));
+
+    project->setProjectPath(fileNameCRV);
+    MacrosManager::instance().log(std::make_shared<SaveProjectCommand>(fileNameWithoutExtension));
 }
 
 void FileSystem::inputFigure(QTextStream& stream, FigureSettings* set) {

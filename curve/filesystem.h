@@ -29,7 +29,7 @@ public:
     static QMap<QString, QStringList> parseOutputToElements(QStringList elements);
     static void loadCloud(QString filePath, QString name, QString separator, int startLineToSkip,
         int finishLineToSkip, QString columnNames, QString numberOfColumns, QString decimal, Order order = Order::Default);
-    static void saveProject(QString dir, QString projectName, bool createCRV);
+    static void saveProject(QString fileNameWithoutExtension);
     static void loadProject(const QString &filePath);
     static Figure* parseFigureFromCRV(Project *project, QString figureText);
     static void exportToFLR(QString filepath, QStringList *curvesToTake);

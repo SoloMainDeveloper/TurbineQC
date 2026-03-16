@@ -9,7 +9,7 @@
 #include "dialogservice.h"
 
 namespace Ui {
-	class CurveWindow;
+    class CurveWindow;
 };
 
 class LoadingCloudDialog;
@@ -17,34 +17,36 @@ class LoadingCloudDialog;
 class PrintWindow;
 
 class CurveWindow : public QMainWindow {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit CurveWindow(QWidget* parent = nullptr);
-	void dimensionMenuInit();
-	void disableDimensionMenu();
-	virtual ~CurveWindow();
+    explicit CurveWindow(QWidget* parent = nullptr);
+    virtual ~CurveWindow();
 
 private:
-	DialogService* _dialogService;
+    DialogService* _dialogService;
 
-	Ui::CurveWindow* _ui;
-	Project* _project;
-	FigureControls* _figureControls;
-	Tree* _tree;
-	Plot* _plot;
+    Ui::CurveWindow* _ui;
+    Project* _project;
+    FigureControls* _figureControls;
+    Tree* _tree;
+    Plot* _plot;
 
-	QStatusBar* _statusBar;
-	QLabel* _formLabel; // max dev - min dev
-	QLabel* _coordsLabel;
-	QLabel* _workPlaneLabel;
-	QLabel* _currentFigureLabel;
-	QLabel* _magnificationLabel;
+    QStatusBar* _statusBar;
+    QLabel* _formLabel; // max dev - min dev
+    QLabel* _coordsLabel;
+    QLabel* _workPlaneLabel;
+    QLabel* _currentFigureLabel;
+    QLabel* _magnificationLabel;
 
-	QString _windowTitle;
+    QString _windowTitle;
 
-	void connectMenuItems();
-	void changeWindowTitle(const QString& projectPath);
-	void setDefualtWindowTitle();
-	void keyPressEvent(QKeyEvent* event);
+    void connectMenuItems();
+    void createShowHideActions();
+    void disableDimensionMenu();
+    void dimensionMenuInit();
+    void changeWindowTitle(const QString& projectPath);
+    void setDefualtWindowTitle();
+    void keyPressEvent(QKeyEvent* event);
+    void onSaveProject();
 };
