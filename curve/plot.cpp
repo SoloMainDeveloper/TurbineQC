@@ -1,9 +1,10 @@
 #include "curve/pch.h"
 #include "curve/plot.h"
 
+Plot* Plot::_instance = nullptr;
+
 Plot& Plot::instance() {
-	static Plot instance;
-	return instance;
+	return *_instance;
 }
 
 Plot::Plot(QWidget* parent) : QCustomPlot(parent), _project(nullptr) {
@@ -20,6 +21,11 @@ Plot::Plot(QWidget* parent) : QCustomPlot(parent), _project(nullptr) {
 		}
 	});*/
 	setInteractions(QCP::iRangeDrag | QCP::iSelectPlottables | QCP::iSelectItems);
+}
+
+void Plot::initialize(Plot* plot)
+{
+	_instance = plot;
 }
 
 void Plot::setProject(Project* project) {

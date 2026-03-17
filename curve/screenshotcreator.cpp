@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "screenshotcreator.h"
 
 ScreenshotCreator::ScreenshotCreator(std::shared_ptr<ReportSettings> reportSettings) : _reportSettings(reportSettings) {

@@ -50,7 +50,7 @@ void CalculateCurveDialog::initialize() {
     _ui->minlineSB->setValue(0.0);
     _ui->numberRB->setChecked(true);
     _ui->valueLE->setText("10");
-    setWindowTitle("Calculate 2D Curve");
+    //setWindowTitle("Calculate 2D Curve");
 
     auto project = &Project::instance();
     auto figures = project->figures();

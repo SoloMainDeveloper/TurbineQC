@@ -53,13 +53,18 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
 
     _tree = _ui->tree;
     _tree->setProject(_project);
-    _plot = _ui->plot;
+
+    Plot::initialize(_ui->plot);
+    _plot = &Plot::instance();
     _plot->setProject(_project);
 
     //connect(_ui->menuDimensions, &QMenu::aboutToShow, this, &CurveWindow::dimensionMenuInit);
     delete _ui->menuDimensions;
     delete _ui->menuTest;
     delete _ui->menuConstruct;
+    delete _ui->menuCalculate;
+    delete _ui->actionCalculateDeviations;
+    delete _ui->actionAssignTolerancesToNominal;
 
     connect(_ui->actionRadius, &QAction::triggered, _plot, &Plot::createRadiusDimension);
     connect(_ui->actionDiameter, &QAction::triggered, _plot, &Plot::createDiameterDimension);
