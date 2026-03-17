@@ -207,7 +207,6 @@
     <property name="title">
      <string>Calculate</string>
     </property>
-    <addaction name="actionCurve_2D_calculation"/>
     <addaction name="actionCalculateEdgeWidth"/>
    </widget>
    <widget class="QMenu" name="menuFile">
@@ -228,6 +227,7 @@
     </property>
     <addaction name="actionAssignTolerancesToNominal"/>
     <addaction name="actionMergeClouds"/>
+    <addaction name="actionCurve_2D_calculation"/>
     <addaction name="actionRadiusCorrection"/>
     <addaction name="actionBestFit"/>
     <addaction name="actionCalculateDeviations"/>

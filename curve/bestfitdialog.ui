@@ -352,22 +352,22 @@
     </spacer>
    </item>
    <item row="5" column="1">
-    <widget class="QPushButton" name="closeBtn">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Close</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="3">
     <widget class="QPushButton" name="calculateBtn">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
       <string>OK</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="3">
+    <widget class="QPushButton" name="closeBtn">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
      </property>
     </widget>
    </item>

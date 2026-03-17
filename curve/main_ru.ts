@@ -182,12 +182,12 @@
     <message>
         <location filename="bestfitdialog.ui" line="360"/>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="370"/>
         <source>OK</source>
-        <translation>Применить</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="bestfitdialog.ui" line="377"/>
@@ -210,7 +210,7 @@
     <message>
         <location filename="calculatecurvedialog.ui" line="36"/>
         <source>Result curve</source>
-        <translation>Результирующая кривая</translation>
+        <translation>Итоговая кривая</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="53"/>
@@ -220,7 +220,7 @@
     <message>
         <location filename="calculatecurvedialog.ui" line="66"/>
         <source>Equalize</source>
-        <translation>Уравнять</translation>
+        <translation>=</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="78"/>
@@ -290,7 +290,7 @@
     <message>
         <location filename="calculatecurvedialog.ui" line="224"/>
         <source>Eliminate points closer than</source>
-        <translation>Уничтожить точки ближе чем</translation>
+        <translation>Исключить точки ближе чем</translation>
     </message>
     <message>
         <location filename="calculatecurvedialog.ui" line="234"/>

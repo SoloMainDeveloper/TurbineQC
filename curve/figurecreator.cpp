@@ -137,6 +137,8 @@ CurveFigure* FigureCreator::createGlobalCurve(const QString &globalName, const Q
     globalCurve->setClosed(isClosed);
     globalCurve->setShowDeviations(true);
     globalCurve->setConnectDeviations(true);
+    globalCurve->setHighLightOut(true);
+    globalCurve->setShowTolerances(true);
     globalCurve->setAmplification(_reportSettings->globalAmplification());
     _project->safeInsert(globalName, globalCurve, false);
 
@@ -147,6 +149,8 @@ CurveFigure* FigureCreator::createGlobalEdge(const QString &edgeName, const QVec
     auto edge = new CurveFigure(edgeName, points);
     edge->setShowDeviations(true);
     edge->setConnectDeviations(true);
+    edge->setHighLightOut(true);
+    edge->setShowTolerances(true);
     edge->setAmplification(amplification);
     _project->safeInsert(edgeName, edge, false);
 
@@ -157,6 +161,8 @@ CurveFigure* FigureCreator::createGlobalPart(const QString &curveName, const QVe
     auto curve = new CurveFigure(curveName, points);
     curve->setShowDeviations(true);
     curve->setConnectDeviations(true);
+    curve->setHighLightOut(true);
+    curve->setShowTolerances(true);
     curve->setAmplification(_reportSettings->globalAmplification());
     _project->safeInsert(curveName, curve, false);
 

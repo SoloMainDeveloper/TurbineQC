@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
+    <width>621</width>
     <height>440</height>
    </rect>
   </property>
@@ -15,78 +15,29 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="4" column="3">
+    <spacer name="horizontalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="1">
     <widget class="QPushButton" name="mergeBtn">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>Merge</string>
+      <string>OK</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="closeBtn">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Close</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="5">
-    <widget class="QGroupBox" name="groupBoxOptions">
-     <property name="title">
-      <string>Options</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="2">
-       <widget class="QLabel" name="labelThresholdForEqualPoints">
-        <property name="text">
-         <string>Threshold for equal points</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="needSortedCheckBox">
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="text">
-         <string>Sort</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLineEdit" name="threshold">
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="text">
-         <string>0.02</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="5">
+   <item row="0" column="0" colspan="4">
     <widget class="QGroupBox" name="groupBoxFindCurves">
      <property name="title">
       <string/>
@@ -164,22 +115,6 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="2">
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>80</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="4" column="0">
     <spacer name="horizontalSpacer_3">
      <property name="orientation">
@@ -193,18 +128,67 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="4">
-    <spacer name="horizontalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="closeBtn">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
+     <property name="text">
+      <string>Cancel</string>
      </property>
-    </spacer>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4">
+    <widget class="QGroupBox" name="groupBoxOptions">
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="2">
+       <widget class="QLabel" name="labelThresholdForEqualPoints">
+        <property name="text">
+         <string>Threshold for equal points</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="needSortedCheckBox">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="text">
+         <string>Sort</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="threshold">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="text">
+         <string>0.02</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
