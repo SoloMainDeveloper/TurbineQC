@@ -33,7 +33,8 @@ public:
     static Point getDirection(Point linePoint, double angularCoefficient);
     static CurveParts divideCurveIntoParts(const QVector<CurvePoint> curve, const Function18Params params);
     static QVector<CurvePoint> calculateStretch(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function31Params &params);
-    static QVector<CurvePoint> calculateCurveUsing3DVectors(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function42Params &params, double radiusCorrection);
+    static QVector<CurvePoint> calculateCurveUsing3DVectors(const QVector<CurvePoint>& nominalCurve, const QVector<CurvePoint>& measuredCurve, const Function42Params& params, double radiusCorrection);
+    static QVector<CurvePoint> calculateCurveUsing3DVectorsTest(const QVector<CurvePoint> &nominalCurve, const QVector<CurvePoint> &measuredCurve, const Function42Params &params, double radiusCorrection);
     static double getMinX(const QVector<CurvePoint> points, const Function18Params params);
     static QVector<CurvePoint> reassembleWholeCurve(const CurveParts &curveParts, LEDirection direction);
     static QVector<CurvePoint> reassembleCurveWithoutTE(const CurveParts &curveParts, LEDirection direction);

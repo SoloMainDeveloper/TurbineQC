@@ -2,14 +2,17 @@
 
 #include "screenshotcreator.h"
 
-ScreenshotCreator::ScreenshotCreator(std::shared_ptr<ReportSettings> reportSettings) : _reportSettings(reportSettings) {
+ScreenshotCreator::ScreenshotCreator(std::shared_ptr<ReportSettings> reportSettings) : _reportSettings(reportSettings)
+{
     _project = &Project::instance();
     _plot = &Plot::instance();
+
     _nominalName = _reportSettings->nominalName();
     _measuredName = _reportSettings->measuredName();
 }
 
-void ScreenshotCreator::run(const GlobalCurveMap &curvesToMakeScreenshot) {
+void ScreenshotCreator::run(const GlobalCurveMap& curvesToMakeScreenshot)
+{
     QStringList defaultCurvesToVisible;
     if(curvesToMakeScreenshot.contains(CurveType::WholeGlobal)) {
         auto [name, points] = curvesToMakeScreenshot[CurveType::WholeGlobal];
@@ -25,8 +28,7 @@ void ScreenshotCreator::run(const GlobalCurveMap &curvesToMakeScreenshot) {
             makeScreenshotOfGlobal({ name });
         }
     }
-    if((curvesToMakeScreenshot.contains(CurveType::GlobalCV) || curvesToMakeScreenshot.contains(CurveType::GlobalCC)) &&
-        (!curvesToMakeScreenshot.contains(CurveType::WholeGlobal) && !curvesToMakeScreenshot.contains(CurveType::GlobalWithoutTE))) {
+    if((curvesToMakeScreenshot.contains(CurveType::GlobalCV) || curvesToMakeScreenshot.contains(CurveType::GlobalCC)) && (!curvesToMakeScreenshot.contains(CurveType::WholeGlobal) && !curvesToMakeScreenshot.contains(CurveType::GlobalWithoutTE))) {
         auto [nameCV, pointsCV] = curvesToMakeScreenshot[CurveType::GlobalCV];
         auto [nameCC, pointsCC] = curvesToMakeScreenshot[CurveType::GlobalCC];
         defaultCurvesToVisible.append(nameCV);
@@ -46,7 +48,8 @@ void ScreenshotCreator::run(const GlobalCurveMap &curvesToMakeScreenshot) {
     setDefaultVisibilityOnGraphics(defaultCurvesToVisible);
 }
 
-void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList &globalNames) {
+void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList& globalNames)
+{
     _project->resetVisibilityForAllFigures();
     _project->setVisibility({ globalNames });
     setVisibilityAdditionalFigures();
@@ -57,7 +60,8 @@ void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList &globalNames) {
     _reportSettings->setScreenshotOfGlobal(screenshot);
 }
 
-void ScreenshotCreator::setVisibilityAdditionalFigures() {
+void ScreenshotCreator::setVisibilityAdditionalFigures()
+{
     auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
     auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
 
@@ -80,7 +84,8 @@ void ScreenshotCreator::setVisibilityAdditionalFigures() {
     _project->setVisibility(figuresToVisible);
 }
 
-void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType) {
+void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType)
+{
     _project->resetVisibilityForAllFigures();
     _project->setVisibility({ edgeName });
     auto curveDevs = createNumericalDeviations(edgeName, devsType, curveType);
@@ -91,8 +96,7 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType 
         auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
         auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, preparedMeasName);
         using AdditionalName = ReportGenerator::AdditionalName;
-        _project->setVisibility({
-            templateAdditionalNames[AdditionalName::NominalMCL],
+        _project->setVisibility({ templateAdditionalNames[AdditionalName::NominalMCL],
             templateAdditionalNames[AdditionalName::MeasuredMCL] });
     }
     _project->setCurrentFigure(_nominalName);
@@ -101,7 +105,8 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString &edgeName, CurveType 
     _project->removeFigure(curveDevs->name());
 }
 
-CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString &edgeName, TypeOfShowDevs devsType, CurveType curveType) {
+CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString& edgeName, TypeOfShowDevs devsType, CurveType curveType)
+{
     auto edge = dynamic_cast<const CurveFigure*>(_project->findFigure(edgeName));
 
     ARGUMENT_ASSERT(edge, "Create numerical deviations: curve's not found");
@@ -116,12 +121,14 @@ CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString &edgeNam
         for(auto i = 0; i < edgePoints.length(); i += pointsInterval) {
             pointsWithInterval.append(edgePoints[i]);
         }
-    } else if(devsType == ReportSettings::TypeOfShowDevs::Set) {
+    }
+    else if(devsType == ReportSettings::TypeOfShowDevs::Set) {
         auto pointsInterval = curveType == CurveType::GlobalLE ? _reportSettings->valueOfSetShowDevsLE() + 1 : _reportSettings->valueOfSetShowDevsTE() + 1;
         for(auto i = 0; i < edgePoints.length(); i += pointsInterval) {
             pointsWithInterval.append(edgePoints[i]);
         }
-    } else if(devsType == ReportSettings::TypeOfShowDevs::OnEdge) {
+    }
+    else if(devsType == ReportSettings::TypeOfShowDevs::OnEdge) {
         pointsWithInterval.append(edgePoints[edgePoints.length() / 2]);
     }
     auto curveWithIntervalName = QString("%1_interval").arg(edgeName);
@@ -133,7 +140,8 @@ CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString &edgeNam
     return curveWithInterval;
 }
 
-void ScreenshotCreator::setDefaultVisibilityOnGraphics(const QStringList &visibleFigures) {
+void ScreenshotCreator::setDefaultVisibilityOnGraphics(const QStringList& visibleFigures)
+{
     _project->resetVisibilityForAllFigures();
     _project->setVisibility(visibleFigures);
     _plot->zoomExtents();

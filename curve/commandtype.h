@@ -1,99 +1,148 @@
 #pragma once
 
 enum class CommandType {
-    LoadCloud, //DONE
-    LoadProject, //DONE
-    SaveProject, //YET
-    ClearProject, //YET
+    LoadCloud,    // DONE
+    LoadProject,  // DONE
+    SaveProject,  // DONE
+    ClearProject, // DONE
     ConstantTolerance,
     EdgesTolerance,
     CreateWidthOfLE,
     CreateWidthOfTE,
-    MergeScans, //YET
-    RadiusCorrection, //YET
+    MergeScans,       // DONE
+    RadiusCorrection, // DONE
+    RadiusCorrection3D,
     CalculateDeviations,
-    BestFit, //YET
+    BestFit, // DONE
     CreateDimension,
-    InsertBestFitPosition,
-    RenameFigure, //DONE
-    RemoveFigure, //YET
+    InsertBestFitPosition, // DONE
+    RenameFigure,          // DONE
+    RemoveFigure,          // DONE
     FigureVisibilityChanged,
-    CreateReport, //YET
+    CreateReport, // DONE
     ChangeFigureColor,
-    ExportToFLR, //YET
-    ShiftFigure, //YET
-    RotateFigure, //YET
-    Alignment, //YET
+    ExportToFLR,  // DONE
+    ShiftFigure,  // DONE
+    RotateFigure, // DONE
+    Alignment,    // DONE
     CalculateCurve,
-    RegenerateCurve, //YET
-    EditFigure,
+    RegenerateCurve, // DONE
+    EditFigure,      // DONE
     CreateMaxCircle,
     CreateMiddleCurve,
     CreateContactLine,
     ChangeFigureVisibility,
-    ChangeCurveParameters,
+    ChangeCurveParameters, // DONE
     ChangeDimensionParameters,
-    PartData, //YET
+    PartData, // DONE
     InsertText,
-    PrintReport, //YET
+    PrintReport, // DONE
     ClearReport,
     RemovePage,
-    SetPrinterSettings, //YET
+    SetPrinterSettings, // DONE
     ShowAll,
-    HideAll,
+    HideAll, // DONE
     CompareFLR,
+    ChangeCurveAppearance, // DONE
     Unknown,
 };
 
-static QString commandTypeToString(CommandType type) {
+static QString commandTypeToString(CommandType type)
+{
     switch(type) {
-        case CommandType::LoadCloud: return "LoadCloud";
-        case CommandType::LoadProject: return "LoadProject";
-        case CommandType::SaveProject: return "SaveProject";
-        case CommandType::ClearProject: return "ClearProject";
-        case CommandType::ConstantTolerance: return "ConstantTolerance";
-        case CommandType::EdgesTolerance: return "EdgesTolerance";
-        case CommandType::CreateWidthOfLE: return "CreateWidthOfLE";
-        case CommandType::CreateWidthOfTE: return "CreateWidthOfTE";
-        case CommandType::MergeScans: return "MergeScans";
-        case CommandType::RadiusCorrection: return "RadiusCorrection";
-        case CommandType::CalculateDeviations: return "CalculateDeviations";
-        case CommandType::BestFit: return "BestFit";
-        case CommandType::CreateDimension: return "CreateDimension";
-        case CommandType::InsertBestFitPosition: return "InsertBestFitPosition";
-        case CommandType::RenameFigure: return "RenameFigure";
-        case CommandType::RemoveFigure: return "RemoveFigure";
-        case CommandType::FigureVisibilityChanged: return "FigureVisibilityChanged";
-        case CommandType::CreateReport: return "CreateReport";
-        case CommandType::ChangeFigureColor: return "ChangeFigureColor";
-        case CommandType::ExportToFLR: return "ExportToFLR";
-        case CommandType::ShiftFigure: return "ShiftFigure";
-        case CommandType::RotateFigure: return "RotateFigure";
-        case CommandType::Alignment: return "Alignment";
-        case CommandType::CalculateCurve: return "CalculateCurve";
-        case CommandType::RegenerateCurve: return "RegenerateCurve";
-        case CommandType::EditFigure: return "EditFigure";
-        case CommandType::CreateMaxCircle: return "CreateMaxCircle";
-        case CommandType::CreateMiddleCurve: return "CreateMiddleCurve";
-        case CommandType::CreateContactLine: return "CreateContactLine";
-        case CommandType::ChangeFigureVisibility: return "ChangeFigureVisibility";
-        case CommandType::ChangeCurveParameters: return "ChangeCurveParameters";
-        case CommandType::ChangeDimensionParameters: return "ChangeDimensionParameters";
-        case CommandType::PartData: return "PartData";
-        case CommandType::InsertText: return "InsertText";
-        case CommandType::PrintReport: return "PrintReport";
-        case CommandType::ClearReport: return "ClearReport";
-        case CommandType::RemovePage: return "RemovePage";
-        case CommandType::SetPrinterSettings: return "SetPrinterSettings";
-        case CommandType::ShowAll: return "ShowAll";
-        case CommandType::HideAll: return "HideAll";
-        case CommandType::CompareFLR: return "CompareFLR";
-        case CommandType::Unknown: return "Unknown";
-        default: return "Unknown";
+        case CommandType::LoadCloud:
+            return "LoadCloud";
+        case CommandType::LoadProject:
+            return "LoadProject";
+        case CommandType::SaveProject:
+            return "SaveProject";
+        case CommandType::ClearProject:
+            return "ClearProject";
+        case CommandType::ConstantTolerance:
+            return "ConstantTolerance";
+        case CommandType::EdgesTolerance:
+            return "EdgesTolerance";
+        case CommandType::CreateWidthOfLE:
+            return "CreateWidthOfLE";
+        case CommandType::CreateWidthOfTE:
+            return "CreateWidthOfTE";
+        case CommandType::MergeScans:
+            return "MergeScans";
+        case CommandType::RadiusCorrection:
+            return "RadiusCorrection";
+        case CommandType::RadiusCorrection3D:
+            return "RadiusCorrection3D";
+        case CommandType::CalculateDeviations:
+            return "CalculateDeviations";
+        case CommandType::BestFit:
+            return "BestFit";
+        case CommandType::CreateDimension:
+            return "CreateDimension";
+        case CommandType::InsertBestFitPosition:
+            return "InsertBestFitPosition";
+        case CommandType::RenameFigure:
+            return "RenameFigure";
+        case CommandType::RemoveFigure:
+            return "RemoveFigure";
+        case CommandType::FigureVisibilityChanged:
+            return "FigureVisibilityChanged";
+        case CommandType::CreateReport:
+            return "CreateReport";
+        case CommandType::ChangeFigureColor:
+            return "ChangeFigureColor";
+        case CommandType::ExportToFLR:
+            return "ExportToFLR";
+        case CommandType::ShiftFigure:
+            return "ShiftFigure";
+        case CommandType::RotateFigure:
+            return "RotateFigure";
+        case CommandType::Alignment:
+            return "Alignment";
+        case CommandType::CalculateCurve:
+            return "CalculateCurve";
+        case CommandType::RegenerateCurve:
+            return "RegenerateCurve";
+        case CommandType::EditFigure:
+            return "EditFigure";
+        case CommandType::CreateMaxCircle:
+            return "CreateMaxCircle";
+        case CommandType::CreateMiddleCurve:
+            return "CreateMiddleCurve";
+        case CommandType::CreateContactLine:
+            return "CreateContactLine";
+        case CommandType::ChangeFigureVisibility:
+            return "ChangeFigureVisibility";
+        case CommandType::ChangeCurveParameters:
+            return "ChangeCurveParameters";
+        case CommandType::ChangeDimensionParameters:
+            return "ChangeDimensionParameters";
+        case CommandType::PartData:
+            return "PartData";
+        case CommandType::InsertText:
+            return "InsertText";
+        case CommandType::PrintReport:
+            return "PrintReport";
+        case CommandType::ClearReport:
+            return "ClearReport";
+        case CommandType::RemovePage:
+            return "RemovePage";
+        case CommandType::SetPrinterSettings:
+            return "SetPrinterSettings";
+        case CommandType::ShowAll:
+            return "ShowAll";
+        case CommandType::HideAll:
+            return "HideAll";
+        case CommandType::CompareFLR:
+            return "CompareFLR";
+        case CommandType::ChangeCurveAppearance:
+            return "ChangeCurveAppearance";
+        default:
+            return "Unknown";
     }
 }
 
-static CommandType stringToCommandType(const QString& str) {
+static CommandType stringToCommandType(const QString& str)
+{
     static QMap<QString, CommandType> map = {
         { "LoadCloud", CommandType::LoadCloud },
         { "LoadProject", CommandType::LoadProject },

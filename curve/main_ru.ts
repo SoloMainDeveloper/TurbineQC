@@ -426,6 +426,14 @@
     </message>
 </context>
 <context>
+    <name>ChangeCurveAppearanceCommand</name>
+    <message>
+        <location filename="changecurveappearancecommand.cpp" line="25"/>
+        <source>Change Curve Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CompareFLRDialog</name>
     <message>
         <location filename="compareflrdialog.ui" line="14"/>
@@ -618,7 +626,7 @@
     </message>
     <message>
         <location filename="curvewindow.ui" line="123"/>
-        <location filename="curvewindow.cpp" line="95"/>
+        <location filename="curvewindow.cpp" line="134"/>
         <source>Search figure</source>
         <translation>Найти фигуру</translation>
     </message>
@@ -639,8 +647,8 @@
     </message>
     <message>
         <location filename="curvewindow.ui" line="237"/>
-        <location filename="curvewindow.cpp" line="233"/>
-        <location filename="curvewindow.cpp" line="248"/>
+        <location filename="curvewindow.cpp" line="294"/>
+        <location filename="curvewindow.cpp" line="323"/>
         <source>Dimensions</source>
         <translation>Измерения</translation>
     </message>
@@ -906,48 +914,48 @@
         <translation>Остановить запись</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="223"/>
-        <location filename="curvewindow.cpp" line="238"/>
+        <location filename="curvewindow.cpp" line="274"/>
+        <location filename="curvewindow.cpp" line="303"/>
         <source>All figures</source>
         <translation>Все фигуры</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="225"/>
-        <location filename="curvewindow.cpp" line="240"/>
+        <location filename="curvewindow.cpp" line="278"/>
+        <location filename="curvewindow.cpp" line="307"/>
         <source>Curves</source>
         <translation>Кривые</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="227"/>
-        <location filename="curvewindow.cpp" line="242"/>
+        <location filename="curvewindow.cpp" line="282"/>
+        <location filename="curvewindow.cpp" line="311"/>
         <source>Circles</source>
         <translation>Окружности</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="229"/>
-        <location filename="curvewindow.cpp" line="244"/>
+        <location filename="curvewindow.cpp" line="286"/>
+        <location filename="curvewindow.cpp" line="315"/>
         <source>Lines</source>
         <translation>Прямые</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="231"/>
-        <location filename="curvewindow.cpp" line="246"/>
+        <location filename="curvewindow.cpp" line="290"/>
+        <location filename="curvewindow.cpp" line="319"/>
         <source>Points</source>
         <translation>Точки</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="235"/>
-        <location filename="curvewindow.cpp" line="250"/>
+        <location filename="curvewindow.cpp" line="298"/>
+        <location filename="curvewindow.cpp" line="327"/>
         <source>Texts</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="284"/>
+        <location filename="curvewindow.cpp" line="368"/>
         <source>Save project</source>
         <translation>Сохранить проект</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="286"/>
+        <location filename="curvewindow.cpp" line="370"/>
         <source>CRV files (*.crv);</source>
         <translation></translation>
     </message>
@@ -990,7 +998,7 @@
         <translation>Выбрать все</translation>
     </message>
     <message>
-        <location filename="exporttoFLRdialog.cpp" line="47"/>
+        <location filename="exporttoFLRdialog.cpp" line="48"/>
         <source>Choose filepath</source>
         <translation>Выберите путь</translation>
     </message>
@@ -1184,6 +1192,14 @@
         <location filename="figureeditdialog.cpp" line="161"/>
         <source>Choose Color</source>
         <translation>Выбрать цвет</translation>
+    </message>
+</context>
+<context>
+    <name>HideAllCommand</name>
+    <message>
+        <location filename="hideallcommand.cpp" line="32"/>
+        <source>Hide All</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1407,7 +1423,7 @@
     </message>
     <message>
         <location filename="macrosdialog.ui" line="261"/>
-        <location filename="macrosdialog.cpp" line="168"/>
+        <location filename="macrosdialog.cpp" line="195"/>
         <source>Stop</source>
         <translation>Остановить</translation>
     </message>
@@ -1417,27 +1433,32 @@
         <translation>Пропустить</translation>
     </message>
     <message>
-        <location filename="macrosdialog.cpp" line="170"/>
+        <location filename="macrosdialog.cpp" line="165"/>
+        <source>Macros: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="macrosdialog.cpp" line="198"/>
         <source>Record</source>
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="macrosdialog.cpp" line="198"/>
+        <location filename="macrosdialog.cpp" line="229"/>
         <source>Remove command?</source>
         <translation>Удалить команду?</translation>
     </message>
     <message>
-        <location filename="macrosdialog.cpp" line="238"/>
+        <location filename="macrosdialog.cpp" line="274"/>
         <source>Edit command</source>
         <translation>Редактировать команду</translation>
     </message>
     <message>
-        <location filename="macrosdialog.cpp" line="250"/>
+        <location filename="macrosdialog.cpp" line="286"/>
         <source>Cancel</source>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="macrosdialog.cpp" line="254"/>
+        <location filename="macrosdialog.cpp" line="290"/>
         <source>Apply</source>
         <translation>Применить</translation>
     </message>
@@ -1612,6 +1633,14 @@
         <location filename="printpreviewdialog.ui" line="54"/>
         <source>Clear</source>
         <translation>Очистить</translation>
+    </message>
+</context>
+<context>
+    <name>RadiusCorrection3DCommand</name>
+    <message>
+        <location filename="radiuscorrection3dcommand.cpp" line="56"/>
+        <source>Radius Correction 3D</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2808,6 +2837,14 @@
         <location filename="turbinedialog.ui" line="167"/>
         <source>Close</source>
         <translation>Закрыть</translation>
+    </message>
+</context>
+<context>
+    <name>UnknownCommand</name>
+    <message>
+        <location filename="unknowncommand.cpp" line="25"/>
+        <source>Unknown Command</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

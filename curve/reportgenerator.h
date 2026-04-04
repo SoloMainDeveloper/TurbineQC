@@ -1,40 +1,47 @@
 #pragma once
 
-#include "plot.h"
-#include "project.h"
-#include "reportsettings.h"
-#include "curveanalyzer.h"
-#include "figurecreator.h"
-#include "screenshotcreator.h"
-#include "markupcreator.h"
-#include "printer.h"
-
+class Project;
+class Plot;
 class ReportSettings;
 
 class ReportGenerator {
 public:
     enum class GlobalName {
         GlobalCurve,
-        GlobalCV, GlobalCC,
-        GlobalLE, GlobalTE,
+        GlobalCV,
+        GlobalCC,
+        GlobalLE,
+        GlobalTE,
     };
 
     enum class FormName {
         GlobalForm,
-        CVForm, CCForm,
-        LEForm, TEForm,
+        CVForm,
+        CCForm,
+        LEForm,
+        TEForm,
     };
 
     enum class AdditionalName {
-        NominalMCL, MeasuredMCL,
-        NominalMaxDia, MeasuredMaxDia,
-        NominalCntctLine, MeasuredCntctLine
+        NominalMCL,
+        MeasuredMCL,
+        NominalMaxDia,
+        MeasuredMaxDia,
+        NominalCntctLine,
+        MeasuredCntctLine
     };
 
     enum class InterimName {
-        NominalCurve, MeasuredCurve,
-        NominalCV, MeasuredCV,
-        NominalCC, MeasuredCC,
+        NominalCurve,
+        MeasuredCurve,
+        NominalCV,
+        MeasuredCV,
+        NominalCC,
+        MeasuredCC,
+        NominalLE,
+        MeasuredLE,
+        NominalTE,
+        MeasuredTE,
     };
 
     static void createReport(std::shared_ptr<ReportSettings> reportSettings);

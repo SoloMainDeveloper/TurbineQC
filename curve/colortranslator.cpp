@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "colortranslator.h"
 
 QColor* ColorTranslator::getColorFromInt(const int colorInt) {

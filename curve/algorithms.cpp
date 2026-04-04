@@ -1,12 +1,15 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
-#include "regeneratecurvecommand.h"
 #include "bestfitcommand.h"
+#include "curvelibrary.h"
 #include "mergescanscommand.h"
+#include "radiuscorrection3dcommand.h"
 #include "radiuscorrectioncommand.h"
+#include "regeneratecurvecommand.h"
 
-void Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params *params, Project *project) {
+void Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Function1Params* params, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -18,7 +21,8 @@ void Algorithms::enlargeCurveWithIntermediatePoints(QString figureName, const Fu
     project->safeInsert(newName, newCurve);
 }
 
-void Algorithms::calculateCurve(QString figureName, QString newFigureName, const Function1Params *params, Project *project) {
+void Algorithms::calculateCurve(QString figureName, QString newFigureName, const Function1Params* params, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -33,25 +37,25 @@ void Algorithms::calculateCurve(QString figureName, QString newFigureName, const
 
     auto log = QMap<QString, QString>(const_cast<Function1Params*>(params)->toQMap());
     log.insert({ { "figureName", figureName }, { "newFigureName", newFigureName } });
-    //MacrosManager::log(MacrosManager::CalculateCurve, log);
+    // MacrosManager::log(MacrosManager::CalculateCurve, log);
 }
 
-void Algorithms::regenerateCurve(QString figureName, QString newFigureName, const Function19Params *params) {
+void Algorithms::regenerateCurve(QString figureName, QString newFigureName, const Function19Params* params)
+{
     auto figure = Project::instance().findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Regenerate curve: curve`s not found");
 
-    auto &pointsToRegen = curve->points();
+    auto& pointsToRegen = curve->points();
     auto regenCurve = CurveMachine::regenerateCurve(pointsToRegen, *params);
-    auto &regeneratedPoints = regenCurve.points();
+    auto& regeneratedPoints = regenCurve.points();
 
     QVector<CurvePoint> resultPoints;
     for(auto i = 0; i < regeneratedPoints.length(); i++) {
         resultPoints.append(CurvePoint(
             regeneratedPoints[i].x, regeneratedPoints[i].y, pointsToRegen[0].z,
-            regeneratedPoints[i].i, regeneratedPoints[i].j, regeneratedPoints[i].k
-        ));
+            regeneratedPoints[i].i, regeneratedPoints[i].j, regeneratedPoints[i].k));
     }
 
     auto resultCurve = new CurveFigure;
@@ -63,7 +67,8 @@ void Algorithms::regenerateCurve(QString figureName, QString newFigureName, cons
     MacrosManager::instance().log(std::make_shared<RegenerateCurveCommand>(figureName, newFigureName, params));
 }
 
-void Algorithms::createMiddleCurve(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
+void Algorithms::createMiddleCurve(QString parentName, QString figureName, const Function18Params* params, Project* project, QColor color)
+{
     auto result = getMiddleCurve(parentName, params, project);
     auto middleCurve = new CurveFigure(figureName, result.points());
     middleCurve->setColor(color);
@@ -71,10 +76,11 @@ void Algorithms::createMiddleCurve(QString parentName, QString figureName, const
 
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    //MacrosManager::log(MacrosManager::CreateMiddleCurve, log);
+    // MacrosManager::log(MacrosManager::CreateMiddleCurve, log);
 }
 
-CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params *params, Project *project) {
+CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -83,7 +89,8 @@ CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params
     return CurveMachine::getMiddleCurve(curve->points(), *params);
 }
 
-double Algorithms::getMiddleCurveLength(QString curveName, const Function18Params *params, Project * project) {
+double Algorithms::getMiddleCurveLength(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -92,7 +99,8 @@ double Algorithms::getMiddleCurveLength(QString curveName, const Function18Param
     return CurveMachine::getMiddleCurveLength(curve->points(), *params);
 }
 
-void Algorithms::createContactLine(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
+void Algorithms::createContactLine(QString parentName, QString figureName, const Function18Params* params, Project* project, QColor color)
+{
     auto contactLine = getContactLine(parentName, params, project);
     auto lineFigure = new LineFigure(figureName, contactLine.origin(), contactLine.direction(), qInf());
     lineFigure->setColor(color);
@@ -100,10 +108,11 @@ void Algorithms::createContactLine(QString parentName, QString figureName, const
 
     auto log = params->toQMap();
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    //MacrosManager::log(MacrosManager::CreateContactLine, log);
+    // MacrosManager::log(MacrosManager::CreateContactLine, log);
 }
 
-LineFigure Algorithms::getContactLine(QString curveName, const Function18Params *params, Project *project) {
+LineFigure Algorithms::getContactLine(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -112,7 +121,8 @@ LineFigure Algorithms::getContactLine(QString curveName, const Function18Params 
     return CurveMachine::getContactLine(curve->points(), *params);
 }
 
-void Algorithms::createMaxCircle(QString parentName, QString figureName, const Function18Params *params, Project *project, QColor color) {
+void Algorithms::createMaxCircle(QString parentName, QString figureName, const Function18Params* params, Project* project, QColor color)
+{
     auto result = getMaxCircle(parentName, params, project);
     auto circle = new CircleFigure(figureName, result.center(), Point(0, 0, 1), result.radius());
     circle->setColor(color);
@@ -120,10 +130,11 @@ void Algorithms::createMaxCircle(QString parentName, QString figureName, const F
 
     auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
-    //MacrosManager::log(MacrosManager::CreateMaxCircle, log);
+    // MacrosManager::log(MacrosManager::CreateMaxCircle, log);
 }
 
-CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params *params, Project *project) {
+CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -132,7 +143,8 @@ CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params 
     return CurveMachine::getMaxCircle(curve->points(), *params);
 }
 
-QPair<PointFigure, PointFigure> Algorithms::getChord(QString curveName, const Function18Params * params, Project * project) {
+QPair<PointFigure, PointFigure> Algorithms::getChord(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -141,7 +153,8 @@ QPair<PointFigure, PointFigure> Algorithms::getChord(QString curveName, const Fu
     return CurveMachine::getChord(curve->points(), *params);
 }
 
-double Algorithms::getChordLength(QString curveName, const Function18Params *params, Project *project) {
+double Algorithms::getChordLength(QString curveName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -151,7 +164,8 @@ double Algorithms::getChordLength(QString curveName, const Function18Params *par
     return chordLength;
 }
 
-QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(QString curveName, const Function18Params *params, double distanceFromEdge, Project *project) {
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(QString curveName, const Function18Params* params, double distanceFromEdge, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -160,7 +174,8 @@ QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(QString curveNam
     return CurveMachine::getWidthOfLeadingEdge(curve->points(), *params, distanceFromEdge);
 }
 
-QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(QString figureName, const Function18Params *params, double distanceFromEdge, Project *project) {
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(QString figureName, const Function18Params* params, double distanceFromEdge, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -169,7 +184,8 @@ QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(QString figureN
     return CurveMachine::getWidthOfTrailingEdge(curve->points(), *params, distanceFromEdge);
 }
 
-CircleFigure Algorithms::getRadiusOfLeadingEdge(QString curveName, const Function18Params *params, double degreeAngle, Project *project) {
+CircleFigure Algorithms::getRadiusOfLeadingEdge(QString curveName, const Function18Params* params, double degreeAngle, Project* project)
+{
     auto figure = project->findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -178,7 +194,8 @@ CircleFigure Algorithms::getRadiusOfLeadingEdge(QString curveName, const Functio
     return CurveMachine::getRadiusOfLeadingEdge(curve->points(), *params, degreeAngle);
 }
 
-CircleFigure Algorithms::getRadiusOfTrailingEdge(QString figureName, const Function18Params *params, double degreeAngle, Project * project) {
+CircleFigure Algorithms::getRadiusOfTrailingEdge(QString figureName, const Function18Params* params, double degreeAngle, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -187,7 +204,8 @@ CircleFigure Algorithms::getRadiusOfTrailingEdge(QString figureName, const Funct
     return CurveMachine::getRadiusOfTrailingEdge(curve->points(), *params, degreeAngle);
 }
 
-double Algorithms::getMinX(QString figureName, const Function18Params *params, Project *project) {
+double Algorithms::getMinX(QString figureName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -195,7 +213,8 @@ double Algorithms::getMinX(QString figureName, const Function18Params *params, P
     return CurveMachine::getMinX(curve->points(), *params);
 }
 
-void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params *params) {
+void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params* params)
+{
     auto& project = Project::instance();
     auto figure = project.findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
@@ -212,7 +231,8 @@ void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName,
     MacrosManager::instance().log(std::make_shared<RadiusCorrectionCommand>(figureName, figureNewName, params));
 }
 
-bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted) {
+bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurveName, QString resultName, double threshold, bool needSorted)
+{
     auto& project = Project::instance();
     auto firstCloud = project.findFigure(firstCurveName);
     auto secondCloud = project.findFigure(secondCurveName);
@@ -237,7 +257,8 @@ bool Algorithms::tryMergePointClouds(QString firstCurveName, QString secondCurve
     return true;
 }
 
-void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params *params) {
+void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName, QString resultCurveName, const Function4Params* params)
+{
     auto& project = Project::instance();
     auto measFigure = project.findFigure(measCurveName);
     auto nomFigure = project.findFigure(nomCurveName);
@@ -257,10 +278,11 @@ void Algorithms::calculateDeviations(QString nomCurveName, QString measCurveName
 
     auto log = QMap<QString, QString>(const_cast<Function4Params*>(params)->toQMap());
     log.insert({ { "nominal", nomCurveName }, { "measured", measCurveName }, { "resultName", resultCurveName } });
-    //MacrosManager::log(MacrosManager::CalculateDeviations, log);
+    // MacrosManager::log(MacrosManager::CalculateDeviations, log);
 }
 
-void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params *params) {
+void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function6Params* params)
+{
     auto& project = Project::instance();
     auto nominalFigure = project.findFigure(nomCurveName);
     auto measuredFigure = project.findFigure(measCurveName);
@@ -287,7 +309,8 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
     MacrosManager::instance().log(std::make_shared<BestFitCommand>(nomCurveName, measCurveName, resultCurveName, bestFitLineName, params));
 }
 
-void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params *params) {
+void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, QString resultCurveName, QString bestFitLineName, const Function21Params* params)
+{
     auto& project = Project::instance();
     auto nominalFigure = project.findFigure(nomCurveName);
     auto measuredFigure = project.findFigure(measCurveName);
@@ -312,7 +335,8 @@ void Algorithms::calculateBestFit(QString nomCurveName, QString measCurveName, Q
     project.safeInsert(bestFitLineName, bestFitLine, false);
 }
 
-void Algorithms::calculateConstantTolerances(QString figureName, double upperTolerance, double lowerTolerance, Project *project) {
+void Algorithms::calculateConstantTolerances(QString figureName, double upperTolerance, double lowerTolerance, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -333,7 +357,8 @@ void Algorithms::calculateConstantTolerances(QString figureName, double upperTol
 }
 
 void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDirection, double lEPercent, double tEPercent, double lEUpper, double lELower,
-    double tEUpper, double tELower, double highEUpper, double highELower, double lowEUpper, double lowELower, Project *project) {
+    double tEUpper, double tELower, double highEUpper, double highELower, double lowEUpper, double lowELower, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -348,8 +373,7 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
     f18result.curveLow.assignToleranceToSegment(lowEUpper, lowELower);
 
     QVector<CurvePoint> pointsWithTolerances;
-    if(f18result.curveLE.points().length() + f18result.curveHigh.points().length() +
-        f18result.curveTE.points().length() + f18result.curveLow.points().length() == curve->points().length() + 8) {
+    if(f18result.curveLE.points().length() + f18result.curveHigh.points().length() + f18result.curveTE.points().length() + f18result.curveLow.points().length() == curve->points().length() + 8) {
         auto curveLEPoints = f18result.curveLE.points();
         curveLEPoints.pop_back();
         curveLEPoints.pop_front();
@@ -364,9 +388,9 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
         curveLowPoints.pop_front();
 
         pointsWithTolerances = curveLEPoints + curveLowPoints + curveTEPoints + curveHighPoints;
-    } else {
-        pointsWithTolerances = f18result.curveLE.points() + f18result.curveLow.points() +
-            f18result.curveTE.points() + f18result.curveHigh.points();
+    }
+    else {
+        pointsWithTolerances = f18result.curveLE.points() + f18result.curveLow.points() + f18result.curveTE.points() + f18result.curveHigh.points();
     }
 
     auto f1params = Function1Params(0, 0, 0, true, true, FunctionParams::Direction::Left, false);
@@ -389,7 +413,8 @@ void Algorithms::calculateEdgesTolerance(QString figureName, int leadingEdgeDire
         { "lowEdgeLowerTolerance", QString::number(lowELower) }, });*/
 }
 
-void Algorithms::insertBestFitDimension(const QString &figureName, const QString &parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR) {
+void Algorithms::insertBestFitDimension(const QString& figureName, const QString& parentName, double x, double y, double z, bool isShowX, bool isShowY, bool isShowR)
+{
     auto labelPoint = Point(x, y, z);
     auto dimension = new DimFigure(figureName, labelPoint);
     auto& project = Project::instance();
@@ -411,7 +436,8 @@ void Algorithms::insertBestFitDimension(const QString &figureName, const QString
     project.safeInsert(figureName, dimension, false);
 }
 
-CurveParts Algorithms::divideCurveIntoParts(const QString &figureName, const Function18Params *params, Project *project) {
+CurveParts Algorithms::divideCurveIntoParts(const QString& figureName, const Function18Params* params, Project* project)
+{
     auto figure = project->findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
@@ -420,7 +446,8 @@ CurveParts Algorithms::divideCurveIntoParts(const QString &figureName, const Fun
     return CurveMachine::divideCurveIntoParts(curve->points(), *params);
 }
 
-void Algorithms::calculateStretch(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function31Params *params31, const Function6Params *params6, Project *project) {
+void Algorithms::calculateStretch(const QString& nomCurveName, const QString& measCurveName, const QString& resultCurveName, const Function31Params* params31, const Function6Params* params6, Project* project)
+{
     auto nominalFigure = project->findFigure(nomCurveName);
     auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
     auto measuredFigure = project->findFigure(measCurveName);
@@ -437,7 +464,8 @@ void Algorithms::calculateStretch(const QString &nomCurveName, const QString &me
     project->safeInsert(resultCurveName, resultCurve);
 }
 
-void Algorithms::calculateCurveUsing3DVectors(const QString &nomCurveName, const QString &measCurveName, const QString &resultCurveName, const Function42Params *params, double radiusCorrection, Project *project) {
+void Algorithms::calculateCurveUsing3DVectors(const QString& nomCurveName, const QString& measCurveName, const QString& resultCurveName, const Function42Params* params, double radiusCorrection, Project* project)
+{
     auto nominalFigure = project->findFigure(nomCurveName);
     auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
     auto measuredFigure = project->findFigure(measCurveName);
@@ -453,9 +481,32 @@ void Algorithms::calculateCurveUsing3DVectors(const QString &nomCurveName, const
     project->safeInsert(resultCurveName, resultCurve);
 }
 
-void Algorithms::calculateMeasuredParams(Project *project, std::shared_ptr<ReportSettings> reportSettings, const QString &globalMeasCurve) {
+void Algorithms::calculateCurveUsing3DVectorsTest(const QString& nomCurveName, const QString& measCurveName, const QString& resultCurveName,
+    const Function42Params* params, double radiusCorrection)
+{
+    auto& project = Project::instance();
+    auto nominalFigure = project.findFigure(nomCurveName);
+    auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
+    auto measuredFigure = project.findFigure(measCurveName);
+    auto measuredCurve = dynamic_cast<const CurveFigure*>(measuredFigure);
+
+    ARGUMENT_ASSERT(nominalCurve && measuredCurve, "Calculate curve using 3D vectors: best fit line not found");
+
+    auto nominalPoints = nominalCurve->points();
+    auto measuredPoints = measuredCurve->points();
+    auto resultPoints = CurveMachine::calculateCurveUsing3DVectorsTest(nominalPoints, measuredPoints, *params, radiusCorrection);
+
+    auto resultCurve = new CurveFigure(resultCurveName, resultPoints);
+    project.safeInsert(resultCurveName, resultCurve);
+
+    MacrosManager::instance().log(std::make_shared<RadiusCorrection3DCommand>(
+        nomCurveName, measCurveName, resultCurveName, params, radiusCorrection));
+}
+
+void Algorithms::calculateMeasuredParams(Project* project, std::shared_ptr<ReportSettings> reportSettings, const QString& globalMeasCurve)
+{
     auto nominalCurve = reportSettings->nominalName();
-    auto &turbineParams = reportSettings->turbineParameters();
+    auto& turbineParams = reportSettings->turbineParameters();
     auto params18 = FunctionParamsGenerator::params18(project, reportSettings);
     for(auto [type, paramList] : turbineParams.asKeyValueRange()) {
         for(auto i = 0; i < paramList.count(); i++) {
@@ -464,33 +515,39 @@ void Algorithms::calculateMeasuredParams(Project *project, std::shared_ptr<Repor
     }
 }
 
-double Algorithms::getDistanceBetweenPoints(Point firstPoint, Point secondPoint) {
+double Algorithms::getDistanceBetweenPoints(Point firstPoint, Point secondPoint)
+{
     return CurveMachine::getDistanceBetweenPoints(firstPoint, secondPoint);
 }
 
-Point Algorithms::getMiddlePoint(Point firstPoint, Point secondPoint) {
+Point Algorithms::getMiddlePoint(Point firstPoint, Point secondPoint)
+{
     return CurveMachine::getMiddlePoint(firstPoint, secondPoint);
 }
 
-void Algorithms::reassembleWholeCurve(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+void Algorithms::reassembleWholeCurve(const QString& resultCurveName, const CurveParts& curveParts, LEDirection direction, Project* project)
+{
     auto reassembledPoints = CurveMachine::reassembleWholeCurve(curveParts, direction);
     auto curve = new CurveFigure(resultCurveName, reassembledPoints);
     project->safeInsert(resultCurveName, curve);
 }
 
-void Algorithms::reassembleCurveWithoutTE(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+void Algorithms::reassembleCurveWithoutTE(const QString& resultCurveName, const CurveParts& curveParts, LEDirection direction, Project* project)
+{
     auto reassembledPoints = CurveMachine::reassembleCurveWithoutTE(curveParts, direction);
     auto curve = new CurveFigure(resultCurveName, reassembledPoints);
     project->safeInsert(resultCurveName, curve);
 }
 
-void Algorithms::reassembleCurveWithoutEdges(const QString &resultCurveName, const CurveParts &curveParts, LEDirection direction, Project *project) {
+void Algorithms::reassembleCurveWithoutEdges(const QString& resultCurveName, const CurveParts& curveParts, LEDirection direction, Project* project)
+{
     auto reassembledPoints = CurveMachine::reassembleCurveWithoutEdges(curveParts, direction);
     auto curve = new CurveFigure(resultCurveName, reassembledPoints);
     project->safeInsert(resultCurveName, curve);
 }
 
-ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathFLR2, QString resultPath, int pointsStartIndex, double precision) {
+ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathFLR2, QString resultPath, int pointsStartIndex, double precision)
+{
     ARGUMENT_ASSERT(QFile::exists(filepathFLR1), "Compare FLR: FLR 1 not found");
     ARGUMENT_ASSERT(QFile::exists(filepathFLR2), "Compare FLR: FLR 2 not found");
     auto flr1 = FileSystem::readFile(filepathFLR1).split("$END$")[1].trimmed().split("\n");
@@ -519,7 +576,8 @@ ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathF
             auto num2 = compare2->name2().split("-")[1].toInt();
             if(num1 > num2) {
                 i++;
-            } else {
+            }
+            else {
                 j++;
             }
             compare2 = compareTwoParamsFLR(flr1[i], flr2[j]);
@@ -547,10 +605,9 @@ ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathF
     return new ResultCompareFLR(totalParams, dimsFails, dimsFailsDeviationSum, pointsFails, pointsFailsDeviationSum, maxFailDeviation);
 }
 
-ResultCompare2Params* Algorithms::compareTwoParamsFLR(QString first, QString second) {
+ResultCompare2Params* Algorithms::compareTwoParamsFLR(QString first, QString second)
+{
     auto splitted1 = first.split(", ");
     auto splitted2 = second.split(", ");
     return new ResultCompare2Params(splitted1[1], splitted2[1], splitted1[7].toDouble(), splitted2[7].toDouble());
 }
-
-

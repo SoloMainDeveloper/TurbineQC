@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "figure.h"
 
 Point::Point() : Point(0.0, 0.0) {

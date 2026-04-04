@@ -5,13 +5,13 @@
 class ReportSettings {
 public:
     static QMap<QString, QString> convertToQMap(std::shared_ptr<ReportSettings> reportSettings);
-    static std::shared_ptr<ReportSettings> convertToSettings(QMap<QString, QString> *params);
+    static std::shared_ptr<ReportSettings> convertToSettings(QMap<QString, QString>* params);
     static QMap<QString, QString> translateAirfoilSettings(QList<QStringList> lines);
 
     explicit ReportSettings();
     virtual ~ReportSettings() = default;
 
-    //Direction, zone
+    // Direction, zone
     enum class LEDirection {
         Auto,
         PlusX,
@@ -24,7 +24,7 @@ public:
         Length,
     };
 
-    //Global form
+    // Global form
     enum class Profile {
         Whole,
         WithoutEdges,
@@ -35,8 +35,8 @@ public:
     enum class GlobalBestFit {
         NoFit,
         Whole,
-        WithoutEdges,
-        WithoutTE,
+        WithoutEdgesLSQ,
+        WithoutTELSQ,
         TwoPointsAt10Percent,
         FitInTolBand,
         MinForm,
@@ -56,10 +56,11 @@ public:
         No,
     };
 
-    //LE, TE
+    // LE, TE
     enum class EdgeBestFit {
-        GlobalFit,
-        NoFit,
+        GlobalFit = 0,
+        FreeFitForm = 1,
+        NoFit = 9,
     };
     enum class TypeOfShowDevs {
         Auto,
@@ -68,13 +69,13 @@ public:
         OnEdge,
     };
 
-    //Form axis
+    // Form axis
     enum class Evaluation {
         Nominal = 1,
         Measured = 2,
     };
 
-    //Single report
+    // Single report
     enum class Template {
         AirfoilReport1,
     };
@@ -90,12 +91,12 @@ public:
     void setScreenshotOfTE(QImage screenshotOfTE);
     QImage screenshotOfTE() const;
 
-    //Calculate parameters
-    void appendTurbineParameter(TurbineParameter *parameter);
+    // Calculate parameters
+    void appendTurbineParameter(TurbineParameter* parameter);
     QMap<TurbineParameter::Type, QList<TurbineParameter*>>& turbineParameters();
     void clearTurbineParameters();
-    
-    //Direction, zone
+
+    // Direction, zone
     void setLEDirection(LEDirection direction);
     LEDirection directionOfLE() const;
 
@@ -104,7 +105,7 @@ public:
     int zoneTE() const;
     MeasureType measureType() const;
 
-    //Pre-process
+    // Pre-process
     void setPreProcessSettings(bool needSortPoints, bool needRemoveEqualPoints, bool needRadiusCompensation, bool needUse3DVectors);
     bool needSortPoints() const;
     bool needRemoveEqualPoints() const;
@@ -115,7 +116,7 @@ public:
     void setRadiusCompensation(double radiusCompensation);
     double radiusCompensation() const;
 
-    //Global form
+    // Global form
     void setNeedAdditionalFigures(bool needMaxDia, bool needMCL, bool needContactLine);
     bool needMaxDiameter() const;
     bool needMCL() const;
@@ -151,7 +152,7 @@ public:
     bool isLEStretch() const;
     bool isTEStretch() const;
 
-    //LE, TE
+    // LE, TE
     void setEdgesBestFit(EdgeBestFit bestFitOfLE, EdgeBestFit bestFitOfTE);
     EdgeBestFit bestFitOfLE() const;
     EdgeBestFit bestFitOfTE() const;
@@ -174,7 +175,7 @@ public:
     int valueOfSetShowDevsLE() const;
     int valueOfSetShowDevsTE() const;
 
-    //Form axis
+    // Form axis
     void setOutputFormMode(int number);
     int outputFormMode() const;
 
@@ -182,14 +183,14 @@ public:
     Evaluation evaluationPlace() const;
     Evaluation evaluationDirection() const;
 
-    //Single report
+    // Single report
     void setNeedPrintWithTemplate(bool needPrintWithTemplate);
     bool needPrintWithTemplate() const;
 
     void setReportTemplate(Template reportTemplate);
     Template reportTemplate() const;
 
-    void setComment(const QString &comment);
+    void setComment(const QString& comment);
     QString comment() const;
 
 private:
@@ -202,16 +203,16 @@ private:
     QImage _screenshotOfLE;
     QImage _screenshotOfTE;
 
-    //Calculate parameters
+    // Calculate parameters
     QMap<TurbineParameter::Type, QList<TurbineParameter*>> _turbineParameters;
 
-    //Direction, zone
+    // Direction, zone
     LEDirection _directionOfLE;
     int _zoneLE;
     int _zoneTE;
     MeasureType _measureType;
 
-    //Pre-process
+    // Pre-process
     bool _needSortPoints;
     bool _needRemoveEqualPoints;
     bool _needRadiusCompensation;
@@ -219,7 +220,7 @@ private:
     double _limitForEqualPoints;
     double _radiusCompensation;
 
-    //Global form
+    // Global form
     bool _needMaxDiameter;
     bool _needMCL;
     bool _needContactLine;
@@ -240,7 +241,7 @@ private:
     bool _isLEStretch;
     bool _isTEStretch;
 
-    //LE, TE
+    // LE, TE
     EdgeBestFit _bestFitOfLE;
     EdgeBestFit _bestFitOfTE;
     bool _isLEVisible;
@@ -254,12 +255,12 @@ private:
     int _valueOfSetShowDevsLE;
     int _valueOfSetShowDevsTE;
 
-    //Form axis
+    // Form axis
     int _outputFormMode;
     Evaluation _evaluationPlace;
     Evaluation _evaluationDirection;
 
-    //Single report
+    // Single report
     bool _needPrintWithTemplate;
     QString _comment;
     Template _reportTemplate;

@@ -2,6 +2,7 @@
 #define QCUSTOMPLOT_USE_LIBRARY
 
 #include <cmath> // before Qt
+#include <functional>
 #include <memory>
 
 #include <QAction>
@@ -16,6 +17,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QMainWindow>
+#include <QMap>
 #include <QMenu>
 #include <QMessageBox>
 #include <QObject>
