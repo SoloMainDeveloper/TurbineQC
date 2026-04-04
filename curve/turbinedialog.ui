@@ -680,6 +680,11 @@
          </item>
          <item>
           <property name="text">
+           <string>Free fit (Form)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>No fit</string>
           </property>
          </item>
@@ -867,6 +872,11 @@
          <item>
           <property name="text">
            <string>Use global fit</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Free fit (Form)</string>
           </property>
          </item>
          <item>
@@ -1273,9 +1283,6 @@
          <property name="checkState">
           <enum>Unchecked</enum>
          </property>
-         <property name="flags">
-          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-         </property>
         </item>
         <item>
          <property name="text">
@@ -1284,9 +1291,6 @@
          <property name="checkState">
           <enum>Unchecked</enum>
          </property>
-         <property name="flags">
-          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-         </property>
         </item>
         <item>
          <property name="text">
@@ -1294,9 +1298,6 @@
          </property>
          <property name="checkState">
           <enum>Unchecked</enum>
-         </property>
-         <property name="flags">
-          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
          </property>
         </item>
         <item>
@@ -2028,16 +2029,220 @@
             <attribute name="title">
              <string>Shift X</string>
             </attribute>
+            <layout class="QFormLayout" name="formLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelShiftXNominal">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalShiftX">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelShiftXUT">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolShiftX">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelShiftXLT">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolShiftX">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="labelShiftXAlgorithm">
+               <property name="text">
+                <string>Algorithm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="algorithmShiftX">
+               <item>
+                <property name="text">
+                 <string>Free fit</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Constrained fit</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="shiftYTab">
             <attribute name="title">
              <string>Shift Y</string>
             </attribute>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelShiftYNominal">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalShiftY">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelShiftYUT">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolShiftY">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelShiftYLT">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolShiftY">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="labelShiftYAlgorithm">
+               <property name="text">
+                <string>Algorithm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="algorithmShiftY">
+               <item>
+                <property name="text">
+                 <string>Free fit</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Constrained fit</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="turnTab">
             <attribute name="title">
              <string>Turn</string>
             </attribute>
+            <layout class="QFormLayout" name="formLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelTurnNominal">
+               <property name="text">
+                <string>Nominal</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="nominalTurn">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelTurnUT">
+               <property name="text">
+                <string>Upper Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="upperTolTurn">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelTurnLT">
+               <property name="text">
+                <string>Lower Tol.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lowerTolTurn">
+               <property name="text">
+                <string>0.0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="labelTurnAlgorithm">
+               <property name="text">
+                <string>Algorithm</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="algorithmTurn">
+               <item>
+                <property name="text">
+                 <string>Free fit</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Constrained fit</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="maxXTab">
             <attribute name="title">
