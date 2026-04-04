@@ -582,9 +582,6 @@
     <ClInclude Include="xmaxdiameter.h">
       <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClInclude>
-    <ClInclude Include="ymaxdiameter.h">
-      <Filter>Header Files\Macros\Commands\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClInclude>
     <ClInclude Include="chordlength.h">
       <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClInclude>
@@ -638,6 +635,9 @@
     </ClInclude>
     <ClInclude Include="unknowncommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ymaxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

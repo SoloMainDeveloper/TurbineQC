@@ -606,7 +606,7 @@ QVector<CurvePoint> CurveMachine::reassembleWholeCurve(const CurveParts& curvePa
     auto highCurvePoints = curveParts.pointsOfHigh;
 
     QVector<CurvePoint> resultPoints;
-    if(direction == LEDirection::PlusX || direction == LEDirection::MinusX || direction == LEDirection::Auto) {
+    if(direction == LEDirection::PlusX || direction == LEDirection::MinusY || direction == LEDirection::Auto) {
         curvePointsOfLE.removeFirst();
         lowCurvePoints.removeFirst();
         curvePointsOfTE.removeFirst();
