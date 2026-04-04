@@ -1,17 +1,22 @@
-﻿#include "curve/pch.h"
+#include "curve/pch.h"
 
 #include "macrostranslator.h"
 
 #include "alignmentcommand.h"
 #include "bestfitcommand.h"
+#include "changecurveparameterscommand.h"
 #include "clearprojectcommand.h"
 #include "createreportcommand.h"
+#include "editfigurecommand.h"
 #include "exporttoflrcommand.h"
+#include "hideallcommand.h"
+#include "insertbestfitpositioncommand.h"
 #include "loadcloudcommand.h"
 #include "loadprojectcommand.h"
 #include "mergescanscommand.h"
 #include "partdatacommand.h"
 #include "printreportcommand.h"
+#include "radiuscorrection3dcommand.h"
 #include "radiuscorrectioncommand.h"
 #include "regeneratecurvecommand.h"
 #include "removefigurecommand.h"
@@ -20,18 +25,17 @@
 #include "saveprojectcommand.h"
 #include "setprintersettingscommand.h"
 #include "shiftfigurecommand.h"
-#include "insertbestfitpositioncommand.h"
-#include "changecurveparameterscommand.h"
-#include "editfigurecommand.h"
+#include "unknowncommand.h"
 
-QStringList MacrosTranslator::splitCRM(const QString &text) {
+QStringList MacrosTranslator::splitCRM(const QString& text)
+{
     QStringList result;
     auto splitted = text.split('\n');
     QString current;
 
     for(auto i = 0; i < splitted.size(); i++) {
         QString line = splitted[i].trimmed(); // Удаляем пробелы в начале и конце
-        current += splitted[i] + '\n'; // Сохраняем оригинальную строку с форматированием
+        current += splitted[i] + '\n';        // Сохраняем оригинальную строку с форматированием
 
         auto splittedLine = line.split(',');
         auto hasEnoughElements = splittedLine.length() > 1;
@@ -52,12 +56,14 @@ QStringList MacrosTranslator::splitCRM(const QString &text) {
     return result;
 }
 
-MacrosTranslator::OperationCRM MacrosTranslator::operationCRMFromString(QString macrosType) {
+MacrosTranslator::OperationCRM MacrosTranslator::operationCRMFromString(QString macrosType)
+{
     return static_cast<MacrosTranslator::OperationCRM>(QMetaEnum::fromType<MacrosTranslator::OperationCRM>()
-        .keyToValue(macrosType.toLatin1()));
+            .keyToValue(macrosType.toLatin1()));
 }
 
-QList<std::shared_ptr<ICommand>>* MacrosTranslator::translateCRM(const QString &operationText) {
+QList<std::shared_ptr<ICommand>>* MacrosTranslator::translateCRM(const QString& operationText)
+{
     auto readyOperations = new QList<std::shared_ptr<ICommand>>();
     auto operations = MacrosTranslator::splitCRM(operationText);
     for(auto i = 0; i < operations.size(); i++) {
@@ -76,14 +82,13 @@ QList<std::shared_ptr<ICommand>>* MacrosTranslator::translateCRM(const QString &
     return readyOperations;
 }
 
-std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, QStringList operationText) {
+std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, QStringList operationText)
+{
     switch(type) {
-        case MacrosTranslator::LoadCRV:
-        {
+        case MacrosTranslator::LoadCRV: {
             return std::make_shared<LoadProjectCommand>(operationText[0].split(',')[2]);
         }
-        case MacrosTranslator::PartData:
-        {
+        case MacrosTranslator::PartData: {
             auto firstLine = operationText[0].split(',');
             auto secondLine = operationText[1].split(',');
 
@@ -116,11 +121,9 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
                 batch,
                 supplier,
                 revision,
-                showPartDataWindowWhenMacroRuns
-            );
+                showPartDataWindowWhenMacroRuns);
         }
-        case MacrosTranslator::CollectCross:
-        {
+        case MacrosTranslator::CollectCross: {
             auto firstLine = operationText[0].split(',');
 
             auto firstName = firstLine[2];
@@ -131,8 +134,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<MergeScansCommand>(firstName, secondName, resultName, threshold, needSorted);
         }
-        case MacrosTranslator::Regen2D:
-        {
+        case MacrosTranslator::Regen2D: {
             auto firstLine = operationText[0].split(',');
             auto figureName = firstLine[2];
             auto newFigureName = firstLine[3];
@@ -143,11 +145,9 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             auto value = firstLine[8].toInt();
 
             return std::make_shared<RegenerateCurveCommand>(
-                figureName, newFigureName, new Function19Params(closed, external, material, mode, value)
-            );
+                figureName, newFigureName, new Function19Params(closed, external, material, mode, value));
         }
-        case MacrosTranslator::Alignment:
-        {
+        case MacrosTranslator::Alignment: {
             QString angle;
             QString axis = "+X";
             QString offsetX;
@@ -158,7 +158,8 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
                 if(line[1] == "RotateSource") {
                     angle = line[2];
                     axis = line[3];
-                } else if(line[1] == "Rotate")
+                }
+                else if(line[1] == "Rotate")
                     angle = line[2];
                 else if(line[1] == "OriginX" || line[1] == "OriginSourceX")
                     offsetX = line[2];
@@ -167,8 +168,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             }
             return std::make_shared<AlignmentCommand>(angle, axis, offsetX, offsetY);
         }
-        case MacrosTranslator::ShiftCurves1:
-        {
+        case MacrosTranslator::ShiftCurves1: {
             auto firstLine = operationText[0].split(',');
 
             auto figureName = firstLine[5];
@@ -178,8 +178,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<ShiftFigureCommand>(figureName, x, y, z);
         }
-        case MacrosTranslator::RotateCurves1:
-        {
+        case MacrosTranslator::RotateCurves1: {
             auto firstLine = operationText[0].split(',');
 
             auto figureName = firstLine[7];
@@ -190,8 +189,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<RotateFigureCommand>(figureName, angle, x, y, z);
         }
-        case MacrosTranslator::BestFit2D:
-        {
+        case MacrosTranslator::BestFit2D: {
             auto firstLine = operationText[1].split(',');
             auto secondLine = operationText[2].split(',');
             auto thirdLine = operationText[3].split(',');
@@ -223,14 +221,12 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             return std::make_shared<BestFitCommand>(
                 nominal, measured, resultName, bestFitLineName,
                 new Function6Params(
-                minimize, method, closed, xshift, yshift, rotation,
-                needHconstraint, xshiftfrom, xshiftto,
-                needVconstraint, yshiftfrom, yshiftto,
-                needRconstraint, rotationfrom, rotationto
-            ));
+                    minimize, method, closed, xshift, yshift, rotation,
+                    needHconstraint, xshiftfrom, xshiftto,
+                    needVconstraint, yshiftfrom, yshiftto,
+                    needRconstraint, rotationfrom, rotationto));
         }
-        case MacrosTranslator::Airfoil:
-        {
+        case MacrosTranslator::Airfoil: {
             auto lines = QList<QStringList>();
             for(int i = 0; i < operationText.size(); i++) {
                 lines.push_back(operationText[i].split(','));
@@ -241,8 +237,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<CreateReportCommand>(settings);
         }
-        case MacrosTranslator::InsertBFPos:
-        {
+        case MacrosTranslator::InsertBFPos: {
             auto firstLine = operationText[1].split(',');
             auto secondLine = operationText[2].split(',');
 
@@ -258,18 +253,16 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             return std::make_shared<InsertBestFitPositionCommand>(
                 figureName, parentName,
                 x, y, z,
-                showX, showY, showR
-            );
+                showX, showY, showR);
         }
-        case MacrosTranslator::ShowOptions:
-        {
+        case MacrosTranslator::ShowOptions: {
             auto firstLine = operationText[0].split(',');
             auto secondLine = operationText[1].split(',');
             auto thirdLine = operationText[2].split(',');
             auto fourthLine = operationText[3].split(',');
 
             auto figureName = firstLine[2];
-            if(true) {
+            if(secondLine[1] == "Visible") {
                 auto showPoints = thirdLine[2] == "1";
                 auto connectPoints = thirdLine[3] == "1";
                 auto showVectors = thirdLine[4] == "1";
@@ -285,16 +278,19 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
                 return std::make_shared<ChangeCurveParametersCommand>(
                     figureName, showPoints, connectPoints, showVectors,
                     closed, showNumbering, numberingInterval, amplification,
-                    showTolerances, showDeviations, connectDeviations, highLightOut
-                );
-            } else {
-                auto isVisible = secondLine[2] == "1";
-                //std::make_shared<>();
+                    showTolerances, showDeviations, connectDeviations, highLightOut);
             }
-
+            else if(secondLine[1] == "ABCDEF") {
+                auto showDeviationType = secondLine[3].toInt();
+                return std::make_shared<UnknownCommand>();
+                // std::make_shared<>();
+            }
+            else {
+                auto isVisible = secondLine[2] == "1";
+                return std::make_shared<UnknownCommand>();
+            }
         }
-        case MacrosTranslator::EditDim:
-        {
+        case MacrosTranslator::EditDim: {
             QMap<QString, QString> paramsChanged;
 
             for(auto j = 5; j < operationText.size() - 1; j++) {
@@ -311,8 +307,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             auto secondLine = operationText[1].split(',');
             auto figureName = secondLine[2];
 
-            paramsChanged.insert({
-                { "x", secondLine[3] },
+            paramsChanged.insert({ { "x", secondLine[3] },
                 { "y", secondLine[4] },
                 { "z", secondLine[5] },
                 { "Ref1", secondLine[6] },
@@ -321,8 +316,7 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<EditFigureCommand>(figureName, paramsChanged);
         }
-        case MacrosTranslator::SaveFLR:
-        {
+        case MacrosTranslator::SaveFLR: {
             auto firstLine = operationText[0].split(',');
 
             QString filepath = firstLine[2];
@@ -334,19 +328,16 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
 
             return std::make_shared<ExportToFLRCommand>(filepath, curves);
         }
-        case MacrosTranslator::PrinterSettings:
-        {
+        case MacrosTranslator::PrinterSettings: {
             Printer::PrintType type = Printer::qStringToPrintType(operationText[0].split(',')[3]);
 
             return std::make_shared<SetPrinterSettingsCommand>(type);
         }
-        case MacrosTranslator::PrintFromViewer:
-        {
+        case MacrosTranslator::PrintFromViewer: {
             auto printAll = true;
             return std::make_shared<PrintReportCommand>(printAll);
         }
-        case MacrosTranslator::ImportQDS:
-        {
+        case MacrosTranslator::ImportQDS: {
             // TODO
             auto filepath = operationText[0].split(',')[2];
             auto firstLine = FileSystem::readFile(filepath).split("\n")[0];
@@ -363,8 +354,30 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
                 filepath, name, separator, skipStart,
                 skipAfter, columnNames, columnNumbers, decimal);
         }
+        case MacrosTranslator::RadCor3D: {
+            auto splittedFirst = operationText[0].split(',');
+
+            auto measuredName = splittedFirst[2];
+            auto resultName = splittedFirst[3];
+            auto nominalName = splittedFirst[4];
+            auto radiusCorrection = splittedFirst[5].toDouble();
+            auto atHeight = splittedFirst[6] == "1" ? "true" : "false";
+            auto height = splittedFirst[7];
+            auto useFit = splittedFirst[8] == "1" ? "true" : "false";
+            Function42Params* params = new Function42Params(true, true, false, false, false);
+
+            return std::make_shared<RadiusCorrection3DCommand>(nominalName, measuredName, resultName, params, radiusCorrection);
+        }
+        case MacrosTranslator::New: {
+            return std::make_shared<ClearProjectCommand>();
+        }
+        case MacrosTranslator::HideAll: {
+            auto firstLine = operationText[0].split(',');
+            auto figuresType = firstLine[2];
+
+            return std::make_shared<HideAllCommand>(figuresType);
+        }
         default:
-            return nullptr;
-            throw new std::runtime_error("Команда не имеет аналога");
+            return std::make_shared<UnknownCommand>();
     }
 }

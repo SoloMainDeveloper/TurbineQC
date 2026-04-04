@@ -1,8 +1,10 @@
 #pragma once
 
+#include "basedialog.h"
+
 namespace Ui {
     class MacrosDialog;
-}
+} // namespace Ui
 
 class MacrosDialog : public BaseDialog {
     Q_OBJECT
@@ -42,6 +44,8 @@ private:
     void onMoveOperationUpItemTriggered();
     void onMoveOperationDownItemTriggered();
 
+    void onOperationLogged(std::shared_ptr<ICommand> command);
+    void onRecordingToggled();
     void onMoveRecordButtonClicked();
     void onRecordIndexChanged(int index);
     void onOperationExecuted(int index, bool isSuccessful);
@@ -52,9 +56,5 @@ private:
     void reindex(int indexFrom, int indexTo);
     void reindex(int indexFrom);
     void insert(int index, QTreeWidgetItem* item);
-    QTreeWidgetItem* createOperationItem(int index, QString operation, QString comment);
-
-private slots:
-    void addOperation(QString operation, QString comment);
-    void updateRecordingButton();
+    QTreeWidgetItem* createOperationItem(int index, QString commandName);
 };

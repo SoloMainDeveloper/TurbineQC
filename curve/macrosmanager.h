@@ -3,6 +3,7 @@
 #include "icommand.h"
 
 #include "turbinedialog.h"
+
 #include "filesystem.h"
 #include "loadingclouddialog.h"
 #include "printer.h"
@@ -43,7 +44,7 @@ public slots:
     void swapOperations(int index1, int index2);
 
 signals:
-    void operationLogged(QString operation, QString comment);
+    void operationLogged(std::shared_ptr<ICommand> command);
     void recordingToggled();
     void recordIndexChanged(int index);
     void operationExecuted(int index, bool isSuccessful);
@@ -54,17 +55,20 @@ private:
     int _recordIndex;
     int _debugIndex;
     QList<std::shared_ptr<ICommand>>* _macros;
+    QProgressDialog* _progressDialog;
 
     void registerAllCommands();
 };
 
-template<typename Func, typename ...Args>
-inline void MacrosManager::executeWithoutLogging(Func func, Args && ...args) {
+template<typename Func, typename... Args>
+inline void MacrosManager::executeWithoutLogging(Func func, Args&&... args)
+{
     auto isRecording = MacrosManager::isRecording();
     setRecording(false);
     try {
         func(std::forward<Args>(args)...);
-    } catch(...) {
+    }
+    catch(...) {
         setRecording(isRecording);
         throw;
     }
