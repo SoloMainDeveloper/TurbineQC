@@ -1,8 +1,8 @@
 #include "curve/pch.h"
 
-#include "markupcreator.h"
 #include "printer.h"
 #include "printreportcommand.h"
+#include "reportmarkuptemplates.h"
 #include "setprintersettingscommand.h"
 
 // QStringList Printer::_printPages;
@@ -76,7 +76,8 @@ void Printer::print(const QList<int>& pagesToTake)
                 auto index = pagesToTake[i];
                 fullMarkup.append(_printPages[index]);
             }
-            in << MarkupCreator::index.arg(fullMarkup.join(""));
+            in << ReportMarkupTemplates::indexTemplate
+                      .arg(fullMarkup.join(""));
             file.close();
             break;
         }

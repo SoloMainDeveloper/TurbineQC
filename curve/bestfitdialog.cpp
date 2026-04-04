@@ -1,14 +1,16 @@
 #include "curve/pch.h"
+
 #include "bestfitdialog.h"
 
-BestFitDialog::BestFitDialog() : _ui(new Ui::BestFitDialog) {
+BestFitDialog::BestFitDialog() : _ui(new Ui::BestFitDialog)
+{
     _ui->setupUi(this);
     _errorMessage = new QMessageBox(this);
     _errorMessage->setWindowTitle("Error");
     _questionMessage = new QMessageBox(this);
     _questionMessage->setText("A curve with that name already exists.\nDo you want to reassign the name?");
     _questionMessage->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    _algorithm = Function6Params::Algorithm::Curve;
+    _algorithm = Function6Params::Method::Curve;
     _isClosed = false;
     _needXShift = true;
     _needYShift = true;
@@ -40,7 +42,8 @@ BestFitDialog::BestFitDialog() : _ui(new Ui::BestFitDialog) {
     connect(_ui->closeBtn, &QPushButton::clicked, this, &BestFitDialog::closeDialog);
 }
 
-void BestFitDialog::initialize() {
+void BestFitDialog::initialize()
+{
     auto figures = Project::instance().figures();
 
     for(auto figure : figures) {
@@ -52,7 +55,8 @@ void BestFitDialog::initialize() {
     this->exec();
 }
 
-void BestFitDialog::changelistOfMeasuredCurves() {
+void BestFitDialog::changelistOfMeasuredCurves()
+{
     auto selectedItems = _ui->listOfMeasuredCurves->selectedItems();
     auto currentItem = selectedItems.length() == 1 ? selectedItems[0] : nullptr;
     if(currentItem != nullptr) {
@@ -60,36 +64,42 @@ void BestFitDialog::changelistOfMeasuredCurves() {
     }
 }
 
-void BestFitDialog::changeMethod() {
+void BestFitDialog::changeMethod()
+{
     auto method = _ui->comboBoxMethods->currentText();
-    Function6Params::Algorithm algorithm;
+    Function6Params::Method algorithm;
     if(method == "LSQ (points-to-curve)") {
         _ui->checkBoxClosed->show();
-        _algorithm = Function6Params::Algorithm::Curve;
+        _algorithm = Function6Params::Method::Curve;
     }
     if(method == "LSQ (point-to-point)") {
         _ui->checkBoxClosed->hide();
-        _algorithm = Function6Params::Algorithm::Point;
+        _algorithm = Function6Params::Method::Point;
     }
 }
 
-void BestFitDialog::onClosed() {
+void BestFitDialog::onClosed()
+{
     _isClosed = _ui->checkBoxClosed->checkState() == Qt::Checked ? true : false;
 }
 
-void BestFitDialog::onXShift() {
+void BestFitDialog::onXShift()
+{
     _needXShift = _ui->checkBoxXShift->checkState() == Qt::Checked ? true : false;
 }
 
-void BestFitDialog::onYShift() {
+void BestFitDialog::onYShift()
+{
     _needYShift = _ui->checkBoxYShift->checkState() == Qt::Checked ? true : false;
 }
 
-void BestFitDialog::onRotation() {
+void BestFitDialog::onRotation()
+{
     _needRotation = _ui->checkBoxRotation->checkState() == Qt::Checked ? true : false;
 }
 
-void BestFitDialog::onConstraints() {
+void BestFitDialog::onConstraints()
+{
     if(_ui->checkBoxConstraints->checkState() == Qt::Checked) {
         _ui->groupBoxConstraints->setEnabled(true);
         _ui->checkBoxHConstraint->setChecked(true);
@@ -97,7 +107,8 @@ void BestFitDialog::onConstraints() {
         onHorizontalConstraint();
         onVerticalConstraint();
         onRotationConstraint();
-    } else {
+    }
+    else {
         _ui->groupBoxConstraints->setEnabled(false);
         _ui->checkBoxHConstraint->setChecked(false);
         _ui->checkBoxVConstraint->setChecked(false);
@@ -108,7 +119,8 @@ void BestFitDialog::onConstraints() {
     }
 }
 
-void BestFitDialog::onHorizontalConstraint() {
+void BestFitDialog::onHorizontalConstraint()
+{
     _needHConstraint = _ui->checkBoxHConstraint->checkState() == Qt::Checked ? true : false;
     if(_needHConstraint) {
         _ui->labelXShiftFrom->setEnabled(true);
@@ -117,7 +129,8 @@ void BestFitDialog::onHorizontalConstraint() {
         _ui->lineEditXShiftTo->setEnabled(true);
         _ui->lineEditXShiftFrom->setText("-0.1");
         _ui->lineEditXShiftTo->setText("0.1");
-    } else {
+    }
+    else {
         _ui->labelXShiftFrom->setEnabled(false);
         _ui->labelXShiftTo->setEnabled(false);
         _ui->lineEditXShiftFrom->setEnabled(false);
@@ -127,7 +140,8 @@ void BestFitDialog::onHorizontalConstraint() {
     }
 }
 
-void BestFitDialog::onVerticalConstraint() {
+void BestFitDialog::onVerticalConstraint()
+{
     _needVConstraint = _ui->checkBoxVConstraint->checkState() == Qt::Checked ? true : false;
     if(_needVConstraint) {
         _ui->labelYShiftFrom->setEnabled(true);
@@ -136,7 +150,8 @@ void BestFitDialog::onVerticalConstraint() {
         _ui->lineEditYShiftTo->setEnabled(true);
         _ui->lineEditYShiftFrom->setText("-0.1");
         _ui->lineEditYShiftTo->setText("0.1");
-    } else {
+    }
+    else {
         _ui->labelYShiftFrom->setEnabled(false);
         _ui->labelYShiftTo->setEnabled(false);
         _ui->lineEditYShiftFrom->setEnabled(false);
@@ -146,7 +161,8 @@ void BestFitDialog::onVerticalConstraint() {
     }
 }
 
-void BestFitDialog::onRotationConstraint() {
+void BestFitDialog::onRotationConstraint()
+{
     _needRConstraint = _ui->checkBoxRConstraint->checkState() == Qt::Checked ? true : false;
     if(_needRConstraint) {
         _ui->labelRotationFrom->setEnabled(true);
@@ -155,7 +171,8 @@ void BestFitDialog::onRotationConstraint() {
         _ui->lineEditRotationTo->setEnabled(true);
         _ui->lineEditRotationFrom->setText("-1");
         _ui->lineEditRotationTo->setText("1");
-    } else {
+    }
+    else {
         _ui->labelRotationFrom->setEnabled(false);
         _ui->labelRotationTo->setEnabled(false);
         _ui->lineEditRotationFrom->setEnabled(false);
@@ -165,7 +182,8 @@ void BestFitDialog::onRotationConstraint() {
     }
 }
 
-void BestFitDialog::checkSettings() {
+void BestFitDialog::checkSettings()
+{
     auto resultCurveName = _ui->lineEditResultName->text();
     auto selectedItemsOfListMeasured = _ui->listOfMeasuredCurves->selectedItems();
     auto selectedItemsOfListNominal = _ui->listOfNominalCurves->selectedItems();
@@ -194,7 +212,7 @@ void BestFitDialog::checkSettings() {
     auto nominalCurveName = currentItemOfListNominal->text();
     auto project = &Project::instance();
 
-    if(_algorithm == Function6Params::Algorithm::Point) {
+    if(_algorithm == Function6Params::Method::Point) {
         auto nominalFigure = project->findFigure(nominalCurveName);
         auto measuredFigure = project->findFigure(measuredCurveName);
         auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
@@ -206,7 +224,8 @@ void BestFitDialog::checkSettings() {
         auto numberOfPointsOfMeasCurve = measuredCurve->points().length();
         if(numberOfPointsOfNomCurve != numberOfPointsOfMeasCurve) {
             _errorMessage->setText(QString("Point-to-point best-fit requires two curves with the same\nnumber of points(%1<>%2)! Check selected curves!")
-                .arg(numberOfPointsOfMeasCurve).arg(numberOfPointsOfNomCurve));
+                    .arg(numberOfPointsOfMeasCurve)
+                    .arg(numberOfPointsOfNomCurve));
             _errorMessage->exec();
             return;
         }
@@ -216,31 +235,47 @@ void BestFitDialog::checkSettings() {
         _questionMessage->exec();
         if(_questionMessage->result() == QMessageBox::Yes) {
             calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName);
-        } else {
+        }
+        else {
             return;
         }
-    } else {
+    }
+    else {
         calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName);
     }
 }
 
-void BestFitDialog::calculateBestFit(const QString &nominalCurveName, const QString &measuredCurveName, const QString &resultCurveName) {
+void BestFitDialog::calculateBestFit(const QString& nominalCurveName, const QString& measuredCurveName, const QString& resultCurveName)
+{
     QApplication::setOverrideCursor(Qt::WaitCursor);
+
     auto xShiftFrom = _ui->lineEditXShiftFrom->text().toDouble();
     auto xShiftTo = _ui->lineEditXShiftTo->text().toDouble();
     auto yShiftFrom = _ui->lineEditYShiftFrom->text().toDouble();
     auto yShiftTo = _ui->lineEditYShiftTo->text().toDouble();
     auto rotationFrom = _ui->lineEditRotationFrom->text().toDouble();
     auto rotationTo = _ui->lineEditRotationTo->text().toDouble();
-    auto params = Function6Params(true, _algorithm, _isClosed, _needXShift, _needYShift, _needRotation,
-        _needHConstraint, xShiftFrom, xShiftTo, _needVConstraint, yShiftFrom, yShiftTo, _needRConstraint,
-        rotationFrom, rotationTo);
+    auto params = Function6Params(true, _algorithm, _isClosed, _needXShift, _needYShift, _needRotation);
+
+    if(_needHConstraint) {
+        params.setHorizontalConstraint(xShiftFrom, xShiftTo);
+    }
+
+    if(_needVConstraint) {
+        params.setVerticalConstraint(yShiftFrom, yShiftTo);
+    }
+
+    if(_needRConstraint) {
+        params.setRotationConstraint(rotationFrom, rotationTo);
+    }
 
     Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params);
+
     QApplication::restoreOverrideCursor();
 }
 
-bool BestFitDialog::isCorrectNumericLines() {
+bool BestFitDialog::isCorrectNumericLines()
+{
     auto isCorrect = true;
 
     if(_ui->checkBoxConstraints->checkState() == Qt::Checked) {
@@ -263,11 +298,13 @@ bool BestFitDialog::isCorrectNumericLines() {
     return isCorrect;
 }
 
-void BestFitDialog::closeEvent(QCloseEvent *event) {
+void BestFitDialog::closeEvent(QCloseEvent* event)
+{
     closeDialog();
 }
 
-void BestFitDialog::closeDialog() {
+void BestFitDialog::closeDialog()
+{
     this->close();
     _ui->listOfMeasuredCurves->clear();
     _ui->listOfNominalCurves->clear();
@@ -291,6 +328,7 @@ void BestFitDialog::closeDialog() {
     _ui->lineEditResultName->clearFocus();
 }
 
-BestFitDialog::~BestFitDialog() {
+BestFitDialog::~BestFitDialog()
+{
     delete _ui;
 }

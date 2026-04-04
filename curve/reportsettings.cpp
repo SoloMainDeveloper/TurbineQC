@@ -1,5 +1,6 @@
 #include "curve/pch.h"
 
+#include "iturbinetransformparameter.h"
 #include "reportsettings.h"
 
 QMap<QString, QString> ReportSettings::convertToQMap(std::shared_ptr<ReportSettings> reportSettings)
@@ -12,14 +13,14 @@ QMap<QString, QString> ReportSettings::convertToQMap(std::shared_ptr<ReportSetti
     // Calculated turbine parameters
     for(auto [type, paramList] : reportSettings->turbineParameters().asKeyValueRange()) {
         for(auto i = 0; i < paramList.size(); i++) {
-            params.insert(TurbineParameter::toQMap(paramList[i], i));
+            params.insert(ITurbineParameter::toQMap(paramList[i], i));
         }
     }
 
     // Direction, zone
-    params.insert("directionOfLE", QString::number(int(reportSettings->directionOfLE())));
-    params.insert("zoneLE", QString::number(reportSettings->zoneLE()));
-    params.insert("zoneTE", QString::number(reportSettings->zoneTE()));
+    params.insert("directionOfLE", QString::number(int(reportSettings->leadingEdgeDirection())));
+    params.insert("zoneLE", QString::number(reportSettings->leadingEdgeZone()));
+    params.insert("zoneTE", QString::number(reportSettings->trailingEdgeZone()));
     params.insert("measureType", QString::number(int(reportSettings->measureType())));
 
     // Pre-process
@@ -42,22 +43,22 @@ QMap<QString, QString> ReportSettings::convertToQMap(std::shared_ptr<ReportSetti
     params.insert("rotationCC", QString::number(reportSettings->rotationCC()));
     params.insert("profileType", QString::number(int(reportSettings->profileType())));
     params.insert("globalBestFit", QString::number(int(reportSettings->globalBestFit())));
-    params.insert("bestFitOfLE", QString::number(int(reportSettings->bestFitOfLE())));
-    params.insert("bestFitOfTE", QString::number(int(reportSettings->bestFitOfTE())));
-    params.insert("bestFitType", QString::number(int(reportSettings->bestFitType())));
+    params.insert("bestFitOfLE", QString::number(int(reportSettings->leadingEdgeBestFit())));
+    params.insert("bestFitOfTE", QString::number(int(reportSettings->trailingEdgeBestFit())));
+    params.insert("bestFitType", QString::number(int(reportSettings->optionGlobalBestFit())));
     params.insert("isLEStretch", reportSettings->isLEStretch() ? "true" : "false");
     params.insert("isTEStretch", reportSettings->isTEStretch() ? "true" : "false");
     params.insert("globalAmplification", QString::number(reportSettings->globalAmplification()));
-    params.insert("amplificationOfLE", QString::number(reportSettings->amplificationOfLE()));
-    params.insert("amplificationOfTE", QString::number(reportSettings->amplificationOfTE()));
+    params.insert("amplificationOfLE", QString::number(reportSettings->leadingEdgeAmplification()));
+    params.insert("amplificationOfTE", QString::number(reportSettings->trailingEdgeAmplification()));
     params.insert("globalAxisType", QString::number(int(reportSettings->globalAxisType())));
     params.insert("axisTypeOfLE", QString::number(int(reportSettings->axisTypeOfLE())));
     params.insert("axisTypeOfTE", QString::number(int(reportSettings->axisTypeOfTE())));
     params.insert("needMaxDia", reportSettings->needMaxDiameter() ? "true" : "false");
     params.insert("needMCL", reportSettings->needMCL() ? "true" : "false");
     params.insert("needContactLine", reportSettings->needContactLine() ? "true" : "false");
-    params.insert("isLEVisible", reportSettings->isLEVisible() ? "true" : "false");
-    params.insert("isTEVisible", reportSettings->isTEVisible() ? "true" : "false");
+    params.insert("isLEVisible", reportSettings->isLeadingEdgeVisible() ? "true" : "false");
+    params.insert("isTEVisible", reportSettings->isTrailingEdgeVisible() ? "true" : "false");
     params.insert("typeOfShowDevsLE", QString::number(int(reportSettings->typeOfShowDevsLE())));
     params.insert("typeOfShowDevsTE", QString::number(int(reportSettings->typeOfShowDevsTE())));
     params.insert("valueOfSetShowDevsLE", QString::number(reportSettings->valueOfSetShowDevsLE()));
@@ -87,7 +88,7 @@ std::shared_ptr<ReportSettings> ReportSettings::convertToSettings(QMap<QString, 
             continue;
         }
 
-        reportSettings->appendTurbineParameter(TurbineParameter::toTurbineParameter(turbineParam));
+        reportSettings->appendTurbineParameter(ITurbineParameter::toTurbineParameter(turbineParam));
     }
 
     // Direction zone
@@ -114,7 +115,7 @@ std::shared_ptr<ReportSettings> ReportSettings::convertToSettings(QMap<QString, 
     reportSettings->setEdgesBestFit(
         static_cast<ReportSettings::EdgeBestFit>(params->value("bestFitOfLE").toInt()),
         static_cast<ReportSettings::EdgeBestFit>(params->value("bestFitOfTE").toInt()));
-    reportSettings->setBestFitType(static_cast<ReportSettings::BestFitType>(params->value("bestFitType").toInt()));
+    reportSettings->setBestFitType(static_cast<ReportSettings::OptionGlobalBestFit>(params->value("bestFitType").toInt()));
     reportSettings->setStretch(params->value("isLEStretch") == "true", params->value("isTEStretch") == "true");
     reportSettings->setAmplification(params->value("globalAmplification").toDouble(),
         params->value("amplificationOfLE").toDouble(), params->value("amplificationOfTE").toDouble());
@@ -166,7 +167,7 @@ QMap<QString, QString> ReportSettings::translateAirfoilSettings(QList<QStringLis
 
     // params to calculate
     for(auto i = 0; i < calcParamsPart.size(); i++) {
-        params.insert(TurbineParameter::toQMapFromCRM(calcParamsPart[i]));
+        params.insert(ITurbineParameter::toQMapFromCRM(calcParamsPart[i]));
     }
 
     // global, LE, TE form
@@ -219,8 +220,8 @@ ReportSettings::ReportSettings()
     _needMCL = false;
     _needContactLine = false;
     _profileType = Profile::Whole;
-    _globalBestFit = GlobalBestFit::Whole;
-    _bestFitType = BestFitType::TranslationAndRotation;
+    _globalBestFit = GlobalBestFit::WholeLSQ;
+    _bestFitType = OptionGlobalBestFit::TranslationAndRotation;
     _xShift = 0;
     _yShift = 0;
     _rotation = 0;
@@ -309,34 +310,34 @@ QString ReportSettings::measuredName() const
     return _measuredName;
 }
 
-void ReportSettings::setScreenshotOfGlobal(QImage screenshotOfGlobal)
+void ReportSettings::setGlobalBase64Image(const QString& base64Image)
 {
-    _screenshotOfGlobal = screenshotOfGlobal;
+    _globalBase64Image = base64Image;
 }
 
-QImage ReportSettings::screenshotOfGlobal() const
+QString ReportSettings::globalBase64Image() const
 {
-    return _screenshotOfGlobal;
+    return _globalBase64Image;
 }
 
-void ReportSettings::setScreenshotOfLE(QImage screenshotOfLE)
+void ReportSettings::setLeadingEdgeBase64Image(const QString& base64Image)
 {
-    _screenshotOfLE = screenshotOfLE;
+    _leadingEdgeBase64Image = base64Image;
 }
 
-QImage ReportSettings::screenshotOfLE() const
+QString ReportSettings::leadingEdgeBase64Image() const
 {
-    return _screenshotOfLE;
+    return _leadingEdgeBase64Image;
 }
 
-void ReportSettings::setScreenshotOfTE(QImage screenshotOfTE)
+void ReportSettings::setTrailingEdgeBase64Image(const QString& base64Image)
 {
-    _screenshotOfTE = screenshotOfTE;
+    _trailingEdgeBase64Image = base64Image;
 }
 
-QImage ReportSettings::screenshotOfTE() const
+QString ReportSettings::trailingEdgeBase64Image() const
 {
-    return _screenshotOfTE;
+    return _trailingEdgeBase64Image;
 }
 
 void ReportSettings::clearTurbineParameters()
@@ -344,19 +345,19 @@ void ReportSettings::clearTurbineParameters()
     _turbineParameters.clear();
 }
 
-void ReportSettings::setZone(int zoneLE, int zoneTE, MeasureType type)
+void ReportSettings::setZone(int leadingEdgeZone, int trailingEdgeZone, MeasureType type)
 {
-    _zoneLE = zoneLE;
-    _zoneTE = zoneTE;
+    _zoneLE = leadingEdgeZone;
+    _zoneTE = trailingEdgeZone;
     _measureType = type;
 }
 
-int ReportSettings::zoneLE() const
+int ReportSettings::leadingEdgeZone() const
 {
     return _zoneLE;
 }
 
-int ReportSettings::zoneTE() const
+int ReportSettings::trailingEdgeZone() const
 {
     return _zoneTE;
 }
@@ -388,12 +389,12 @@ bool ReportSettings::needContactLine() const
     return _needContactLine;
 }
 
-void ReportSettings::setBestFitType(BestFitType type)
+void ReportSettings::setBestFitType(OptionGlobalBestFit type)
 {
     _bestFitType = type;
 }
 
-ReportSettings::BestFitType ReportSettings::bestFitType() const
+ReportSettings::OptionGlobalBestFit ReportSettings::optionGlobalBestFit() const
 {
     return _bestFitType;
 }
@@ -403,9 +404,32 @@ void ReportSettings::setBestFitValues(double xShift, double yShift, double rotat
     _xShift = xShift;
     _yShift = yShift;
     _rotation = rotation;
+
+    using ParameterType = ITurbineParameter::Type;
+
+    QList<ITurbineParameter*> shiftXList = _turbineParameters.value(ParameterType::ShiftX);
+    QList<ITurbineParameter*> shiftYList = _turbineParameters.value(ParameterType::ShiftY);
+    QList<ITurbineParameter*> turnList = _turbineParameters.value(ParameterType::Turn);
+
+    if(!shiftXList.isEmpty()) {
+        auto shiftX = qobject_cast<ITurbineTransformParameter*>(shiftXList.first());
+        shiftX->setMeasured(_xShift);
+    }
+
+    if(!shiftYList.isEmpty()) {
+        auto shiftY = qobject_cast<ITurbineTransformParameter*>(shiftYList.first());
+        shiftY->setMeasured(_yShift);
+    }
+
+    if(!turnList.isEmpty()) {
+        auto turn = qobject_cast<ITurbineTransformParameter*>(turnList.first());
+        turn->setMeasured(_rotation);
+    }
 }
 
-void ReportSettings::setBestFitValues(double xShiftCV, double yShiftCV, double rotationCV, double xShiftCC, double yShiftCC, double rotationCC)
+void ReportSettings::setBestFitValues(
+    double xShiftCV, double yShiftCV, double rotationCV,
+    double xShiftCC, double yShiftCC, double rotationCC)
 {
     _xShiftCV = xShiftCV;
     _yShiftCV = yShiftCV;
@@ -472,28 +496,28 @@ double ReportSettings::globalAmplification() const
     return _globalAmplification;
 }
 
-void ReportSettings::setEdgesBestFit(EdgeBestFit bestFitOfLE, EdgeBestFit bestFitOfTE)
+void ReportSettings::setEdgesBestFit(EdgeBestFit leadingEdgeBestFit, EdgeBestFit trailingEdgeBestFit)
 {
-    _bestFitOfLE = bestFitOfLE;
-    _bestFitOfTE = bestFitOfTE;
+    _bestFitOfLE = leadingEdgeBestFit;
+    _bestFitOfTE = trailingEdgeBestFit;
 }
 
-ReportSettings::EdgeBestFit ReportSettings::bestFitOfLE() const
+ReportSettings::EdgeBestFit ReportSettings::leadingEdgeBestFit() const
 {
     return _bestFitOfLE;
 }
 
-ReportSettings::EdgeBestFit ReportSettings::bestFitOfTE() const
+ReportSettings::EdgeBestFit ReportSettings::trailingEdgeBestFit() const
 {
     return _bestFitOfTE;
 }
 
-double ReportSettings::amplificationOfLE() const
+double ReportSettings::leadingEdgeAmplification() const
 {
     return _amplificationOfLE;
 }
 
-double ReportSettings::amplificationOfTE() const
+double ReportSettings::trailingEdgeAmplification() const
 {
     return _amplificationOfTE;
 }
@@ -573,7 +597,7 @@ void ReportSettings::setLEDirection(LEDirection direction)
     _directionOfLE = direction;
 }
 
-ReportSettings::LEDirection ReportSettings::directionOfLE() const
+ReportSettings::LEDirection ReportSettings::leadingEdgeDirection() const
 {
     return _directionOfLE;
 }
@@ -604,28 +628,28 @@ QString ReportSettings::comment() const
     return _comment;
 }
 
-void ReportSettings::appendTurbineParameter(TurbineParameter* parameter)
+void ReportSettings::appendTurbineParameter(ITurbineParameter* parameter)
 {
-    _turbineParameters[parameter->type].append(parameter);
+    _turbineParameters[parameter->type()].append(parameter);
 }
 
-QMap<TurbineParameter::Type, QList<TurbineParameter*>>& ReportSettings::turbineParameters()
+QMap<ITurbineParameter::Type, QList<ITurbineParameter*>>& ReportSettings::turbineParameters()
 {
     return _turbineParameters;
 }
 
-void ReportSettings::setVisibilityEdges(bool isLEVisible, bool isTEVisible)
+void ReportSettings::setVisibilityEdges(bool isLeadingEdgeVisible, bool isTrailingEdgeVisible)
 {
-    _isLEVisible = isLEVisible;
-    _isTEVisible = isTEVisible;
+    _isLEVisible = isLeadingEdgeVisible;
+    _isTEVisible = isTrailingEdgeVisible;
 }
 
-bool ReportSettings::isLEVisible() const
+bool ReportSettings::isLeadingEdgeVisible() const
 {
     return _isLEVisible;
 }
 
-bool ReportSettings::isTEVisible() const
+bool ReportSettings::isTrailingEdgeVisible() const
 {
     return _isTEVisible;
 }

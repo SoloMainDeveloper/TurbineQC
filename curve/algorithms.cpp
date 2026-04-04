@@ -3,6 +3,9 @@
 #include "algorithms.h"
 #include "bestfitcommand.h"
 #include "curvelibrary.h"
+#include "functionparamsfactory.h"
+#include "iturbineprofileparameter.h"
+#include "iturbinetransformparameter.h"
 #include "mergescanscommand.h"
 #include "radiuscorrection3dcommand.h"
 #include "radiuscorrectioncommand.h"
@@ -89,14 +92,14 @@ CurveFigure Algorithms::getMiddleCurve(QString curveName, const Function18Params
     return CurveMachine::getMiddleCurve(curve->points(), *params);
 }
 
-double Algorithms::getMiddleCurveLength(QString curveName, const Function18Params* params, Project* project)
+double Algorithms::getMiddleCurveLength(QString curveName, const Function18Params& params)
 {
-    auto figure = project->findFigure(curveName);
+    auto figure = Project::instance().findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get middle curve: curve`s not found");
 
-    return CurveMachine::getMiddleCurveLength(curve->points(), *params);
+    return CurveMachine::getMiddleCurveLength(curve->points(), params);
 }
 
 void Algorithms::createContactLine(QString parentName, QString figureName, const Function18Params* params, Project* project, QColor color)
@@ -121,36 +124,36 @@ LineFigure Algorithms::getContactLine(QString curveName, const Function18Params*
     return CurveMachine::getContactLine(curve->points(), *params);
 }
 
-void Algorithms::createMaxCircle(QString parentName, QString figureName, const Function18Params* params, Project* project, QColor color)
+void Algorithms::createMaxCircle(const QString& parentName, const Function18Params& params, const QString& figureName, QColor color)
 {
-    auto result = getMaxCircle(parentName, params, project);
+    auto result = getMaxCircle(parentName, params);
     auto circle = new CircleFigure(figureName, result.center(), Point(0, 0, 1), result.radius());
     circle->setColor(color);
-    project->safeInsert(figureName, circle);
+    Project::instance().safeInsert(figureName, circle);
 
-    auto log = QMap<QString, QString>(const_cast<Function18Params*>(params)->toQMap());
+    auto log = QMap<QString, QString>(const_cast<Function18Params*>(&params)->toQMap());
     log.insert({ { "parentName", parentName }, { "figureName", figureName } });
     // MacrosManager::log(MacrosManager::CreateMaxCircle, log);
 }
 
-CircleFigure Algorithms::getMaxCircle(QString curveName, const Function18Params* params, Project* project)
+CircleFigure Algorithms::getMaxCircle(const QString& curveName, const Function18Params& params)
 {
-    auto figure = project->findFigure(curveName);
+    auto figure = Project::instance().findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get max circle: curve`s not found");
 
-    return CurveMachine::getMaxCircle(curve->points(), *params);
+    return CurveMachine::getMaxCircle(curve->points(), params);
 }
 
-QPair<PointFigure, PointFigure> Algorithms::getChord(QString curveName, const Function18Params* params, Project* project)
+QPair<PointFigure, PointFigure> Algorithms::getChord(const QString& curveName, const Function18Params& params)
 {
-    auto figure = project->findFigure(curveName);
+    auto figure = Project::instance().findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get chord: curve`s not found");
 
-    return CurveMachine::getChord(curve->points(), *params);
+    return CurveMachine::getChord(curve->points(), params);
 }
 
 double Algorithms::getChordLength(QString curveName, const Function18Params* params, Project* project)
@@ -164,53 +167,56 @@ double Algorithms::getChordLength(QString curveName, const Function18Params* par
     return chordLength;
 }
 
-QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(QString curveName, const Function18Params* params, double distanceFromEdge, Project* project)
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfLeadingEdge(const QString& curveName,
+    const Function18Params& params, double distanceFromEdge)
 {
-    auto figure = project->findFigure(curveName);
+    auto figure = Project::instance().findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Width of leading edge: curve`s not found");
 
-    return CurveMachine::getWidthOfLeadingEdge(curve->points(), *params, distanceFromEdge);
+    return CurveMachine::getWidthOfLeadingEdge(curve->points(), params, distanceFromEdge);
 }
 
-QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(QString figureName, const Function18Params* params, double distanceFromEdge, Project* project)
+QPair<CurvePoint, CurvePoint> Algorithms::getWidthOfTrailingEdge(const QString& figureName,
+    const Function18Params& params, double distanceFromEdge)
 {
-    auto figure = project->findFigure(figureName);
+    auto figure = Project::instance().findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Width of trailing edge: curve`s not found");
 
-    return CurveMachine::getWidthOfTrailingEdge(curve->points(), *params, distanceFromEdge);
+    return CurveMachine::getWidthOfTrailingEdge(curve->points(), params, distanceFromEdge);
 }
 
-CircleFigure Algorithms::getRadiusOfLeadingEdge(QString curveName, const Function18Params* params, double degreeAngle, Project* project)
+CircleFigure Algorithms::getRadiusOfLeadingEdge(const QString& curveName, const Function18Params& params, double angleInDegrees)
 {
-    auto figure = project->findFigure(curveName);
+    auto figure = Project::instance().findFigure(curveName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get radius of leading edge: curve`s not found");
 
-    return CurveMachine::getRadiusOfLeadingEdge(curve->points(), *params, degreeAngle);
+    return CurveMachine::getRadiusOfLeadingEdge(curve->points(), params, angleInDegrees);
 }
 
-CircleFigure Algorithms::getRadiusOfTrailingEdge(QString figureName, const Function18Params* params, double degreeAngle, Project* project)
+CircleFigure Algorithms::getRadiusOfTrailingEdge(const QString& figureName, const Function18Params& params, double angleInDegrees)
 {
-    auto figure = project->findFigure(figureName);
+    auto figure = Project::instance().findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get radius of trailing edge: curve`s not found");
 
-    return CurveMachine::getRadiusOfTrailingEdge(curve->points(), *params, degreeAngle);
+    return CurveMachine::getRadiusOfTrailingEdge(curve->points(), params, angleInDegrees);
 }
 
-double Algorithms::getMinX(QString figureName, const Function18Params* params, Project* project)
+double Algorithms::getMinX(const QString& figureName, const Function18Params& params)
 {
-    auto figure = project->findFigure(figureName);
+    auto figure = Project::instance().findFigure(figureName);
     auto curve = dynamic_cast<const CurveFigure*>(figure);
 
     ARGUMENT_ASSERT(curve, "Get MinX: curve`s not found");
-    return CurveMachine::getMinX(curve->points(), *params);
+
+    return CurveMachine::getMinX(curve->points(), params);
 }
 
 void Algorithms::makeRadiusCorrection(QString figureName, QString figureNewName, const Function3Params* params)
@@ -503,16 +509,38 @@ void Algorithms::calculateCurveUsing3DVectorsTest(const QString& nomCurveName, c
         nomCurveName, measCurveName, resultCurveName, params, radiusCorrection));
 }
 
-void Algorithms::calculateMeasuredParams(Project* project, std::shared_ptr<ReportSettings> reportSettings, const QString& globalMeasCurve)
+void Algorithms::calculateMeasuredParams(std::shared_ptr<ReportSettings> reportSettings, const QString& measuredProfileName)
 {
-    auto nominalCurve = reportSettings->nominalName();
-    auto& turbineParams = reportSettings->turbineParameters();
-    auto params18 = FunctionParamsGenerator::params18(project, reportSettings);
-    for(auto [type, paramList] : turbineParams.asKeyValueRange()) {
-        for(auto i = 0; i < paramList.count(); i++) {
-            paramList[i]->createMeasured(nominalCurve, globalMeasCurve, params18, project);
+    QString nominalProfileName = reportSettings->nominalName();
+    auto& parameters = reportSettings->turbineParameters();
+    auto params18 = FunctionParamsFactory(reportSettings).params18();
+
+    for(auto [type, list] : parameters.asKeyValueRange()) {
+        for(auto i = 0; i < list.count(); i++) {
+            if(auto parameter = qobject_cast<ITurbineProfileParameter*>(list[i])) {
+                parameter->createMeasured(nominalProfileName, measuredProfileName, params18);
+            }
         }
     }
+}
+
+void Algorithms::calculateMeasuredTransformParams(std::shared_ptr<ReportSettings> reportSettings, const QString& parentLineName)
+{
+    QList<ITurbineTransformParameter*> transforms;
+
+    auto& parameters = reportSettings->turbineParameters();
+
+    for(auto [type, list] : parameters.asKeyValueRange()) {
+        for(auto i = 0; i < list.count(); i++) {
+            if(auto parameter = qobject_cast<ITurbineTransformParameter*>(list[i])) {
+                transforms.append(parameter);
+            }
+        }
+    }
+
+    QString nominalProfileName = reportSettings->nominalName();
+
+    ITurbineTransformParameter::createMeasuredTransforms(transforms, nominalProfileName, parentLineName);
 }
 
 double Algorithms::getDistanceBetweenPoints(Point firstPoint, Point secondPoint)

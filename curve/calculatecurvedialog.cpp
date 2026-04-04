@@ -1,9 +1,11 @@
 #include "curve/pch.h"
 
-#include "ui_calculatecurvedialog.h"
+#include "algorithms.h"
 #include "calculatecurvedialog.h"
+#include "ui_calculatecurvedialog.h"
 
-CalculateCurveDialog::CalculateCurveDialog() : _ui(new Ui::CalculateCurveDialog()) {
+CalculateCurveDialog::CalculateCurveDialog() : _ui(new Ui::CalculateCurveDialog())
+{
     _ui->setupUi(this);
 
     _ui->valueLE->setValidator(new QIntValidator);
@@ -28,7 +30,8 @@ CalculateCurveDialog::CalculateCurveDialog() : _ui(new Ui::CalculateCurveDialog(
         if(checked) {
             _ui->materialRB1->setText("External");
             _ui->materialRB2->setText("Internal");
-        } else {
+        }
+        else {
             _ui->materialRB1->setText("Right");
             _ui->materialRB2->setText("Left");
         }
@@ -38,7 +41,8 @@ CalculateCurveDialog::CalculateCurveDialog() : _ui(new Ui::CalculateCurveDialog(
     connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &CalculateCurveDialog::close);
 }
 
-void CalculateCurveDialog::initialize() {
+void CalculateCurveDialog::initialize()
+{
     _ui->initialCurveCBox->clear();
     _ui->resultCurveLE->setText("");
     _ui->closedRB->setChecked(true);
@@ -50,7 +54,7 @@ void CalculateCurveDialog::initialize() {
     _ui->minlineSB->setValue(0.0);
     _ui->numberRB->setChecked(true);
     _ui->valueLE->setText("10");
-    //setWindowTitle("Calculate 2D Curve");
+    // setWindowTitle("Calculate 2D Curve");
 
     auto project = &Project::instance();
     auto figures = project->figures();
@@ -62,29 +66,34 @@ void CalculateCurveDialog::initialize() {
     if(_ui->initialCurveCBox->findText(project->currentFigureName(), Qt::MatchExactly) != -1) {
         _ui->initialCurveCBox->setCurrentIndex(_ui->initialCurveCBox->findText(project->currentFigureName(), Qt::MatchExactly));
         updateResultNameAndClosed(project->currentFigureName());
-    } else {
+    }
+    else {
         _ui->initialCurveCBox->setCurrentIndex(-1);
     }
 
     show();
 }
 
-void CalculateCurveDialog::updateResultNameAndClosed(QString curveName) {
+void CalculateCurveDialog::updateResultNameAndClosed(QString curveName)
+{
     if(!curveName.isEmpty()) {
         _ui->resultCurveLE->setText(curveName + "_Recalculated");
         setWindowTitle("Calculate " + curveName);
         auto isClosed = dynamic_cast<const CurveFigure*>(Project::instance().findFigure(curveName))->isClosed();
         if(isClosed) {
             _ui->closedRB->setChecked(true);
-        } else {
+        }
+        else {
             _ui->openedRB->setChecked(true);
         }
-    } else {
+    }
+    else {
         _ui->resultCurveLE->clear();
     }
 }
 
-void CalculateCurveDialog::calculateCurve() {
+void CalculateCurveDialog::calculateCurve()
+{
     if(_ui->initialCurveCBox->currentText().isEmpty()) {
         auto text = QMessageBox::warning(this, "No initial curve selected", "Select initial curve", "Ok");
         return;
@@ -111,7 +120,8 @@ void CalculateCurveDialog::calculateCurve() {
 
         const Function1Params* params = new Function1Params(intermediate, eliminate, minline, isClosed, isExternal, material, needSort);
         Algorithms::calculateCurve(curveName, newCurveName, params, &Project::instance());
-    } else if(_ui->regenerateRB->isChecked()) {
+    }
+    else if(_ui->regenerateRB->isChecked()) {
         auto value = _ui->valueLE->text().toInt();
         auto mode = _ui->numberRB->isChecked() ? "number" : "density";
 
@@ -120,9 +130,9 @@ void CalculateCurveDialog::calculateCurve() {
     }
 
     accept();
-
 }
 
-CalculateCurveDialog::~CalculateCurveDialog() {
+CalculateCurveDialog::~CalculateCurveDialog()
+{
     delete _ui;
 }

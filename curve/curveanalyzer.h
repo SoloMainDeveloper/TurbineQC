@@ -2,11 +2,13 @@
 
 #include "figure.h"
 #include "figurecreator.h"
-#include "functionparamsgenerator.h"
-#include "project.h"
+#include "functionparamsfactory.h"
 #include "reportsettings.h"
 
 using GlobalCurveMap = QMap<FigureCreator::CurveType, QPair<QString, QVector<CurvePoint>>>;
+
+class Project;
+// class FunctionParamsFactory;
 
 class CurveAnalyzer {
 public:
@@ -25,6 +27,9 @@ public:
 private:
     Project* _project;
     std::shared_ptr<ReportSettings> _reportSettings;
+
+    std::unique_ptr<FunctionParamsFactory> _paramsFactory;
+
     CurveParts _curveParts;
     QSet<QString> _curvesToDelete;
 

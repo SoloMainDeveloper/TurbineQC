@@ -1,9 +1,11 @@
 #include "curve/pch.h"
 
-#include "ui_airfoiltolerancesdialog.h"
 #include "airfoiltolerancesdialog.h"
+#include "algorithms.h"
+#include "ui_airfoiltolerancesdialog.h"
 
-AirfoilTolerancesDialog::AirfoilTolerancesDialog() : _ui(new Ui::AirfoilTolerancesDialog()) {
+AirfoilTolerancesDialog::AirfoilTolerancesDialog() : _ui(new Ui::AirfoilTolerancesDialog())
+{
     _ui->setupUi(this);
 
     widgetsInitializaion();
@@ -65,7 +67,8 @@ AirfoilTolerancesDialog::AirfoilTolerancesDialog() : _ui(new Ui::AirfoilToleranc
     _edgesGroupBoxLayout->addWidget(_trailingEdgePercentLineEdit, 1, 2);
 }
 
-void AirfoilTolerancesDialog::initialize() {
+void AirfoilTolerancesDialog::initialize()
+{
     _ui->listWidgetCurves->clear();
     _ui->listWidgetCurves->setCurrentItem(nullptr);
     _currentCurveName = nullptr;
@@ -84,13 +87,15 @@ void AirfoilTolerancesDialog::initialize() {
     }
     if(_ui->listWidgetCurves->findItems(projectCurrentCurveName, Qt::MatchExactly).length() == 1) {
         _ui->listWidgetCurves->setCurrentItem(_ui->listWidgetCurves->findItems(projectCurrentCurveName, Qt::MatchExactly)[0]);
-    } else {
+    }
+    else {
         changeCurrentMode();
     }
     exec();
 }
 
-void AirfoilTolerancesDialog::changeCurrentMode() {
+void AirfoilTolerancesDialog::changeCurrentMode()
+{
     auto currentMode = _ui->comboBoxMode->currentText();
 
     if(currentMode == "Constant tolerance") {
@@ -101,33 +106,35 @@ void AirfoilTolerancesDialog::changeCurrentMode() {
         if(_currentCurve) {
             _upperToleranceLineEdit->setEnabled(true);
             _lowerToleranceLineEdit->setEnabled(true);
-        } else {
+        }
+        else {
             _upperToleranceLineEdit->setEnabled(false);
             _lowerToleranceLineEdit->setEnabled(false);
         }
         _upperToleranceLineEdit->setText("0.1");
         _lowerToleranceLineEdit->setText("-0.1");
-    } else if(currentMode == "Edges") {
+    }
+    else if(currentMode == "Edges") {
         _stackedLayoutModes->setCurrentWidget(_edgesWidget);
 
         checkCurrentItem(_edgesButtonBox);
 
         if(_currentCurve) {
             edgesLayoutSetEnabled(true);
-        } else {
+        }
+        else {
             edgesLayoutSetEnabled(false);
         }
 
         _leadingEdgeDirectionComboBox->setCurrentIndex(0);
         _leadingEdgePercentLineEdit->setText("5");
         _trailingEdgePercentLineEdit->setText("5");
-
     }
     adjustSize();
-
 }
 
-void AirfoilTolerancesDialog::changeItemOfList() {
+void AirfoilTolerancesDialog::changeItemOfList()
+{
     auto selectedItemsOfCurves = _ui->listWidgetCurves->selectedItems();
     auto currentItem = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
     if(currentItem) {
@@ -137,7 +144,8 @@ void AirfoilTolerancesDialog::changeItemOfList() {
     }
 }
 
-void AirfoilTolerancesDialog::assignTolerances() {
+void AirfoilTolerancesDialog::assignTolerances()
+{
     if(!_currentCurve) {
         auto text = QMessageBox::warning(this, "Curve not selected", "Select curve", "Ok");
         return;
@@ -148,19 +156,23 @@ void AirfoilTolerancesDialog::assignTolerances() {
         auto lowerTolerance = _lowerToleranceLineEdit->text().toDouble();
 
         Algorithms::calculateConstantTolerances(_currentCurveName, upperTolerance, lowerTolerance, &Project::instance());
-
-    } else if(currentMode == "Edges") {
+    }
+    else if(currentMode == "Edges") {
         auto lEDir = 0;
         auto lEDirText = _leadingEdgeDirectionComboBox->currentText();
         if(lEDirText == "Auto") {
             lEDir = 0;
-        } else if(lEDirText == "+X") {
+        }
+        else if(lEDirText == "+X") {
             lEDir = 1;
-        } else if(lEDirText == "-X") {
+        }
+        else if(lEDirText == "-X") {
             lEDir = 3;
-        } else if(lEDirText == "+Y") {
+        }
+        else if(lEDirText == "+Y") {
             lEDir = 2;
-        } else if(lEDirText == "-Y") {
+        }
+        else if(lEDirText == "-Y") {
             lEDir = 4;
         }
         auto lEPercent = _leadingEdgePercentLineEdit->text().toDouble();
@@ -179,10 +191,10 @@ void AirfoilTolerancesDialog::assignTolerances() {
             lowEUpper, lowELower, &Project::instance());
     }
     accept();
-
 }
 
-void AirfoilTolerancesDialog::addToleranceBlock(QVBoxLayout* layout, QString blockName, QLabel* label, QLineEdit* upperLineEdit, QLineEdit* lowerLineEdit) {
+void AirfoilTolerancesDialog::addToleranceBlock(QVBoxLayout* layout, QString blockName, QLabel* label, QLineEdit* upperLineEdit, QLineEdit* lowerLineEdit)
+{
     label->setText(blockName);
     layout->addWidget(label);
     QHBoxLayout* blockLayout = new QHBoxLayout;
@@ -193,7 +205,8 @@ void AirfoilTolerancesDialog::addToleranceBlock(QVBoxLayout* layout, QString blo
     layout->addLayout(blockLayout);
 }
 
-void AirfoilTolerancesDialog::addButtonBox(QVBoxLayout* layout, QDialogButtonBox* buttonBox) {
+void AirfoilTolerancesDialog::addButtonBox(QVBoxLayout* layout, QDialogButtonBox* buttonBox)
+{
     buttonBox->setCenterButtons(true);
     buttonBox->addButton(QDialogButtonBox::Ok);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -203,7 +216,8 @@ void AirfoilTolerancesDialog::addButtonBox(QVBoxLayout* layout, QDialogButtonBox
     layout->addWidget(buttonBox);
 }
 
-void AirfoilTolerancesDialog::widgetsInitializaion() {
+void AirfoilTolerancesDialog::widgetsInitializaion()
+{
     _stackedLayoutModes = new QStackedLayout;
     _constantToleranceButtonBox = new QDialogButtonBox;
     _edgesButtonBox = new QDialogButtonBox;
@@ -235,24 +249,28 @@ void AirfoilTolerancesDialog::widgetsInitializaion() {
     _edgesGroupBoxLayout = new QGridLayout;
 }
 
-void AirfoilTolerancesDialog::checkCurrentItem(QDialogButtonBox* buttonBox) {
+void AirfoilTolerancesDialog::checkCurrentItem(QDialogButtonBox* buttonBox)
+{
     if(auto currentCurveItem = _ui->listWidgetCurves->currentItem()) {
         _currentCurveName = currentCurveItem->text();
         auto currentFigure = Project::instance().findFigure(_currentCurveName);
         if(currentFigure) {
             _currentCurve = dynamic_cast<const CurveFigure*>(currentFigure);
             buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
-        } else {
+        }
+        else {
             _currentCurve = nullptr;
             buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
         }
-    } else {
+    }
+    else {
         _currentCurve = nullptr;
         buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
 }
 
-void AirfoilTolerancesDialog::edgesLayoutSetEnabled(bool state) {
+void AirfoilTolerancesDialog::edgesLayoutSetEnabled(bool state)
+{
     _leadingEdgeUpperToleranceLineEdit->setEnabled(state);
     _leadingEdgeLowerToleranceLineEdit->setEnabled(state);
     _trailingEdgeUpperToleranceLineEdit->setEnabled(state);
@@ -275,6 +293,7 @@ void AirfoilTolerancesDialog::edgesLayoutSetEnabled(bool state) {
     _lowEdgeLowerToleranceLineEdit->setText("-0.1");
 }
 
-AirfoilTolerancesDialog::~AirfoilTolerancesDialog() {
+AirfoilTolerancesDialog::~AirfoilTolerancesDialog()
+{
     delete _ui;
 }

@@ -2,15 +2,18 @@
 
 #include "icommand.h"
 
-QString ICommand::getName() const {
+QString ICommand::getName() const
+{
     return "Unknown Command";
 }
 
-QString ICommand::getDescription() const {
+QString ICommand::getDescription() const
+{
     return "No description";
 }
 
-QJsonObject ICommand::toJson() const {
+QJsonObject ICommand::toJson() const
+{
     QJsonObject json;
     json["type"] = commandTypeToString(getType());
     json["name"] = getName();
@@ -25,7 +28,8 @@ QJsonObject ICommand::toJson() const {
     return json;
 }
 
-void ICommand::fromJson(const QJsonObject& json) {
+void ICommand::fromJson(const QJsonObject& json)
+{
     if(json.contains("parameters") && json["parameters"].isObject()) {
         QJsonObject paramsObj = json["parameters"].toObject();
         setParameters(paramsObj.toVariantMap());

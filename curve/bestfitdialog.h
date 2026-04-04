@@ -35,7 +35,7 @@ private:
 	QMessageBox* _errorMessage;
 	QMessageBox* _questionMessage;
 
-	Function6Params::Algorithm _algorithm;
+	Function6Params::Method _algorithm;
 	bool _isClosed;
 	bool _needXShift;
 	bool _needYShift;

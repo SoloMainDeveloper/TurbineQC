@@ -1,6 +1,6 @@
 #pragma once
 
-#include "turbineparameter.h"
+#include "iturbineparameter.h"
 
 class ReportSettings {
 public:
@@ -32,16 +32,18 @@ public:
         WithoutEdgesLSQ,
         WithoutEdgesForm,
     };
+
     enum class GlobalBestFit {
         NoFit,
-        Whole,
+        WholeLSQ,
         WithoutEdgesLSQ,
         WithoutTELSQ,
         TwoPointsAt10Percent,
         FitInTolBand,
         MinForm,
     };
-    enum class BestFitType {
+
+    enum class OptionGlobalBestFit {
         TranslationAndRotation,
         OnlyTranslation,
         OnlyRotation,
@@ -50,6 +52,7 @@ public:
         XTranslationAndRotation,
         YTranslationAndRotation,
     };
+
     enum class Axis {
         LeftAndDown,
         Center,
@@ -84,25 +87,26 @@ public:
     QString nominalName() const;
     void setMeasuredName(QString name);
     QString measuredName() const;
-    void setScreenshotOfGlobal(QImage screenshotOfGlobal);
-    QImage screenshotOfGlobal() const;
-    void setScreenshotOfLE(QImage screenshotOfLE);
-    QImage screenshotOfLE() const;
-    void setScreenshotOfTE(QImage screenshotOfTE);
-    QImage screenshotOfTE() const;
+
+    void setGlobalBase64Image(const QString& base64Image);
+    QString globalBase64Image() const;
+    void setLeadingEdgeBase64Image(const QString& base64Image);
+    QString leadingEdgeBase64Image() const;
+    void setTrailingEdgeBase64Image(const QString& base64Image);
+    QString trailingEdgeBase64Image() const;
 
     // Calculate parameters
-    void appendTurbineParameter(TurbineParameter* parameter);
-    QMap<TurbineParameter::Type, QList<TurbineParameter*>>& turbineParameters();
+    void appendTurbineParameter(ITurbineParameter* parameter);
+    QMap<ITurbineParameter::Type, QList<ITurbineParameter*>>& turbineParameters();
     void clearTurbineParameters();
 
     // Direction, zone
     void setLEDirection(LEDirection direction);
-    LEDirection directionOfLE() const;
+    LEDirection leadingEdgeDirection() const;
 
-    void setZone(int zoneLE, int zoneTE, MeasureType type);
-    int zoneLE() const;
-    int zoneTE() const;
+    void setZone(int leadingEdgeZone, int trailingEdgeZone, MeasureType type);
+    int leadingEdgeZone() const;
+    int trailingEdgeZone() const;
     MeasureType measureType() const;
 
     // Pre-process
@@ -128,8 +132,8 @@ public:
     void setGlobalBestFit(GlobalBestFit bestFit);
     GlobalBestFit globalBestFit() const;
 
-    void setBestFitType(BestFitType type);
-    BestFitType bestFitType() const;
+    void setBestFitType(OptionGlobalBestFit type);
+    OptionGlobalBestFit optionGlobalBestFit() const;
     void setBestFitValues(double xShift, double yShift, double rotation);
     void setBestFitValues(double xShiftCV, double yShiftCV, double rotationCV, double xShiftCC, double yShiftCC, double rotationCC);
     double xShift() const;
@@ -153,19 +157,19 @@ public:
     bool isTEStretch() const;
 
     // LE, TE
-    void setEdgesBestFit(EdgeBestFit bestFitOfLE, EdgeBestFit bestFitOfTE);
-    EdgeBestFit bestFitOfLE() const;
-    EdgeBestFit bestFitOfTE() const;
+    void setEdgesBestFit(EdgeBestFit leadingEdgeBestFit, EdgeBestFit trailingEdgeBestFit);
+    EdgeBestFit leadingEdgeBestFit() const;
+    EdgeBestFit trailingEdgeBestFit() const;
 
-    double amplificationOfLE() const;
-    double amplificationOfTE() const;
+    double leadingEdgeAmplification() const;
+    double trailingEdgeAmplification() const;
 
     Axis axisTypeOfLE() const;
     Axis axisTypeOfTE() const;
 
-    void setVisibilityEdges(bool isLEVisible, bool isTEVisible);
-    bool isLEVisible() const;
-    bool isTEVisible() const;
+    void setVisibilityEdges(bool isLeadingEdgeVisible, bool isTrailingEdgeVisible);
+    bool isLeadingEdgeVisible() const;
+    bool isTrailingEdgeVisible() const;
 
     void setTypeOfShowDevs(TypeOfShowDevs typeOfLE, TypeOfShowDevs typeOfTE);
     TypeOfShowDevs typeOfShowDevsLE() const;
@@ -199,12 +203,12 @@ private:
     QString _nominalName;
     QString _measuredName;
 
-    QImage _screenshotOfGlobal;
-    QImage _screenshotOfLE;
-    QImage _screenshotOfTE;
+    QString _globalBase64Image;
+    QString _leadingEdgeBase64Image;
+    QString _trailingEdgeBase64Image;
 
     // Calculate parameters
-    QMap<TurbineParameter::Type, QList<TurbineParameter*>> _turbineParameters;
+    QMap<ITurbineParameter::Type, QList<ITurbineParameter*>> _turbineParameters;
 
     // Direction, zone
     LEDirection _directionOfLE;
@@ -226,7 +230,7 @@ private:
     bool _needContactLine;
     Profile _profileType;
     GlobalBestFit _globalBestFit;
-    BestFitType _bestFitType;
+    OptionGlobalBestFit _bestFitType;
     double _xShift;
     double _yShift;
     double _rotation;
