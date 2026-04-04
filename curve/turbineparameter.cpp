@@ -1,7 +1,10 @@
 #include "curve/pch.h"
+
+#include "markupcreator.h"
 #include "turbineparameter.h"
 
-TurbineParameter::TurbineParameter(double nominal, double UT, double LT, QString extraParam1, QString extraParam2) {
+TurbineParameter::TurbineParameter(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
+{
     this->nominal = nominal;
     this->measured = 0;
     this->UT = UT;
@@ -11,19 +14,24 @@ TurbineParameter::TurbineParameter(double nominal, double UT, double LT, QString
     this->_dimName = nullptr;
 }
 
-QMap<QString, QString> TurbineParameter::toQMap(const TurbineParameter *param, int indexFromList) {
+QMap<QString, QString> TurbineParameter::toQMap(const TurbineParameter* param, int indexFromList)
+{
     QString paramTemplate = "Type:%1,Nom:%2,UT:%3,LT:%4,ex1:%5,ex2:%6";
     auto result = QMap<QString, QString>();
     auto index = static_cast<int>(param->type);
     auto key = QString("Param %1 %2").arg(QString::number(index), QString::number(indexFromList));
     auto paramStr = paramTemplate.arg(turbineParamTypeToQString(param->type))
-        .arg(QString::number(param->nominal)).arg(QString::number(param->UT))
-        .arg(QString::number(param->LT)).arg(param->extraParam1).arg(param->extraParam2);
+                        .arg(QString::number(param->nominal))
+                        .arg(QString::number(param->UT))
+                        .arg(QString::number(param->LT))
+                        .arg(param->extraParam1)
+                        .arg(param->extraParam2);
     result.insert(key, paramStr);
     return result;
 }
 
-QMap<QString, QString> TurbineParameter::toQMapFromCRM(const QStringList &params) {
+QMap<QString, QString> TurbineParameter::toQMapFromCRM(const QStringList& params)
+{
     if(params[2] == "0") {
         return QMap<QString, QString>();
     }
@@ -36,16 +44,21 @@ QMap<QString, QString> TurbineParameter::toQMapFromCRM(const QStringList &params
     for(auto j = 0; j < nominals.size(); j++) {
         auto key = QString("Param %1 %2").arg(QString::number(index), QString::number(j));
         auto parameter = paramTemplate.arg(TurbineParameter::turbineParamTypeToQString(type))
-            .arg(nominals[j]).arg(params[4]).arg(params[5]).arg(extra1[j]).arg(params[7]);
+                             .arg(nominals[j])
+                             .arg(params[4])
+                             .arg(params[5])
+                             .arg(extra1[j])
+                             .arg(params[7]);
         paramsOfSameType.insert(key, parameter);
     }
     return paramsOfSameType;
 }
 
-TurbineParameter* TurbineParameter::toTurbineParameter(const QString &turbineParam) {
+TurbineParameter* TurbineParameter::toTurbineParameter(const QString& turbineParam)
+{
     auto paramPairs = QMap<QString, QString>();
     auto paramsStr = turbineParam.split(",");
-    for(auto &param : paramsStr) {
+    for(auto& param : paramsStr) {
         auto pair = param.split(":");
         paramPairs[pair[0]] = pair[1];
     }
@@ -53,66 +66,112 @@ TurbineParameter* TurbineParameter::toTurbineParameter(const QString &turbinePar
     auto turbineParamType = turbineParamTypeFromQString(paramPairs["Type"]);
     switch(turbineParamType) {
         case Type::MaxWidth:
-            return new MaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new MaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::MaxWidthX:
-            return new XMaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new XMaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::MaxWidthY:
-            return new YMaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new YMaxDiameter(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::ChordLength:
-            return new ChordLength(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new ChordLength(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::LEWidth:
-            return new WidthLE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new WidthLE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::TEWidth:
-            return new WidthTE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new WidthTE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::LERadius:
-            return new RadiusLE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new RadiusLE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::TERadius:
-            return new RadiusTE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new RadiusTE(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+        case Type::ShiftX:
+            return new ShiftX(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+        case Type::ShiftY:
+            return new ShiftY(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+        case Type::Turn:
+            return new Turn(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         case Type::MinX:
-            return new MinX(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(), paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
+            return new MinX(paramPairs["Nom"].toDouble(), paramPairs["UT"].toDouble(),
+                paramPairs["LT"].toDouble(), paramPairs["ex1"], paramPairs["ex2"]);
         default:
             return nullptr;
     }
 }
 
-QString TurbineParameter::turbineParamTypeToQString(TurbineParameter::Type type) {
+QString TurbineParameter::turbineParamTypeToQString(TurbineParameter::Type type)
+{
     return QMetaEnum::fromType<TurbineParameter::Type>().valueToKey(static_cast<int>(type));
 }
 
-TurbineParameter::Type TurbineParameter::turbineParamTypeFromQString(const QString &name) {
+TurbineParameter::Type TurbineParameter::turbineParamTypeFromQString(const QString& name)
+{
     return static_cast<TurbineParameter::Type>(QMetaEnum::fromType<TurbineParameter::Type>().keyToValue(name.toLatin1()));
 }
 
-QString TurbineParameter::createParameterMarkup() const {
-    auto &tableRowTemplate = MarkupCreator::tableRowTemplate;
+QString TurbineParameter::createParameterMarkup() const
+{
+    auto& tableRowTemplate = MarkupCreator::tableRowTemplate;
     auto title = _dimName;
     auto type = getMarkupType();
     auto oot = QString("<td></td>");
     auto deviation = measured - nominal;
     if(nominal == 0 && UT == 0 && LT == 0) {
-        return tableRowTemplate.arg(title).arg(type).arg("").arg("").arg("")
-            .arg(QString::number(measured, 'f', 3)).arg("").arg(oot);
-    } else if(UT == 0 && LT == 0) {
-        return tableRowTemplate.arg(title).arg(type).arg(QString::number(nominal, 'f', 3)).arg("").arg("")
-            .arg(QString::number(measured, 'f', 3)).arg(QString::number(deviation, 'f', 3)).arg(oot);
-    } else {
+        return tableRowTemplate
+            .arg(title)
+            .arg(type)
+            .arg("")
+            .arg("")
+            .arg("")
+            .arg(QString::number(measured, 'f', 3))
+            .arg("")
+            .arg(oot);
+    }
+    else if(UT == 0 && LT == 0) {
+        return tableRowTemplate
+            .arg(title)
+            .arg(type)
+            .arg(QString::number(nominal, 'f', 3))
+            .arg("")
+            .arg("")
+            .arg(QString::number(measured, 'f', 3))
+            .arg(QString::number(deviation, 'f', 3))
+            .arg(oot);
+    }
+    else {
         oot = MarkupCreator::getOOTMarkup(UT, LT, deviation);
-        return tableRowTemplate.arg(title).arg(type).arg(QString::number(nominal, 'f', 3))
-            .arg(QString::number(UT, 'f', 3)).arg(QString::number(LT, 'f', 3))
-            .arg(QString::number(measured, 'f', 3)).arg(QString::number(deviation, 'f', 3)).arg(oot);
+        return tableRowTemplate
+            .arg(title)
+            .arg(type)
+            .arg(QString::number(nominal, 'f', 3))
+            .arg(QString::number(UT, 'f', 3))
+            .arg(QString::number(LT, 'f', 3))
+            .arg(QString::number(measured, 'f', 3))
+            .arg(QString::number(deviation, 'f', 3))
+            .arg(oot);
     }
 }
 
 MaxDiameter::MaxDiameter(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::MaxWidth;
 }
 
-void MaxDiameter::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void MaxDiameter::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getMaxCircle(nominalCurve, &params, project).radius() * 2;
 }
 
-void MaxDiameter::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void MaxDiameter::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measMaxDia = Algorithms::getMaxCircle(measuredCurve, &params, project);
     measured = measMaxDia.radius() * 2;
 
@@ -136,20 +195,24 @@ void MaxDiameter::createMeasured(const QString &nominalCurve, const QString &mea
     _dimName = dimName;
 }
 
-QString MaxDiameter::getMarkupType() const {
+QString MaxDiameter::getMarkupType() const
+{
     return QString("Diameter");
 }
 
 XMaxDiameter::XMaxDiameter(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::MaxWidthX;
 }
 
-void XMaxDiameter::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void XMaxDiameter::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getMaxCircle(nominalCurve, &params, project).center().x;
 }
 
-void XMaxDiameter::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void XMaxDiameter::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measMaxDia = Algorithms::getMaxCircle(measuredCurve, &params, project);
     measured = measMaxDia.center().x;
 
@@ -173,20 +236,24 @@ void XMaxDiameter::createMeasured(const QString &nominalCurve, const QString &me
     this->_dimName = dimName;
 }
 
-QString XMaxDiameter::getMarkupType() const {
+QString XMaxDiameter::getMarkupType() const
+{
     return QString("X");
 }
 
 YMaxDiameter::YMaxDiameter(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::MaxWidthY;
 }
 
-void YMaxDiameter::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void YMaxDiameter::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getMaxCircle(nominalCurve, &params, project).center().y;
 }
 
-void YMaxDiameter::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void YMaxDiameter::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measMaxDia = Algorithms::getMaxCircle(measuredCurve, &params, project);
     measured = measMaxDia.center().y;
 
@@ -210,22 +277,26 @@ void YMaxDiameter::createMeasured(const QString &nominalCurve, const QString &me
     _dimName = dimName;
 }
 
-QString YMaxDiameter::getMarkupType() const {
+QString YMaxDiameter::getMarkupType() const
+{
     return QString("Y");
 }
 
 ChordLength::ChordLength(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::ChordLength;
 }
 
-void ChordLength::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void ChordLength::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     auto nomChord = Algorithms::getChord(nominalCurve, &params, project);
     auto [first, second] = nomChord;
     nominal = Algorithms::getDistanceBetweenPoints(Point(first.point()), Point(second.point()));
 }
 
-void ChordLength::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project * project) {
+void ChordLength::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measChord = Algorithms::getChord(measuredCurve, &params, project);
     auto [first, second] = measChord;
     measured = Algorithms::getDistanceBetweenPoints(Point(first.point()), Point(second.point()));
@@ -246,29 +317,33 @@ void ChordLength::createMeasured(const QString &nominalCurve, const QString &mea
     auto dimName = QString("%1_Chord").arg(nominalCurve);
     auto middlePoint = Algorithms::getMiddlePoint(Point(firstPointFigure->point()), Point(secondPointFigure->point()));
     auto dimFigure = new DimFigure(dimName, middlePoint, firstPointName, secondPointName);
-    dimFigure->setDimType(DimFigure::DimType::Distance); //TODO: Need DistanceBetweenPoints
+    dimFigure->setDimType(DimFigure::DimType::Distance); // TODO: Need DistanceBetweenPoints
     dimFigure->addValue(value);
     project->safeInsert(dimName, dimFigure);
 
     _dimName = dimName;
 }
 
-QString ChordLength::getMarkupType() const {
+QString ChordLength::getMarkupType() const
+{
     return QString("Distance 2D");
 }
 
 WidthLE::WidthLE(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::LEWidth;
 }
 
-void WidthLE::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void WidthLE::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     auto nomWidthLE = Algorithms::getWidthOfLeadingEdge(nominalCurve, &params, extraParam1.toDouble(), project);
     auto [firstPoint, secondPoint] = nomWidthLE;
     nominal = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
 }
 
-void WidthLE::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void WidthLE::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measWidthLE = Algorithms::getWidthOfLeadingEdge(measuredCurve, &params, extraParam1.toDouble(), project);
     auto [firstPoint, secondPoint] = measWidthLE;
     measured = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
@@ -301,22 +376,26 @@ void WidthLE::createMeasured(const QString &nominalCurve, const QString &measure
     //MacrosManager::log(MacrosManager::CreateWidthOfLE, log);
 }
 
-QString WidthLE::getMarkupType() const {
+QString WidthLE::getMarkupType() const
+{
     return QString("Distance 2D");
 }
 
 WidthTE::WidthTE(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::TEWidth;
 }
 
-void WidthTE::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void WidthTE::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     auto nomWidthTE = Algorithms::getWidthOfTrailingEdge(nominalCurve, &params, extraParam1.toDouble(), project);
     auto [firstPoint, secondPoint] = nomWidthTE;
     nominal = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
 }
 
-void WidthTE::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void WidthTE::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto measWidthTE = Algorithms::getWidthOfTrailingEdge(measuredCurve, &params, extraParam1.toDouble(), project);
     auto [firstPoint, secondPoint] = measWidthTE;
     measured = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
@@ -349,20 +428,24 @@ void WidthTE::createMeasured(const QString &nominalCurve, const QString &measure
     //MacrosManager::log(MacrosManager::CreateWidthOfTE, log);
 }
 
-QString WidthTE::getMarkupType() const {
+QString WidthTE::getMarkupType() const
+{
     return QString("Distance 2D");
 }
 
 RadiusLE::RadiusLE(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::LERadius;
 }
 
-void RadiusLE::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void RadiusLE::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getRadiusOfLeadingEdge(nominalCurve, &params, extraParam1.toDouble(), project).radius();
 }
 
-void RadiusLE::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void RadiusLE::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto circle = Algorithms::getRadiusOfLeadingEdge(measuredCurve, &params, extraParam1.toDouble(), project);
     measured = circle.radius();
 
@@ -386,20 +469,24 @@ void RadiusLE::createMeasured(const QString &nominalCurve, const QString &measur
     _dimName = dimName;
 }
 
-QString RadiusLE::getMarkupType() const {
+QString RadiusLE::getMarkupType() const
+{
     return QString("Radius");
 }
 
 RadiusTE::RadiusTE(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::TERadius;
 }
 
-void RadiusTE::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void RadiusTE::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getRadiusOfTrailingEdge(nominalCurve, &params, extraParam1.toDouble(), project).radius();
 }
 
-void RadiusTE::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void RadiusTE::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     auto circle = Algorithms::getRadiusOfTrailingEdge(measuredCurve, &params, extraParam1.toDouble(), project);
     measured = circle.radius();
 
@@ -423,20 +510,81 @@ void RadiusTE::createMeasured(const QString &nominalCurve, const QString &measur
     _dimName = dimName;
 }
 
-QString RadiusTE::getMarkupType() const {
+QString RadiusTE::getMarkupType() const
+{
     return QString("Radius");
 }
 
+ShiftX::ShiftX(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
+    type = TurbineParameter::Type::ShiftX;
+}
+
+void ShiftX::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
+}
+
+void ShiftX::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
+}
+
+QString ShiftX::getMarkupType() const
+{
+    return QString();
+}
+
+ShiftY::ShiftY(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
+    type = TurbineParameter::Type::ShiftY;
+}
+
+void ShiftY::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
+}
+
+void ShiftY::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
+}
+
+QString ShiftY::getMarkupType() const
+{
+    return QString();
+}
+
+Turn::Turn(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
+    type = TurbineParameter::Type::Turn;
+}
+
+void Turn::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
+}
+
+void Turn::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
+}
+
+QString Turn::getMarkupType() const
+{
+    return QString();
+}
+
 MinX::MinX(double nominal, double UT, double LT, QString extraParam1, QString extraParam2)
-    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2) {
+    : TurbineParameter(nominal, UT, LT, extraParam1, extraParam2)
+{
     type = TurbineParameter::Type::MinX;
 }
 
-void MinX::calculateNominal(const QString &nominalCurve, const Function18Params &params, Project *project) {
+void MinX::calculateNominal(const QString& nominalCurve, const Function18Params& params, Project* project)
+{
     nominal = Algorithms::getMinX(nominalCurve, &params, project);
 }
 
-void MinX::createMeasured(const QString &nominalCurve, const QString &measuredCurve, const Function18Params &params, Project *project) {
+void MinX::createMeasured(const QString& nominalCurve, const QString& measuredCurve, const Function18Params& params, Project* project)
+{
     measured = Algorithms::getMinX(measuredCurve, &params, project);
     auto minXPoint = CurvePoint(measured, 0, 0);
 
@@ -460,6 +608,7 @@ void MinX::createMeasured(const QString &nominalCurve, const QString &measuredCu
     _dimName = dimName;
 }
 
-QString MinX::getMarkupType() const {
+QString MinX::getMarkupType() const
+{
     return QString("X");
 }

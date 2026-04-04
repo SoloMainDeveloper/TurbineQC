@@ -11,7 +11,7 @@ LoadingCloudDialog::LoadingCloudDialog() : _ui(new Ui::LoadingCloudDialog()) {
     _message = new QMessageBox(this);
     _message->setWindowTitle("Warning");
 
-    this->setWindowTitle("Load file");
+    this->setWindowTitle(tr("Load file"));
     this->setFixedSize(750, 500);
 
     _groupOfBtnWidgets = new QGroupBox("From clipboard", this);

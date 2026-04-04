@@ -701,6 +701,11 @@
        </item>
        <item>
         <property name="text">
+         <string>Free fit (form)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>No fit</string>
         </property>
        </item>
@@ -928,6 +933,11 @@
        <item>
         <property name="text">
          <string>Use global fit</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Free fit (form)</string>
         </property>
        </item>
        <item>

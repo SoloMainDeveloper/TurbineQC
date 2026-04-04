@@ -1,49 +1,58 @@
 #include "curve/pch.h"
 
+#include "markupcreator.h"
 #include "printer.h"
 #include "printreportcommand.h"
 #include "setprintersettingscommand.h"
 
-//QStringList Printer::_printPages;
-//Printer::PrintType Printer::_printType = PrintType::HTML; //add UI to choose printType
+// QStringList Printer::_printPages;
+// Printer::PrintType Printer::_printType = PrintType::HTML; //add UI to choose printType
 
-Printer& Printer::instance() {
+Printer& Printer::instance()
+{
     static Printer printer;
     return printer;
 }
 
-void Printer::addPage(const QString &page, const QMap<QString, QString> &information) {
+void Printer::addPage(const QString& page, const QMap<QString, QString>& information)
+{
     _printPages.append(page);
     emit pageAdded(information);
 }
 
-void Printer::removePage(int index) {
+void Printer::removePage(int index)
+{
     _printPages.removeAt(index);
     emit pageRemoved(index);
-    //MacrosManager::log(MacrosManager::RemovePage, { { "index", QString::number(index) } });
+    // MacrosManager::log(MacrosManager::RemovePage, { { "index", QString::number(index) } });
 }
 
-void Printer::clear() {
+void Printer::clear()
+{
     _printPages.clear();
     emit printerPagesCleared();
-    //MacrosManager::log(MacrosManager::ClearReport);
+    // MacrosManager::log(MacrosManager::ClearReport);
 }
 
-QString Printer::printTypeToQString(PrintType type) {
+QString Printer::printTypeToQString(PrintType type)
+{
     return QMetaEnum::fromType<PrintType>().valueToKey(static_cast<int>(type));
 }
 
-Printer::PrintType Printer::qStringToPrintType(const QString &type) {
+Printer::PrintType Printer::qStringToPrintType(const QString& type)
+{
     return static_cast<PrintType>(QMetaEnum::fromType<Printer::PrintType>().keyToValue(type.toLatin1()));
 }
 
-void Printer::setPrinterSettings(const PrintType type) {
+void Printer::setPrinterSettings(const PrintType type)
+{
     //_printType = type;
     _printType = PrintType::HTML;
     MacrosManager::instance().log(std::make_shared<SetPrinterSettingsCommand>(type));
 }
 
-void Printer::printAll() {
+void Printer::printAll()
+{
     QList<int> pagesToTake;
     for(auto i = 0; i < _printPages.length(); i++) {
         pagesToTake.append(i);
@@ -51,13 +60,14 @@ void Printer::printAll() {
     print(pagesToTake);
 }
 
-void Printer::print(const QList<int> &pagesToTake) {
+void Printer::print(const QList<int>& pagesToTake)
+{
     auto filePath = QFileDialog::getSaveFileName(nullptr, "Save report", "", "HTML Files (*.html)");
-    if(filePath.isEmpty()) return;
+    if(filePath.isEmpty())
+        return;
 
     switch(_printType) {
-        case PrintType::HTML:
-        {
+        case PrintType::HTML: {
             QFile file(filePath);
             file.open(QIODevice::WriteOnly | QIODevice::Truncate);
             QTextStream in(&file);

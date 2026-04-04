@@ -1,10 +1,14 @@
 ﻿#include "curve/pch.h"
 
 #include "macrosdialog.h"
+
 #include "ui_macrosdialog.h"
+
 #include "macrostranslator.h"
 
-MacrosDialog::MacrosDialog() : _ui(new Ui::MacrosDialog()) {
+MacrosDialog::MacrosDialog()
+    : _ui(new Ui::MacrosDialog())
+{
     _ui->setupUi(this);
 
     _macrosManager = &MacrosManager::instance();
@@ -25,8 +29,8 @@ MacrosDialog::MacrosDialog() : _ui(new Ui::MacrosDialog()) {
     connect(moveOperationUp, &QAction::triggered, this, &MacrosDialog::onMoveOperationUpItemTriggered);
     connect(moveOperationDown, &QAction::triggered, this, &MacrosDialog::onMoveOperationDownItemTriggered);
 
-    connect(_macrosManager, &MacrosManager::operationLogged, this, &MacrosDialog::addOperation);
-    connect(_macrosManager, &MacrosManager::recordingToggled, this, &MacrosDialog::updateRecordingButton);
+    connect(_macrosManager, &MacrosManager::operationLogged, this, &MacrosDialog::onOperationLogged);
+    connect(_macrosManager, &MacrosManager::recordingToggled, this, &MacrosDialog::onRecordingToggled);
     connect(_macrosManager, &MacrosManager::recordIndexChanged, this, &MacrosDialog::onRecordIndexChanged);
     connect(_macrosManager, &MacrosManager::operationExecuted, this, &MacrosDialog::onOperationExecuted);
     connect(_macrosManager, &MacrosManager::operationSkipped, this, &MacrosDialog::onOperationSkipped);
@@ -43,7 +47,8 @@ MacrosDialog::MacrosDialog() : _ui(new Ui::MacrosDialog()) {
     connect(_ui->skipButton, &QPushButton::clicked, _macrosManager, &MacrosManager::skipOne);
 }
 
-void MacrosDialog::initialize() {
+void MacrosDialog::initialize()
+{
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     onRecordIndexChanged(_macrosManager->recordIndex());
 
@@ -56,46 +61,62 @@ void MacrosDialog::initialize() {
     show();
 }
 
-void MacrosDialog::addOperation(QString operation, QString comment) {
+void MacrosDialog::onOperationLogged(std::shared_ptr<ICommand> command)
+{
     auto recordIndex = _macrosManager->recordIndex();
-    auto item = createOperationItem(recordIndex, operation, comment);
+    auto item = createOperationItem(recordIndex, command->getName());
     insert(recordIndex, item);
     reindex(recordIndex);
 }
 
-void MacrosDialog::insert(int index, QTreeWidgetItem* item) {
+QTreeWidgetItem* MacrosDialog::createOperationItem(int index, QString commandName)
+{
+    auto root = new QTreeWidgetItem(_operationList);
+    root->setText(0, QString("%1. %2").arg(index).arg(commandName));
+    return root;
+}
+
+void MacrosDialog::insert(int index, QTreeWidgetItem* itemToAdd)
+{
     auto items = QList<QTreeWidgetItem*>();
     while(index != _operationList->topLevelItemCount()) {
-        auto itemi = _operationList->takeTopLevelItem(index - 1);
-        auto text = itemi->text(0);
-        items.append(itemi);
+        auto itemToTake = _operationList->takeTopLevelItem(index - 1);
+        auto text = itemToTake->text(0);
+        items.append(itemToTake);
     }
-    items.append(item);
+    items.append(itemToAdd);
     _operationList->insertTopLevelItems(index, items);
 }
 
-void MacrosDialog::clear() {
+void MacrosDialog::clear()
+{
     _macrosManager->clear();
     _operationList->clear();
 }
 
-void MacrosDialog::save() {
-    QString fileName = QFileDialog::getSaveFileName(nullptr, "Сохранить макрос", "", "Macros (*.json)");
+void MacrosDialog::save()
+{
+    QString fileName = QFileDialog::getSaveFileName(nullptr, "Сохранить макрос", "", "Макрос (*.json)");
+
     if(!fileName.isEmpty()) {
         QFile file(fileName);
+
         if(!file.open(QIODevice::WriteOnly)) {
-            qWarning() << "Cannot open file for writing:" << fileName;
+            QMessageBox::critical(nullptr, "Ошибка", "Не удалось открыть файл для записи");
             return;
         }
+
         QJsonDocument doc(_macrosManager->toJson());
         file.write(doc.toJson());
         file.close();
-    } else {
-        QMessageBox::critical(nullptr, "Error", "Макрос не был сохранен");
+    }
+    else {
+        QMessageBox::critical(nullptr, "Ошибка", "Макрос не был сохранен");
     }
 }
 
-void MacrosDialog::load() {
+void MacrosDialog::load()
+{
     auto path = QFileDialog::getOpenFileName(nullptr, "Загрузить макрос", "", "Macros (*.json *.crm)");
     if(!path.isEmpty()) {
         QFileInfo fileInfo(path);
@@ -122,7 +143,8 @@ void MacrosDialog::load() {
             _macrosManager->setRecording(isRecording);
 
             file.close();
-        } else if(extension == "json") {
+        }
+        else if(extension == "json") {
             QFile file(path);
             if(!file.open(QIODevice::ReadOnly)) {
                 qWarning() << "Cannot open file for reading:" << path;
@@ -140,15 +162,18 @@ void MacrosDialog::load() {
 
             file.close();
         }
+        setWindowTitle(tr("Macros: ") + fileInfo.baseName());
     }
 }
 
-void MacrosDialog::startDebug() {
+void MacrosDialog::startDebug()
+{
     _ui->buttonsList->setCurrentIndex(1);
     _isDebugging = true;
 }
 
-void MacrosDialog::stopDebug() {
+void MacrosDialog::stopDebug()
+{
     _macrosManager->stopDebug();
     _ui->buttonsList->setCurrentIndex(0);
     _ui->nextDebugButton->setEnabled(true);
@@ -159,23 +184,28 @@ void MacrosDialog::stopDebug() {
     }
 }
 
-void MacrosDialog::debugNext() {
+void MacrosDialog::debugNext()
+{
     _macrosManager->debugNext();
 }
 
-void MacrosDialog::updateRecordingButton() {
+void MacrosDialog::onRecordingToggled()
+{
     if(_macrosManager->isRecording()) {
         _ui->toggleRecordButton->setText(tr("Stop"));
-    } else {
+    }
+    else {
         _ui->toggleRecordButton->setText(tr("Record"));
     }
 }
 
-void MacrosDialog::run() {
+void MacrosDialog::run()
+{
     _macrosManager->run();
 }
 
-void MacrosDialog::contextMenuEvent(QContextMenuEvent * event) {
+void MacrosDialog::contextMenuEvent(QContextMenuEvent* event)
+{
     auto current = _operationList->currentItem();
     auto index = current->text(0).split('.')[0].toInt() - 1;
     if(current && !current->parent()) {
@@ -193,14 +223,14 @@ void MacrosDialog::contextMenuEvent(QContextMenuEvent * event) {
     }
 }
 
-void MacrosDialog::onRemoveItemTriggered() {
+void MacrosDialog::onRemoveItemTriggered()
+{
     QMessageBox mBox;
     mBox.setText(tr("Remove command?"));
     mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     auto dialogWindow = mBox.exec();
     switch(dialogWindow) {
-        case QMessageBox::Ok:
-        {
+        case QMessageBox::Ok: {
             auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
             removeOperation(index);
             break;
@@ -210,30 +240,36 @@ void MacrosDialog::onRemoveItemTriggered() {
     }
 }
 
-void MacrosDialog::onExecuteCurrentItemTriggered() {
+void MacrosDialog::onExecuteCurrentItemTriggered()
+{
     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
     _macrosManager->executeOne(index);
 }
 
-void MacrosDialog::onMoveOperationUpItemTriggered() {
+void MacrosDialog::onMoveOperationUpItemTriggered()
+{
     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
-    if(index == 0) return;
+    if(index == 0)
+        return;
     _operationList->insertTopLevelItem(index - 1, _operationList->takeTopLevelItem(index));
     _operationList->setCurrentItem(_operationList->topLevelItem(index - 1));
     reindex(index - 1, index);
     _macrosManager->swapOperations(index - 1, index);
 }
 
-void MacrosDialog::onMoveOperationDownItemTriggered() {
+void MacrosDialog::onMoveOperationDownItemTriggered()
+{
     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
-    if(index == _operationList->topLevelItemCount() - 1) return;
+    if(index == _operationList->topLevelItemCount() - 1)
+        return;
     _operationList->insertTopLevelItem(index + 1, _operationList->takeTopLevelItem(index));
     _operationList->setCurrentItem(_operationList->topLevelItem(index + 1));
     reindex(index, index + 1);
     _macrosManager->swapOperations(index, index + 1);
 }
 
-void MacrosDialog::onEditItemTriggered() {
+void MacrosDialog::onEditItemTriggered()
+{
     auto* dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
     dialog->setWindowTitle(tr("Edit command"));
     dialog->setFixedSize(420, 470);
@@ -262,7 +298,8 @@ void MacrosDialog::onEditItemTriggered() {
     dialog->exec();
 }
 
-void MacrosDialog::onMoveRecordButtonClicked() {
+void MacrosDialog::onMoveRecordButtonClicked()
+{
     auto* dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
     dialog->setWindowTitle("Передвинуть каретку записи");
     auto* label = new QLabel(dialog);
@@ -288,7 +325,8 @@ void MacrosDialog::onMoveRecordButtonClicked() {
         if(index >= 0 && index <= count) {
             _macrosManager->setRecordIndex(index);
             dialog->close();
-        } else {
+        }
+        else {
             edit->clear();
             edit->setPlaceholderText("Неверный индекс. Попробуйте снова");
         }
@@ -299,25 +337,30 @@ void MacrosDialog::onMoveRecordButtonClicked() {
     dialog->exec();
 }
 
-void MacrosDialog::onRecordIndexChanged(int index) {
+void MacrosDialog::onRecordIndexChanged(int index)
+{
     _ui->indexLineEdit->setText(QString::number(index));
 }
 
-void MacrosDialog::onOperationExecuted(int index, bool isSuccessful) {
+void MacrosDialog::onOperationExecuted(int index, bool isSuccessful)
+{
     if(isSuccessful) {
         _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(0, 255, 0)));
-    } else {
+    }
+    else {
         _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(255, 0, 0)));
         _ui->nextDebugButton->setEnabled(false);
         _ui->skipButton->setEnabled(false);
     }
 }
 
-void MacrosDialog::onOperationSkipped(int index) {
+void MacrosDialog::onOperationSkipped(int index)
+{
     _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(150, 150, 150)));
 }
 
-void MacrosDialog::keyPressEvent(QKeyEvent * event) {
+void MacrosDialog::keyPressEvent(QKeyEvent* event)
+{
     if(event->key() == Qt::Key_Delete && _ui->operationList->currentItem()) {
         QMessageBox mBox;
         QString name = _ui->operationList->currentItem()->text(0);
@@ -332,29 +375,27 @@ void MacrosDialog::keyPressEvent(QKeyEvent * event) {
     }
 }
 
-void MacrosDialog::removeOperation(int index) {
+void MacrosDialog::removeOperation(int index)
+{
     _ui->operationList->takeTopLevelItem(index);
     _macrosManager->remove(index);
     reindex(index);
 }
 
-void MacrosDialog::reindex(int indexFrom, int indexTo) {
-    for(auto i = indexFrom; i <= indexTo; i++) { //check
+void MacrosDialog::reindex(int indexFrom, int indexTo)
+{
+    for(auto i = indexFrom; i <= indexTo; i++) { // check
         auto text = _operationList->topLevelItem(i)->text(0).split(". ");
         _operationList->topLevelItem(i)->setText(0, QString("%1. %2").arg(i + 1).arg(text[1]));
     }
 }
 
-void MacrosDialog::reindex(int indexFrom) {
+void MacrosDialog::reindex(int indexFrom)
+{
     reindex(indexFrom, _operationList->topLevelItemCount() - 1);
 }
 
-QTreeWidgetItem* MacrosDialog::createOperationItem(int index, QString operation, QString comment) {
-    auto root = new QTreeWidgetItem(_operationList);
-    root->setText(0, QString("%1. %2").arg(index).arg(operation));
-    return root;
-}
-
-MacrosDialog::~MacrosDialog() {
+MacrosDialog::~MacrosDialog()
+{
     delete _ui;
 }

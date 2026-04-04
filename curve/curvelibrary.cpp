@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "curvelibrary.h"
 
 Function1Result CurveLibrary::function1(QVector<CurvePoint> points, Function1Params params) {

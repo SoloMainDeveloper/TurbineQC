@@ -1,7 +1,11 @@
 #include "curve/pch.h"
+
+#include "macrostranslator.h"
 #include "macroswindow.h"
 
-MacrosWindow::MacrosWindow(QWidget *parent, Project *project, Plot *plot) : QMainWindow(parent), _ui(new Ui::MacrosWindow()) {
+MacrosWindow::MacrosWindow(QWidget* parent, Project* project, Plot* plot)
+    : QMainWindow(parent), _ui(new Ui::MacrosWindow())
+{
     _ui->setupUi(this);
     _project = project;
     _plot = plot;
@@ -36,8 +40,8 @@ MacrosWindow::MacrosWindow(QWidget *parent, Project *project, Plot *plot) : QMai
     connect(_ui->toggleRecordButton, &QPushButton::clicked, this, &MacrosManager::toggleRecording);
     connect(_ui->clearButton, &QPushButton::clicked, this, &MacrosWindow::clear);
     connect(_ui->runButton, &QPushButton::clicked, this, &MacrosWindow::run);
-    connect(_ui->saveButton, &QPushButton::clicked, this, &MacrosWindow::save); 
-    connect(_ui->loadButton, &QPushButton::clicked, this, &MacrosManager::load);
+    connect(_ui->saveButton, &QPushButton::clicked, this, &MacrosWindow::save);
+    connect(_ui->loadButton, &QPushButton::clicked, this, &MacrosTranslator::load);
     connect(_ui->moveRecordButton, &QPushButton::clicked, this, &MacrosWindow::onMoveRecordButtonClicked);
     connect(_ui->startDebugButton, &QPushButton::clicked, this, &MacrosWindow::startDebug);
     connect(_ui->stopDebugButton, &QPushButton::clicked, this, &MacrosWindow::stopDebug);
@@ -45,20 +49,23 @@ MacrosWindow::MacrosWindow(QWidget *parent, Project *project, Plot *plot) : QMai
     connect(_ui->skipButton, &QPushButton::clicked, this, &MacrosManager::skipOne);
 }
 
-void MacrosWindow::initialization() {
+void MacrosWindow::initialization()
+{
     onRecordIndexChanged(MacrosManager::recordIndex());
     show();
     emit needShow(false);
 }
 
-void MacrosWindow::addOperation(QString operation, QString comment) {
+void MacrosWindow::addOperation(QString operation, QString comment)
+{
     auto recordIndex = MacrosManager::recordIndex();
     auto item = createOperationItem(recordIndex, operation, comment);
     insert(recordIndex, item);
     reindex(recordIndex);
 }
 
-void MacrosWindow::insert(int index, QTreeWidgetItem* item) {
+void MacrosWindow::insert(int index, QTreeWidgetItem* item)
+{
     auto items = QList<QTreeWidgetItem*>();
     while(index != _operationList->topLevelItemCount()) {
         auto itemi = _operationList->takeTopLevelItem(index - 1);
@@ -69,30 +76,36 @@ void MacrosWindow::insert(int index, QTreeWidgetItem* item) {
     _operationList->insertTopLevelItems(index, items);
 }
 
-void MacrosWindow::closeEvent(QCloseEvent *event) {
+void MacrosWindow::closeEvent(QCloseEvent* event)
+{
     emit needShow(true);
 }
 
-void MacrosWindow::clear() {
+void MacrosWindow::clear()
+{
     _operationList->clear();
     MacrosManager::clear();
 }
 
-void MacrosWindow::save() {
+void MacrosWindow::save()
+{
     QString fileName = QFileDialog::getSaveFileName(nullptr, "Save macros", "", "Macros (*.crmm)");
     if(!fileName.isEmpty()) {
         MacrosManager::save(fileName);
-    } else {
+    }
+    else {
         QMessageBox::critical(nullptr, "Error", "Macros was not saved");
     }
 }
 
-void MacrosWindow::startDebug() {
+void MacrosWindow::startDebug()
+{
     _ui->buttonsList->setCurrentIndex(1);
     _isDebugging = true;
 }
 
-void MacrosWindow::stopDebug() {
+void MacrosWindow::stopDebug()
+{
     MacrosManager::stopDebug();
     _ui->buttonsList->setCurrentIndex(0);
     _ui->nextDebugButton->setEnabled(true);
@@ -103,23 +116,28 @@ void MacrosWindow::stopDebug() {
     }
 }
 
-void MacrosWindow::debugNext() {
+void MacrosWindow::debugNext()
+{
     MacrosManager::debugNext(_project, _plot);
 }
 
-void MacrosWindow::updateRecordingButton() {
+void MacrosWindow::updateRecordingButton()
+{
     if(MacrosManager::isRecording()) {
         _ui->toggleRecordButton->setText("Stop");
-    } else {
+    }
+    else {
         _ui->toggleRecordButton->setText("Start record");
     }
 }
 
-void MacrosWindow::run() {
+void MacrosWindow::run()
+{
     MacrosManager::run(_project, _plot);
 }
 
-void MacrosWindow::contextMenuEvent(QContextMenuEvent *event) {
+void MacrosWindow::contextMenuEvent(QContextMenuEvent* event)
+{
     auto current = _operationList->currentItem();
     auto index = current->text(0).split('.')[0].toInt() - 1;
     if(current && !current->parent()) {
@@ -137,15 +155,15 @@ void MacrosWindow::contextMenuEvent(QContextMenuEvent *event) {
     }
 }
 
-void MacrosWindow::onRemoveItemTriggered() {
+void MacrosWindow::onRemoveItemTriggered()
+{
     QMessageBox mBox;
     mBox.setText("Delete current item?");
     mBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     auto dialogWindow = mBox.exec();
     switch(dialogWindow) {
-        case QMessageBox::Ok:
-        {
-        auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+        case QMessageBox::Ok: {
+            auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
             removeOperation(index);
             break;
         }
@@ -154,45 +172,51 @@ void MacrosWindow::onRemoveItemTriggered() {
     }
 }
 
-void MacrosWindow::onExecuteCurrentItemTriggered() {
-     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
-     MacrosManager::executeOne(_project, _plot, index);
-}
-
-void MacrosWindow::onMoveOperationUpItemTriggered() {
-     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
-     if(index == 0) return;
-     _operationList->insertTopLevelItem(index - 1, _operationList->takeTopLevelItem(index));
-     _operationList->setCurrentItem(_operationList->topLevelItem(index - 1));
-     reindex(index - 1, index);
-     MacrosManager::swapOperations(index - 1, index);
-}
-
-void MacrosWindow::onMoveOperationDownItemTriggered() {
+void MacrosWindow::onExecuteCurrentItemTriggered()
+{
     auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
-    if(index == _operationList->topLevelItemCount() - 1) return;
+    MacrosManager::executeOne(_project, _plot, index);
+}
+
+void MacrosWindow::onMoveOperationUpItemTriggered()
+{
+    auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+    if(index == 0)
+        return;
+    _operationList->insertTopLevelItem(index - 1, _operationList->takeTopLevelItem(index));
+    _operationList->setCurrentItem(_operationList->topLevelItem(index - 1));
+    reindex(index - 1, index);
+    MacrosManager::swapOperations(index - 1, index);
+}
+
+void MacrosWindow::onMoveOperationDownItemTriggered()
+{
+    auto index = _operationList->currentItem()->text(0).split('.')[0].toInt() - 1;
+    if(index == _operationList->topLevelItemCount() - 1)
+        return;
     _operationList->insertTopLevelItem(index + 1, _operationList->takeTopLevelItem(index));
     _operationList->setCurrentItem(_operationList->topLevelItem(index + 1));
     reindex(index, index + 1);
     MacrosManager::swapOperations(index, index + 1);
 }
 
-void MacrosWindow::onEditItemTriggered() {
-    auto *dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
+void MacrosWindow::onEditItemTriggered()
+{
+    auto* dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
     dialog->setWindowTitle("Edit current item");
     auto currentOperation = _operationList->currentItem();
     auto currentOperationText = currentOperation->child(0)->text(0);
-    auto *edit = new QTextEdit(dialog);
+    auto* edit = new QTextEdit(dialog);
     edit->setText(currentOperationText);
     edit->setGeometry(10, 10, 400, 400);
     edit->show();
 
-    auto *cancelBtn = new QPushButton("Cancel", dialog);
+    auto* cancelBtn = new QPushButton("Cancel", dialog);
     cancelBtn->setGeometry(10, 420, 195, 40);
     connect(cancelBtn, &QPushButton::clicked, dialog, &QDialog::close);
     cancelBtn->show();
 
-    auto *acceptBtn = new QPushButton("Accept", dialog);
+    auto* acceptBtn = new QPushButton("Accept", dialog);
     acceptBtn->setGeometry(215, 420, 195, 40);
     connect(acceptBtn, &QPushButton::clicked, this, [&]() {
         auto operationInfo = currentOperation->text(0).split('.');
@@ -209,25 +233,26 @@ void MacrosWindow::onEditItemTriggered() {
     dialog->exec();
 }
 
-void MacrosWindow::onMoveRecordButtonClicked() {
-    auto *dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
+void MacrosWindow::onMoveRecordButtonClicked()
+{
+    auto* dialog = new QDialog(this, Qt::WindowStaysOnTopHint);
     dialog->setWindowTitle("Move record");
-    auto *label = new QLabel(dialog);
+    auto* label = new QLabel(dialog);
     label->setText("Set record after which operation?");
     label->setGeometry(10, 10, 180, 30);
 
-    auto *edit = new QLineEdit(dialog);
+    auto* edit = new QLineEdit(dialog);
     edit->setValidator(new QIntValidator(0, _operationList->topLevelItemCount()));
     edit->setText(0);
     edit->setGeometry(10, 45, 180, 30);
     edit->show();
 
-    auto *cancelBtn = new QPushButton("Cancel", dialog);
+    auto* cancelBtn = new QPushButton("Cancel", dialog);
     cancelBtn->setGeometry(10, 80, 85, 30);
     connect(cancelBtn, &QPushButton::clicked, dialog, &QDialog::close);
     cancelBtn->show();
 
-    auto *acceptBtn = new QPushButton("Accept", dialog);
+    auto* acceptBtn = new QPushButton("Accept", dialog);
     acceptBtn->setGeometry(105, 80, 85, 30);
     connect(acceptBtn, &QPushButton::clicked, this, [&]() {
         auto index = edit->text().toInt();
@@ -235,7 +260,8 @@ void MacrosWindow::onMoveRecordButtonClicked() {
         if(index >= 0 && index <= count) {
             MacrosManager::setRecordIndex(index);
             dialog->close();
-        } else {
+        }
+        else {
             edit->clear();
             edit->setPlaceholderText("Incorrect index. Try again");
         }
@@ -246,25 +272,30 @@ void MacrosWindow::onMoveRecordButtonClicked() {
     dialog->exec();
 }
 
-void MacrosWindow::onRecordIndexChanged(int index) {
+void MacrosWindow::onRecordIndexChanged(int index)
+{
     _ui->indexLineEdit->setText(QString::number(index));
 }
 
-void MacrosWindow::onOperationExecuted(int index, bool isSuccessful) {
+void MacrosWindow::onOperationExecuted(int index, bool isSuccessful)
+{
     if(isSuccessful) {
         _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(0, 255, 0)));
-    } else {
+    }
+    else {
         _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(255, 0, 0)));
         _ui->nextDebugButton->setEnabled(false);
         _ui->skipButton->setEnabled(false);
     }
 }
 
-void MacrosWindow::onOperationSkipped(int index) {
+void MacrosWindow::onOperationSkipped(int index)
+{
     _operationList->topLevelItem(index)->setBackground(0, QBrush(QColor(150, 150, 150)));
 }
 
-void MacrosWindow::keyPressEvent(QKeyEvent *event) {
+void MacrosWindow::keyPressEvent(QKeyEvent* event)
+{
     if(event->key() == Qt::Key_Delete && _ui->operationList->currentItem()) {
         QMessageBox mBox;
         QString name = _ui->operationList->currentItem()->text(0);
@@ -279,24 +310,28 @@ void MacrosWindow::keyPressEvent(QKeyEvent *event) {
     }
 }
 
-void MacrosWindow::removeOperation(int index) {
+void MacrosWindow::removeOperation(int index)
+{
     _ui->operationList->takeTopLevelItem(index);
     MacrosManager::remove(index);
     reindex(index);
 }
 
-void MacrosWindow::reindex(int indexFrom, int indexTo) {
-    for(auto i = indexFrom; i <= indexTo; i++) { //check
+void MacrosWindow::reindex(int indexFrom, int indexTo)
+{
+    for(auto i = indexFrom; i <= indexTo; i++) { // check
         auto text = _operationList->topLevelItem(i)->text(0).split(". ");
         _operationList->topLevelItem(i)->setText(0, QString("%1. %2").arg(i + 1).arg(text[1]));
     }
 }
 
-void MacrosWindow::reindex(int indexFrom) {
+void MacrosWindow::reindex(int indexFrom)
+{
     reindex(indexFrom, _operationList->topLevelItemCount() - 1); // -1
 }
 
-QTreeWidgetItem* MacrosWindow::createOperationItem(int index, QString operation, QString comment) {
+QTreeWidgetItem* MacrosWindow::createOperationItem(int index, QString operation, QString comment)
+{
     auto root = new QTreeWidgetItem(_operationList);
     root->setText(0, QString("%1. %2").arg(index).arg(operation));
     auto commentItem = new QTreeWidgetItem(root);
@@ -307,6 +342,7 @@ QTreeWidgetItem* MacrosWindow::createOperationItem(int index, QString operation,
     return root;
 }
 
-MacrosWindow::~MacrosWindow() {
+MacrosWindow::~MacrosWindow()
+{
     delete _ui;
 }

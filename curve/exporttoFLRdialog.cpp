@@ -6,6 +6,7 @@
 
 ExportToFLRDialog::ExportToFLRDialog() : _ui(new Ui::ExportToFLRDialog) {
     _ui->setupUi(this);
+    _ui->mergeModeCheckbox->setEnabled(true);
 
     setFixedSize(350, 420);
 

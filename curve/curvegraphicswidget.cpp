@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "curvegraphicswidget.h"
 
 CurveGraphicsWidget::CurveGraphicsWidget(QWidget *parent) : QWidget(parent), _ui(new Ui::CurveGraphicsWidget) {

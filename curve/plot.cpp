@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "curve/plot.h"
 
 Plot* Plot::_instance = nullptr;
@@ -15,11 +16,11 @@ Plot::Plot(QWidget* parent) : QCustomPlot(parent), _project(nullptr) {
 	yAxis->setRange(0, _defaultYRangeLength);
 	_replotTimer.setSingleShot(false);
 	_replotTimer.setInterval(500);
-	/*connect(&_replotTimer, &QTimer::timeout, this, [&]() {
+	/* connect(&_replotTimer, &QTimer::timeout, this, [&]() {
 		for(const auto &figure : _project->figures()) {
 			if(figure->isVisible()) updateFigure(figure->name());
 		}
-	});*/
+	}); */
 	setInteractions(QCP::iRangeDrag | QCP::iSelectPlottables | QCP::iSelectItems);
 }
 

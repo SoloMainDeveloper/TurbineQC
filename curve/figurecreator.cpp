@@ -1,7 +1,9 @@
 #include "curve/pch.h"
+
 #include "figurecreator.h"
 
-void FigureCreator::createAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings) {
+void FigureCreator::createAdditionalFigures(Project* project, std::shared_ptr<ReportSettings> reportSettings)
+{
     auto nominalName = reportSettings->nominalName();
     auto measuredName = reportSettings->measuredName();
 
@@ -27,7 +29,8 @@ void FigureCreator::createAdditionalFigures(Project *project, std::shared_ptr<Re
     }
 }
 
-void FigureCreator::alignAdditionalFigures(Project *project, std::shared_ptr<ReportSettings> reportSettings) {
+void FigureCreator::alignAdditionalFigures(Project* project, std::shared_ptr<ReportSettings> reportSettings)
+{
     auto nominalName = reportSettings->nominalName();
     auto measuredName = reportSettings->measuredName();
 
@@ -40,6 +43,10 @@ void FigureCreator::alignAdditionalFigures(Project *project, std::shared_ptr<Rep
     auto xShift = reportSettings->xShift();
     auto yShift = reportSettings->yShift();
     auto rotation = reportSettings->rotation();
+
+    if(xShift == 0 && yShift == 0 && rotation == 0) {
+        return;
+    }
 
     if(reportSettings->needMCL()) {
         auto figure = project->findFigure(additionalNames[Name::MeasuredMCL]);
@@ -78,7 +85,8 @@ FigureCreator::FigureCreator(std::shared_ptr<ReportSettings> reportSettings)
     _project = &Project::instance();
 }
 
-void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>>> &globalCurvesToCreate) {
+void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>>>& globalCurvesToCreate)
+{
     using FormName = ReportGenerator::FormName;
     auto nominalName = _reportSettings->nominalName();
     auto templateFormName = ReportGenerator::getTemplateFormNames(nominalName);
@@ -86,40 +94,34 @@ void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>
     for(auto [curveType, curve] : globalCurvesToCreate.asKeyValueRange()) {
         auto [name, points] = curve;
         switch(curveType) {
-            case CurveType::WholeGlobal:
-            {
+            case CurveType::WholeGlobal: {
                 auto createdCurve = createGlobalCurve(name, points, true);
                 createDimension(templateFormName[FormName::GlobalForm], createdCurve);
                 break;
             }
-            case CurveType::GlobalWithoutTE:
-            {
+            case CurveType::GlobalWithoutTE: {
                 auto createdCurve = createGlobalCurve(name, points, false);
                 createDimension(templateFormName[FormName::GlobalForm], createdCurve);
                 break;
             }
-            case CurveType::GlobalCV:
-            {
+            case CurveType::GlobalCV: {
                 auto createdCurve = createGlobalPart(name, points);
                 createDimension(templateFormName[FormName::CVForm], createdCurve);
                 break;
             }
-            case CurveType::GlobalCC:
-            {
+            case CurveType::GlobalCC: {
                 auto createdCurve = createGlobalPart(name, points);
                 createDimension(templateFormName[FormName::CCForm], createdCurve);
                 break;
             }
-            case CurveType::GlobalLE:
-            {
+            case CurveType::GlobalLE: {
                 if(_reportSettings->isLEVisible()) {
                     auto createdCurve = createGlobalEdge(name, points, _reportSettings->amplificationOfLE());
                     createDimension(templateFormName[FormName::LEForm], createdCurve);
                 }
                 break;
             }
-            case CurveType::GlobalTE:
-            {
+            case CurveType::GlobalTE: {
                 if(_reportSettings->isTEVisible()) {
                     auto createdCurve = createGlobalEdge(name, points, _reportSettings->amplificationOfTE());
                     createDimension(templateFormName[FormName::TEForm], createdCurve);
@@ -132,7 +134,8 @@ void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>
     }
 }
 
-CurveFigure* FigureCreator::createGlobalCurve(const QString &globalName, const QVector<CurvePoint> &globalPoints, bool isClosed) {
+CurveFigure* FigureCreator::createGlobalCurve(const QString& globalName, const QVector<CurvePoint>& globalPoints, bool isClosed)
+{
     auto globalCurve = new CurveFigure(globalName, globalPoints);
     globalCurve->setClosed(isClosed);
     globalCurve->setShowDeviations(true);
@@ -145,7 +148,8 @@ CurveFigure* FigureCreator::createGlobalCurve(const QString &globalName, const Q
     return globalCurve;
 }
 
-CurveFigure* FigureCreator::createGlobalEdge(const QString &edgeName, const QVector<CurvePoint> &points, double amplification) {
+CurveFigure* FigureCreator::createGlobalEdge(const QString& edgeName, const QVector<CurvePoint>& points, double amplification)
+{
     auto edge = new CurveFigure(edgeName, points);
     edge->setShowDeviations(true);
     edge->setConnectDeviations(true);
@@ -157,7 +161,8 @@ CurveFigure* FigureCreator::createGlobalEdge(const QString &edgeName, const QVec
     return edge;
 }
 
-CurveFigure* FigureCreator::createGlobalPart(const QString &curveName, const QVector<CurvePoint> &points) {
+CurveFigure* FigureCreator::createGlobalPart(const QString& curveName, const QVector<CurvePoint>& points)
+{
     auto curve = new CurveFigure(curveName, points);
     curve->setShowDeviations(true);
     curve->setConnectDeviations(true);
@@ -169,15 +174,16 @@ CurveFigure* FigureCreator::createGlobalPart(const QString &curveName, const QVe
     return curve;
 }
 
-void FigureCreator::createDimension(const QString &dimensionName, const CurveFigure *globalCurve, const Point &labelPoint) {
+void FigureCreator::createDimension(const QString& dimensionName, const CurveFigure* globalCurve, const Point& labelPoint)
+{
     auto table = new DimFigure(dimensionName, labelPoint, globalCurve->name());
     table->setDimType(DimFigure::DimType::Form);
     table->setVisible(false);
 
-    auto &points = globalCurve->points();
+    auto& points = globalCurve->points();
     auto minDeviation = points[0].dev;
     auto maxDeviation = points[0].dev;
-    for(auto &point : points) {
+    for(auto& point : points) {
         if(point.dev < minDeviation) {
             minDeviation = point.dev;
         }
@@ -188,12 +194,12 @@ void FigureCreator::createDimension(const QString &dimensionName, const CurveFig
 
     table->addValues(QVector<DimFigure::Value> {
         DimFigure::Value(DimFigure::ValueType::MinMax, true, abs(maxDeviation - minDeviation)),
-            DimFigure::Value(DimFigure::ValueType::Form, true, std::max(abs(maxDeviation), abs(minDeviation) * 2)),
-            DimFigure::Value(DimFigure::ValueType::Min, true, minDeviation),
-            DimFigure::Value(DimFigure::ValueType::Max, true, maxDeviation),
-            DimFigure::Value(DimFigure::ValueType::MaxAbs, false, abs(std::max(minDeviation, maxDeviation))),
-            DimFigure::Value(DimFigure::ValueType::SupUT, true, maxDeviation > 0 ? maxDeviation : 0.0),
-            DimFigure::Value(DimFigure::ValueType::InfLT, true, minDeviation < 0 ? minDeviation : 0.0),
+        DimFigure::Value(DimFigure::ValueType::Form, true, std::max(abs(maxDeviation), abs(minDeviation) * 2)),
+        DimFigure::Value(DimFigure::ValueType::Min, true, minDeviation),
+        DimFigure::Value(DimFigure::ValueType::Max, true, maxDeviation),
+        DimFigure::Value(DimFigure::ValueType::MaxAbs, false, abs(std::max(minDeviation, maxDeviation))),
+        DimFigure::Value(DimFigure::ValueType::SupUT, true, maxDeviation > 0 ? maxDeviation : 0.0),
+        DimFigure::Value(DimFigure::ValueType::InfLT, true, minDeviation < 0 ? minDeviation : 0.0),
     });
     _project->safeInsert(dimensionName, table, false);
 }

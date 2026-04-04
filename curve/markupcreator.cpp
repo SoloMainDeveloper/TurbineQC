@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "markupcreator.h"
 
 const QString MarkupCreator::index = "<!DOCTYPE html>\n \
@@ -28,15 +29,21 @@ const QString MarkupCreator::tableRowTemplate = "<tr>\n \
                                                      %8\n \
                                                  </tr>";
 
-QString MarkupCreator::getOOTMarkup(double upperTolerance, double downTolerance, double deviation) {
+QString MarkupCreator::getOOTMarkup(double upperTolerance, double downTolerance, double deviation)
+{
     auto difference = 0.0;
     if(deviation >= downTolerance && deviation <= upperTolerance) {
         auto step = (upperTolerance - downTolerance) / 10;
         return QString("<td style=\"text-align: center;\">\n \
                             <input type=\"range\" min=\"%1\" max=\"%2\" step=\"%3\" value=\"%4\" \
                             style=\"width: 40px; height: 4px; accent-color: green; pointer-events: none; vertical-align:middle;\">\n \
-                        </td>").arg(downTolerance).arg(upperTolerance).arg(step).arg(deviation);
-    } else {
+                        </td>")
+            .arg(downTolerance)
+            .arg(upperTolerance)
+            .arg(step)
+            .arg(deviation);
+    }
+    else {
         difference = deviation < downTolerance ? deviation - downTolerance : deviation - upperTolerance;
         return QString("<td style=\"font-size: 14px; text-align: center; color: red;\">%1</td>\n")
             .arg(QString::number(difference, 'f', 3));
@@ -55,7 +62,8 @@ MarkupCreator::MarkupCreator(std::shared_ptr<ReportSettings> reportSettings) : _
                        </div>";
 }
 
-QString MarkupCreator::run(const GlobalCurveMap &analyzedGlobalCurves) {
+QString MarkupCreator::run(const GlobalCurveMap& analyzedGlobalCurves)
+{
     _creationTime = QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss");
 
     auto comment = getCommentMarkup();
@@ -68,12 +76,14 @@ QString MarkupCreator::run(const GlobalCurveMap &analyzedGlobalCurves) {
     return _reportTemplate.arg(comment).arg(globalView).arg(parameters).arg(LEView).arg(TEView).arg(partData);
 }
 
-QString MarkupCreator::getCommentMarkup() {
+QString MarkupCreator::getCommentMarkup()
+{
     auto comment = _reportSettings->comment();
     return QString("<p style=\"margin: 0; padding: 0;\">%1</p>").arg(comment);
 }
 
-QString MarkupCreator::getGlobalViewMarkup(const GlobalCurveMap &analyzedGlobalCurves) {
+QString MarkupCreator::getGlobalViewMarkup(const GlobalCurveMap& analyzedGlobalCurves)
+{
     auto xShift = _reportSettings->xShift();
     auto yShift = _reportSettings->yShift();
     auto rotation = _reportSettings->rotation();
@@ -83,19 +93,34 @@ QString MarkupCreator::getGlobalViewMarkup(const GlobalCurveMap &analyzedGlobalC
     auto xShiftCC = _reportSettings->xShiftCC();
     auto yShiftCC = _reportSettings->yShiftCC();
     auto rotationCC = _reportSettings->rotationCC();
-    auto title = QString("Section %1 - Global Fit: %2 / %3 / Error amp: %4x <br> %5");
+    auto firstLineTitle = QString("Section %1 - Global Fit: %2 / %3 / Error amp: %4x");
+    auto secondLineTitle = QString("%1");
 
     auto bestFit = _reportSettings->globalBestFit();
     auto bestFitInfo = QString();
     using BestFit = ReportSettings::GlobalBestFit;
-    if(bestFit == BestFit::Whole) {
-        bestFitInfo = "Whole profile (LSQ)";
-    } else if(bestFit == BestFit::WithoutEdges) {
-        bestFitInfo = "Profile without LE/TE (LSQ)";
-    } else if(bestFit == BestFit::MinForm) {
-        bestFitInfo = "Min. Form";
-    } else {
-        bestFitInfo = "Add new best fit";
+
+    switch(bestFit) {
+        case BestFit::NoFit: {
+            bestFitInfo = "No Fit";
+            break;
+        }
+        case BestFit::Whole: {
+            bestFitInfo = "Whole profile (LSQ)";
+            break;
+        }
+        case BestFit::WithoutEdgesLSQ: {
+            bestFitInfo = "Profile without LE/TE (LSQ)";
+            break;
+        }
+        case BestFit::MinForm: {
+            bestFitInfo = "Min. Form";
+            break;
+        }
+        default: {
+            bestFitInfo = "Add new best fit";
+            break;
+        }
     }
 
     auto bestFitType = _reportSettings->bestFitType();
@@ -103,19 +128,26 @@ QString MarkupCreator::getGlobalViewMarkup(const GlobalCurveMap &analyzedGlobalC
     using BestFitType = ReportSettings::BestFitType;
     if(bestFitType == BestFitType::OnlyRotation) {
         bestFitTypeInfo = "Rotation";
-    } else if(bestFitType == BestFitType::OnlyTranslation) {
+    }
+    else if(bestFitType == BestFitType::OnlyTranslation) {
         bestFitTypeInfo = "Translation";
-    } else if(bestFitType == BestFitType::OnlyXTranslation) {
+    }
+    else if(bestFitType == BestFitType::OnlyXTranslation) {
         bestFitTypeInfo = "X Translation";
-    } else if(bestFitType == BestFitType::OnlyYTranslation) {
+    }
+    else if(bestFitType == BestFitType::OnlyYTranslation) {
         bestFitTypeInfo = "Y Translation";
-    } else if(bestFitType == BestFitType::TranslationAndRotation) {
+    }
+    else if(bestFitType == BestFitType::TranslationAndRotation) {
         bestFitTypeInfo = "Translation and Rotation";
-    } else if(bestFitType == BestFitType::XTranslationAndRotation) {
+    }
+    else if(bestFitType == BestFitType::XTranslationAndRotation) {
         bestFitTypeInfo = "X Translation and Rotation";
-    } else if(bestFitType == BestFitType::YTranslationAndRotation) {
+    }
+    else if(bestFitType == BestFitType::YTranslationAndRotation) {
         bestFitTypeInfo = "Y Translation and Rotation";
-    } else {
+    }
+    else {
         bestFitTypeInfo = "Add new best fit type";
     }
 
@@ -124,38 +156,65 @@ QString MarkupCreator::getGlobalViewMarkup(const GlobalCurveMap &analyzedGlobalC
     using Profile = ReportSettings::Profile;
     if(profileType == Profile::Whole || profileType == Profile::WithoutTE || profileType == Profile::WithoutEdges) {
         alignmentInfo = QString("Best-fit: X: %1, Y: %2, Rotation: %3")
-            .arg(QString::number(xShift, 'f', 3)).arg(QString::number(yShift, 'f', 3)).arg(QString::number(rotation, 'f', 3));
-    } else {
+                            .arg(QString::number(xShift, 'f', 3))
+                            .arg(QString::number(yShift, 'f', 3))
+                            .arg(QString::number(rotation, 'f', 3));
+    }
+    else {
         alignmentInfo = QString("Best-fit: CV - X: %1, Y: %2, Rotation: %3 / CC - X: %4, Y: %5, Rotation: %6")
-            .arg(QString::number(xShiftCV, 'f', 3)).arg(QString::number(yShiftCV, 'f', 3)).arg(QString::number(rotationCV, 'f', 3))
-            .arg(QString::number(xShiftCC, 'f', 3)).arg(QString::number(yShiftCC, 'f', 3)).arg(QString::number(rotationCC, 'f', 3));
+                            .arg(QString::number(xShiftCV, 'f', 3))
+                            .arg(QString::number(yShiftCV, 'f', 3))
+                            .arg(QString::number(rotationCV, 'f', 3))
+                            .arg(QString::number(xShiftCC, 'f', 3))
+                            .arg(QString::number(yShiftCC, 'f', 3))
+                            .arg(QString::number(rotationCC, 'f', 3));
     }
 
-    title = title.arg(_reportSettings->nominalName()).arg(bestFitInfo).arg(bestFitTypeInfo)
-        .arg(QString::number(_reportSettings->globalAmplification())).arg(alignmentInfo);
-    auto [nameCV, pointsCV] = analyzedGlobalCurves[CurveType::GlobalCV];
-    auto [nameCC, pointsCC] = analyzedGlobalCurves[CurveType::GlobalCC];
+    firstLineTitle = firstLineTitle
+                         .arg(_reportSettings->nominalName())
+                         .arg(bestFitInfo)
+                         .arg(bestFitTypeInfo)
+                         .arg(QString::number(_reportSettings->globalAmplification()));
+    secondLineTitle = secondLineTitle.arg(alignmentInfo);
+
+    auto [nameCV, pointsCV] = analyzedGlobalCurves[FigureCreator::CurveType::GlobalCV];
+    auto [nameCC, pointsCC] = analyzedGlobalCurves[FigureCreator::CurveType::GlobalCC];
     auto convexFormTable = getTableMarkup(pointsCV, QString("Convex_%1").arg(_reportSettings->nominalName()));
     auto concaveFormTable = getTableMarkup(pointsCC, QString("Concave_%1").arg(_reportSettings->nominalName()));
     auto encodedImage = getEncodedScreenshot(_reportSettings->screenshotOfGlobal());
 
     return QString("<div class = \"global-view\" id=\"rectangle\" style=\"border: 1px solid; grid-column: span 2; overflow: hidden;\">\n \
-                       <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; text-align: center;\">\n \
+                       <div id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 10%; display: flex; flex-direction: column; align-items: center; justify-content: center;\">\n \
                            <p style=\"margin: 0;\">%1</p>\n \
+                           <p style=\"margin: 0;\">%2</p>\n \
                        </div>\n \
                        <div style=\"position: absolute; display: flex; flex-direction: column; gap: 20px;\">\n \
-                           %2\n \
                            %3\n \
+                           %4\n \
                        </div>\n \
                        <img style=\"width: 100%; height: auto; object-fit: cover; display: block;\" src=\"data:image/png;base64,%5\" alt=\"Global form\">\n \
-                    </div>").arg(title).arg(convexFormTable).arg(concaveFormTable).arg(encodedImage);
+                    </div>")
+        .arg(firstLineTitle)
+        .arg(secondLineTitle)
+        .arg(concaveFormTable)
+        .arg(convexFormTable)
+        .arg(encodedImage);
 }
 
-QString MarkupCreator::getParametersMarkup() {
-    auto &turbineParams = _reportSettings->turbineParameters();
+QString MarkupCreator::getParametersMarkup()
+{
+    auto& turbineParams = _reportSettings->turbineParameters();
     auto result = QString();
     for(auto [type, paramList] : turbineParams.asKeyValueRange()) {
         for(auto param : paramList) {
+            auto shiftX = dynamic_cast<ShiftX*>(param);
+            auto shiftY = dynamic_cast<ShiftY*>(param);
+            auto turn = dynamic_cast<Turn*>(param);
+
+            if(shiftX != nullptr || shiftY != nullptr || turn != nullptr) {
+                continue;
+            }
+
             result += param->createParameterMarkup();
         }
     }
@@ -178,19 +237,44 @@ QString MarkupCreator::getParametersMarkup() {
                                    %1\n \
                            </table>\n \
                          </div>\n \
-                     </div>").arg(result);
+                     </div>")
+        .arg(result);
 }
 
-QString MarkupCreator::getViewLEMarkup(const GlobalCurveMap &analyzedGlobalCurves) {
+QString MarkupCreator::getViewLEMarkup(const GlobalCurveMap& analyzedGlobalCurves)
+{
     QString title = "";
     QString table = "";
     QString imgHTMLCode = "";
+
     if(_reportSettings->isLEVisible()) {
         title = "<p style=\"margin: 0;\">LE - Local Fit: %1 / Error amp: %2x</p>";
-        auto edgeBestFit = _reportSettings->bestFitOfLE() == ReportSettings::EdgeBestFit::GlobalFit ? "Use global fit" : "No fit";
+
+        using EdgeBestFit = ReportSettings::EdgeBestFit;
+
+        EdgeBestFit edgeBestFit = _reportSettings->bestFitOfLE();
+        QString bestFitInfo;
+
+        switch(edgeBestFit) {
+            case EdgeBestFit::GlobalFit: {
+                bestFitInfo = "Use global fit";
+                break;
+            }
+            case EdgeBestFit::FreeFitForm: {
+                bestFitInfo = "Free Fit (Form)";
+                break;
+            }
+            case EdgeBestFit::NoFit: {
+                bestFitInfo = "No fit";
+                break;
+            }
+        }
+
         auto amplification = QString::number(_reportSettings->amplificationOfLE(), 'f', 0);
-        title = title.arg(edgeBestFit).arg(amplification);
-        auto [name, points] = analyzedGlobalCurves[CurveType::GlobalLE];
+
+        title = title.arg(bestFitInfo).arg(amplification);
+
+        auto [name, points] = analyzedGlobalCurves[FigureCreator::CurveType::GlobalLE];
         table = getTableMarkup(points, QString("LE_%1").arg(_reportSettings->nominalName()));
         auto encodedImage = getEncodedScreenshot(_reportSettings->screenshotOfLE());
         imgHTMLCode = QString("<img style=\"width: 100%; height: auto; display: block;\" src=\"data:image/png;base64,%1\" alt=\"Leading edge form\">").arg(encodedImage);
@@ -203,19 +287,44 @@ QString MarkupCreator::getViewLEMarkup(const GlobalCurveMap &analyzedGlobalCurve
                             %2\n \
                         </div>\n \
                         %3\n \
-                    </div>").arg(title).arg(table).arg(imgHTMLCode);
+                    </div>")
+        .arg(title)
+        .arg(table)
+        .arg(imgHTMLCode);
 }
 
-QString MarkupCreator::getViewTEMarkup(const GlobalCurveMap &analyzedGlobalCurves) {
+QString MarkupCreator::getViewTEMarkup(const GlobalCurveMap& analyzedGlobalCurves)
+{
     QString title = "";
     QString table = "";
     QString imgHTMLCode = "";
     if(_reportSettings->isTEVisible()) {
         title = "<p style=\"margin: 0;\">TE - Local Fit: %1 / Error amp: %2x</p>";
-        auto edgeBestFit = _reportSettings->bestFitOfTE() == ReportSettings::EdgeBestFit::GlobalFit ? "Use global fit" : "No fit";
+
+        using EdgeBestFit = ReportSettings::EdgeBestFit;
+
+        EdgeBestFit edgeBestFit = _reportSettings->bestFitOfTE();
+        QString bestFitInfo;
+
+        switch(edgeBestFit) {
+            case EdgeBestFit::GlobalFit: {
+                bestFitInfo = "Use global fit";
+                break;
+            }
+            case EdgeBestFit::FreeFitForm: {
+                bestFitInfo = "Free Fit (Form)";
+                break;
+            }
+            case EdgeBestFit::NoFit: {
+                bestFitInfo = "No fit";
+                break;
+            }
+        }
         auto amplification = QString::number(_reportSettings->amplificationOfTE(), 'f', 0);
-        title = title.arg(edgeBestFit).arg(amplification);
-        auto [name, points] = analyzedGlobalCurves[CurveType::GlobalTE];
+
+        title = title.arg(bestFitInfo).arg(amplification);
+
+        auto [name, points] = analyzedGlobalCurves[FigureCreator::CurveType::GlobalTE];
         table = getTableMarkup(points, QString("TE_%1").arg(_reportSettings->nominalName()), "style=\"position: absolute\"");
         auto encodedImage = getEncodedScreenshot(_reportSettings->screenshotOfTE());
         imgHTMLCode = QString("<img style=\"width: 100%; height: auto; display: block;\" src=\"data:image/png;base64,%1\" alt=\"Trailing edge form\">").arg(encodedImage);
@@ -228,10 +337,14 @@ QString MarkupCreator::getViewTEMarkup(const GlobalCurveMap &analyzedGlobalCurve
                             %2\n \
                         </div>\n \
                         %3\n \
-                    </div>").arg(title).arg(table).arg(imgHTMLCode);
+                    </div>")
+        .arg(title)
+        .arg(table)
+        .arg(imgHTMLCode);
 }
 
-QString MarkupCreator::getPartDataMarkup() {
+QString MarkupCreator::getPartDataMarkup()
+{
     return QString("<div class=\"part-data\" id=\"rectangle\" style=\"display: grid; gap: 5px; grid-template-rows: 0.6fr 0.4fr;\">\n \
                         <div id=\"rectangle\" style=\"border: 1px solid;\">\n \
                             <div class=\"header\" id=\"rectangle\" style=\"background-color: orange; width: 100%; height: 18%; display: flex; align-items: center; justify-content: center;\">\n \
@@ -249,15 +362,28 @@ QString MarkupCreator::getPartDataMarkup() {
                         <div id=\"rectangle\" style=\"border: 1px solid; display: flex; justify-content: center; align-items: center;\">\n \
                             <p style=\"margin: 0;\"><b>Time: %7</b></p>\n \
                         </div>\n \
-                    </div>").arg(_project->description()).arg(_project->partNumber()).arg(_project->drawing()).
-        arg(_project->projectOperator()).arg(_project->orderNumber()).arg(_project->note()).arg(_creationTime);
+                    </div>")
+        .arg(_project->description())
+        .arg(_project->partNumber())
+        .arg(_project->drawing())
+        .arg(_project->projectOperator())
+        .arg(_project->orderNumber())
+        .arg(_project->note())
+        .arg(_creationTime);
 }
 
-QString MarkupCreator::getTableMarkup(const QVector<CurvePoint> &points, const QString &caption, const QString &style) {
+QString MarkupCreator::getTableMarkup(const QVector<CurvePoint>& points, const QString& caption, const QString& style)
+{
     QVector<double> deviations;
-    for(auto &point : points) {
+    QVector<double> upperTolerances;
+    QVector<double> lowerTolerances;
+
+    for(auto& point : points) {
         deviations.append(point.dev);
+        upperTolerances.append(point.ut);
+        lowerTolerances.append(point.lt);
     }
+
     auto tableRowTemplate = QString(
         "<tr>\n \
             <td style=\"text-align: center; font-size: 10px;\">%1:</td>\n \
@@ -290,21 +416,46 @@ QString MarkupCreator::getTableMarkup(const QVector<CurvePoint> &points, const Q
         auto maxAbs = std::max(abs(min), abs(max));
         tableRows += tableRowTemplate.arg("MaxAbs").arg(QString::number(maxAbs, 'f', 3)) + "\n";
     }
-    if(QString(binCode[1]).toInt()) {
-        auto supUT = max > 0 ? max : 0;
-        tableRows += tableRowTemplate.arg("SupUT").arg(QString::number(supUT, 'f', 3)) + "\n";
+
+    if(QString(binCode[1]).toInt() || QString(binCode[0]).toInt()) {
+        double maxUpperShift = -1e9;
+        double minLowerShift = 1e9;
+
+        for(int i = 0; i < deviations.size(); ++i) {
+            double upperShift = deviations[i] - upperTolerances[i];
+            double lowerShift = deviations[i] - lowerTolerances[i];
+
+            if(upperShift > maxUpperShift) {
+                maxUpperShift = upperShift;
+            }
+
+            if(lowerShift < minLowerShift) {
+                minLowerShift = lowerShift;
+            }
+        }
+
+        if(QString(binCode[1]).toInt()) {
+            double supUT = std::max(0.0, maxUpperShift);
+            tableRows += tableRowTemplate.arg("SupUT").arg(QString::number(supUT, 'f', 3)) + "\n";
+        }
+
+        if(QString(binCode[0]).toInt()) {
+            double infLT = std::min(0.0, minLowerShift);
+            tableRows += tableRowTemplate.arg("InfLT").arg(QString::number(infLT, 'f', 3)) + "\n";
+        }
     }
-    if(QString(binCode[0]).toInt()) {
-        auto infLT = min < 0 ? min : 0;
-        tableRows += tableRowTemplate.arg("InfLT").arg(QString::number(infLT, 'f', 3)) + "\n";
-    }
-    return  QString("<table %1>\n \
+
+    return QString("<table %1>\n \
                          <caption style=\"font-size: 14px;\"><b>%2</b></caption>\n \
                          %3\n \
-                     </table>").arg(style).arg(caption).arg(tableRows);
+                     </table>")
+        .arg(style)
+        .arg(caption)
+        .arg(tableRows);
 }
 
-QString MarkupCreator::getEncodedScreenshot(const QImage &screenshot) {
+QString MarkupCreator::getEncodedScreenshot(const QImage& screenshot)
+{
     QByteArray byteArray;
     QBuffer buffer(&byteArray);
     buffer.open(QIODevice::WriteOnly);
@@ -314,6 +465,7 @@ QString MarkupCreator::getEncodedScreenshot(const QImage &screenshot) {
     return QString::fromUtf8(byteArray.toBase64());
 }
 
-QString MarkupCreator::reportCreationTime() {
+QString MarkupCreator::reportCreationTime()
+{
     return _creationTime;
 }

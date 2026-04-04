@@ -2,7 +2,9 @@
 
 #include "commandtype.h"
 
-class ICommand {
+class ICommand : public QObject {
+    Q_OBJECT
+
 public:
     virtual ~ICommand() = default;
 

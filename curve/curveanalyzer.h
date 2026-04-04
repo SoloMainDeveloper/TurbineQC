@@ -1,13 +1,12 @@
 #pragma once
 
-#include "functionparamsgenerator.h"
+#include "figure.h"
 #include "figurecreator.h"
-#include "screenshotcreator.h"
+#include "functionparamsgenerator.h"
 #include "project.h"
-#include "reportgenerator.h"
+#include "reportsettings.h"
 
-using CurveType = FigureCreator::CurveType;
-using GlobalCurveMap = QMap<CurveType, QPair<QString, QVector<CurvePoint>>>;
+using GlobalCurveMap = QMap<FigureCreator::CurveType, QPair<QString, QVector<CurvePoint>>>;
 
 class CurveAnalyzer {
 public:
@@ -24,7 +23,7 @@ public:
     GlobalCurveMap run();
 
 private:
-    Project *_project;
+    Project* _project;
     std::shared_ptr<ReportSettings> _reportSettings;
     CurveParts _curveParts;
     QSet<QString> _curvesToDelete;
@@ -32,12 +31,18 @@ private:
     QString _nominalName;
     QString _measuredName;
 
-    QString _dummyNomName;
-    QString _dummyMeasName;
-    QString _dummyNomCVName;
-    QString _dummyNomCCName;
-    QString _dummyMeasCVName;
-    QString _dummyMeasCCName;
+    QString _dummyNominalName;
+    QString _dummyMeasuredName;
+
+    QString _dummyNominalCVName;
+    QString _dummyMeasuredCVName;
+    QString _dummyNominalCCName;
+    QString _dummyMeasuredCCName;
+
+    QString _dummyNominalLEName;
+    QString _dummyMeasuredLEName;
+    QString _dummyNominalTEName;
+    QString _dummyMeasuredTEName;
 
     QString _globalName;
     QString _globalCVName;
@@ -45,23 +50,33 @@ private:
     QString _globalLEName;
     QString _globalTEName;
 
-    void initialization();
+    QPair<CurveParts, CurveParts> analyzeProfile(const Function18Params& params18);
+    GlobalCurveMap analyzeWholeProfile(const Function18Params& params18);
+    GlobalCurveMap analyzeProfileWithoutTE(const Function18Params& params18);
+    GlobalCurveMap analyzeProfileWithoutEdges(const CurveParts& nominalParts,
+        const CurveParts& measuredParts, const Function18Params& params18);
+    GlobalCurveMap analyzeProfileWithoutEdgesLSQ(const CurveParts& nominalParts,
+        const CurveParts& measuredParts, const Function18Params& params18);
+    GlobalCurveMap analyzeProfileWithoutEdgesForm(const CurveParts& nominalParts,
+        const CurveParts& measuredParts, const Function18Params& params18);
 
-    QPair<CurveParts, CurveParts> analyzeProfile(const Function18Params *params18);
-    GlobalCurveMap analyzeWholeProfile(const Function18Params *params18);
-    GlobalCurveMap analyzeProfileWithoutTE(const Function18Params *params18);
-    GlobalCurveMap analyzeProfileWithoutEdges(const Function18Params *params18);
-    GlobalCurveMap analyzeProfileWithoutEdgesLSQ(const CurveParts &nominalParts, const CurveParts &measuredParts, const Function18Params *params18);
-    GlobalCurveMap analyzeProfileWithoutEdgesForm(const CurveParts &nominalParts, const CurveParts &measuredParts, const Function18Params *params18);
+    void calculateEdgeBestFit(
+        const QString& nominalName, const QList<CurvePoint>& nominalPoints,
+        const QString& measuredName, const QList<CurvePoint>& measuredPoints,
+        const QString& lineBestFitName, ReportSettings::EdgeBestFit bestFit);
 
-    void calculatePreprocessingFunctions(const QString &updatedNomName, const QString &updatedMeasName);
-    CurveParts getCurvePartsAfterStretching(const QString &nominalName, const QString &measuredName, const Function18Params &params18);
-    template <class T> void calculateBestFit(const QString &updateNomName, const QString &updateMeasName, const T &params);
-    void calculateBestFitWithAlignment(const QString &updateNomName, const QString &updateMeasName, const Function6Params &params6, const CurveParts &nominalParts, CurveParts *measuredParts);
+    const CurveFigure* calculateEdgeDeviations(const Function18Params& params18, const QString& nominalName, const QString& measuredName,
+        const QString& globalName, const QList<CurvePoint>& resultGlobalPoints, ReportSettings::EdgeBestFit bestFit);
 
-    CurveParts alignCurveParts(const CurveParts &curveParts, const Function18Params &params18);
+    void calculatePreprocessingFunctions(const QString& updatedNomName, const QString& updatedMeasName);
+    CurveParts getCurvePartsAfterStretching(const QString& nominalName, const QString& measuredName, const Function18Params& params18);
+    template<class T>
+    void calculateBestFit(const QString& updateNomName, const QString& updateMeasName, const T& params);
+    void calculateBestFitWithAlignment(const QString& updateNomName, const QString& updateMeasName, const Function6Params& params6, const CurveParts& nominalParts, CurveParts* measuredParts);
 
-    void insertCurveInProject(const QString &curveName, const QVector<CurvePoint> &points, bool needToDelete = false);
-    const CurveFigure* getCurveFromProject(const QString &curveName);
+    CurveParts alignCurveParts(const CurveParts& curveParts, const Function18Params& params18);
+
+    void insertCurveInProject(const QString& curveName, const QVector<CurvePoint>& points, bool needToDelete = false);
+    const CurveFigure* getCurveFromProject(const QString& curveName);
     void deleteDummyCurves();
 };

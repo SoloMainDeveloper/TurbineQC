@@ -1,4 +1,5 @@
 #include "curve/pch.h"
+
 #include "functionresults.h"
 
 Function1Result::Function1Result(CurveFigure curve) {

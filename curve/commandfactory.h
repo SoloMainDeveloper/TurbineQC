@@ -1,8 +1,6 @@
-#pragma once
+п»ї#pragma once
 
 #include "icommand.h"
-#include <QMap>
-#include <functional>
 
 class CommandFactory {
 public:
@@ -10,11 +8,11 @@ public:
 
     static CommandFactory& instance();
 
-    // Регистрация типа команды
+    // Р РµРіРёСЃС‚СЂР°С†РёСЏ С‚РёРїР° РєРѕРјР°РЅРґС‹
     template<typename T>
     void registerCommand() {
         T* cmd = new T();
-        CommandType type = cmd->getType();  // Получаем enum
+        CommandType type = cmd->getType();  // РџРѕР»СѓС‡Р°РµРј enum
         delete cmd;
 
         _creators[type] = []() {
@@ -22,13 +20,13 @@ public:
         };
     }
 
-    // Создание команды по типу
+    // РЎРѕР·РґР°РЅРёРµ РєРѕРјР°РЅРґС‹ РїРѕ С‚РёРїСѓ
     std::shared_ptr<ICommand> createCommand(CommandType type);
 
-    // Создание команды из JSON
+    // РЎРѕР·РґР°РЅРёРµ РєРѕРјР°РЅРґС‹ РёР· JSON
     std::shared_ptr<ICommand> createFromJson(const QJsonObject& json);
 
-    // Получение списка всех зарегистрированных типов
+    // РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІСЃРµС… Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹С… С‚РёРїРѕРІ
     QList<CommandType> getRegisteredTypes() const;
 
 private:

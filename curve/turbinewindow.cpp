@@ -1,7 +1,8 @@
-#include "curve/pch.h"
 #include "turbinewindow.h"
+#include "curve/pch.h"
 
-TurbineWindow::TurbineWindow(Project *project, Plot *plot) : _ui(new Ui::TurbineWindow()) {
+TurbineWindow::TurbineWindow(Project* project, Plot* plot) : _ui(new Ui::TurbineWindow())
+{
     _ui->setupUi(this);
     _project = project;
     _plot = plot;
@@ -30,7 +31,8 @@ TurbineWindow::TurbineWindow(Project *project, Plot *plot) : _ui(new Ui::Turbine
     connect(_ui->radiusCompensation, &QLineEdit::textChanged, this, &TurbineWindow::onRadiusCompensationChange);
 }
 
-void TurbineWindow::setupWindow() {
+void TurbineWindow::setupWindow()
+{
     _doubleValidator = new QDoubleValidator();
     _doubleValidator->setDecimals(9);
     _doubleValidator->setLocale(QLocale::C);
@@ -42,30 +44,30 @@ void TurbineWindow::setupWindow() {
 
     _ui->paramsTab->tabBar()->hide();
 
-    //profiles
+    // profiles
     _ui->zoneLE->setValidator(_doubleValidator);
     _ui->zoneTE->setValidator(_doubleValidator);
 
-    //prepare points
+    // prepare points
     _ui->limitForEqualPoints->setValidator(_doubleValidator);
     _ui->radiusCompensation->setValidator(_doubleValidator);
     _ui->radius3DCompensation->setValidator(_doubleValidator);
 
-    //global form
+    // global form
     _ui->globalApmlification->setValidator(_doubleValidator);
     _ui->globalZoom->setValidator(_doubleValidator);
 
-    //LE form
+    // LE form
     _ui->amplificationLE->setValidator(_doubleValidator);
     _ui->zoomLE->setValidator(_doubleValidator);
     _ui->valueOfSetLE->setValidator(_intValidator);
 
-    //TE form
+    // TE form
     _ui->amplificationTE->setValidator(_doubleValidator);
     _ui->zoomTE->setValidator(_doubleValidator);
     _ui->valueOfSetTE->setValidator(_intValidator);
 
-    //parameters
+    // parameters
     _ui->upperTolMaxWidth->setValidator(_doubleValidator);
     _ui->lowerTolMaxWidth->setValidator(_doubleValidator);
     _ui->upperTolMaxWidthX->setValidator(_doubleValidator);
@@ -90,7 +92,8 @@ void TurbineWindow::setupWindow() {
     disableUnrealizedParams();
 }
 
-void TurbineWindow::disableUnrealizedParams() {
+void TurbineWindow::disableUnrealizedParams()
+{
     auto globalAxisModel = dynamic_cast<QStandardItemModel*>(_ui->globalAxis->model());
     auto globalAxisCenter = globalAxisModel->item(1);
     globalAxisCenter->setEnabled(false);
@@ -104,8 +107,6 @@ void TurbineWindow::disableUnrealizedParams() {
     axisTECenter->setEnabled(false);
 
     auto globalBestFitModel = dynamic_cast<QStandardItemModel*>(_ui->globalBestFit->model());
-    auto globalNoFit = globalBestFitModel->item(0);
-    globalNoFit->setEnabled(false);
     auto globalWithoutTE = globalBestFitModel->item(3);
     globalWithoutTE->setEnabled(false);
     auto globalTwoPointsAt = globalBestFitModel->item(4);
@@ -114,7 +115,8 @@ void TurbineWindow::disableUnrealizedParams() {
     globalFitInTolBand->setEnabled(false);
 }
 
-void TurbineWindow::initialization() {
+void TurbineWindow::initialization()
+{
     _reportSettings = std::make_shared<ReportSettings>();
     _ui->valueOfSetLE->hide();
     _ui->valueOfSetTE->hide();
@@ -149,7 +151,8 @@ void TurbineWindow::initialization() {
     exec();
 }
 
-void TurbineWindow::run() {
+void TurbineWindow::run()
+{
     auto selectedNominalItems = _ui->listNominal->selectedItems();
     auto currentNominal = selectedNominalItems.length() == 1 ? selectedNominalItems[0] : nullptr;
     auto selectedMeasuredItems = _ui->listMeasured->selectedItems();
@@ -171,8 +174,8 @@ void TurbineWindow::run() {
     assert(nominalCurve && measuredCurve);
 
     if(_ui->needUse3DVectors->isChecked()) {
-        auto &nominalPoint = nominalCurve->points()[0];
-        auto &measuredPoint = measuredCurve->points()[0];
+        auto& nominalPoint = nominalCurve->points()[0];
+        auto& measuredPoint = measuredCurve->points()[0];
 
         if(!nominalPoint.i && !nominalPoint.j || !measuredPoint.i && !measuredPoint.j) {
             auto message = "If you want to use 3D vectors for comp.,\nthe vectors of the curves should not be zero!";
@@ -181,16 +184,20 @@ void TurbineWindow::run() {
         }
     }
     _reportSettings->clearTurbineParameters();
-    MacrosManager::executeWithoutLogging([&]() { onCalculateNominals(); });
+    MacrosManager::executeWithoutLogging([&]() {
+        onCalculateNominals();
+    });
 
     setSettings();
     try {
         ReportGenerator::createReport(_project, _plot, _reportSettings);
-    } catch(...) {
+    }
+    catch(...) {
     }
 }
 
-void TurbineWindow::onCalculateNominals() {
+void TurbineWindow::onCalculateNominals()
+{
     auto selectedNominalItems = _ui->listNominal->selectedItems();
     auto currentNominal = selectedNominalItems.length() != 0 ? selectedNominalItems[0] : nullptr;
 
@@ -202,7 +209,8 @@ void TurbineWindow::onCalculateNominals() {
     calculateNominals(nomFigureName);
 }
 
-void TurbineWindow::calculateNominals(const QString &curveName) {
+void TurbineWindow::calculateNominals(const QString& curveName)
+{
     _reportSettings->clearTurbineParameters();
     auto precision = _project->precision();
     for(auto i = 0; i < _ui->paramList->count(); i++) {
@@ -212,35 +220,31 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                 using TurbineParamType = TurbineParameter::Type;
                 auto turbineParamType = static_cast<TurbineParamType>(i);
                 switch(turbineParamType) {
-                    case TurbineParamType::MaxWidth:
-                    {
-                        auto maxDia = new MaxDiameter(0, _ui->upperTolMaxWidth->text().toDouble(), 
+                    case TurbineParamType::MaxWidth: {
+                        auto maxDia = new MaxDiameter(0, _ui->upperTolMaxWidth->text().toDouble(),
                             _ui->lowerTolMaxWidth->text().toDouble());
                         maxDia->calculateNominal(curveName, Function18Params(), _project);
                         _ui->nominalMaxWidth->setText(QString::number(maxDia->nominal, 'f', precision));
                         _reportSettings->appendTurbineParameter(maxDia);
                         break;
                     }
-                    case TurbineParamType::MaxWidthX:
-                    {
-                        auto xMaxDia = new XMaxDiameter(0, _ui->upperTolMaxWidthX->text().toDouble(), 
+                    case TurbineParamType::MaxWidthX: {
+                        auto xMaxDia = new XMaxDiameter(0, _ui->upperTolMaxWidthX->text().toDouble(),
                             _ui->lowerTolMaxWidthX->text().toDouble());
                         xMaxDia->calculateNominal(curveName, Function18Params(), _project);
                         _ui->nominalMaxWidthX->setText(QString::number(xMaxDia->nominal, 'f', precision));
                         _reportSettings->appendTurbineParameter(xMaxDia);
                         break;
                     }
-                    case TurbineParamType::MaxWidthY:
-                    {
-                        auto yMaxDia = new YMaxDiameter(0, _ui->upperTolMaxWidthX->text().toDouble(), 
+                    case TurbineParamType::MaxWidthY: {
+                        auto yMaxDia = new YMaxDiameter(0, _ui->upperTolMaxWidthX->text().toDouble(),
                             _ui->lowerTolMaxWidthX->text().toDouble());
                         yMaxDia->calculateNominal(curveName, Function18Params(), _project);
                         _ui->nominalMaxWidthY->setText(QString::number(yMaxDia->nominal, 'f', precision));
                         _reportSettings->appendTurbineParameter(yMaxDia);
                         break;
                     }
-                    case TurbineParamType::ChordLength:
-                    {
+                    case TurbineParamType::ChordLength: {
                         auto chordLength = new ChordLength(0, _ui->upperTolChordLength->text().toDouble(),
                             _ui->lowerTolChordLength->text().toDouble());
                         chordLength->calculateNominal(curveName, Function18Params(), _project);
@@ -248,8 +252,7 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         _reportSettings->appendTurbineParameter(chordLength);
                         break;
                     }
-                    case TurbineParamType::LEWidth:
-                    {
+                    case TurbineParamType::LEWidth: {
                         auto widthLE = new WidthLE(0, _ui->upperTolWidthLE->text().toDouble(),
                             _ui->lowerTolWidthLE->text().toDouble(), _ui->atWidthLE->text());
                         widthLE->calculateNominal(curveName, Function18Params(), _project);
@@ -257,8 +260,7 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         _reportSettings->appendTurbineParameter(widthLE);
                         break;
                     }
-                    case TurbineParamType::TEWidth:
-                    {
+                    case TurbineParamType::TEWidth: {
                         auto widthTE = new WidthTE(0, _ui->upperTolWidthTE->text().toDouble(),
                             _ui->lowerTolWidthTE->text().toDouble(), _ui->atWidthTE->text());
                         widthTE->calculateNominal(curveName, Function18Params(), _project);
@@ -266,8 +268,7 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         _reportSettings->appendTurbineParameter(widthTE);
                         break;
                     }
-                    case TurbineParamType::LERadius:
-                    {
+                    case TurbineParamType::LERadius: {
                         auto radiusLE = new RadiusLE(0, _ui->upperTolRadiusLE->text().toDouble(),
                             _ui->lowerTolRadiusLE->text().toDouble(), _ui->degreeAngleLE->text());
                         radiusLE->calculateNominal(curveName, Function18Params(), _project);
@@ -275,8 +276,7 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         _reportSettings->appendTurbineParameter(radiusLE);
                         break;
                     }
-                    case TurbineParamType::TERadius:
-                    {
+                    case TurbineParamType::TERadius: {
                         auto radiusTE = new RadiusTE(0, _ui->upperTolRadiusTE->text().toDouble(),
                             _ui->lowerTolRadiusTE->text().toDouble(), _ui->degreeAngleTE->text());
                         radiusTE->calculateNominal(curveName, Function18Params(), _project);
@@ -284,9 +284,8 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         _reportSettings->appendTurbineParameter(radiusTE);
                         break;
                     }
-                    case TurbineParamType::MinX:
-                    {
-                        auto minX = new MinX(0, _ui->upperTolMinX->text().toDouble(), 
+                    case TurbineParamType::MinX: {
+                        auto minX = new MinX(0, _ui->upperTolMinX->text().toDouble(),
                             _ui->lowerTolMinX->text().toDouble());
                         minX->calculateNominal(curveName, Function18Params(), _project);
                         _ui->nominalMinX->setText(QString::number(minX->nominal, 'f', precision));
@@ -294,13 +293,15 @@ void TurbineWindow::calculateNominals(const QString &curveName) {
                         break;
                     }
                 }
-            } catch(...) {
+            }
+            catch(...) {
             }
         }
     }
 }
 
-void TurbineWindow::setSettings() {
+void TurbineWindow::setSettings()
+{
     _reportSettings->setNominalName(_ui->listNominal->currentItem()->text());
     _reportSettings->setMeasuredName(_ui->listMeasured->currentItem()->text());
 
@@ -357,8 +358,8 @@ void TurbineWindow::setSettings() {
     }
 }
 
-
-void TurbineWindow::updateParamOutputView() {
+void TurbineWindow::updateParamOutputView()
+{
     auto currentParam = _ui->paramList->currentItem();
 
     if(currentParam) {
@@ -367,7 +368,8 @@ void TurbineWindow::updateParamOutputView() {
     }
 }
 
-void TurbineWindow::changeItemOfList() {
+void TurbineWindow::changeItemOfList()
+{
     auto selectedItemsOfListNominal = _ui->listNominal->selectedItems();
     auto selectedItemsOfListMeasured = _ui->listMeasured->selectedItems();
     auto currentNominalItem = selectedItemsOfListNominal.length() == 1 ? selectedItemsOfListNominal[0] : nullptr;
@@ -378,12 +380,14 @@ void TurbineWindow::changeItemOfList() {
         auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
         assert(nominalCurve);
         _curveGraphics->drawCurve(nominalCurve, Qt::green, 0.1);
-    } else if(!currentNominalItem && currentMeasuredItem) {
+    }
+    else if(!currentNominalItem && currentMeasuredItem) {
         auto measuredFigure = _project->findFigure(currentMeasuredItem->text());
         auto measuredCurve = dynamic_cast<const CurveFigure*>(measuredFigure);
         assert(measuredCurve);
         _curveGraphics->drawCurve(measuredCurve, Qt::blue, 0.1);
-    } else if(currentNominalItem && currentMeasuredItem) {
+    }
+    else if(currentNominalItem && currentMeasuredItem) {
         auto nominalFigure = _project->findFigure(currentNominalItem->text());
         auto nominalCurve = dynamic_cast<const CurveFigure*>(nominalFigure);
         auto measuredFigure = _project->findFigure(currentMeasuredItem->text());
@@ -393,7 +397,8 @@ void TurbineWindow::changeItemOfList() {
     }
 }
 
-void TurbineWindow::onProfileTypeChange() {
+void TurbineWindow::onProfileTypeChange()
+{
     auto profileType = static_cast<ReportSettings::Profile>(_ui->profileType->currentIndex());
     if(profileType == ReportSettings::Profile::WithoutEdgesLSQ || profileType == ReportSettings::Profile::WithoutEdgesForm) {
         auto edgeBestFit = ReportSettings::EdgeBestFit::NoFit;
@@ -402,34 +407,40 @@ void TurbineWindow::onProfileTypeChange() {
     }
 }
 
-void TurbineWindow::onNoBestFitLEClick() {
+void TurbineWindow::onNoBestFitLEClick()
+{
     auto edgeBestFit = static_cast<ReportSettings::EdgeBestFit>(_ui->bestFitLE->currentIndex());
     edgeBestFit == ReportSettings::EdgeBestFit::NoFit ? _ui->toliranceLE->show() : _ui->toliranceLE->hide();
 }
 
-void TurbineWindow::onNoBestFitTEClick() {
+void TurbineWindow::onNoBestFitTEClick()
+{
     auto edgeBestFit = static_cast<ReportSettings::EdgeBestFit>(_ui->bestFitTE->currentIndex());
     edgeBestFit == ReportSettings::EdgeBestFit::NoFit ? _ui->toliranceTE->show() : _ui->toliranceTE->hide();
 }
 
-void TurbineWindow::onShowNumDevLEClick() {
+void TurbineWindow::onShowNumDevLEClick()
+{
     auto typeOfShowDevs = static_cast<ReportSettings::TypeOfShowDevs>(_ui->showNumDevLE->currentIndex());
     typeOfShowDevs == ReportSettings::TypeOfShowDevs::Set ? _ui->valueOfSetLE->show() : _ui->valueOfSetLE->hide();
 }
 
-void TurbineWindow::onShowNumDevTEClick() {
+void TurbineWindow::onShowNumDevTEClick()
+{
     auto typeOfShowDevs = static_cast<ReportSettings::TypeOfShowDevs>(_ui->showNumDevTE->currentIndex());
     typeOfShowDevs == ReportSettings::TypeOfShowDevs::Set ? _ui->valueOfSetTE->show() : _ui->valueOfSetTE->hide();
 }
 
-void TurbineWindow::onPreparePointsClick() {
+void TurbineWindow::onPreparePointsClick()
+{
     auto isChecked = _ui->needPreparePoints->isChecked();
     if(isChecked) {
         _ui->needSort->show();
         _ui->needRemoveSimilar->show();
         _ui->needRadiusCorrection->show();
         _ui->needUse3DVectors->show();
-    } else {
+    }
+    else {
         _ui->needSort->hide();
         _ui->needRemoveSimilar->hide();
         _ui->limitForEqualPoints->hide();
@@ -440,55 +451,65 @@ void TurbineWindow::onPreparePointsClick() {
     }
 }
 
-void TurbineWindow::onDeleteSimilarClick() {
+void TurbineWindow::onDeleteSimilarClick()
+{
     auto isChecked = _ui->needRemoveSimilar->isChecked();
     isChecked ? _ui->limitForEqualPoints->show() : _ui->limitForEqualPoints->hide();
 }
 
-void TurbineWindow::onRadiusCompensationClick() {
+void TurbineWindow::onRadiusCompensationClick()
+{
     auto isChecked = _ui->needRadiusCorrection->isChecked();
     if(isChecked) {
         _ui->radiusCompensation->show();
         _ui->radius3DCompensation->show();
-    } else {
+    }
+    else {
         _ui->radiusCompensation->hide();
         _ui->radius3DCompensation->hide();
     }
 }
 
-void TurbineWindow::onUse3DVectorsForCompClick() {
+void TurbineWindow::onUse3DVectorsForCompClick()
+{
     auto isChecked = _ui->needUse3DVectors->isChecked();
     if(isChecked) {
         _ui->radiusCompensation->show();
         _ui->radius3DCompensation->show();
-    } else {
+    }
+    else {
         _ui->radiusCompensation->hide();
         _ui->radius3DCompensation->hide();
     }
 }
 
-void TurbineWindow::onRadiusCompensationChange() {
+void TurbineWindow::onRadiusCompensationChange()
+{
     auto radius = _ui->radiusCompensation->text();
     _ui->radius3DCompensation->setText(radius);
 }
 
-void TurbineWindow::onNeedPrintTemplateClick() {
+void TurbineWindow::onNeedPrintTemplateClick()
+{
     if(_ui->needPrintTemplate->isChecked()) {
         _ui->commentLabel->show();
         _ui->comment->show();
         _ui->reportList->show();
-    } else {
+    }
+    else {
         _ui->commentLabel->hide();
         _ui->comment->hide();
         _ui->reportList->hide();
     }
 }
 
-void TurbineWindow::closeEvent(QCloseEvent * event) {
+void TurbineWindow::closeEvent(QCloseEvent* event)
+{
     closeWindow();
 }
 
-void TurbineWindow::closeWindow() {
+void TurbineWindow::closeWindow()
+{
     close();
     _ui->listMeasured->clear();
     _ui->listNominal->clear();
@@ -558,6 +579,7 @@ void TurbineWindow::closeWindow() {
     _ui->profileNames->clear();
 }
 
-TurbineWindow::~TurbineWindow() {
+TurbineWindow::~TurbineWindow()
+{
     delete _ui;
 }

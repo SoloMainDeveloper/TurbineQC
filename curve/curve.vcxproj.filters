@@ -319,6 +319,18 @@
     <ClCompile Include="insertbestfitpositioncommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="radiuscorrection3dcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="unknowncommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="changecurveappearancecommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="hideallcommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curvemachine.h">
@@ -377,9 +389,6 @@
     </ClInclude>
     <ClInclude Include="dialogtype.h">
       <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="icommand.h">
-      <Filter>Header Files\Macros</Filter>
     </ClInclude>
     <ClInclude Include="commandtype.h">
       <Filter>Header Files\Macros</Filter>
@@ -448,6 +457,18 @@
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
     <ClInclude Include="insertbestfitpositioncommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="changecurveappearancecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="hideallcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="radiuscorrection3dcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="unknowncommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
   </ItemGroup>
@@ -543,6 +564,9 @@
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
     <QtMoc Include="macrostranslator.h">
+      <Filter>Header Files\Macros</Filter>
+    </QtMoc>
+    <QtMoc Include="icommand.h">
       <Filter>Header Files\Macros</Filter>
     </QtMoc>
   </ItemGroup>

@@ -336,22 +336,22 @@ void FileSystem::loadProject(const QString& filePath) {
     auto figures = parts[1].split("$END POINTS");
     figures.removeLast();
 
-    /*QVector<QFuture<Figure*>> futures;
-    for (const auto& figure : figures) {
-        futures.append(QtConcurrent::run([=]() {
-            return parseFigureFromCRV(project, figure);
-            }));
-    }
-    QVector<Figure*> results;
-    for (const auto& future : futures) {
-        results.append(future.result());
-    }
-    for (auto figure : results)
-        project->safeInsert(figure->name(), figure);*/
+    //QVector<QFuture<Figure*>> futures;
+    //for (const auto& figure : figures) {
+    //	futures.append(QtConcurrent::run([=]() {
+    //		return parseFigureFromCRV(project, figure);
+    //	}));
+    //}
+    //QVector<Figure*> results;
+    //for (const auto& future : futures) {
+    //	results.append(future.result());
+    //}
+    //for (auto figure : results)
+    //	project->safeInsert(figure->name(), figure);
 
-    for(auto& figure : figures) {
-        auto parsedFigure = parseFigureFromCRV(project, figure);
-        project->safeInsert(parsedFigure->name(), parsedFigure);
+    for (auto figure : figures) {
+        auto result = parseFigureFromCRV(project, figure);
+        project->safeInsert(result->name(), result);
     }
 
     project->zoomToPoint(scaleFactor, offsetPoint);

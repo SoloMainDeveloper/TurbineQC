@@ -1,9 +1,12 @@
 #include "curve/pch.h"
 
-#include "reportgenerator.h"
 #include "createreportcommand.h"
+#include "markupcreator.h"
+#include "reportgenerator.h"
+#include "screenshotcreator.h"
 
-void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSettings) {
+void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSettings)
+{
     auto& project = Project::instance();
     auto nominalCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->nominalName()));
     auto measuredCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->measuredName()));
@@ -23,16 +26,20 @@ void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSetting
             auto reportMarkup = creatingMarkup.run(analyzedGlobalCurves);
             auto time = creatingMarkup.reportCreationTime();
             Printer::instance().addPage(reportMarkup, {
-                { "markup", reportMarkup },
-                { "nominalCurve", nominalCurve->name() },
-                { "measuredCurve", measuredCurve->name() },
-                { "time", time } });
+                                                          { "markup", reportMarkup },
+                                                          { "nominalCurve", nominalCurve->name() },
+                                                          { "measuredCurve", measuredCurve->name() },
+                                                          { "time", time },
+                                                      });
+
+            // Printer::addPage(reportMarkup, information);
         }
     });
     MacrosManager::instance().log(std::make_shared<CreateReportCommand>(reportSettings));
 }
 
-QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString &nominalName, const QString &measuredName) {
+QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString& nominalName, const QString& measuredName)
+{
     auto globalName = QString("Global_%1").arg(nominalName);
     auto globalCVName = QString("GlobalCV_%1").arg(nominalName);
     auto globalCCName = QString("GlobalCC_%1").arg(nominalName);
@@ -47,7 +54,8 @@ QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNam
     };
 }
 
-QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(const QString &nominalName) {
+QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(const QString& nominalName)
+{
     auto globalFormName = QString("%1_Form").arg(nominalName);
     auto globalCVFormName = QString("%1_Convex_Form").arg(nominalName);
     auto globalCCFormName = QString("%1_Concav_Form").arg(nominalName);
@@ -62,7 +70,8 @@ QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(c
     };
 }
 
-QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAdditionalNames(const QString &nominalName, const QString &measuredName) {
+QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAdditionalNames(const QString& nominalName, const QString& measuredName)
+{
     auto nomMCLName = QString("%1_MCL").arg(nominalName);
     auto measMCLName = QString("%1_MCL").arg(measuredName);
     auto nomMaxDiaName = QString("%1_CMaxDia").arg(nominalName);
@@ -79,19 +88,32 @@ QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAddit
     };
 }
 
-QMap<ReportGenerator::InterimName, QString> ReportGenerator::getTemplateInterimNames(const QString & nominalName, const QString & measuredName) {
-    auto dummyNomName = QString("_%1").arg(nominalName);
-    auto dummyMeasName = QString("_%1").arg(measuredName);
-    auto dummyNomCVName = QString("dummy_CV_%1").arg(nominalName);
-    auto dummyMeasCVName = QString("dummy_CV_%1").arg(measuredName);
-    auto dummyNomCCName = QString("dummy_CC_%1").arg(nominalName);
-    auto dummyMeasCCName = QString("dummy_CC_%1").arg(measuredName);
+QMap<ReportGenerator::InterimName, QString> ReportGenerator::getTemplateInterimNames(
+    const QString& nominalName, const QString& measuredName)
+{
+    auto dummyNominalName = QString("_%1").arg(nominalName);
+    auto dummyMeasuredName = QString("_%1").arg(measuredName);
+
+    auto dummyNominalCVName = QString("dummy_CV_%1").arg(nominalName);
+    auto dummyMeasuredCVName = QString("dummy_CV_%1").arg(measuredName);
+    auto dummyNominalCCName = QString("dummy_CC_%1").arg(nominalName);
+    auto dummyMeasuredCCName = QString("dummy_CC_%1").arg(measuredName);
+
+    auto dummyNominalLEName = QString("dummy_LE_%1").arg(nominalName);
+    auto dummyMeasuredLEName = QString("dummy_LE_%1").arg(measuredName);
+    auto dummyNominalTEName = QString("dummy_TE_%1").arg(nominalName);
+    auto dummyMeasuredTEName = QString("dummy_TE_%1").arg(measuredName);
+
     return {
-        { InterimName::NominalCurve, dummyNomName },
-        { InterimName::MeasuredCurve, dummyMeasName },
-        { InterimName::NominalCV, dummyNomCVName },
-        { InterimName::MeasuredCV, dummyMeasCVName },
-        { InterimName::NominalCC, dummyNomCCName },
-        { InterimName::MeasuredCC, dummyMeasCCName }
+        { InterimName::NominalCurve, dummyNominalName },
+        { InterimName::MeasuredCurve, dummyMeasuredName },
+        { InterimName::NominalCV, dummyNominalCVName },
+        { InterimName::MeasuredCV, dummyMeasuredCVName },
+        { InterimName::NominalCC, dummyNominalCCName },
+        { InterimName::MeasuredCC, dummyMeasuredCCName },
+        { InterimName::NominalLE, dummyNominalLEName },
+        { InterimName::MeasuredLE, dummyMeasuredLEName },
+        { InterimName::NominalTE, dummyNominalTEName },
+        { InterimName::MeasuredTE, dummyMeasuredTEName },
     };
 }
