@@ -1,6 +1,9 @@
 #include "curve/pch.h"
 
+#include "algorithms.h"
 #include "figurecreator.h"
+#include "functionparamsfactory.h"
+#include "reportgenerator.h"
 
 void FigureCreator::createAdditionalFigures(Project* project, std::shared_ptr<ReportSettings> reportSettings)
 {
@@ -11,7 +14,7 @@ void FigureCreator::createAdditionalFigures(Project* project, std::shared_ptr<Re
     auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
 
     auto additionalNames = ReportGenerator::getTemplateAdditionalNames(nominalName, preparedMeasName);
-    auto params18 = FunctionParamsGenerator::params18(project, reportSettings);
+    auto params18 = FunctionParamsFactory(reportSettings).params18();
 
     using Name = ReportGenerator::AdditionalName;
 
@@ -20,8 +23,8 @@ void FigureCreator::createAdditionalFigures(Project* project, std::shared_ptr<Re
         Algorithms::createMiddleCurve(preparedMeasName, additionalNames[Name::MeasuredMCL], &params18, project, Qt::blue);
     }
     if(reportSettings->needMaxDiameter()) {
-        Algorithms::createMaxCircle(nominalName, additionalNames[Name::NominalMaxDia], &params18, project);
-        Algorithms::createMaxCircle(preparedMeasName, additionalNames[Name::MeasuredMaxDia], &params18, project, Qt::blue);
+        Algorithms::createMaxCircle(nominalName, params18, additionalNames[Name::NominalMaxDia], Qt::black);
+        Algorithms::createMaxCircle(preparedMeasName, params18, additionalNames[Name::MeasuredMaxDia], Qt::blue);
     }
     if(reportSettings->needContactLine()) {
         Algorithms::createContactLine(nominalName, additionalNames[Name::NominalCntctLine], &params18, project);
@@ -81,7 +84,8 @@ void FigureCreator::alignAdditionalFigures(Project* project, std::shared_ptr<Rep
 }
 
 FigureCreator::FigureCreator(std::shared_ptr<ReportSettings> reportSettings)
-    : _reportSettings(reportSettings) {
+    : _reportSettings(reportSettings)
+{
     _project = &Project::instance();
 }
 
@@ -115,15 +119,15 @@ void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>
                 break;
             }
             case CurveType::GlobalLE: {
-                if(_reportSettings->isLEVisible()) {
-                    auto createdCurve = createGlobalEdge(name, points, _reportSettings->amplificationOfLE());
+                if(_reportSettings->isLeadingEdgeVisible()) {
+                    auto createdCurve = createGlobalEdge(name, points, _reportSettings->leadingEdgeAmplification());
                     createDimension(templateFormName[FormName::LEForm], createdCurve);
                 }
                 break;
             }
             case CurveType::GlobalTE: {
-                if(_reportSettings->isTEVisible()) {
-                    auto createdCurve = createGlobalEdge(name, points, _reportSettings->amplificationOfTE());
+                if(_reportSettings->isTrailingEdgeVisible()) {
+                    auto createdCurve = createGlobalEdge(name, points, _reportSettings->trailingEdgeAmplification());
                     createDimension(templateFormName[FormName::TEForm], createdCurve);
                 }
                 break;

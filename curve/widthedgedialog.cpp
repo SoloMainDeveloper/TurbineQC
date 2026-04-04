@@ -1,9 +1,13 @@
 #include "curve/pch.h"
 
-#include "widthedgedialog.h"
+#include "algorithms.h"
+#include "leadingedgewidth.h"
+#include "trailingedgewidth.h"
 #include "ui_widthedgedialog.h"
+#include "widthedgedialog.h"
 
-WidthEdgeDialog::WidthEdgeDialog() : _ui(new Ui::WidthEdgeDialog()) {
+WidthEdgeDialog::WidthEdgeDialog() : _ui(new Ui::WidthEdgeDialog())
+{
     _ui->setupUi(this);
     _curveGraphics = new CurveGraphicsWidget();
     _containerLayout = new QGridLayout(_ui->container);
@@ -17,7 +21,8 @@ WidthEdgeDialog::WidthEdgeDialog() : _ui(new Ui::WidthEdgeDialog()) {
     connect(curves, &QListWidget::itemClicked, this, &WidthEdgeDialog::updateAnswerView);
 }
 
-void WidthEdgeDialog::initialize() {
+void WidthEdgeDialog::initialize()
+{
     auto figures = Project::instance().figures();
     _curveGraphics->initialization();
 
@@ -30,7 +35,8 @@ void WidthEdgeDialog::initialize() {
     exec();
 }
 
-void WidthEdgeDialog::setupWindow() {
+void WidthEdgeDialog::setupWindow()
+{
     _doubleValidator = new QDoubleValidator(); // TODO: memory leak
     _doubleValidator->setDecimals(9);
     _doubleValidator->setLocale(QLocale::C);
@@ -50,7 +56,8 @@ void WidthEdgeDialog::setupWindow() {
     answerTE = _ui->answerTE;
 }
 
-void WidthEdgeDialog::closeWindow() {
+void WidthEdgeDialog::closeWindow()
+{
     close();
     curves->clear();
     directionLE->setCurrentIndex(0);
@@ -70,7 +77,8 @@ void WidthEdgeDialog::closeWindow() {
     _ui->modeTE->setCurrentIndex(0);
 }
 
-void WidthEdgeDialog::calculateWidthEdge() {
+void WidthEdgeDialog::calculateWidthEdge()
+{
     auto selectedItemsOfCurves = curves->selectedItems();
     auto currFigure = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
     if(currFigure != nullptr) {
@@ -79,25 +87,28 @@ void WidthEdgeDialog::calculateWidthEdge() {
         auto widthLE = 0.0;
         auto widthTE = 0.0;
         auto currentFigure = currFigure->text();
-        auto params18 = new Function18Params();
+        auto params18 = Function18Params();
         if(_ui->checkBoxLE) {
             if(_ui->createDistanceCheckBoxLE->isChecked()) {
-                auto param = WidthLE(0, 0, 0, QString::number(distanceLEValue));
-                param.createMeasured(currentFigure, currentFigure, Function18Params(), &Project::instance());
-                widthLE = param.measured;
-            } else {
-                auto result = Algorithms::getWidthOfLeadingEdge(currentFigure, params18, distanceLEValue, &Project::instance());
+                auto parameter = LeadingEdgeWidth(0, 0, 0, QString::number(distanceLEValue));
+                parameter.createMeasured(currentFigure, currentFigure, Function18Params());
+
+                widthLE = parameter.measured();
+            }
+            else {
+                auto result = Algorithms::getWidthOfLeadingEdge(currentFigure, params18, distanceLEValue);
                 auto [firstPoint, secondPoint] = result;
                 widthLE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
             }
         }
         if(_ui->checkBoxTE) {
             if(_ui->createDistanceCheckBoxTE->isChecked()) {
-                auto param = WidthTE(0, 0, 0, QString::number(distanceTEValue));
-                param.createMeasured(currentFigure, currentFigure, Function18Params(), &Project::instance());
-                widthTE = param.measured;
-            } else {
-                auto result = Algorithms::getWidthOfTrailingEdge(currentFigure, params18, distanceTEValue, &Project::instance());
+                auto parameter = TrailingEdgeWidth(0, 0, 0, QString::number(distanceTEValue));
+                parameter.createMeasured(currentFigure, currentFigure, Function18Params());
+                widthTE = parameter.measured();
+            }
+            else {
+                auto result = Algorithms::getWidthOfTrailingEdge(currentFigure, params18, distanceTEValue);
                 auto [firstPoint, secondPoint] = result;
                 widthTE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
             }
@@ -107,7 +118,8 @@ void WidthEdgeDialog::calculateWidthEdge() {
     }
 }
 
-void WidthEdgeDialog::updateAnswerView() {
+void WidthEdgeDialog::updateAnswerView()
+{
     auto selectedItemsOfCurves = curves->selectedItems();
     auto currentItem = selectedItemsOfCurves.length() == 1 ? selectedItemsOfCurves[0] : nullptr;
     if(currentItem) {
@@ -121,45 +133,54 @@ void WidthEdgeDialog::updateAnswerView() {
             distanceLE->setText(QString::number(_widths[figureName]->distanceLE));
             answerTE->setText(QString::number(_widths[figureName]->widthTE));
             distanceTE->setText(QString::number(_widths[figureName]->distanceTE));
-        } else {
+        }
+        else {
             answerLE->clear();
             answerTE->clear();
         }
     }
 }
 
-void WidthEdgeDialog::closeEvent(QCloseEvent *event) {
+void WidthEdgeDialog::closeEvent(QCloseEvent* event)
+{
     closeWindow();
 }
 
-void WidthEdgeDialog::checkBoxLEStateChange() {
+void WidthEdgeDialog::checkBoxLEStateChange()
+{
     auto state = checkBoxLE->isChecked();
     if(state) {
         groupBoxLE->show();
-    } else {
+    }
+    else {
         groupBoxLE->hide();
     }
 }
 
-void WidthEdgeDialog::checkBoxTEStateChange() {
+void WidthEdgeDialog::checkBoxTEStateChange()
+{
     auto state = checkBoxTE->isChecked();
     if(state) {
         groupBoxTE->show();
-    } else {
+    }
+    else {
         groupBoxTE->hide();
     }
 }
 
-WidthEdgeDialog::~WidthEdgeDialog() {
+WidthEdgeDialog::~WidthEdgeDialog()
+{
     delete _ui;
 }
 
-EdgeWidth::EdgeWidth(double widthLeadingEdge, double distLE, double widthTrailingEdge, double distTE) {
+EdgeWidth::EdgeWidth(double widthLeadingEdge, double distLE, double widthTrailingEdge, double distTE)
+{
     widthLE = widthLeadingEdge;
     distanceLE = distLE;
     widthTE = widthTrailingEdge;
     distanceTE = distTE;
 }
 
-EdgeWidth::~EdgeWidth() {
+EdgeWidth::~EdgeWidth()
+{
 }

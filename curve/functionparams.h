@@ -3,7 +3,8 @@
 class FunctionParams {
 public:
     enum class Direction {
-        Right, Left
+        Right,
+        Left
     };
 
     virtual QString toQString() const = 0;
@@ -14,7 +15,7 @@ class Function1Params : public FunctionParams {
 public:
     Function1Params(int intermediate, double threshold = 0, double minline = 0, bool isClosed = false,
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
-    Function1Params(const QMap<QString, QString> *data);
+    Function1Params(const QMap<QString, QString>* data);
     QString toQString() const override;
 
 private:
@@ -25,7 +26,6 @@ private:
     double _threshold;
     double _minline;
     Direction _material;
-
 };
 
 class Function2Params : public FunctionParams {
@@ -42,7 +42,7 @@ class Function3Params : public FunctionParams {
 public:
     Function3Params(double radiusCorrection, bool isClosed = false,
         bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
-    Function3Params(const QMap<QString, QString> *data);
+    Function3Params(const QMap<QString, QString>* data);
     QString toQString() const override;
 
 private:
@@ -57,7 +57,7 @@ class Function4Params : public FunctionParams {
 public:
     Function4Params(float nominalTolerance = 0, int evaluationPlace = 1, int evaluationDirection = 1,
         bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, bool needSort = false);
-    Function4Params(const QMap<QString, QString> *data);
+    Function4Params(const QMap<QString, QString>* data);
     QString toQString() const override;
 
 private:
@@ -83,37 +83,47 @@ private:
 
 class Function6Params : public FunctionParams {
 public:
-    enum class Algorithm {
-        Curve, Point
+    enum class Method {
+        Curve,
+        Point
     };
 
-    Function6Params(bool needMinimize = true, Algorithm method = Algorithm::Curve, bool isClosed = true, bool needXShift = true,
-        bool needYShift = true, bool needRotation = true, bool needHConstraint = false, double xShiftFrom = 0, double xShiftTo = 0,
-        bool needVConstraint = false, double yShiftFrom = 0, double yShiftTo = 0, bool needRConstraint = false, double rotationFrom = 0,
-        double rotationTo = 0);
-    Function6Params(const QMap<QString, QString> *data);
+    Function6Params();
+    Function6Params(bool needMinimize, Method method, bool isClosed,
+        bool needXShift, bool needYShift, bool needRotation);
+    Function6Params(const QMap<QString, QString>* data);
+
+    void setHorizontalConstraint(double shiftFrom, double shiftTo);
+    void setVerticalConstraint(double shiftFrom, double shiftTo);
+    void setRotationConstraint(double rotationFrom, double rotationTo);
+
     QString toQString() const override;
 
 private:
-    double _xShiftFrom;
-    double _xShiftTo;
-    double _yShiftFrom;
-    double _yShiftTo;
-    double _rotationFrom;
-    double _rotationTo;
+    bool _needMinimize;
     bool _isClosed;
-    //bool _isExternal; defualt Y
+    Method _method;
+
     bool _needXShift;
     bool _needYShift;
     bool _needRotation;
+
     bool _needHConstraint;
+    double _xShiftFrom;
+    double _xShiftTo;
+
     bool _needVConstraint;
+    double _yShiftFrom;
+    double _yShiftTo;
+
     bool _needRConstraint;
-    bool _needMinimize;
-    //int _evaluationPlace; //defualt 1
-    //int _evaluationDirection; // defualt 2
-    //Direction _material; // defualt L
-    Algorithm _method;
+    double _rotationFrom;
+    double _rotationTo;
+
+    // bool _isExternal; defualt Y
+    // int _evaluationPlace; //defualt 1
+    // int _evaluationDirection; // defualt 2
+    // Direction _material; // defualt L
 };
 
 class Function7Params : public FunctionParams {
@@ -187,10 +197,13 @@ private:
 class Function13Params : public FunctionParams {
 public:
     enum class Filter {
-        Polar, Linear
+        Polar,
+        Linear
     };
     enum class FilterType {
-        LowPass, HighPass, Band
+        LowPass,
+        HighPass,
+        Band
     };
 
     Function13Params(Filter filter, FilterType filterType, double filterFactor, bool isClosed = false);
@@ -237,7 +250,9 @@ private:
 class Function17Params : public FunctionParams {
 public:
     enum class Sorter {
-        NotSort, OnIncrease, OnDecrease
+        NotSort,
+        OnIncrease,
+        OnDecrease
     };
 
     Function17Params(double diameter, Sorter sortZ = Sorter::NotSort);
@@ -251,7 +266,7 @@ private:
 class Function18Params : public FunctionParams {
 public:
     Function18Params(int directionLE = 0, double percentLE = 5, double percentTE = 5, int joinedSegments = 1);
-    Function18Params(const QMap<QString, QString> *data);
+    Function18Params(const QMap<QString, QString>* data);
     QString toQString() const override;
     int getLEDirection() const;
 
@@ -265,7 +280,7 @@ private:
 class Function19Params : public FunctionParams {
 public:
     Function19Params(bool isClosed = false, bool isExternal = true, Direction material = Direction::Left, QString mode = "number", int value = 500);
-    Function19Params(const QMap<QString, QString> *data);
+    Function19Params(const QMap<QString, QString>* data);
     QString toQString() const override;
 
 private:
@@ -278,16 +293,36 @@ private:
 
 class Function21Params : public FunctionParams {
 public:
-    Function21Params(int limInterpMethod = 0, bool needXSift = true, bool needYShift = true, bool needRotation = true, bool isClosed = false);
+    Function21Params();
+    Function21Params(bool isClosed, int limInterpMethod,
+        bool needXSift, bool needYShift, bool needRotation);
+
+    void setHorizontalConstraint(double shiftFrom, double shiftTo);
+    void setVerticalConstraint(double shiftFrom, double shiftTo);
+    void setRotationConstraint(double rotationFrom, double rotationTo);
+
     QString toQString() const override;
     bool isClosedCurve() const;
 
 private:
     bool _isClosed;
+    int _limInterpMethod;
+
     bool _needXShift;
     bool _needYShift;
     bool _needRotation;
-    int _limInterpMethod;
+
+    bool _needHConstraint;
+    double _xShiftFrom;
+    double _xShiftTo;
+
+    bool _needVConstraint;
+    double _yShiftFrom;
+    double _yShiftTo;
+
+    bool _needRConstraint;
+    double _rotationFrom;
+    double _rotationTo;
 };
 
 class Function31Params : public FunctionParams {

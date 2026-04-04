@@ -78,8 +78,44 @@
     <Filter Include="Header Files\Macros\Commands">
       <UniqueIdentifier>{fe4fe631-59a3-4dc7-b845-8bdaf5751943}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\services">
+      <UniqueIdentifier>{ac1b1426-80bc-4f27-be46-d2d466d0b8db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\services\reportservice">
+      <UniqueIdentifier>{33820e29-0bb4-4ca9-9c49-7f927366c551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services">
+      <UniqueIdentifier>{d210a084-75df-438e-91d0-3c0c6281bca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services\reportservice">
+      <UniqueIdentifier>{172b0dfa-a1e4-4e60-bdff-fd9271c7ea3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services\analysisservice">
+      <UniqueIdentifier>{e4c77007-5b3a-4b79-a656-8520016af094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\services\analysisservice">
+      <UniqueIdentifier>{97ad1b8b-ad6a-4110-a88d-94d18adb5242}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Macros\Commands">
       <UniqueIdentifier>{6119ba93-0c2d-4042-a6ae-a11b84853c80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\services\analysisservice\turbineparameters">
+      <UniqueIdentifier>{facbeda7-d840-493d-83a8-50ede0b4a048}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\services\analysisservice\turbineparameters\turbineprofileparameters">
+      <UniqueIdentifier>{8d4abe92-eeb3-4934-9835-0650b9e6efa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\services\analysisservice\turbineparameters\turbinetransformparameters">
+      <UniqueIdentifier>{9526ec62-2ded-4369-9e9e-8076e158dba8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services\analysisservice\turbineparameters">
+      <UniqueIdentifier>{35c624ca-dedc-4b83-9f34-9cf25ee3dbea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services\analysisservice\turbineparameters\turbineprofileparameters">
+      <UniqueIdentifier>{fe9707cf-ac2d-4cec-a740-d03397c62e57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\services\analysisservice\turbineparameters\turbinetransformparameter">
+      <UniqueIdentifier>{c0e6d341-b106-4b2d-837e-c9c593fa05d6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +144,6 @@
     </ClCompile>
     <ClCompile Include="colortranslator.cpp">
       <Filter>Source Files\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="markupcreator.cpp">
-      <Filter>Source Files\Report</Filter>
     </ClCompile>
     <ClCompile Include="curvegraphicswidget.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -178,9 +211,6 @@
     <ClCompile Include="tree.cpp">
       <Filter>Source Files\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="turbinedialog.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="widthedgedialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -214,14 +244,8 @@
     <ClCompile Include="figurecreator.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
-    <ClCompile Include="functionparamsgenerator.cpp">
+    <ClCompile Include="functionparamsfactory.cpp">
       <Filter>Source Files\Report</Filter>
-    </ClCompile>
-    <ClCompile Include="functionparamsgenerator.cpp">
-      <Filter>Source Files\Report</Filter>
-    </ClCompile>
-    <ClCompile Include="turbineparameter.cpp">
-      <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="compareflrdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
@@ -325,11 +349,92 @@
     <ClCompile Include="unknowncommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="reportservice.cpp">
+      <Filter>Source Files\services\reportservice</Filter>
+    </ClCompile>
+    <ClCompile Include="reportmarkuptemplates.cpp">
+      <Filter>Source Files\services\reportservice</Filter>
+    </ClCompile>
+    <ClCompile Include="deviationstatistics.cpp">
+      <Filter>Source Files\services\reportservice</Filter>
+    </ClCompile>
+    <ClCompile Include="maxdiameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="xmaxdiameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="ymaxdiameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="chordlength.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="minx.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="turbinedialog.cpp">
+      <Filter>Source Files\services\analysisservice</Filter>
+    </ClCompile>
+    <ClCompile Include="shiftx.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="shifty.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="turn.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="chordlength.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="minx.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="turn.cpp">
+      <Filter>Source Files\services\analysisservice\turbinetransformparameter</Filter>
+    </ClCompile>
+    <ClCompile Include="shifty.cpp">
+      <Filter>Source Files\services\analysisservice\turbinetransformparameter</Filter>
+    </ClCompile>
     <ClCompile Include="changecurveappearancecommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
     </ClCompile>
     <ClCompile Include="hideallcommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="iturbinetransformparameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="iturbineparameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="iturbineprofileparameter.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -366,10 +471,7 @@
     <ClInclude Include="screenshotcreator.h">
       <Filter>Header Files\Report</Filter>
     </ClInclude>
-    <ClInclude Include="functionparamsgenerator.h">
-      <Filter>Header Files\Report</Filter>
-    </ClInclude>
-    <ClInclude Include="markupcreator.h">
+    <ClInclude Include="functionparamsfactory.h">
       <Filter>Header Files\Report</Filter>
     </ClInclude>
     <ClInclude Include="curveanalyzer.h">
@@ -465,6 +567,72 @@
     <ClInclude Include="hideallcommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="deviationstatistics.h">
+      <Filter>Header Files\services\reportservice</Filter>
+    </ClInclude>
+    <ClInclude Include="reportservice.h">
+      <Filter>Header Files\services\reportservice</Filter>
+    </ClInclude>
+    <ClInclude Include="reportmarkuptemplates.h">
+      <Filter>Header Files\services\reportservice</Filter>
+    </ClInclude>
+    <ClInclude Include="maxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="xmaxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="ymaxdiameter.h">
+      <Filter>Header Files\Macros\Commands\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="chordlength.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="leadingedgewidth.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="trailingedgewidth.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="leadingedgeradius.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="trailingedgeradius.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="minx.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="deviationstatistics.h">
+      <Filter>Header Files\services\reportservice</Filter>
+    </ClInclude>
+    <ClInclude Include="shiftx.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
+    </ClInclude>
+    <ClInclude Include="shifty.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
+    </ClInclude>
+    <ClInclude Include="turn.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
+    </ClInclude>
+    <ClInclude Include="maxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="xmaxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="ymaxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="shiftx.h">
+      <Filter>Header Files\services\analysisservice\turbinetransformparameter</Filter>
+    </ClInclude>
+    <ClInclude Include="changecurveappearancecommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="hideallcommand.h">
+      <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
     <ClInclude Include="radiuscorrection3dcommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
     </ClInclude>
@@ -524,9 +692,6 @@
     <QtMoc Include="tree.h">
       <Filter>Header Files\Interface</Filter>
     </QtMoc>
-    <QtMoc Include="turbinedialog.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </QtMoc>
     <QtMoc Include="widthedgedialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
@@ -548,9 +713,6 @@
     <QtMoc Include="printpreviewdialog.h">
       <Filter>Header Files\Report</Filter>
     </QtMoc>
-    <QtMoc Include="turbineparameter.h">
-      <Filter>Header Files\Other</Filter>
-    </QtMoc>
     <QtMoc Include="compareflrdialog.h">
       <Filter>Header Files\Dialogs</Filter>
     </QtMoc>
@@ -568,6 +730,18 @@
     </QtMoc>
     <QtMoc Include="icommand.h">
       <Filter>Header Files\Macros</Filter>
+    </QtMoc>
+    <QtMoc Include="turbinedialog.h">
+      <Filter>Header Files\services\analysisservice</Filter>
+    </QtMoc>
+    <QtMoc Include="iturbineparameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
+    </QtMoc>
+    <QtMoc Include="iturbinetransformparameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
+    </QtMoc>
+    <QtMoc Include="iturbineprofileparameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

@@ -199,7 +199,9 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             auto measured = firstLine[4];
             auto bestFitLineName = firstLine[2] + "_BF";
 
-            auto method = secondLine[6] == "0" ? Function6Params::Algorithm::Curve : Function6Params::Algorithm::Point;
+            auto method = secondLine[6] == "0"
+                ? Function6Params::Method::Curve
+                : Function6Params::Method::Point;
             auto minimize = true;
             auto closed = secondLine[2] == "1";
             auto xshift = secondLine[3] == "1";
@@ -218,13 +220,21 @@ std::shared_ptr<ICommand> MacrosTranslator::parseCRMCommand(OperationCRM type, Q
             auto rotationfrom = thirdLine.length() > 9 && thirdLine[8] == "1" ? thirdLine[9].toDouble() : 0;
             auto rotationto = thirdLine.length() > 10 && thirdLine[8] == "1" ? thirdLine[10].toDouble() : 0;
 
-            return std::make_shared<BestFitCommand>(
-                nominal, measured, resultName, bestFitLineName,
-                new Function6Params(
-                    minimize, method, closed, xshift, yshift, rotation,
-                    needHconstraint, xshiftfrom, xshiftto,
-                    needVconstraint, yshiftfrom, yshiftto,
-                    needRconstraint, rotationfrom, rotationto));
+            auto params6 = new Function6Params(minimize, method, closed, xshift, yshift, rotation);
+
+            if(needHconstraint) {
+                params6->setHorizontalConstraint(xshiftfrom, xshiftto);
+            }
+
+            if(needVconstraint) {
+                params6->setVerticalConstraint(yshiftfrom, yshiftto);
+            }
+
+            if(needRconstraint) {
+                params6->setRotationConstraint(rotationfrom, rotationto);
+            }
+
+            return std::make_shared<BestFitCommand>(nominal, measured, resultName, bestFitLineName, params6);
         }
         case MacrosTranslator::Airfoil: {
             auto lines = QList<QStringList>();
