@@ -1,15 +1,17 @@
 #include "curve/pch.h"
 
 #include "createreportcommand.h"
-#include "markupcreator.h"
 #include "reportgenerator.h"
+#include "reportservice.h"
 #include "screenshotcreator.h"
 
 void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSettings)
 {
     auto& project = Project::instance();
+
     auto nominalCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->nominalName()));
     auto measuredCurve = dynamic_cast<const CurveFigure*>(project.findFigure(reportSettings->measuredName()));
+
     ARGUMENT_ASSERT(nominalCurve && measuredCurve, "Report generator: curve's not found");
 
     MacrosManager::instance().executeWithoutLogging([&]() {
@@ -22,19 +24,21 @@ void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSetting
         screenshotCreator.run(analyzedGlobalCurves);
 
         if(reportSettings->needPrintWithTemplate()) {
-            auto creatingMarkup = MarkupCreator(reportSettings);
-            auto reportMarkup = creatingMarkup.run(analyzedGlobalCurves);
-            auto time = creatingMarkup.reportCreationTime();
-            Printer::instance().addPage(reportMarkup, {
-                                                          { "markup", reportMarkup },
-                                                          { "nominalCurve", nominalCurve->name() },
-                                                          { "measuredCurve", measuredCurve->name() },
-                                                          { "time", time },
-                                                      });
+            auto reportService = ReportService(reportSettings);
 
-            // Printer::addPage(reportMarkup, information);
+            QString report = reportService.generateReport(analyzedGlobalCurves);
+            QString time = reportService.creationTime();
+            QMap<QString, QString> information = {
+                { "markup", report },
+                { "nominalCurve", nominalCurve->name() },
+                { "measuredCurve", measuredCurve->name() },
+                { "time", time },
+            };
+
+            Printer::instance().addPage(report, information);
         }
     });
+
     MacrosManager::instance().log(std::make_shared<CreateReportCommand>(reportSettings));
 }
 

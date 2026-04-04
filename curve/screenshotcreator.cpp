@@ -37,11 +37,11 @@ void ScreenshotCreator::run(const GlobalCurveMap& curvesToMakeScreenshot)
             makeScreenshotOfGlobal({ nameCV, nameCC });
         }
     }
-    if(curvesToMakeScreenshot.contains(CurveType::GlobalLE) && _reportSettings->isLEVisible()) {
+    if(curvesToMakeScreenshot.contains(CurveType::GlobalLE) && _reportSettings->isLeadingEdgeVisible()) {
         auto [name, points] = curvesToMakeScreenshot[CurveType::GlobalLE];
         makeScreenshotOfEdge(name, CurveType::GlobalLE, _reportSettings->typeOfShowDevsLE(), _reportSettings->axisTypeOfLE());
     }
-    if(curvesToMakeScreenshot.contains(CurveType::GlobalTE) && _reportSettings->isTEVisible()) {
+    if(curvesToMakeScreenshot.contains(CurveType::GlobalTE) && _reportSettings->isTrailingEdgeVisible()) {
         auto [name, points] = curvesToMakeScreenshot[CurveType::GlobalTE];
         makeScreenshotOfEdge(name, CurveType::GlobalTE, _reportSettings->typeOfShowDevsTE(), _reportSettings->axisTypeOfTE());
     }
@@ -56,8 +56,9 @@ void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList& globalNames)
 
     _plot->zoomExtents();
     _project->setCurrentFigure(_nominalName);
-    auto screenshot = _plot->getScreenshot(800, 450, _reportSettings->globalAxisType());
-    _reportSettings->setScreenshotOfGlobal(screenshot);
+
+    QString screenshot = _plot->getScreenshotInBase64(800, 450, _reportSettings->globalAxisType());
+    _reportSettings->setGlobalBase64Image(screenshot);
 }
 
 void ScreenshotCreator::setVisibilityAdditionalFigures()
@@ -88,7 +89,7 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType 
 {
     _project->resetVisibilityForAllFigures();
     _project->setVisibility({ edgeName });
-    auto curveDevs = createNumericalDeviations(edgeName, devsType, curveType);
+    CurveFigure* deviations = createNumericalDeviations(edgeName, devsType, curveType);
     _plot->zoomExtents();
 
     if(_reportSettings->needMCL()) {
@@ -100,9 +101,13 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType 
             templateAdditionalNames[AdditionalName::MeasuredMCL] });
     }
     _project->setCurrentFigure(_nominalName);
-    auto screenshot = _plot->getScreenshot(400, 225, axisType);
-    curveType == CurveType::GlobalLE ? _reportSettings->setScreenshotOfLE(screenshot) : _reportSettings->setScreenshotOfTE(screenshot);
-    _project->removeFigure(curveDevs->name());
+
+    QString screenshot = _plot->getScreenshotInBase64(400, 225, axisType);
+    curveType == CurveType::GlobalLE
+        ? _reportSettings->setLeadingEdgeBase64Image(screenshot)
+        : _reportSettings->setTrailingEdgeBase64Image(screenshot);
+
+    _project->removeFigure(deviations->name());
 }
 
 CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString& edgeName, TypeOfShowDevs devsType, CurveType curveType)
