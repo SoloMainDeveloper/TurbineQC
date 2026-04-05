@@ -1,6 +1,5 @@
 #include "curve/pch.h"
 
-#include "curveanalyzer.h"
 #include "algorithms.h"
 #include "curveanalyzer.h"
 #include "functionparamsfactory.h"
@@ -85,21 +84,25 @@ GlobalCurveMap CurveAnalyzer::run()
 
     using EdgeBestFit = ReportSettings::EdgeBestFit;
 
-    EdgeBestFit leadingEdgeBestFit = _reportSettings->leadingEdgeBestFit();
-    auto lineLEBestFit = QString("%1_LE_BF").arg(_measuredName);
-    calculateEdgeBestFit(_dummyNominalLEName, nominalParts.pointsOfLE, _dummyMeasuredLEName,
-        measuredParts.pointsOfLE, lineLEBestFit, leadingEdgeBestFit);
-    const CurveFigure* leadingEdge = calculateEdgeDeviations(params18, _dummyNominalLEName,
-        _dummyMeasuredLEName, _globalLEName, globalParts.pointsOfLE, leadingEdgeBestFit);
-    result.insert({ { FigureCreator::CurveType::GlobalLE, { leadingEdge->name(), leadingEdge->points() } } });
+    if(_reportSettings->isLeadingEdgeVisible()) {
+        EdgeBestFit leadingEdgeBestFit = _reportSettings->leadingEdgeBestFit();
+        auto lineLEBestFit = QString("%1_LE_BF").arg(_measuredName);
+        calculateEdgeBestFit(_dummyNominalLEName, nominalParts.pointsOfLE, _dummyMeasuredLEName,
+            measuredParts.pointsOfLE, lineLEBestFit, leadingEdgeBestFit);
+        const CurveFigure* leadingEdge = calculateEdgeDeviations(params18, _dummyNominalLEName,
+            _dummyMeasuredLEName, _globalLEName, globalParts.pointsOfLE, leadingEdgeBestFit);
+        result.insert({ { FigureCreator::CurveType::GlobalLE, { leadingEdge->name(), leadingEdge->points() } } });
+    }
 
-    EdgeBestFit trailingEdgeBestFit = _reportSettings->trailingEdgeBestFit();
-    auto lineTEBestFit = QString("%1_TE_BF").arg(_measuredName);
-    calculateEdgeBestFit(_dummyNominalTEName, nominalParts.pointsOfTE, _dummyMeasuredTEName,
-        measuredParts.pointsOfTE, lineTEBestFit, _reportSettings->trailingEdgeBestFit());
-    const CurveFigure* trailingEdge = calculateEdgeDeviations(params18, _dummyNominalTEName,
-        _dummyMeasuredTEName, _globalTEName, globalParts.pointsOfTE, trailingEdgeBestFit);
-    result.insert({ { FigureCreator::CurveType::GlobalTE, { trailingEdge->name(), trailingEdge->points() } } });
+    if(_reportSettings->isTrailingEdgeVisible()) {
+        EdgeBestFit trailingEdgeBestFit = _reportSettings->trailingEdgeBestFit();
+        auto lineTEBestFit = QString("%1_TE_BF").arg(_measuredName);
+        calculateEdgeBestFit(_dummyNominalTEName, nominalParts.pointsOfTE, _dummyMeasuredTEName,
+            measuredParts.pointsOfTE, lineTEBestFit, _reportSettings->trailingEdgeBestFit());
+        const CurveFigure* trailingEdge = calculateEdgeDeviations(params18, _dummyNominalTEName,
+            _dummyMeasuredTEName, _globalTEName, globalParts.pointsOfTE, trailingEdgeBestFit);
+        result.insert({ { FigureCreator::CurveType::GlobalTE, { trailingEdge->name(), trailingEdge->points() } } });
+    }
 
     deleteDummyCurves();
 

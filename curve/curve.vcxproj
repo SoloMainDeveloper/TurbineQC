@@ -130,6 +130,7 @@
     <ClCompile Include="calculatecurvedialog.cpp" />
     <ClCompile Include="changecurveappearancecommand.cpp" />
     <ClCompile Include="changecurveparameterscommand.cpp" />
+    <ClCompile Include="changefigurevisibilitycommand.cpp" />
     <ClCompile Include="chordlength.cpp" />
     <ClCompile Include="clearprojectcommand.cpp" />
     <ClCompile Include="colortranslator.cpp" />
@@ -209,6 +210,7 @@
     <ClCompile Include="widthedgedialog.cpp" />
     <ClCompile Include="xmaxdiameter.cpp" />
     <ClCompile Include="ymaxdiameter.cpp" />
+    <ClInclude Include="changefigurevisibilitycommand.h" />
     <ClInclude Include="chordlength.h" />
     <QtMoc Include="iturbineprofileparameter.h" />
     <ClInclude Include="leadingedgeradius.h" />
