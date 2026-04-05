@@ -436,6 +436,9 @@
     <ClCompile Include="iturbineprofileparameter.cpp">
       <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
     </ClCompile>
+    <ClCompile Include="changefigurevisibilitycommand.cpp">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curvemachine.h">
@@ -638,6 +641,12 @@
     </ClInclude>
     <ClInclude Include="ymaxdiameter.h">
       <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="changefigurevisibilitycommand.h">
+      <Filter>Source Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="changefigurevisibilitycommand.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
