@@ -151,7 +151,7 @@ QTreeWidgetItem* Tree::findChild(const QString &name) {
 }
 
 void Tree::onRenameItemTriggered() {
-    auto text = QInputDialog::getText(this, "Rename element", "Input new name", QLineEdit::Normal, currentItem()->text(0));
+    auto text = QInputDialog::getText(this, tr("Rename element"), tr("Input new name"), QLineEdit::Normal, currentItem()->text(0));
     if(text == "") {
         return;
     }

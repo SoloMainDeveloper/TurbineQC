@@ -29,7 +29,7 @@ void RenameFigureCommand::setParameters(QMap<QString, QVariant> params) {
 }
 
 QString RenameFigureCommand::getName() const {
-    return "Rename figure";
+    return "Переименовать фигуру";
 }
 
 QString RenameFigureCommand::getDescription() const {

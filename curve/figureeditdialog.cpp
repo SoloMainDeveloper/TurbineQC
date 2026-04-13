@@ -27,7 +27,7 @@ void FigureEditDialog::initialize() {
 
     _figureName = _project->currentFigureName();
     _figure = _project->findFigure(_figureName);
-    setWindowTitle("Edit " + _figureName);
+    setWindowTitle(tr("Edit ") + _figureName);
     _ui->nameLE->setText(_figureName);
     auto precision = _project->precision();
     auto &color = _figure->color();

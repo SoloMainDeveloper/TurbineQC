@@ -9,17 +9,17 @@
         <translation>Окно задания допусков</translation>
     </message>
     <message>
-        <location filename="airfoiltolerancesdialog.cpp" line="11"/>
+        <location filename="airfoiltolerancesdialog.cpp" line="13"/>
         <source>Assign Tolerances to Nominal</source>
         <translation>Назначение допусков номиналу</translation>
     </message>
     <message>
-        <location filename="airfoiltolerancesdialog.cpp" line="24"/>
+        <location filename="airfoiltolerancesdialog.cpp" line="26"/>
         <source>Constant tolerance</source>
         <translation>Константный допуск</translation>
     </message>
     <message>
-        <location filename="airfoiltolerancesdialog.cpp" line="25"/>
+        <location filename="airfoiltolerancesdialog.cpp" line="27"/>
         <source>Edges</source>
         <translation>Кромки</translation>
     </message>
@@ -430,7 +430,7 @@
     <message>
         <location filename="changecurveappearancecommand.cpp" line="25"/>
         <source>Change Curve Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить отображение кривой</translation>
     </message>
 </context>
 <context>
@@ -626,7 +626,7 @@
     </message>
     <message>
         <location filename="curvewindow.ui" line="123"/>
-        <location filename="curvewindow.cpp" line="134"/>
+        <location filename="curvewindow.cpp" line="132"/>
         <source>Search figure</source>
         <translation>Найти фигуру</translation>
     </message>
@@ -647,8 +647,8 @@
     </message>
     <message>
         <location filename="curvewindow.ui" line="237"/>
-        <location filename="curvewindow.cpp" line="294"/>
-        <location filename="curvewindow.cpp" line="323"/>
+        <location filename="curvewindow.cpp" line="280"/>
+        <location filename="curvewindow.cpp" line="309"/>
         <source>Dimensions</source>
         <translation>Измерения</translation>
     </message>
@@ -914,48 +914,58 @@
         <translation>Остановить запись</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="274"/>
-        <location filename="curvewindow.cpp" line="303"/>
+        <location filename="curvewindow.cpp" line="171"/>
+        <source>Scale: 1</source>
+        <translation>Масштаб: 1</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.cpp" line="210"/>
+        <source>Scale: %1</source>
+        <translation>Масштаб: %1</translation>
+    </message>
+    <message>
+        <location filename="curvewindow.cpp" line="260"/>
+        <location filename="curvewindow.cpp" line="289"/>
         <source>All figures</source>
         <translation>Все фигуры</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="278"/>
-        <location filename="curvewindow.cpp" line="307"/>
+        <location filename="curvewindow.cpp" line="264"/>
+        <location filename="curvewindow.cpp" line="293"/>
         <source>Curves</source>
         <translation>Кривые</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="282"/>
-        <location filename="curvewindow.cpp" line="311"/>
+        <location filename="curvewindow.cpp" line="268"/>
+        <location filename="curvewindow.cpp" line="297"/>
         <source>Circles</source>
         <translation>Окружности</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="286"/>
-        <location filename="curvewindow.cpp" line="315"/>
+        <location filename="curvewindow.cpp" line="272"/>
+        <location filename="curvewindow.cpp" line="301"/>
         <source>Lines</source>
         <translation>Прямые</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="290"/>
-        <location filename="curvewindow.cpp" line="319"/>
+        <location filename="curvewindow.cpp" line="276"/>
+        <location filename="curvewindow.cpp" line="305"/>
         <source>Points</source>
         <translation>Точки</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="298"/>
-        <location filename="curvewindow.cpp" line="327"/>
+        <location filename="curvewindow.cpp" line="284"/>
+        <location filename="curvewindow.cpp" line="313"/>
         <source>Texts</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="368"/>
+        <location filename="curvewindow.cpp" line="349"/>
         <source>Save project</source>
         <translation>Сохранить проект</translation>
     </message>
     <message>
-        <location filename="curvewindow.cpp" line="370"/>
+        <location filename="curvewindow.cpp" line="351"/>
         <source>CRV files (*.crv);</source>
         <translation></translation>
     </message>
@@ -1189,6 +1199,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="figureeditdialog.cpp" line="30"/>
+        <source>Edit </source>
+        <translation>Редактировать </translation>
+    </message>
+    <message>
         <location filename="figureeditdialog.cpp" line="161"/>
         <source>Choose Color</source>
         <translation>Выбрать цвет</translation>
@@ -1199,7 +1214,7 @@
     <message>
         <location filename="hideallcommand.cpp" line="32"/>
         <source>Hide All</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрыть все</translation>
     </message>
 </context>
 <context>
@@ -1435,7 +1450,7 @@
     <message>
         <location filename="macrosdialog.cpp" line="165"/>
         <source>Macros: </source>
-        <translation type="unfinished"></translation>
+        <translation>Макрос: </translation>
     </message>
     <message>
         <location filename="macrosdialog.cpp" line="198"/>
@@ -1461,6 +1476,24 @@
         <location filename="macrosdialog.cpp" line="290"/>
         <source>Apply</source>
         <translation>Применить</translation>
+    </message>
+</context>
+<context>
+    <name>MacrosManager</name>
+    <message>
+        <location filename="macrosmanager.cpp" line="135"/>
+        <source>Start time: </source>
+        <translation>Время начала: </translation>
+    </message>
+    <message>
+        <location filename="macrosmanager.cpp" line="135"/>
+        <source>Cancel</source>
+        <translation>Отменить</translation>
+    </message>
+    <message>
+        <location filename="macrosmanager.cpp" line="137"/>
+        <source>Macros executing...</source>
+        <translation>Макрос выполняется...</translation>
     </message>
 </context>
 <context>
@@ -1636,11 +1669,19 @@
     </message>
 </context>
 <context>
+    <name>Project</name>
+    <message>
+        <location filename="project.cpp" line="432"/>
+        <source>Delete %1 and its children?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RadiusCorrection3DCommand</name>
     <message>
         <location filename="radiuscorrection3dcommand.cpp" line="56"/>
         <source>Radius Correction 3D</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиус коррекция 3D</translation>
     </message>
 </context>
 <context>
@@ -1977,6 +2018,16 @@
         <source>Text (</source>
         <translation>Текст (</translation>
     </message>
+    <message>
+        <location filename="tree.cpp" line="154"/>
+        <source>Rename element</source>
+        <translation>Переименовать фигуру</translation>
+    </message>
+    <message>
+        <location filename="tree.cpp" line="154"/>
+        <source>Input new name</source>
+        <translation>Введите новое имя</translation>
+    </message>
 </context>
 <context>
     <name>TurbineDialog</name>
@@ -1986,84 +2037,87 @@
         <translation>Окно расчёта турбинных лопаток</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2365"/>
+        <location filename="turbinedialog.ui" line="2570"/>
         <source>Nominal/Measured profile</source>
         <translation>Номинал/Измеренный профиль</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="259"/>
-        <location filename="turbinedialog.ui" line="2483"/>
-        <location filename="turbinedialog.ui" line="2523"/>
+        <location filename="turbinedialog.ui" line="2688"/>
+        <location filename="turbinedialog.ui" line="2728"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2497"/>
+        <location filename="turbinedialog.ui" line="2702"/>
         <source>%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2502"/>
+        <location filename="turbinedialog.ui" line="2707"/>
         <source>L</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2510"/>
+        <location filename="turbinedialog.ui" line="2715"/>
         <source>Leading edge direction</source>
         <translation>Направление передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2533"/>
+        <location filename="turbinedialog.ui" line="2738"/>
         <source>LE/TE zone</source>
         <translation>Зона передней/задней кромок</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="645"/>
-        <location filename="turbinedialog.ui" line="836"/>
-        <location filename="turbinedialog.ui" line="2544"/>
+        <location filename="turbinedialog.ui" line="841"/>
+        <location filename="turbinedialog.ui" line="2749"/>
         <source>Auto</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2549"/>
+        <location filename="turbinedialog.ui" line="2754"/>
         <source>+X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2554"/>
+        <location filename="turbinedialog.ui" line="2759"/>
         <source>+Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2559"/>
+        <location filename="turbinedialog.ui" line="2764"/>
         <source>-X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2564"/>
+        <location filename="turbinedialog.ui" line="2769"/>
         <source>-Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="972"/>
-        <location filename="turbinedialog.ui" line="1036"/>
-        <location filename="turbinedialog.ui" line="2429"/>
+        <location filename="turbinedialog.ui" line="982"/>
+        <location filename="turbinedialog.ui" line="1046"/>
+        <location filename="turbinedialog.ui" line="2634"/>
         <source>Measured</source>
         <translation>Измеренный</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="959"/>
-        <location filename="turbinedialog.ui" line="1023"/>
-        <location filename="turbinedialog.ui" line="1640"/>
-        <location filename="turbinedialog.ui" line="1684"/>
-        <location filename="turbinedialog.ui" line="1712"/>
-        <location filename="turbinedialog.ui" line="1768"/>
-        <location filename="turbinedialog.ui" line="1840"/>
-        <location filename="turbinedialog.ui" line="1871"/>
-        <location filename="turbinedialog.ui" line="1925"/>
-        <location filename="turbinedialog.ui" line="1980"/>
-        <location filename="turbinedialog.ui" line="2055"/>
-        <location filename="turbinedialog.ui" line="2389"/>
+        <location filename="turbinedialog.ui" line="969"/>
+        <location filename="turbinedialog.ui" line="1033"/>
+        <location filename="turbinedialog.ui" line="1641"/>
+        <location filename="turbinedialog.ui" line="1685"/>
+        <location filename="turbinedialog.ui" line="1713"/>
+        <location filename="turbinedialog.ui" line="1769"/>
+        <location filename="turbinedialog.ui" line="1841"/>
+        <location filename="turbinedialog.ui" line="1872"/>
+        <location filename="turbinedialog.ui" line="1926"/>
+        <location filename="turbinedialog.ui" line="1981"/>
+        <location filename="turbinedialog.ui" line="2036"/>
+        <location filename="turbinedialog.ui" line="2109"/>
+        <location filename="turbinedialog.ui" line="2182"/>
+        <location filename="turbinedialog.ui" line="2260"/>
+        <location filename="turbinedialog.ui" line="2594"/>
         <source>Nominal</source>
         <translation>Номинал</translation>
     </message>
@@ -2106,15 +2160,15 @@
         <location filename="turbinedialog.ui" line="284"/>
         <location filename="turbinedialog.ui" line="609"/>
         <location filename="turbinedialog.ui" line="622"/>
-        <location filename="turbinedialog.ui" line="701"/>
-        <location filename="turbinedialog.ui" line="718"/>
+        <location filename="turbinedialog.ui" line="706"/>
+        <location filename="turbinedialog.ui" line="723"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="304"/>
-        <location filename="turbinedialog.ui" line="683"/>
-        <location filename="turbinedialog.ui" line="874"/>
+        <location filename="turbinedialog.ui" line="688"/>
+        <location filename="turbinedialog.ui" line="884"/>
         <source>No fit</source>
         <translation>Без припасовки</translation>
     </message>
@@ -2151,28 +2205,28 @@
     <message>
         <location filename="turbinedialog.ui" line="349"/>
         <location filename="turbinedialog.ui" line="575"/>
-        <location filename="turbinedialog.ui" line="768"/>
+        <location filename="turbinedialog.ui" line="773"/>
         <source>Axis left/down</source>
         <translation>Ось слева/снизу</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="354"/>
         <location filename="turbinedialog.ui" line="580"/>
-        <location filename="turbinedialog.ui" line="773"/>
+        <location filename="turbinedialog.ui" line="778"/>
         <source>Axis center</source>
         <translation>Ось по центру</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="359"/>
         <location filename="turbinedialog.ui" line="585"/>
-        <location filename="turbinedialog.ui" line="778"/>
+        <location filename="turbinedialog.ui" line="783"/>
         <source>No axis</source>
         <translation>Без оси</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="367"/>
         <location filename="turbinedialog.ui" line="554"/>
-        <location filename="turbinedialog.ui" line="803"/>
+        <location filename="turbinedialog.ui" line="808"/>
         <source>Best-fit</source>
         <translation>Припасовка</translation>
     </message>
@@ -2263,13 +2317,13 @@
     </message>
     <message>
         <location filename="turbinedialog.ui" line="678"/>
-        <location filename="turbinedialog.ui" line="869"/>
+        <location filename="turbinedialog.ui" line="874"/>
         <source>Use global fit</source>
         <translation>Использовать глобальную припасовку</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="561"/>
-        <location filename="turbinedialog.ui" line="711"/>
+        <location filename="turbinedialog.ui" line="716"/>
         <source>Amp/Zoom</source>
         <translation>Масштаб/увеличение</translation>
     </message>
@@ -2277,479 +2331,525 @@
         <location filename="turbinedialog.ui" line="94"/>
         <location filename="turbinedialog.ui" line="138"/>
         <location filename="turbinedialog.ui" line="520"/>
-        <location filename="turbinedialog.ui" line="728"/>
-        <location filename="turbinedialog.ui" line="1833"/>
-        <location filename="turbinedialog.ui" line="1905"/>
+        <location filename="turbinedialog.ui" line="733"/>
+        <location filename="turbinedialog.ui" line="1834"/>
+        <location filename="turbinedialog.ui" line="1906"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="530"/>
-        <location filename="turbinedialog.ui" line="738"/>
+        <location filename="turbinedialog.ui" line="743"/>
         <source>Show num. deviation</source>
         <translation>Показывать отклонения</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="650"/>
-        <location filename="turbinedialog.ui" line="841"/>
+        <location filename="turbinedialog.ui" line="846"/>
         <source>From nominal</source>
         <translation>Из номинала</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="655"/>
-        <location filename="turbinedialog.ui" line="846"/>
+        <location filename="turbinedialog.ui" line="851"/>
         <source>Set</source>
         <translation>Установить</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="660"/>
-        <location filename="turbinedialog.ui" line="851"/>
+        <location filename="turbinedialog.ui" line="856"/>
         <source>On edge</source>
         <translation>На кромке</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="541"/>
-        <location filename="turbinedialog.ui" line="790"/>
+        <location filename="turbinedialog.ui" line="795"/>
         <source>Tol. from nominal</source>
         <translation>Допуски из номинала</translation>
     </message>
     <message>
         <location filename="turbinedialog.ui" line="546"/>
-        <location filename="turbinedialog.ui" line="795"/>
+        <location filename="turbinedialog.ui" line="800"/>
         <source>Input tol.</source>
         <translation>Ввести допуски</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="692"/>
+        <location filename="turbinedialog.ui" line="683"/>
+        <location filename="turbinedialog.ui" line="879"/>
+        <source>Free fit (Form)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="turbinedialog.ui" line="697"/>
         <source>Trailing edge</source>
         <translation>Задняя кромка</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="813"/>
+        <location filename="turbinedialog.ui" line="818"/>
         <source>Trailing edge form</source>
         <translation>Отображать форму задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="883"/>
+        <location filename="turbinedialog.ui" line="893"/>
         <source>Form axis</source>
         <translation>Вывод статистики</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="892"/>
+        <location filename="turbinedialog.ui" line="902"/>
         <source>MinMax</source>
         <translation>Разница макс. и мин. отк. (MinMax)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="905"/>
+        <location filename="turbinedialog.ui" line="915"/>
         <source>InfLT</source>
         <translation>Мин. отрицательное отк. с учетом допуска (InfLT)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="918"/>
+        <location filename="turbinedialog.ui" line="928"/>
         <source>Max</source>
         <translation>Максимальное отк. (Max)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="950"/>
+        <location filename="turbinedialog.ui" line="960"/>
         <source>Evaluation place</source>
         <translation>Место анализа</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="988"/>
+        <location filename="turbinedialog.ui" line="998"/>
         <source>Form</source>
         <translation>Форма (Form)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="998"/>
+        <location filename="turbinedialog.ui" line="1008"/>
         <source>SupUT</source>
         <translation>Макс. положительное отк. с учетом допуска (SupUT)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1014"/>
+        <location filename="turbinedialog.ui" line="1024"/>
         <source>Evaluation direction</source>
         <translation>Направление анализа</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1049"/>
+        <location filename="turbinedialog.ui" line="1059"/>
         <source>Min</source>
         <translation>Минимальное отк. (Min)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1062"/>
+        <location filename="turbinedialog.ui" line="1072"/>
         <source>MaxAbs</source>
         <translation>Максимальное абсолютное отк. (MaxAbs)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1070"/>
+        <location filename="turbinedialog.ui" line="1080"/>
         <source>Gap analysis</source>
         <translation>Анализ впадин</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1086"/>
+        <location filename="turbinedialog.ui" line="1096"/>
         <source>No</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1091"/>
+        <location filename="turbinedialog.ui" line="1101"/>
         <source>Gap value</source>
         <translation>Значение впадин</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1096"/>
+        <location filename="turbinedialog.ui" line="1106"/>
         <source>Dev. value</source>
         <translation>Значение отклонения</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1140"/>
+        <location filename="turbinedialog.ui" line="1150"/>
         <source>Airfoil parameters</source>
         <translation>Параметры лопатки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1174"/>
+        <location filename="turbinedialog.ui" line="1184"/>
         <source>Max. Thickness (D)</source>
         <translation>Максимальная ширина (D)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1182"/>
+        <location filename="turbinedialog.ui" line="1192"/>
         <source>Position max. thickness (XD)</source>
         <translation>Позиция макс. ширины (XD)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1190"/>
+        <location filename="turbinedialog.ui" line="1200"/>
         <source>Position max. thickness (YD)</source>
         <translation>Позиция макс. ширины (YD)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1198"/>
+        <location filename="turbinedialog.ui" line="1208"/>
         <source>Center of mass (XS)</source>
         <translation>Центр тяжести (XS)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1209"/>
+        <location filename="turbinedialog.ui" line="1219"/>
         <source>Center of mass (YS)</source>
         <translation>Центр тяжести (YS)</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1220"/>
+        <location filename="turbinedialog.ui" line="1230"/>
         <source>Chord angle</source>
         <translation>Угол хорды</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1231"/>
+        <location filename="turbinedialog.ui" line="1241"/>
         <source>Chord length</source>
         <translation>Длина хорды</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1239"/>
+        <location filename="turbinedialog.ui" line="1249"/>
         <source>LE Thickness</source>
         <translation>Ширина передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1247"/>
+        <location filename="turbinedialog.ui" line="1257"/>
         <source>TE Thickness</source>
         <translation>Ширина задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1255"/>
+        <location filename="turbinedialog.ui" line="1265"/>
         <source>LE Radius</source>
         <translation>Радиус передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1263"/>
+        <location filename="turbinedialog.ui" line="1273"/>
         <source>TE Radius</source>
         <translation>Радиус задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1271"/>
+        <location filename="turbinedialog.ui" line="1281"/>
         <source>ShiftX</source>
         <translation>Сдвиг по OX</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1282"/>
+        <location filename="turbinedialog.ui" line="1289"/>
         <source>ShiftY</source>
         <translation>Сдвиг по OY</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1293"/>
-        <location filename="turbinedialog.ui" line="2039"/>
+        <location filename="turbinedialog.ui" line="1297"/>
+        <location filename="turbinedialog.ui" line="2176"/>
         <source>Turn</source>
         <translation>Поворот</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1304"/>
+        <location filename="turbinedialog.ui" line="1305"/>
         <source>MaxX</source>
         <translation>Макс. координата X</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1315"/>
+        <location filename="turbinedialog.ui" line="1316"/>
         <source>MinX</source>
         <translation>Мин. координата X</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1323"/>
+        <location filename="turbinedialog.ui" line="1324"/>
         <source>MaxY</source>
         <translation>Макс. координата Y</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1334"/>
+        <location filename="turbinedialog.ui" line="1335"/>
         <source>MinY</source>
         <translation>Мин. координата Y</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1345"/>
+        <location filename="turbinedialog.ui" line="1346"/>
         <source>Position size</source>
         <translation>Размер позиции</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1356"/>
+        <location filename="turbinedialog.ui" line="1357"/>
         <source>DistX</source>
         <translation>Дистанция X</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1367"/>
+        <location filename="turbinedialog.ui" line="1368"/>
         <source>DistY</source>
         <translation>Дистанция Y</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1378"/>
-        <location filename="turbinedialog.ui" line="2115"/>
+        <location filename="turbinedialog.ui" line="1379"/>
+        <location filename="turbinedialog.ui" line="2320"/>
         <source>Form LE Min</source>
         <translation>Min на передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1389"/>
-        <location filename="turbinedialog.ui" line="2120"/>
+        <location filename="turbinedialog.ui" line="1390"/>
+        <location filename="turbinedialog.ui" line="2325"/>
         <source>Form TE Min</source>
         <translation>Min на задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1400"/>
-        <location filename="turbinedialog.ui" line="2125"/>
+        <location filename="turbinedialog.ui" line="1401"/>
+        <location filename="turbinedialog.ui" line="2330"/>
         <source>Form Convex Min</source>
         <translation>Min на выпуклой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1411"/>
-        <location filename="turbinedialog.ui" line="2130"/>
+        <location filename="turbinedialog.ui" line="1412"/>
+        <location filename="turbinedialog.ui" line="2335"/>
         <source>Form Concave Min</source>
         <translation>Min на вогнутой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1422"/>
-        <location filename="turbinedialog.ui" line="2135"/>
+        <location filename="turbinedialog.ui" line="1423"/>
+        <location filename="turbinedialog.ui" line="2340"/>
         <source>Form LE Max</source>
         <translation>Max на передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1433"/>
-        <location filename="turbinedialog.ui" line="2140"/>
+        <location filename="turbinedialog.ui" line="1434"/>
+        <location filename="turbinedialog.ui" line="2345"/>
         <source>Form TE Max</source>
         <translation>Max на задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1444"/>
-        <location filename="turbinedialog.ui" line="2145"/>
+        <location filename="turbinedialog.ui" line="1445"/>
+        <location filename="turbinedialog.ui" line="2350"/>
         <source>Form Convex Max</source>
         <translation>Max на выпуклой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1455"/>
-        <location filename="turbinedialog.ui" line="2150"/>
+        <location filename="turbinedialog.ui" line="1456"/>
+        <location filename="turbinedialog.ui" line="2355"/>
         <source>Form Concave Max</source>
         <translation>Max на вогнутой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1466"/>
-        <location filename="turbinedialog.ui" line="2155"/>
+        <location filename="turbinedialog.ui" line="1467"/>
+        <location filename="turbinedialog.ui" line="2360"/>
         <source>LE deviation</source>
         <translation>Отклонение передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1477"/>
-        <location filename="turbinedialog.ui" line="2160"/>
+        <location filename="turbinedialog.ui" line="1478"/>
+        <location filename="turbinedialog.ui" line="2365"/>
         <source>TE deviation</source>
         <translation>Отклонение задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1488"/>
+        <location filename="turbinedialog.ui" line="1489"/>
         <source>Thickness from LE </source>
         <translation>Ширина с передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1499"/>
-        <location filename="turbinedialog.ui" line="2170"/>
+        <location filename="turbinedialog.ui" line="1500"/>
+        <location filename="turbinedialog.ui" line="2375"/>
         <source>Form LE MinMax</source>
         <translation>MinMax на передней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1510"/>
-        <location filename="turbinedialog.ui" line="2175"/>
+        <location filename="turbinedialog.ui" line="1511"/>
+        <location filename="turbinedialog.ui" line="2380"/>
         <source>Form TE MinMax</source>
         <translation>MinMax на задней кромки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1521"/>
-        <location filename="turbinedialog.ui" line="2180"/>
+        <location filename="turbinedialog.ui" line="1522"/>
+        <location filename="turbinedialog.ui" line="2385"/>
         <source>Form Convex MinMax</source>
         <translation>MinMax на выпуклой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1532"/>
-        <location filename="turbinedialog.ui" line="2185"/>
+        <location filename="turbinedialog.ui" line="1533"/>
+        <location filename="turbinedialog.ui" line="2390"/>
         <source>Form Concave MinMax</source>
         <translation>MinMax на вогнутой части</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1584"/>
+        <location filename="turbinedialog.ui" line="1585"/>
         <source>Calculate nominals</source>
         <translation>Расчет номиналов</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1624"/>
+        <location filename="turbinedialog.ui" line="1625"/>
         <source>MaxWidth</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1647"/>
-        <location filename="turbinedialog.ui" line="1691"/>
-        <location filename="turbinedialog.ui" line="1726"/>
-        <location filename="turbinedialog.ui" line="1782"/>
-        <location filename="turbinedialog.ui" line="1819"/>
-        <location filename="turbinedialog.ui" line="1888"/>
-        <location filename="turbinedialog.ui" line="1932"/>
-        <location filename="turbinedialog.ui" line="2004"/>
-        <location filename="turbinedialog.ui" line="2069"/>
+        <location filename="turbinedialog.ui" line="1648"/>
+        <location filename="turbinedialog.ui" line="1692"/>
+        <location filename="turbinedialog.ui" line="1727"/>
+        <location filename="turbinedialog.ui" line="1783"/>
+        <location filename="turbinedialog.ui" line="1820"/>
+        <location filename="turbinedialog.ui" line="1889"/>
+        <location filename="turbinedialog.ui" line="1933"/>
+        <location filename="turbinedialog.ui" line="2005"/>
+        <location filename="turbinedialog.ui" line="2053"/>
+        <location filename="turbinedialog.ui" line="2126"/>
+        <location filename="turbinedialog.ui" line="2199"/>
+        <location filename="turbinedialog.ui" line="2274"/>
         <source>Upper Tol.</source>
         <translation>Верхний допуск</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1654"/>
-        <location filename="turbinedialog.ui" line="1698"/>
-        <location filename="turbinedialog.ui" line="1736"/>
-        <location filename="turbinedialog.ui" line="1792"/>
-        <location filename="turbinedialog.ui" line="1850"/>
-        <location filename="turbinedialog.ui" line="1881"/>
-        <location filename="turbinedialog.ui" line="1939"/>
-        <location filename="turbinedialog.ui" line="1997"/>
-        <location filename="turbinedialog.ui" line="2079"/>
+        <location filename="turbinedialog.ui" line="1655"/>
+        <location filename="turbinedialog.ui" line="1699"/>
+        <location filename="turbinedialog.ui" line="1737"/>
+        <location filename="turbinedialog.ui" line="1793"/>
+        <location filename="turbinedialog.ui" line="1851"/>
+        <location filename="turbinedialog.ui" line="1882"/>
+        <location filename="turbinedialog.ui" line="1940"/>
+        <location filename="turbinedialog.ui" line="1998"/>
+        <location filename="turbinedialog.ui" line="2067"/>
+        <location filename="turbinedialog.ui" line="2140"/>
+        <location filename="turbinedialog.ui" line="2213"/>
+        <location filename="turbinedialog.ui" line="2284"/>
         <source>Lower Tol.</source>
         <translation>Нижний допуск</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1665"/>
+        <location filename="turbinedialog.ui" line="1666"/>
         <source>Max WidthX</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1706"/>
+        <location filename="turbinedialog.ui" line="1707"/>
         <source>Max WidthY</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1747"/>
+        <location filename="turbinedialog.ui" line="1748"/>
         <source>Center Mass X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1752"/>
+        <location filename="turbinedialog.ui" line="1753"/>
         <source>Center Mass Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1757"/>
+        <location filename="turbinedialog.ui" line="1758"/>
         <source>Chord Angle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1762"/>
+        <location filename="turbinedialog.ui" line="1763"/>
         <source>Chord Length</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1803"/>
+        <location filename="turbinedialog.ui" line="1804"/>
         <source>Width LE</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1826"/>
-        <location filename="turbinedialog.ui" line="1895"/>
+        <location filename="turbinedialog.ui" line="1827"/>
+        <location filename="turbinedialog.ui" line="1896"/>
         <source>At</source>
         <translation>На расстоянии</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1858"/>
+        <location filename="turbinedialog.ui" line="1859"/>
         <source>Width TE</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1913"/>
+        <location filename="turbinedialog.ui" line="1914"/>
         <source>Radius LE</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1956"/>
-        <location filename="turbinedialog.ui" line="2014"/>
+        <location filename="turbinedialog.ui" line="1957"/>
+        <location filename="turbinedialog.ui" line="2015"/>
         <source>120</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1963"/>
-        <location filename="turbinedialog.ui" line="2021"/>
+        <location filename="turbinedialog.ui" line="1964"/>
+        <location filename="turbinedialog.ui" line="2022"/>
         <source>Angle</source>
         <translation>Угол</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="1971"/>
+        <location filename="turbinedialog.ui" line="1972"/>
         <source>Radius TE</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2029"/>
+        <location filename="turbinedialog.ui" line="2030"/>
         <source>Shift X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2034"/>
+        <location filename="turbinedialog.ui" line="2043"/>
+        <location filename="turbinedialog.ui" line="2060"/>
+        <location filename="turbinedialog.ui" line="2074"/>
+        <location filename="turbinedialog.ui" line="2116"/>
+        <location filename="turbinedialog.ui" line="2133"/>
+        <location filename="turbinedialog.ui" line="2147"/>
+        <location filename="turbinedialog.ui" line="2189"/>
+        <location filename="turbinedialog.ui" line="2206"/>
+        <location filename="turbinedialog.ui" line="2220"/>
+        <source>0.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="turbinedialog.ui" line="2081"/>
+        <location filename="turbinedialog.ui" line="2154"/>
+        <location filename="turbinedialog.ui" line="2227"/>
+        <source>Algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="turbinedialog.ui" line="2089"/>
+        <location filename="turbinedialog.ui" line="2162"/>
+        <location filename="turbinedialog.ui" line="2235"/>
+        <source>Free fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="turbinedialog.ui" line="2094"/>
+        <location filename="turbinedialog.ui" line="2167"/>
+        <location filename="turbinedialog.ui" line="2240"/>
+        <source>Constrained fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="turbinedialog.ui" line="2103"/>
         <source>Shift Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2044"/>
+        <location filename="turbinedialog.ui" line="2249"/>
         <source>Max X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2049"/>
+        <location filename="turbinedialog.ui" line="2254"/>
         <source>Min X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2090"/>
+        <location filename="turbinedialog.ui" line="2295"/>
         <source>Max Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2095"/>
+        <location filename="turbinedialog.ui" line="2300"/>
         <source>Min Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2100"/>
+        <location filename="turbinedialog.ui" line="2305"/>
         <source>Position Size</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2105"/>
+        <location filename="turbinedialog.ui" line="2310"/>
         <source>Dist X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2110"/>
+        <location filename="turbinedialog.ui" line="2315"/>
         <source>Dist Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2165"/>
+        <location filename="turbinedialog.ui" line="2370"/>
         <source>Thickness from LE</source>
         <translation></translation>
     </message>
@@ -2789,37 +2889,37 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2238"/>
+        <location filename="turbinedialog.ui" line="2443"/>
         <source>Single report</source>
         <translation>Единый отчет</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2259"/>
+        <location filename="turbinedialog.ui" line="2464"/>
         <source>Print with template</source>
         <translation>Печать с шаблоном</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2270"/>
+        <location filename="turbinedialog.ui" line="2475"/>
         <source>AirfoilReport1.html</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2278"/>
+        <location filename="turbinedialog.ui" line="2483"/>
         <source>Report comment:</source>
         <translation>Комментарий для отчета:</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2289"/>
+        <location filename="turbinedialog.ui" line="2494"/>
         <source>Summary report</source>
         <translation>Сводный отчет</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2304"/>
+        <location filename="turbinedialog.ui" line="2509"/>
         <source>Create summary report</source>
         <translation>Создать сводный отчет</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2337"/>
+        <location filename="turbinedialog.ui" line="2542"/>
         <source>Double click on profile name to add to the list</source>
         <translation>Дважды кликните по имени, чтобы добавить профиль в список</translation>
     </message>
@@ -2829,7 +2929,7 @@
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="turbinedialog.ui" line="2202"/>
+        <location filename="turbinedialog.ui" line="2407"/>
         <source>ОК</source>
         <translation>Запустить</translation>
     </message>
