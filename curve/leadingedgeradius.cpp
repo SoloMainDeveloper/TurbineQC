@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "figurenameservice.h"
 #include "leadingedgeradius.h"
 
 LeadingEdgeRadius::LeadingEdgeRadius(double nominal, double upperTolerance,
@@ -25,11 +26,11 @@ void LeadingEdgeRadius::createMeasured(const QString& nominalProfileName,
     double leadingEdgeRadius = circle.radius();
 
     _measured = leadingEdgeRadius;
-    _dimensionName = _dimensionNameTemplate.arg(nominalProfileName);
+    _dimensionName = FigureNameService::LeadingEdgeRadius(nominalProfileName);
 
     Project* project = &Project::instance();
 
-    QString circleName = _parameterNameTemplate.arg(measuredProfileName);
+    QString circleName = FigureNameService::LeadingEdgeRadiusCircle(measuredProfileName);
     auto circleFigure = new CircleFigure(circle);
     circleFigure->setName(circleName);
     project->safeInsert(circleName, circleFigure);

@@ -13,47 +13,50 @@ public:
     static Plot& instance();
     static void initialize(Plot* plot);
 
-    void setProject(Project* project);
-    QString getScreenshotInBase64(int width, int height, ReportSettings::Axis axisType);
-    void setGridVisible(bool enabled);
-    void setAxesVisible(bool enabled);
-    void setBuffering(bool enabled);
-    void unloadBuffer();
-    void loadFigure(const Figure* figure);
-    void clearLayer(const QString& layerName);
-    Point centerPoint() const;
-    const Figure* currentFigure() const;
-    const Point pixelToCoord(const Point& pixel) const;
-    const Point coordToPixel(const Point& coord) const;
-    const void findNearestCurvePoint(const Point& point, const CurveFigure* curveFigure, CurvePoint& result, int& resultIndex) const;
+    static void setTestingInstance(Plot* testInstance);
+    static void resetToRealInstance();
+
+    virtual void setProject(Project* project);
+    virtual QString getScreenshotInBase64(int width, int height, ReportSettings::Axis axisType);
+    virtual void setGridVisible(bool enabled);
+    virtual void setAxesVisible(bool enabled);
+    virtual void setBuffering(bool enabled);
+    virtual void unloadBuffer();
+    virtual void loadFigure(const Figure* figure);
+    virtual void clearLayer(const QString& layerName);
+    virtual Point centerPoint() const;
+    virtual const Figure* currentFigure() const;
+    virtual const Point pixelToCoord(const Point& pixel) const;
+    virtual const Point coordToPixel(const Point& coord) const;
+    virtual const void findNearestCurvePoint(const Point& point, const CurveFigure* curveFigure, CurvePoint& result, int& resultIndex) const;
 
 public slots:
-    void addFigure(Figure* figure);
-    void renameFigure(const QString figureName, const QString newName);
-    void removeFigure(const QString figureName);
-    void changeCurrentFigure(const QString& currentFigureName, const QString& previousFigureName);
-    void changeFigureVisibility(const QString figureName, bool visible);
-    void changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
+    virtual void addFigure(Figure* figure);
+    virtual void renameFigure(const QString figureName, const QString newName);
+    virtual void removeFigure(const QString figureName);
+    virtual void changeCurrentFigure(const QString& currentFigureName, const QString& previousFigureName);
+    virtual void changeFigureVisibility(const QString figureName, bool visible);
+    virtual void changeCurveParameters(const QString curveName, bool showPoints, bool connectPoints,
         bool showVectors, bool closed, bool showNumbering, int numberingInterval,
         double amplification, bool showTolerances, bool showDeviations, bool connectDeviations, bool highLightOut);
-    void changeDimensionParameters(const QString dimensionName, bool showNumbers, bool showTolerances, bool freePosition);
-    void changeCurveTolerance(const QString curveName);
-    void changeFigureColor(const QString figureName);
-    void changeScale(double magnitude, const Point& center, bool needToReplot);
-    void createRadiusDimension();
-    void createDiameterDimension();
-    void createPerimeterDimension(double perimeter);
-    void changeDimensionValue(const QString& dimName, const DimFigure::Value& value);
-    void changeFigureCoords(const QString figureName);
-    void changeEditedFigure(const QString figureName);
-    void cancelInteractiveOperations();
+    virtual void changeDimensionParameters(const QString dimensionName, bool showNumbers, bool showTolerances, bool freePosition);
+    virtual void changeCurveTolerance(const QString curveName);
+    virtual void changeFigureColor(const QString figureName);
+    virtual void changeScale(double magnitude, const Point& center, bool needToReplot);
+    virtual void createRadiusDimension();
+    virtual void createDiameterDimension();
+    virtual void createPerimeterDimension(double perimeter);
+    virtual void changeDimensionValue(const QString& dimName, const DimFigure::Value& value);
+    virtual void changeFigureCoords(const QString figureName);
+    virtual void changeEditedFigure(const QString figureName);
+    virtual void cancelInteractiveOperations();
 
-    void zoomExtents();
-    void zoomToPoint(double scaleFactor, const Point center);
-    void zoomPlus();
-    void zoomPlusToPoint(const Point& point, bool needToReplot);
-    void zoomMinus();
-    void zoomMinusToPoint(const Point& point, bool needToReplot);
+    virtual void zoomExtents();
+    virtual void zoomToPoint(double scaleFactor, const Point center);
+    virtual void zoomPlus();
+    virtual void zoomPlusToPoint(const Point& point, bool needToReplot);
+    virtual void zoomMinus();
+    virtual void zoomMinusToPoint(const Point& point, bool needToReplot);
 
 signals:
     void currentFigureChanged(const QString& name);

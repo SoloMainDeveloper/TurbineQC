@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "figurenameservice.h"
 #include "leadingedgewidth.h"
 
 LeadingEdgeWidth::LeadingEdgeWidth(double nominal, double upperTolerance,
@@ -33,9 +34,9 @@ void LeadingEdgeWidth::createMeasured(const QString& nominalProfileName,
 
     Project* project = &Project::instance();
 
-    _dimensionName = project->getFreeName(_dimensionNameTemplate.arg(nominalProfileName), true);
+    _dimensionName = project->getFreeName(FigureNameService::LeadingEdgeThickness(nominalProfileName), true);
 
-    QString pointName = _parameterNameTemplate.arg(measuredProfileName);
+    QString pointName = FigureNameService::LeadingEdgeThicknessPoint(measuredProfileName);
     QString firstFreeName = project->getFreeName(pointName);
     auto firstPointFigure = new PointFigure(firstFreeName, firstCurvePoint);
     project->safeInsert(firstFreeName, firstPointFigure);

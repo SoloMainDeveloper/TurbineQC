@@ -4,7 +4,7 @@
 
 class UnknownCommand : public ICommand {
 public:
-    UnknownCommand() = default;
+    UnknownCommand(QString name = QString());
 
     void run() override;
     CommandType getType() const override;
@@ -12,4 +12,7 @@ public:
     void setParameters(QMap<QString, QVariant> params) override;
     QString getName() const override;
     QString getDescription() const override;
+
+private:
+    QString _name;
 };

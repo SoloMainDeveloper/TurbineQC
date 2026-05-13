@@ -25,11 +25,11 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -146,9 +146,11 @@
     <ClCompile Include="editfigurecommand.cpp" />
     <ClCompile Include="exporttoflrcommand.cpp" />
     <ClCompile Include="figurecreator.cpp" />
+    <ClCompile Include="figurenameservice.cpp" />
     <ClCompile Include="functionparamsfactory.cpp" />
     <ClCompile Include="hideallcommand.cpp" />
     <ClCompile Include="icommand.cpp" />
+    <ClCompile Include="imacrosreader.cpp" />
     <ClCompile Include="insertbestfitpositioncommand.cpp" />
     <ClCompile Include="iturbineparameter.cpp" />
     <ClCompile Include="iturbineprofileparameter.cpp" />
@@ -157,9 +159,12 @@
     <ClCompile Include="leadingedgewidth.cpp" />
     <ClCompile Include="loadcloudcommand.cpp" />
     <ClCompile Include="loadprojectcommand.cpp" />
+    <ClCompile Include="macrosreadercrm.cpp" />
+    <ClCompile Include="macrosreaderjson.cpp" />
     <ClCompile Include="macrostranslator.cpp" />
     <ClCompile Include="maxdiameter.cpp" />
     <ClCompile Include="minx.cpp" />
+    <ClCompile Include="mockplot.cpp" />
     <ClCompile Include="reportservice.cpp" />
     <ClCompile Include="curvegraphicswidget.cpp" />
     <ClCompile Include="exporttoFLRdialog.cpp" />
@@ -195,6 +200,7 @@
     <ClCompile Include="saveprojectcommand.cpp" />
     <ClCompile Include="screenshotcreator.cpp" />
     <ClCompile Include="setprintersettingscommand.cpp" />
+    <ClCompile Include="settings.cpp" />
     <ClCompile Include="shiftdialog.cpp" />
     <ClCompile Include="basedialog.cpp" />
     <ClCompile Include="dialogtype.cpp" />
@@ -213,10 +219,17 @@
     <ClInclude Include="changefigurevisibilitycommand.h" />
     <ClInclude Include="chordlength.h" />
     <QtMoc Include="iturbineprofileparameter.h" />
+    <QtMoc Include="imacrosreader.h" />
+    <ClInclude Include="figurenameservice.h" />
     <ClInclude Include="leadingedgeradius.h" />
     <ClInclude Include="leadingedgewidth.h" />
+    <ClInclude Include="macrosreadercrm.h" />
+    <ClInclude Include="macrosreaderjson.h" />
     <ClInclude Include="minx.h" />
+    <ClInclude Include="mockplot.h" />
+    <ClInclude Include="settings.h" />
     <ClInclude Include="shifty.h" />
+    <ClInclude Include="singleton.h" />
     <ClInclude Include="trailingedgeradius.h" />
     <ClInclude Include="trailingedgewidth.h" />
     <ClInclude Include="turn.h" />
@@ -341,6 +354,7 @@
     <QtUic Include="widthedgedialog.ui" />
   </ItemGroup>
   <ItemGroup>
+    <QtTranslation Include="main_en.ts" />
     <QtTranslation Include="main_ru.ts" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

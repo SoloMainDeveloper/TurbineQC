@@ -2,14 +2,17 @@
 
 #include "curvelibrary.h"
 #include "curvewindow.h"
+#include "figurenameservice.h"
 #include "reportgenerator.h"
 
-CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::CurveWindow) {
+CurveWindow::CurveWindow(QWidget* parent)
+    : QMainWindow(parent), _ui(new Ui::CurveWindow)
+{
     _ui->setupUi(this);
 
     _windowTitle = "Curve 1.0";
     this->setWindowIcon(QIcon("icons/curveWindow.png"));
-    setDefualtWindowTitle();
+    setDefaultWindowTitle();
 
     _project = &Project::instance();
 
@@ -77,7 +80,8 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
         auto projectPath = QFileDialog::getOpenFileName(nullptr, "Open file", "", "(*.txt *.crv)");
         try {
             FileSystem::loadProject(projectPath);
-        } catch(...) {
+        }
+        catch(...) {
         }
     });
     connect(_project, &Project::projectPathChanged, this, &CurveWindow::changeWindowTitle);
@@ -85,7 +89,7 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
     connect(_ui->actionClearProject, &QAction::triggered, [this]() {
         Project::instance().clear();
         Printer::instance().clear();
-        setDefualtWindowTitle();
+        setDefaultWindowTitle();
     });
 
     _tree = _ui->tree;
@@ -151,9 +155,11 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
         if(list.size() == 1 && _ui->searchCB->currentText().toLower() == list[0].toLower()) {
             _ui->searchCB->clear();
             _ui->searchCB->completer()->popup()->hide();
-        } else if(list.isEmpty()) {
+        }
+        else if(list.isEmpty()) {
             QToolTip::showText(_ui->searchCB->mapToGlobal(_ui->searchCB->rect().bottomLeft()), "Figure not found", nullptr, {}, 3000);
-        } else {
+        }
+        else {
             auto currenText = _ui->searchCB->currentText();
             _ui->searchCB->clear();
             _ui->searchCB->addItems(list);
@@ -188,19 +194,24 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
             _formLabel->setStyleSheet("color: black");
             _formLabel->setText(QString("Form: %1 (Max: %2, Min: %3)").arg(maxDev - minDev, 0, 'f', _project->precision()).arg(maxDev, 0, 'f', _project->precision()).arg(minDev, 0, 'f', _project->precision()));
             _currentFigureLabel->setText(QString("(Curve, %1 Points) %2").arg(curve->points().length()).arg(currentFigureName));
-        } else {
+        }
+        else {
             _formLabel->setStyleSheet("color: grey");
             _formLabel->setText(QString("Form: 0 (Max: 0, Min: 0)"));
             _currentFigureLabel->clear();
             if(auto circle = dynamic_cast<const CircleFigure*>(figure)) {
                 _currentFigureLabel->setText(QString("(Circle) %1").arg(currentFigureName));
-            } else if(auto line = dynamic_cast<const LineFigure*>(figure)) {
+            }
+            else if(auto line = dynamic_cast<const LineFigure*>(figure)) {
                 _currentFigureLabel->setText(QString("(Line) %1").arg(currentFigureName));
-            } else if(auto point = dynamic_cast<const PointFigure*>(figure)) {
+            }
+            else if(auto point = dynamic_cast<const PointFigure*>(figure)) {
                 _currentFigureLabel->setText(QString("(Point) %1").arg(currentFigureName));
-            } else if(auto dim = dynamic_cast<const DimFigure*>(figure)) {
+            }
+            else if(auto dim = dynamic_cast<const DimFigure*>(figure)) {
                 _currentFigureLabel->setText(QString("(Dimension) %1").arg(currentFigureName));
-            } else if(auto txt = dynamic_cast<const TextFigure*>(figure)) {
+            }
+            else if(auto txt = dynamic_cast<const TextFigure*>(figure)) {
                 _currentFigureLabel->setText(QString("(Text) %1").arg(currentFigureName));
             }
         }
@@ -214,36 +225,40 @@ CurveWindow::CurveWindow(QWidget* parent) : QMainWindow(parent), _ui(new Ui::Cur
         auto coords = _plot->pixelToCoord(Point(event->pos().x(), event->pos().y()));
         auto pr = hypot(coords.x, coords.y);
         auto pa = 0.0;
-        coords.y < 0 ? pa = atan2(coords.y, coords.x) * 180 / M_PI + 360 : pa = atan2(coords.y, coords.x) * 180 / M_PI;
+        coords.y < 0 ? pa = atan2(coords.y, coords.x)* 180 / M_PI + 360 : pa = atan2(coords.y, coords.x) * 180 / M_PI;
         if(auto curve = dynamic_cast<const CurveFigure*>(_project->findFigure(_project->currentFigureName()))) {
             CurvePoint curvePoint;
             int index;
             _plot->findNearestCurvePoint(coords, curve, curvePoint, index);
             _coordsLabel->setText(QString("X: %1; Y: %2 (PA: %3; PR: %4) / Dev = %5 (%6)")
-                .arg(coords.x, 0, 'f', _project->precision())
-                .arg(coords.y, 0, 'f', _project->precision())
-                .arg(pa, 0, 'f', _project->precision())
-                .arg(pr, 0, 'f', _project->precision())
-                .arg(curvePoint.dev, 0, 'f', _project->precision())
-                .arg(index));
-        } else {
+                    .arg(coords.x, 0, 'f', _project->precision())
+                    .arg(coords.y, 0, 'f', _project->precision())
+                    .arg(pa, 0, 'f', _project->precision())
+                    .arg(pr, 0, 'f', _project->precision())
+                    .arg(curvePoint.dev, 0, 'f', _project->precision())
+                    .arg(index));
+        }
+        else {
             _coordsLabel->setText(QString("X: %1; Y: %2 (PA: %3; PR: %4)").arg(coords.x, 0, 'f', _project->precision()).arg(coords.y, 0, 'f', _project->precision()).arg(pa, 0, 'f', _project->precision()).arg(pr, 0, 'f', _project->precision()));
         }
     });
 }
 
-void CurveWindow::dimensionMenuInit() {
+void CurveWindow::dimensionMenuInit()
+{
     disableDimensionMenu();
     auto currentFigure = _project->findFigure(_project->currentFigureName());
     if(dynamic_cast<const CircleFigure*>(currentFigure)) {
         _ui->actionRadius->setEnabled(true);
         _ui->actionDiameter->setEnabled(true);
-    } else if(dynamic_cast<const CurveFigure*>(currentFigure)) {
+    }
+    else if(dynamic_cast<const CurveFigure*>(currentFigure)) {
         _ui->actionPerimeter->setEnabled(true);
     }
 }
 
-void CurveWindow::disableDimensionMenu() {
+void CurveWindow::disableDimensionMenu()
+{
     _ui->actionPosition->setEnabled(false);
     _ui->actionTruePosition->setEnabled(false);
     _ui->actionDistance->setEnabled(false);
@@ -256,7 +271,8 @@ void CurveWindow::disableDimensionMenu() {
     _ui->actionMeasureOnScreen->setEnabled(false);
 }
 
-void CurveWindow::createShowHideActions() {
+void CurveWindow::createShowHideActions()
+{
     QAction* showAllAction = _ui->visibilityOnTB->addAction(QIcon("icons/all.ico"), QString(tr("All figures")));
     connect(showAllAction, &QAction::triggered, [&]() {
         _project->showAllFigures("ANY");
@@ -316,20 +332,24 @@ void CurveWindow::createShowHideActions() {
     });
 }
 
-void CurveWindow::connectMenuItems() {
+void CurveWindow::connectMenuItems()
+{
 }
 
-void CurveWindow::changeWindowTitle(const QString& projectPath) {
+void CurveWindow::changeWindowTitle(const QString& projectPath)
+{
     if(!projectPath.isEmpty()) {
         this->setWindowTitle(_windowTitle + " - " + projectPath);
     }
 }
 
-void CurveWindow::setDefualtWindowTitle() {
+void CurveWindow::setDefaultWindowTitle()
+{
     this->setWindowTitle(_windowTitle);
 }
 
-void CurveWindow::keyPressEvent(QKeyEvent* event) {
+void CurveWindow::keyPressEvent(QKeyEvent* event)
+{
     if(event->key() == Qt::Key_Delete && !_project->currentFigureName().isEmpty()) {
         QMessageBox mBox;
         QString name = _project->currentFigureName();
@@ -343,7 +363,8 @@ void CurveWindow::keyPressEvent(QKeyEvent* event) {
     }
 }
 
-void CurveWindow::onSaveProject() {
+void CurveWindow::onSaveProject()
+{
     QString fileName = QFileDialog::getSaveFileName(
         this,
         tr("Save project"),
@@ -359,6 +380,7 @@ void CurveWindow::onSaveProject() {
     }
 }
 
-CurveWindow::~CurveWindow() {
+CurveWindow::~CurveWindow()
+{
     delete _ui;
 }

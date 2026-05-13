@@ -1,6 +1,7 @@
 #pragma once
 
 #include "basedialog.h"
+#include "imacrosreader.h"
 
 namespace Ui {
     class MacrosDialog;
@@ -26,6 +27,7 @@ public slots:
 private:
     Ui::MacrosDialog* _ui;
     MacrosManager* _macrosManager;
+    QMap<QString, IMacrosReader*>* _macrosReaders;
 
     QTreeWidget* _operationList;
     bool _isDebugging;

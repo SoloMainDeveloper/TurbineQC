@@ -56,6 +56,7 @@ public:
     static void reassembleCurveWithoutTE(const QString& resultCurveName, const CurveParts& curveParts, LEDirection direction, Project* project);
     static void reassembleCurveWithoutEdges(const QString& resultCurveName, const CurveParts& curveParts, LEDirection direction, Project* project);
     static ResultCompareFLR* compareFLR(QString filepathFLR1, QString filepathFLR2, QString resultPath, int pointsStartIndex, double precision);
+    static QList<ResultCompare2Params*> compareOnlyDimensionsFLR(QString filepathFLR1, QString filepathFLR2, int pointsStartIndex);
 
 private:
     static ResultCompare2Params* compareTwoParamsFLR(QString first, QString second);

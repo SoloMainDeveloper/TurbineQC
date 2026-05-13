@@ -1,13 +1,23 @@
 #include "curve/pch.h"
 
 #include "curve/curvewindow.h"
+#include "settings.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
     QApplication application(argc, argv);
 
+    QString settingsFilePath = QCoreApplication::applicationDirPath() + "/settings.ini";
+    Settings settings(settingsFilePath);
+
     QTranslator translator;
-    if(translator.load("main_ru.qm")) {
-        application.installTranslator(&translator);
+    if(Settings::instance().hasValue("app/language")) {
+        QString language = Settings::instance().value<QString>("app/language");
+        QString translatorFile = QString("main_%1.qm").arg(language);
+
+        if(translator.load(translatorFile)) {
+            application.installTranslator(&translator);
+        }
     }
 
     CurveWindow curveWindow;

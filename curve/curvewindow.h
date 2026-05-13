@@ -1,16 +1,16 @@
 #pragma once
 
+#include "dialogservice.h"
 #include "figure.h"
-#include "ui_curvewindow.h"
+#include "figurecontrols.h"
 #include "filesystem.h"
 #include "project.h"
 #include "tree.h"
-#include "figurecontrols.h"
-#include "dialogservice.h"
+#include "ui_curvewindow.h"
 
 namespace Ui {
     class CurveWindow;
-};
+}; // namespace Ui
 
 class LoadingCloudDialog;
 
@@ -46,7 +46,7 @@ private:
     void disableDimensionMenu();
     void dimensionMenuInit();
     void changeWindowTitle(const QString& projectPath);
-    void setDefualtWindowTitle();
+    void setDefaultWindowTitle();
     void keyPressEvent(QKeyEvent* event);
     void onSaveProject();
 };

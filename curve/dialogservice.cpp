@@ -3,31 +3,33 @@
 #include "dialogservice.h"
 
 #include "airfoiltolerancesdialog.h"
-#include "loadingclouddialog.h"
+#include "alignmentdialog.h"
+#include "bestfitdialog.h"
+#include "calculatecurvedialog.h"
+#include "calculatedeviationsdialog.h"
+#include "compareflrdialog.h"
+#include "exporttoFLRdialog.h"
 #include "figureeditdialog.h"
+#include "inserttextdialog.h"
+#include "loadingclouddialog.h"
+#include "macrosdialog.h"
+#include "mergepointcloudsdialog.h"
+#include "partdatadialog.h"
+#include "printpreviewdialog.h"
+#include "radiuscorrectiondialog.h"
+#include "rotatedialog.h"
+#include "shiftdialog.h"
 #include "turbinedialog.h"
 #include "widthedgedialog.h"
-#include "radiuscorrectiondialog.h"
-#include "mergepointcloudsdialog.h"
-#include "calculatedeviationsdialog.h"
-#include "bestfitdialog.h"
-#include "macrosdialog.h"
-#include "exporttoFLRdialog.h"
-#include "shiftdialog.h"
-#include "rotatedialog.h"
-#include "alignmentdialog.h"
-#include "calculatecurvedialog.h"
-#include "partdatadialog.h"
-#include "inserttextdialog.h"
-#include "printpreviewdialog.h"
-#include "compareflrdialog.h"
 
-DialogService& DialogService::instance() {
+DialogService& DialogService::instance()
+{
     static DialogService instance;
     return instance;
 }
 
-DialogService::DialogService() {
+DialogService::DialogService()
+{
     _dialogs[DialogType::AirfoilTolerances] = new AirfoilTolerancesDialog();
     _dialogs[DialogType::Alignment] = new AlignmentDialog();
     _dialogs[DialogType::BestFit] = new BestFitDialog();
@@ -49,8 +51,19 @@ DialogService::DialogService() {
     _dialogs[DialogType::PrintPreview] = new PrintPreviewDialog();
 }
 
-void DialogService::show(DialogType type) {
+void DialogService::show(DialogType type)
+{
     if(_dialogs.contains(type)) {
         _dialogs[type]->initialize();
     }
+}
+
+void DialogService::showInfo(QString title, QString info)
+{
+    QMessageBox::information(nullptr, title, info);
+}
+
+void DialogService::showWarning(QString title, QString message)
+{
+    QMessageBox::warning(nullptr, title, message);
 }

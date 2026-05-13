@@ -28,8 +28,9 @@ private:
 
 class ResultCompare2Params {
 public:
-    ResultCompare2Params(QString name1, QString name2, double value1, double value2);
+    ResultCompare2Params(QString name1, QString name2, double value1, double value2, double upperTolerance, double lowerTolerance);
     bool isDiffBiggerThanPrecision(double precision);
+    bool isDiffBiggerThanTolerance(double tolerancePercent);
     QString toQString(double precision);
 
     QString name1();
@@ -44,7 +45,8 @@ private:
     QString _name2;
     double _value1;
     double _value2;
+    double _upperTolerance;
+    double _lowerTolerance;
     double _diff;
     bool _isComparable;
 };
-

@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "figurenameservice.h"
 #include "trailingedgeradius.h"
 
 TrailingEdgeRadius::TrailingEdgeRadius(double nominal, double upperTolerance,
@@ -25,11 +26,11 @@ void TrailingEdgeRadius::createMeasured(const QString& nominalProfileName,
     double trailingEdgeRadius = circle.radius();
 
     _measured = trailingEdgeRadius;
-    _dimensionName = _dimensionNameTemplate.arg(nominalProfileName);
+    _dimensionName = FigureNameService::TrailingEdgeRadius(nominalProfileName);
 
     Project* project = &Project::instance();
 
-    QString circleName = _parameterNameTemplate.arg(measuredProfileName);
+    QString circleName = FigureNameService::TrailingEdgeRadiusCircle(measuredProfileName);
     auto circleFigure = new CircleFigure(circle);
     circleFigure->setName(circleName);
     project->safeInsert(circleName, circleFigure);

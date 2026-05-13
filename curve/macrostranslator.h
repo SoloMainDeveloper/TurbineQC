@@ -32,5 +32,5 @@ public:
     static QStringList splitCRM(const QString& text);
     static OperationCRM operationCRMFromString(QString macrosType);
     static QList<std::shared_ptr<ICommand>>* translateCRM(const QString& operationText);
-    static std::shared_ptr<ICommand> parseCRMCommand(OperationCRM type, QStringList operationText);
+    static std::shared_ptr<ICommand> parseCRMCommand(QString operationTypeStr, QStringList operationText);
 };

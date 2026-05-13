@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "figurenameservice.h"
 #include "xmaxdiameter.h"
 
 XMaxDiameter::XMaxDiameter(double nominal, double upperTolerance, double lowerTolerance, QString extraParam1, QString extraParam2)
@@ -23,11 +24,11 @@ void XMaxDiameter::createMeasured(const QString& nominalProfileName, const QStri
     double xMaxDiameter = circle.center().x;
 
     _measured = xMaxDiameter;
-    _dimensionName = _dimensionNameTemplate.arg(nominalProfileName);
+    _dimensionName = FigureNameService::XMaxDiameter(nominalProfileName);
 
     Project* project = &Project::instance();
 
-    auto circleName = _parameterNameTemplate.arg(measuredProfileName);
+    auto circleName = FigureNameService::MaxDiameter(measuredProfileName);
     auto circleFigure = new CircleFigure(circle);
     circleFigure->setName(circleName);
     project->safeInsert(circleName, circleFigure);

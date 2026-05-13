@@ -2,6 +2,11 @@
 
 #include "unknowncommand.h"
 
+UnknownCommand::UnknownCommand(QString name)
+{
+    _name = name;
+}
+
 void UnknownCommand::run()
 {
 }
@@ -22,7 +27,9 @@ void UnknownCommand::setParameters(QMap<QString, QVariant> params)
 
 QString UnknownCommand::getName() const
 {
-    return tr("Unknown Command");
+    auto base = tr("Unknown Command");
+
+    return _name.isEmpty() ? base : base.append(": " + _name);
 }
 
 QString UnknownCommand::getDescription() const

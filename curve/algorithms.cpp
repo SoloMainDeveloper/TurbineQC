@@ -633,9 +633,31 @@ ResultCompareFLR* Algorithms::compareFLR(QString filepathFLR1, QString filepathF
     return new ResultCompareFLR(totalParams, dimsFails, dimsFailsDeviationSum, pointsFails, pointsFailsDeviationSum, maxFailDeviation);
 }
 
+QList<ResultCompare2Params*> Algorithms::compareOnlyDimensionsFLR(QString filepathFLR1, QString filepathFLR2, int pointsStartIndex)
+{
+    ARGUMENT_ASSERT(QFile::exists(filepathFLR1), "Compare FLR: FLR 1 not found");
+    ARGUMENT_ASSERT(QFile::exists(filepathFLR2), "Compare FLR: FLR 2 not found");
+    auto flr1 = FileSystem::readFile(filepathFLR1).split("$END$")[1].trimmed().split("\n");
+    auto flr2 = FileSystem::readFile(filepathFLR2).split("$END$")[1].trimmed().split("\n");
+
+    QList<ResultCompare2Params*> result;
+
+    for(auto i = 0; i < pointsStartIndex; i++) {
+        auto compare2 = compareTwoParamsFLR(flr1[i], flr2[i]);
+
+        result.append(compare2);
+    }
+
+    return result;
+}
+
 ResultCompare2Params* Algorithms::compareTwoParamsFLR(QString first, QString second)
 {
     auto splitted1 = first.split(", ");
     auto splitted2 = second.split(", ");
-    return new ResultCompare2Params(splitted1[1], splitted2[1], splitted1[7].toDouble(), splitted2[7].toDouble());
+
+    return new ResultCompare2Params(
+        splitted1[1], splitted2[1],
+        splitted1[7].toDouble(), splitted2[7].toDouble(),
+        splitted1[5].toDouble(), splitted1[6].toDouble());
 }

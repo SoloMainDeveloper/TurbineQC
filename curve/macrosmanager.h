@@ -16,7 +16,6 @@ public:
     static MacrosManager& instance();
 
     QJsonArray toJson();
-    void fromJson(const QJsonArray& json);
 
     void clear();
     void run();
@@ -33,6 +32,7 @@ public:
     bool isRecording();
     int recordIndex();
     void setRecordIndex(int newIndex);
+    int commandsCount();
 
     template<typename Func, typename... Args>
     void executeWithoutLogging(Func func, Args&&... args);

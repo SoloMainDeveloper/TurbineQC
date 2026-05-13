@@ -117,6 +117,12 @@
     <Filter Include="Header Files\services\analysisservice\turbineparameters\turbinetransformparameter">
       <UniqueIdentifier>{c0e6d341-b106-4b2d-837e-c9c593fa05d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Macros\MacrosReader">
+      <UniqueIdentifier>{7f8149c5-51e0-45e0-9075-96642dd16c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Macros\MacrosReader">
+      <UniqueIdentifier>{9b7f4ee8-99d6-4984-a3f5-bd5d01e614d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="curvewindow.qrc">
@@ -367,36 +373,12 @@
     <ClCompile Include="ymaxdiameter.cpp">
       <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClCompile>
-    <ClCompile Include="chordlength.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="leadingedgeradius.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="leadingedgewidth.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="minx.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="trailingedgeradius.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="trailingedgewidth.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClCompile>
     <ClCompile Include="turbinedialog.cpp">
       <Filter>Source Files\services\analysisservice</Filter>
     </ClCompile>
     <ClCompile Include="shiftx.cpp">
       <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
     </ClCompile>
-    <ClCompile Include="shifty.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="turn.cpp">
-      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
-    </ClCompile>
     <ClCompile Include="leadingedgeradius.cpp">
       <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
     </ClCompile>
@@ -414,12 +396,6 @@
     </ClCompile>
     <ClCompile Include="trailingedgewidth.cpp">
       <Filter>Source Files\services\analysisservice\turbineparameters</Filter>
-    </ClCompile>
-    <ClCompile Include="turn.cpp">
-      <Filter>Source Files\services\analysisservice\turbinetransformparameter</Filter>
-    </ClCompile>
-    <ClCompile Include="shifty.cpp">
-      <Filter>Source Files\services\analysisservice\turbinetransformparameter</Filter>
     </ClCompile>
     <ClCompile Include="changecurveappearancecommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
@@ -438,6 +414,54 @@
     </ClCompile>
     <ClCompile Include="changefigurevisibilitycommand.cpp">
       <Filter>Source Files\Macros\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="imacrosreader.cpp">
+      <Filter>Source Files\Macros\MacrosReader</Filter>
+    </ClCompile>
+    <ClCompile Include="macrosreadercrm.cpp">
+      <Filter>Source Files\Macros\MacrosReader</Filter>
+    </ClCompile>
+    <ClCompile Include="macrosreaderjson.cpp">
+      <Filter>Source Files\Macros\MacrosReader</Filter>
+    </ClCompile>
+    <ClCompile Include="mockplot.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="figurenameservice.cpp">
+      <Filter>Source Files\services</Filter>
+    </ClCompile>
+    <ClCompile Include="shifty.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="turn.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbinetransformparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="shifty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="turn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="chordlength.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="leadingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="minx.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgeradius.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClCompile>
+    <ClCompile Include="trailingedgewidth.cpp">
+      <Filter>Source Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -579,12 +603,6 @@
     <ClInclude Include="reportmarkuptemplates.h">
       <Filter>Header Files\services\reportservice</Filter>
     </ClInclude>
-    <ClInclude Include="maxdiameter.h">
-      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClInclude>
-    <ClInclude Include="xmaxdiameter.h">
-      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
-    </ClInclude>
     <ClInclude Include="chordlength.h">
       <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClInclude>
@@ -606,9 +624,6 @@
     <ClInclude Include="deviationstatistics.h">
       <Filter>Header Files\services\reportservice</Filter>
     </ClInclude>
-    <ClInclude Include="shiftx.h">
-      <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
-    </ClInclude>
     <ClInclude Include="shifty.h">
       <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
     </ClInclude>
@@ -623,9 +638,6 @@
     </ClInclude>
     <ClInclude Include="ymaxdiameter.h">
       <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
-    </ClInclude>
-    <ClInclude Include="shiftx.h">
-      <Filter>Header Files\services\analysisservice\turbinetransformparameter</Filter>
     </ClInclude>
     <ClInclude Include="changecurveappearancecommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
@@ -647,6 +659,36 @@
     </ClInclude>
     <ClInclude Include="changefigurevisibilitycommand.h">
       <Filter>Header Files\Macros\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="macrosreadercrm.h">
+      <Filter>Header Files\Macros\MacrosReader</Filter>
+    </ClInclude>
+    <ClInclude Include="macrosreaderjson.h">
+      <Filter>Header Files\Macros\MacrosReader</Filter>
+    </ClInclude>
+    <ClInclude Include="mockplot.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="singleton.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="figurenameservice.h">
+      <Filter>Header Files\services</Filter>
+    </ClInclude>
+    <ClInclude Include="shiftx.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbinetransformparameter</Filter>
+    </ClInclude>
+    <ClInclude Include="shiftx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xmaxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
+    </ClInclude>
+    <ClInclude Include="maxdiameter.h">
+      <Filter>Header Files\services\analysisservice\turbineparameters\turbineprofileparameters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -752,18 +794,15 @@
     <QtMoc Include="iturbineprofileparameter.h">
       <Filter>Header Files\services\analysisservice\turbineparameters</Filter>
     </QtMoc>
+    <QtMoc Include="imacrosreader.h">
+      <Filter>Header Files\Macros\MacrosReader</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="airfoiltolerancesdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="alignmentdialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
     <QtUic Include="bestfitdialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
-    <QtUic Include="calculatecurvedialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="calculatedeviationsdialog.ui">
@@ -775,16 +814,10 @@
     <QtUic Include="mergepointcloudsdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
-    <QtUic Include="rotatedialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
     <QtUic Include="turbinedialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="widthedgedialog.ui">
-      <Filter>Form Files\Dialogs</Filter>
-    </QtUic>
-    <QtUic Include="shiftdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="radiuscorrectiondialog.ui">
@@ -832,9 +865,24 @@
     <QtUic Include="printpreviewdialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
+    <QtUic Include="alignmentdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="calculatecurvedialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="rotatedialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="shiftdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtTranslation Include="main_ru.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
+    <QtTranslation Include="main_en.ts">
       <Filter>Translation Files</Filter>
     </QtTranslation>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "figurenameservice.h"
 #include "minx.h"
 
 MinX::MinX(double nominal, double upperTolerance, double lowerTolerance, QString extraParam1, QString extraParam2)
@@ -22,11 +23,11 @@ void MinX::createMeasured(const QString& nominalProfileName,
     double minX = Algorithms::getMinX(measuredProfileName, params);
 
     _measured = minX;
-    _dimensionName = _dimensionNameTemplate.arg(nominalProfileName);
+    _dimensionName = FigureNameService::MinX(nominalProfileName);
 
     Project* project = &Project::instance();
 
-    QString pointName = _parameterNameTemplate.arg(measuredProfileName);
+    QString pointName = FigureNameService::MinXPoint(measuredProfileName);
     auto minXPoint = CurvePoint(_measured, 0.0, 0.0);
     auto pointFigure = new PointFigure(pointName, minXPoint);
     project->safeInsert(pointName, pointFigure);

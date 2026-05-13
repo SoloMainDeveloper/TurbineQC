@@ -1,9 +1,9 @@
 #pragma once
 
 #include "basedialog.h"
+#include <QMap>
 #include <memory>
 #include <utility>
-#include <QMap>
 
 class DialogService {
 public:
@@ -13,6 +13,8 @@ public:
     virtual ~DialogService() = default;
 
     void show(DialogType type);
+    void showInfo(QString title, QString info);
+    void showWarning(QString title, QString message);
 
 private:
     QMap<DialogType, BaseDialog*> _dialogs;

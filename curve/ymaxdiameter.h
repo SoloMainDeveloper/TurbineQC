@@ -12,8 +12,4 @@ public:
 
     QString reportType() const override;
     QString dimensionName() const override;
-
-private:
-    const QString _parameterNameTemplate = "%1_CMaxDia";
-    const QString _dimensionNameTemplate = "%1_YD";
 };

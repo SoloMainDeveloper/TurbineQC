@@ -8,6 +8,7 @@
 #include "bestfitcommand.h"
 #include "changecurveappearancecommand.h"
 #include "changecurveparameterscommand.h"
+#include "changefigurevisibilitycommand.h"
 #include "clearprojectcommand.h"
 #include "createreportcommand.h"
 #include "editfigurecommand.h"
@@ -28,10 +29,10 @@
 #include "saveprojectcommand.h"
 #include "setprintersettingscommand.h"
 #include "shiftfigurecommand.h"
-#include "changefigurevisibilitycommand.h"
 #include "unknowncommand.h"
 
-MacrosManager::MacrosManager() {
+MacrosManager::MacrosManager()
+{
     _recordIndex = 0;
     _debugIndex = 0;
     _isRecording = false;
@@ -39,7 +40,8 @@ MacrosManager::MacrosManager() {
     registerAllCommands();
 }
 
-void MacrosManager::registerAllCommands() {
+void MacrosManager::registerAllCommands()
+{
     auto& commandFactory = CommandFactory::instance();
 
     commandFactory.registerCommand<AlignmentCommand>();
@@ -68,41 +70,48 @@ void MacrosManager::registerAllCommands() {
     commandFactory.registerCommand<ChangeCurveAppearanceCommand>();
 }
 
-MacrosManager& MacrosManager::instance() {
+MacrosManager& MacrosManager::instance()
+{
     static MacrosManager instance;
     return instance;
 }
 
-void MacrosManager::toggleRecording() {
+void MacrosManager::toggleRecording()
+{
     _isRecording = !_isRecording;
     emit recordingToggled();
 }
 
-void MacrosManager::setRecording(bool needRecording) {
+void MacrosManager::setRecording(bool needRecording)
+{
     if(needRecording != isRecording()) {
         toggleRecording();
     }
 }
 
-void MacrosManager::swapOperations(int index1, int index2) {
+void MacrosManager::swapOperations(int index1, int index2)
+{
     auto temp = _macros->at(index1);
     _macros->replace(index1, _macros->at(index2));
     _macros->replace(index2, temp);
 }
 
-void MacrosManager::log(std::shared_ptr<ICommand> command) {
+void MacrosManager::log(std::shared_ptr<ICommand> command)
+{
     if(isRecording()) {
         insert(_recordIndex, command);
         emit operationLogged(command);
     }
 }
 
-void MacrosManager::insert(int index, std::shared_ptr<ICommand> command) {
+void MacrosManager::insert(int index, std::shared_ptr<ICommand> command)
+{
     _macros->insert(index, command);
     emit recordIndexChanged(++_recordIndex);
 }
 
-void MacrosManager::remove(int index) {
+void MacrosManager::remove(int index)
+{
     if(index < _recordIndex) {
         _recordIndex--;
     }
@@ -110,24 +119,34 @@ void MacrosManager::remove(int index) {
     emit instance().recordIndexChanged(_recordIndex);
 }
 
-bool MacrosManager::isRecording() {
+bool MacrosManager::isRecording()
+{
     return _isRecording;
 }
 
-int MacrosManager::recordIndex() {
+int MacrosManager::recordIndex()
+{
     return _recordIndex;
 }
 
-void MacrosManager::setRecordIndex(int newIndex) {
+void MacrosManager::setRecordIndex(int newIndex)
+{
     _recordIndex = newIndex;
     emit recordIndexChanged(newIndex);
 }
 
-std::shared_ptr<ICommand> MacrosManager::getCommand(int index) {
+int MacrosManager::commandsCount()
+{
+    return _macros->length();
+}
+
+std::shared_ptr<ICommand> MacrosManager::getCommand(int index)
+{
     return _macros->at(index);
 }
 
-void MacrosManager::run() {
+void MacrosManager::run()
+{
     auto& plot = Plot::instance();
     plot.setBuffering(true);
 
@@ -141,7 +160,8 @@ void MacrosManager::run() {
         if(status) {
             progressDialog.setValue(i + 1);
             QCoreApplication::processEvents();
-        } else {
+        }
+        else {
             break;
         }
     }
@@ -150,13 +170,15 @@ void MacrosManager::run() {
     plot.zoomExtents();
 }
 
-void MacrosManager::executeOne(int index) {
+void MacrosManager::executeOne(int index)
+{
     if(index < _macros->length()) {
         tryExecuteOperation(index);
     }
 }
 
-void MacrosManager::debugNext() {
+void MacrosManager::debugNext()
+{
     if(_debugIndex < _macros->length()) {
         auto status = tryExecuteOperation(_debugIndex);
         emit operationExecuted(_debugIndex, status);
@@ -164,18 +186,21 @@ void MacrosManager::debugNext() {
     }
 }
 
-void MacrosManager::skipOne() {
+void MacrosManager::skipOne()
+{
     if(_debugIndex < _macros->length()) {
         emit instance().operationSkipped(_debugIndex);
         _debugIndex++;
     }
 }
 
-void MacrosManager::stopDebug() {
+void MacrosManager::stopDebug()
+{
     _debugIndex = 0;
 }
 
-bool MacrosManager::tryExecuteOperation(int index) {
+bool MacrosManager::tryExecuteOperation(int index)
+{
     auto project = &Project::instance();
     auto isCurrentlyRecording = isRecording();
     setRecording(false);
@@ -253,14 +278,16 @@ bool MacrosManager::tryExecuteOperation(int index) {
         //    case Unknown:
         //        break;
         //}
-    } catch(...) {
+    }
+    catch(...) {
         return false;
     }
     setRecording(isCurrentlyRecording);
     return true;
 }
 
-QJsonArray MacrosManager::toJson() {
+QJsonArray MacrosManager::toJson()
+{
     QJsonArray array;
     for(auto i = 0; i < _macros->length(); i++) {
         array.append(_macros->at(i)->toJson());
@@ -268,22 +295,10 @@ QJsonArray MacrosManager::toJson() {
     return array;
 }
 
-void MacrosManager::fromJson(const QJsonArray& json) {
-    auto isCurrentlyRecording = isRecording();
-    setRecording(true);
-    for(const auto& value : json) {
-        if(value.isObject()) {
-            auto command = CommandFactory::instance().createFromJson(value.toObject());
-            if(command) {
-                log(command);
-            }
-        }
-    }
-    setRecording(isCurrentlyRecording);
-}
-
-void MacrosManager::clear() {
+void MacrosManager::clear()
+{
     _macros->clear();
     _recordIndex = 0;
+    _debugIndex = 0;
     emit recordIndexChanged(_recordIndex);
 }

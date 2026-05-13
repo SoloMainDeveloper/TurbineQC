@@ -5,12 +5,32 @@
 
 Plot* Plot::_instance = nullptr;
 
+static Plot* testingInstance = nullptr;
+
 Plot& Plot::instance()
 {
+    if(testingInstance) {
+        return *testingInstance;
+    }
+
+    if(!_instance) {
+        _instance = new Plot();
+    }
     return *_instance;
 }
 
-Plot::Plot(QWidget* parent) : QCustomPlot(parent), _project(nullptr)
+void Plot::setTestingInstance(Plot* testInstance)
+{
+    testingInstance = testInstance;
+}
+
+void Plot::resetToRealInstance()
+{
+    testingInstance = nullptr;
+}
+
+Plot::Plot(QWidget* parent)
+    : QCustomPlot(parent), _project(nullptr)
 {
     xAxis->setUpperEnding(QCPLineEnding::esLineArrow);
     yAxis->setUpperEnding(QCPLineEnding::esLineArrow);
