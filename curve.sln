@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33927.249
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11605.296 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curve", "curve\curve.vcxproj", "{E0D89825-82F0-4924-97C5-3E10F499501C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CurveTests", "CurveTests\CurveTests.vcxproj", "{05E71994-677C-4B09-AD8D-904064994CBD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CurveCLI", "CurveCLI\CurveCLI.vcxproj", "{DA82AC91-942D-499A-9914-E19C1DD15F2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{E0D89825-82F0-4924-97C5-3E10F499501C}.Debug|x64.Build.0 = Debug|x64
 		{E0D89825-82F0-4924-97C5-3E10F499501C}.Release|x64.ActiveCfg = Release|x64
 		{E0D89825-82F0-4924-97C5-3E10F499501C}.Release|x64.Build.0 = Release|x64
+		{05E71994-677C-4B09-AD8D-904064994CBD}.Debug|x64.ActiveCfg = Debug|x64
+		{05E71994-677C-4B09-AD8D-904064994CBD}.Debug|x64.Build.0 = Debug|x64
+		{05E71994-677C-4B09-AD8D-904064994CBD}.Release|x64.ActiveCfg = Release|x64
+		{05E71994-677C-4B09-AD8D-904064994CBD}.Release|x64.Build.0 = Release|x64
+		{DA82AC91-942D-499A-9914-E19C1DD15F2C}.Debug|x64.ActiveCfg = Debug|x64
+		{DA82AC91-942D-499A-9914-E19C1DD15F2C}.Debug|x64.Build.0 = Debug|x64
+		{DA82AC91-942D-499A-9914-E19C1DD15F2C}.Release|x64.ActiveCfg = Release|x64
+		{DA82AC91-942D-499A-9914-E19C1DD15F2C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

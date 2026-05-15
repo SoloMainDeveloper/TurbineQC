@@ -7,18 +7,18 @@ class MacrosReaderCRM;
 class Project;
 
 class ExecutorCLI : public QObject {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    ExecutorCLI();
+	ExecutorCLI();
 
-    int run();
+	int run();
 
-    void loadMacros(QString filePath);
-    void loadProject(QString filePath);
+	void loadMacros(QString filePath);
+	void loadProject(QString filePath);
 
 private:
-    MacrosManager* _manager;
-    Project* _project;
-    MacrosReaderCRM* _macrosReaderCRM;
+	MacrosManager* _manager;
+	Project* _project;
+	MacrosReaderCRM* _macrosReaderCRM;
 };
