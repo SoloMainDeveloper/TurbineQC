@@ -228,7 +228,7 @@
     <ClInclude Include="macrosreaderjson.h" />
     <ClInclude Include="minx.h" />
     <ClInclude Include="mockplot.h" />
-    <ClInclude Include="reportplot.h" />
+    <QtMoc Include="reportplot.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="shifty.h" />
     <ClInclude Include="singleton.h" />

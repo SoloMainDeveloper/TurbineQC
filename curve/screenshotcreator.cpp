@@ -9,8 +9,6 @@ ScreenshotCreator::ScreenshotCreator(std::shared_ptr<ReportSettings> reportSetti
 
 	_reportPlot = new ReportPlot();
 	_reportPlot->setProject(new Project());
-	_reportPlot->resize(800, 600);
-	_reportPlot->setVisible(true);
 
 	_nominalName = _reportSettings->nominalName();
 	_measuredName = _reportSettings->measuredName();
@@ -56,20 +54,12 @@ void ScreenshotCreator::run(const GlobalCurveMap& curvesToMakeScreenshot)
 
 void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList& globalNames)
 {
-	//_project->resetVisibilityForAllFigures();
-	//_project->setVisibility({ globalNames });
 	QStringList additionalFigureNames = getAdditionalFigureNamesToVisible();
 	QStringList resultFiguresToVisible = globalNames + additionalFigureNames;
-
-	//_plot->zoomExtents();
-	//_project->setCurrentFigure(_nominalName);
 
 	_reportPlot->clear();
 	_reportPlot->addFigures(resultFiguresToVisible);
 	_reportPlot->zoomExtents();
-
-	_reportPlot->update();
-	_reportPlot->replot();
 
 	for (int i = 0; i < 5; ++i) {
 		QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
@@ -106,11 +96,6 @@ QStringList ScreenshotCreator::getAdditionalFigureNamesToVisible()
 
 void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType curveType, TypeOfShowDevs devsType, Axis axisType)
 {
-	//_project->resetVisibilityForAllFigures();
-	//_project->setVisibility({ edgeName });
-	//CurveFigure* deviations = createNumericalDeviations(edgeName, devsType, curveType);
-	//_plot->zoomExtents();
-
 	_reportPlot->clear();
 	_reportPlot->addFigures({ edgeName });
 	_reportPlot->zoomExtents();
@@ -127,14 +112,10 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType 
 		_reportPlot->addFigures(additionalFiguresToVisible);
 	}
 
-	//_project->setCurrentFigure(_nominalName);
-
 	QString screenshot = _reportPlot->getScreenshotInBase64(400, 225, axisType);
 	curveType == CurveType::GlobalLE
 		? _reportSettings->setLeadingEdgeBase64Image(screenshot)
 		: _reportSettings->setTrailingEdgeBase64Image(screenshot);
-
-	//_project->removeFigure(deviations->name());
 }
 
 CurveFigure* ScreenshotCreator::createNumericalDeviations(const QString& edgeName, TypeOfShowDevs devsType, CurveType curveType)

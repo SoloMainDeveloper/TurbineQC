@@ -3,16 +3,15 @@
 #include "plot.h"
 
 class ReportPlot : public Plot {
+	Q_OBJECT
+
 public:
 	static Plot& instance() = delete;
 	static void initialize(Plot* plot) = delete;
 	static void setTestingInstance(Plot* testInstance) = delete;
 	static void resetToRealInstance() = delete;
 
-	explicit ReportPlot();
-
-	//void setProject(Project* project) override;
-	//void disconnectFromProjectSignals();
+	ReportPlot() = default;
 
 	void clear();
 	void addFigures(const QStringList& figureNames);

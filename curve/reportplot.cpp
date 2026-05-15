@@ -4,10 +4,6 @@
 #include "project.h"
 #include "reportsettings.h"
 
-ReportPlot::ReportPlot() : Plot(new QWidget)
-{
-}
-
 QString ReportPlot::takeScreenshotInBase64(const QStringList& figureNamesToVisible,
 	int width, int height, ReportSettings::Axis axisType)
 {
