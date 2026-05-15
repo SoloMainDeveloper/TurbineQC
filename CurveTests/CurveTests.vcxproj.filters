@@ -38,6 +38,12 @@
     <ClCompile Include="macrosmanagertest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\bladegeometryservicetest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\reportservicetest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="tests.h">
@@ -52,6 +58,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mockfilesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\bladegeometryservicetest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\reportservicetest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

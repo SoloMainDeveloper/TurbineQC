@@ -250,7 +250,7 @@ void TurbineDialog::run()
 
     setSettings();
     try {
-        ReportGenerator::createReport(_reportSettings);
+        GeometryAnalysisService::createReport(_reportSettings);
     }
     catch(...) {
     }

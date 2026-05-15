@@ -9,6 +9,7 @@ MockPlot::MockPlot(QWidget* parent)
 
 QString MockPlot::getScreenshotInBase64(int width, int height, ReportSettings::Axis axisType)
 {
+	return QString();
 }
 
 Point MockPlot::centerPoint() const

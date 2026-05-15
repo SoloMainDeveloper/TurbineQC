@@ -10,25 +10,25 @@ void FigureCreator::createAdditionalFigures(Project* project, std::shared_ptr<Re
     auto nominalName = reportSettings->nominalName();
     auto measuredName = reportSettings->measuredName();
 
-    auto dummyNames = ReportGenerator::getTemplateInterimNames(nominalName, measuredName);
-    auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+    auto dummyNames = GeometryAnalysisService::getTemplateInterimNames(nominalName, measuredName);
+    auto preparedMeasName = dummyNames[GeometryAnalysisService::InterimName::MeasuredCurve];
 
-    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(nominalName, preparedMeasName);
+    auto additionalNames = GeometryAnalysisService::getTemplateAdditionalNames(nominalName, preparedMeasName);
     auto params18 = FunctionParamsFactory(reportSettings).params18();
 
-    using Name = ReportGenerator::AdditionalName;
+    using Name = GeometryAnalysisService::AdditionalName;
 
     if(reportSettings->needMCL()) {
-        Algorithms::createMiddleCurve(nominalName, additionalNames[Name::NominalMCL], &params18, project);
-        Algorithms::createMiddleCurve(preparedMeasName, additionalNames[Name::MeasuredMCL], &params18, project, Qt::blue);
+        BladeGeometryService::createMiddleCurve(nominalName, additionalNames[Name::NominalMCL], &params18, project);
+        BladeGeometryService::createMiddleCurve(preparedMeasName, additionalNames[Name::MeasuredMCL], &params18, project, Qt::blue);
     }
     if(reportSettings->needMaxDiameter()) {
-        Algorithms::createMaxCircle(nominalName, params18, additionalNames[Name::NominalMaxDia], Qt::black);
-        Algorithms::createMaxCircle(preparedMeasName, params18, additionalNames[Name::MeasuredMaxDia], Qt::blue);
+        BladeGeometryService::createMaxCircle(nominalName, params18, additionalNames[Name::NominalMaxDia], Qt::black);
+        BladeGeometryService::createMaxCircle(preparedMeasName, params18, additionalNames[Name::MeasuredMaxDia], Qt::blue);
     }
     if(reportSettings->needContactLine()) {
-        Algorithms::createContactLine(nominalName, additionalNames[Name::NominalCntctLine], &params18, project);
-        Algorithms::createContactLine(preparedMeasName, additionalNames[Name::MeasuredCntctLine], &params18, project, Qt::blue);
+        BladeGeometryService::createContactLine(nominalName, additionalNames[Name::NominalCntctLine], &params18, project);
+        BladeGeometryService::createContactLine(preparedMeasName, additionalNames[Name::MeasuredCntctLine], &params18, project, Qt::blue);
     }
 }
 
@@ -37,11 +37,11 @@ void FigureCreator::alignAdditionalFigures(Project* project, std::shared_ptr<Rep
     auto nominalName = reportSettings->nominalName();
     auto measuredName = reportSettings->measuredName();
 
-    auto dummyNames = ReportGenerator::getTemplateInterimNames(nominalName, measuredName);
-    auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+    auto dummyNames = GeometryAnalysisService::getTemplateInterimNames(nominalName, measuredName);
+    auto preparedMeasName = dummyNames[GeometryAnalysisService::InterimName::MeasuredCurve];
 
-    auto additionalNames = ReportGenerator::getTemplateAdditionalNames(reportSettings->nominalName(), preparedMeasName);
-    using Name = ReportGenerator::AdditionalName;
+    auto additionalNames = GeometryAnalysisService::getTemplateAdditionalNames(reportSettings->nominalName(), preparedMeasName);
+    using Name = GeometryAnalysisService::AdditionalName;
 
     auto xShift = reportSettings->xShift();
     auto yShift = reportSettings->yShift();
@@ -91,9 +91,9 @@ FigureCreator::FigureCreator(std::shared_ptr<ReportSettings> reportSettings)
 
 void FigureCreator::run(const QMap<CurveType, QPair<QString, QVector<CurvePoint>>>& globalCurvesToCreate)
 {
-    using FormName = ReportGenerator::FormName;
+    using FormName = GeometryAnalysisService::FormName;
     auto nominalName = _reportSettings->nominalName();
-    auto templateFormName = ReportGenerator::getTemplateFormNames(nominalName);
+    auto templateFormName = GeometryAnalysisService::getTemplateFormNames(nominalName);
 
     for(auto [curveType, curve] : globalCurvesToCreate.asKeyValueRange()) {
         auto [name, points] = curve;

@@ -12,7 +12,7 @@ MinX::MinX(double nominal, double upperTolerance, double lowerTolerance, QString
 
 void MinX::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    double minX = Algorithms::getMinX(nominalProfileName, params);
+    double minX = BladeGeometryService::getMinX(nominalProfileName, params);
 
     _nominal = minX;
 }
@@ -20,7 +20,7 @@ void MinX::calculateNominal(const QString& nominalProfileName, const Function18P
 void MinX::createMeasured(const QString& nominalProfileName,
     const QString& measuredProfileName, const Function18Params& params)
 {
-    double minX = Algorithms::getMinX(measuredProfileName, params);
+    double minX = BladeGeometryService::getMinX(measuredProfileName, params);
 
     _measured = minX;
     _dimensionName = FigureNameService::MinX(nominalProfileName);

@@ -15,7 +15,7 @@ RadiusCorrectionCommand::RadiusCorrectionCommand(QString figureName, QString new
 }
 
 void RadiusCorrectionCommand::run() {
-    Algorithms::makeRadiusCorrection(_figureName, _newFigureName, _params);
+    BladeGeometryService::makeRadiusCorrection(_figureName, _newFigureName, _params);
 }
 
 CommandType RadiusCorrectionCommand::getType() const {

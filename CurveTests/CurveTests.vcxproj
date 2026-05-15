@@ -112,6 +112,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\bladegeometryservicetest.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\reportservicetest.cpp" />
     <ClCompile Include="macrosmanagertest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mockfilesystem.cpp" />
@@ -131,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="macrosmanagertest.h" />
+    <ClInclude Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\bladegeometryservicetest.h" />
+    <ClInclude Include="..\..\..\..\..\..\projects\geomera\curve\curve\CurveTests\reportservicetest.h" />
     <ClInclude Include="mockfilesystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

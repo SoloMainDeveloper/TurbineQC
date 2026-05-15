@@ -96,7 +96,7 @@ void MergePointCloudsDialog::merge()
             auto needSorted = _ui->needSortedCheckBox->checkState() == Qt::Checked;
             auto threshold = _ui->threshold->text().toDouble();
             auto resultName = _ui->resultName->text();
-            auto status = Algorithms::tryMergePointClouds(nameOfFirstCurve, nameOfSecondCurve, resultName,
+            auto status = BladeGeometryService::tryMergePointClouds(nameOfFirstCurve, nameOfSecondCurve, resultName,
                 threshold, needSorted);
 
             if(!status) {

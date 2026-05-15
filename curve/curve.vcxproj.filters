@@ -133,7 +133,7 @@
     <ClCompile Include="airfoiltolerancesdialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="algorithms.cpp">
+    <ClCompile Include="bladegeometryservice.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="alignmentdialog.cpp">
@@ -202,7 +202,7 @@
     <ClCompile Include="radiuscorrectiondialog.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="reportgenerator.cpp">
+    <ClCompile Include="geometryanalysisservice.cpp">
       <Filter>Source Files\Report</Filter>
     </ClCompile>
     <ClCompile Include="reportsettings.cpp">

@@ -10,7 +10,7 @@ RegenerateCurveCommand::RegenerateCurveCommand(QString figureName, QString newFi
 }
 
 void RegenerateCurveCommand::run() {
-    Algorithms::regenerateCurve(_figureName, _newFigureName, _params);
+    BladeGeometryService::regenerateCurve(_figureName, _newFigureName, _params);
 }
 
 CommandType RegenerateCurveCommand::getType() const {

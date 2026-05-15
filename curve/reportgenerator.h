@@ -4,7 +4,7 @@ class Project;
 class Plot;
 class ReportSettings;
 
-class ReportGenerator {
+class GeometryAnalysisService {
 public:
     enum class GlobalName {
         GlobalCurve,

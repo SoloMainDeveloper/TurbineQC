@@ -96,9 +96,9 @@ void WidthEdgeDialog::calculateWidthEdge()
                 widthLE = parameter.measured();
             }
             else {
-                auto result = Algorithms::getWidthOfLeadingEdge(currentFigure, params18, distanceLEValue);
+                auto result = BladeGeometryService::getWidthOfLeadingEdge(currentFigure, params18, distanceLEValue);
                 auto [firstPoint, secondPoint] = result;
-                widthLE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
+                widthLE = BladeGeometryService::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
             }
         }
         if(_ui->checkBoxTE) {
@@ -108,9 +108,9 @@ void WidthEdgeDialog::calculateWidthEdge()
                 widthTE = parameter.measured();
             }
             else {
-                auto result = Algorithms::getWidthOfTrailingEdge(currentFigure, params18, distanceTEValue);
+                auto result = BladeGeometryService::getWidthOfTrailingEdge(currentFigure, params18, distanceTEValue);
                 auto [firstPoint, secondPoint] = result;
-                widthTE = Algorithms::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
+                widthTE = BladeGeometryService::getDistanceBetweenPoints(Point(firstPoint), Point(secondPoint));
             }
         }
         _widths[currFigure->text()] = new EdgeWidth(widthLE, distanceLEValue, widthTE, distanceTEValue);

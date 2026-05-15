@@ -13,7 +13,7 @@ TrailingEdgeRadius::TrailingEdgeRadius(double nominal, double upperTolerance,
 
 void TrailingEdgeRadius::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    auto circle = Algorithms::getRadiusOfTrailingEdge(nominalProfileName, params, _extraParam1.toDouble());
+    auto circle = BladeGeometryService::getRadiusOfTrailingEdge(nominalProfileName, params, _extraParam1.toDouble());
     double trailingEdgeRadius = circle.radius();
 
     _nominal = trailingEdgeRadius;
@@ -22,7 +22,7 @@ void TrailingEdgeRadius::calculateNominal(const QString& nominalProfileName, con
 void TrailingEdgeRadius::createMeasured(const QString& nominalProfileName,
     const QString& measuredProfileName, const Function18Params& params)
 {
-    auto circle = Algorithms::getRadiusOfTrailingEdge(measuredProfileName, params, _extraParam1.toDouble());
+    auto circle = BladeGeometryService::getRadiusOfTrailingEdge(measuredProfileName, params, _extraParam1.toDouble());
     double trailingEdgeRadius = circle.radius();
 
     _measured = trailingEdgeRadius;

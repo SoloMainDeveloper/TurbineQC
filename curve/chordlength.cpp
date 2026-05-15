@@ -11,21 +11,21 @@ ChordLength::ChordLength(double nominal, double upperTolerance, double lowerTole
 
 void ChordLength::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    QPair<PointFigure, PointFigure> chord = Algorithms::getChord(nominalProfileName, params);
+    QPair<PointFigure, PointFigure> chord = BladeGeometryService::getChord(nominalProfileName, params);
     Point firstPoint = Point(chord.first.point());
     Point secondPoint = Point(chord.second.point());
-    double chordLength = Algorithms::getDistanceBetweenPoints(firstPoint, secondPoint);
+    double chordLength = BladeGeometryService::getDistanceBetweenPoints(firstPoint, secondPoint);
 
     _nominal = chordLength;
 }
 
 void ChordLength::createMeasured(const QString& nominalProfileName, const QString& measuredProfileName, const Function18Params& params)
 {
-    QPair<PointFigure, PointFigure> chord = Algorithms::getChord(measuredProfileName, params);
+    QPair<PointFigure, PointFigure> chord = BladeGeometryService::getChord(measuredProfileName, params);
     auto [firstFigure, secondFigure] = chord;
     Point firstPoint = Point(firstFigure.point());
     Point secondPoint = Point(secondFigure.point());
-    double chordLength = Algorithms::getDistanceBetweenPoints(firstPoint, secondPoint);
+    double chordLength = BladeGeometryService::getDistanceBetweenPoints(firstPoint, secondPoint);
 
     _measured = chordLength;
     _dimensionName = _dimensionNameTemplate.arg(nominalProfileName);
@@ -42,7 +42,7 @@ void ChordLength::createMeasured(const QString& nominalProfileName, const QStrin
     secondPointFigure->setName(secondPointName);
     project->safeInsert(secondPointName, secondPointFigure);
 
-    Point middlePoint = Algorithms::getMiddlePoint(firstPoint, secondPoint);
+    Point middlePoint = BladeGeometryService::getMiddlePoint(firstPoint, secondPoint);
 
     auto dimFigure = new DimFigure(_dimensionName, middlePoint, firstPointName, secondPointName);
     dimFigure->setDimType(DimFigure::DimType::Distance); // TODO: Need DistanceBetweenPoints

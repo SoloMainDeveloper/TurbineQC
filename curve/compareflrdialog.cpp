@@ -36,7 +36,7 @@ void CompareFLRDialog::compare()
         }
         auto precision = _ui->precision->text().toDouble();
         auto pointsStartIndex = _ui->pointsStartIndex->text().toInt();
-        auto result = Algorithms::compareFLR(_ui->filepathFLR1->text(), _ui->filepathFLR2->text(), resultPath, pointsStartIndex, precision);
+        auto result = BladeGeometryService::compareFLR(_ui->filepathFLR1->text(), _ui->filepathFLR2->text(), resultPath, pointsStartIndex, precision);
 
         _ui->totalParams->setText(QString::number(result->paramsTotal()));
         _ui->totalFails->setText(QString::number(result->failsTotal()));

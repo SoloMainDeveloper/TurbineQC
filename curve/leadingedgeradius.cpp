@@ -13,7 +13,7 @@ LeadingEdgeRadius::LeadingEdgeRadius(double nominal, double upperTolerance,
 
 void LeadingEdgeRadius::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    CircleFigure circle = Algorithms::getRadiusOfLeadingEdge(nominalProfileName, params, _extraParam1.toDouble());
+    CircleFigure circle = BladeGeometryService::getRadiusOfLeadingEdge(nominalProfileName, params, _extraParam1.toDouble());
     double leadingEdgeRadius = circle.radius();
 
     _nominal = leadingEdgeRadius;
@@ -22,7 +22,7 @@ void LeadingEdgeRadius::calculateNominal(const QString& nominalProfileName, cons
 void LeadingEdgeRadius::createMeasured(const QString& nominalProfileName,
     const QString& measuredProfileName, const Function18Params& params)
 {
-    CircleFigure circle = Algorithms::getRadiusOfLeadingEdge(measuredProfileName, params, _extraParam1.toDouble());
+    CircleFigure circle = BladeGeometryService::getRadiusOfLeadingEdge(measuredProfileName, params, _extraParam1.toDouble());
     double leadingEdgeRadius = circle.radius();
 
     _measured = leadingEdgeRadius;

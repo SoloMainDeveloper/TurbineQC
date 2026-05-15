@@ -85,7 +85,7 @@ void CalculateDeviationsDialog::calculateDeviations() {
             params = Function4Params(0, 1, 1, true, true, FunctionParams::Direction::Left, false);
         }
 
-        Algorithms::calculateDeviations(nomCurve->name(), measCurve->name(), resultName, &params);
+        BladeGeometryService::calculateDeviations(nomCurve->name(), measCurve->name(), resultName, &params);
 
         //resetDialog();
         //accept();

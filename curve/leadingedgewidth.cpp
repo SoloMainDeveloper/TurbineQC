@@ -13,10 +13,10 @@ LeadingEdgeWidth::LeadingEdgeWidth(double nominal, double upperTolerance,
 
 void LeadingEdgeWidth::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    QPair<CurvePoint, CurvePoint> pointsPair = Algorithms::getWidthOfLeadingEdge(nominalProfileName, params, _extraParam1.toDouble());
+    QPair<CurvePoint, CurvePoint> pointsPair = BladeGeometryService::getWidthOfLeadingEdge(nominalProfileName, params, _extraParam1.toDouble());
     auto firstPoint = Point(pointsPair.first);
     auto secondPoint = Point(pointsPair.second);
-    double leadingEdgeWidth = Algorithms::getDistanceBetweenPoints(firstPoint, secondPoint);
+    double leadingEdgeWidth = BladeGeometryService::getDistanceBetweenPoints(firstPoint, secondPoint);
 
     _nominal = leadingEdgeWidth;
 }
@@ -24,11 +24,11 @@ void LeadingEdgeWidth::calculateNominal(const QString& nominalProfileName, const
 void LeadingEdgeWidth::createMeasured(const QString& nominalProfileName,
     const QString& measuredProfileName, const Function18Params& params)
 {
-    QPair<CurvePoint, CurvePoint> pointsPair = Algorithms::getWidthOfLeadingEdge(measuredProfileName, params, _extraParam1.toDouble());
+    QPair<CurvePoint, CurvePoint> pointsPair = BladeGeometryService::getWidthOfLeadingEdge(measuredProfileName, params, _extraParam1.toDouble());
     auto [firstCurvePoint, secondCurvePoint] = pointsPair;
     auto firstPoint = Point(firstCurvePoint);
     auto secondPoint = Point(secondCurvePoint);
-    double leadingEdgeWidth = Algorithms::getDistanceBetweenPoints(firstPoint, secondPoint);
+    double leadingEdgeWidth = BladeGeometryService::getDistanceBetweenPoints(firstPoint, secondPoint);
 
     _measured = leadingEdgeWidth;
 
@@ -45,7 +45,7 @@ void LeadingEdgeWidth::createMeasured(const QString& nominalProfileName,
     auto secondPointFigure = new PointFigure(secondFreeName, secondCurvePoint);
     project->safeInsert(secondFreeName, secondPointFigure);
 
-    Point middlePoint = Algorithms::getMiddlePoint(firstPoint, secondPoint);
+    Point middlePoint = BladeGeometryService::getMiddlePoint(firstPoint, secondPoint);
 
     auto dimFigure = new DimFigure(_dimensionName, middlePoint, firstFreeName, secondFreeName);
     dimFigure->setDimType(DimFigure::DimType::Distance); // TODO: Need DistanceBetweenPoints

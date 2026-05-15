@@ -5,7 +5,7 @@
 #include "reportservice.h"
 #include "screenshotcreator.h"
 
-void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSettings)
+void GeometryAnalysisService::createReport(std::shared_ptr<ReportSettings> reportSettings)
 {
     auto& project = Project::instance();
 
@@ -42,7 +42,7 @@ void ReportGenerator::createReport(std::shared_ptr<ReportSettings> reportSetting
     MacrosManager::instance().log(std::make_shared<CreateReportCommand>(reportSettings));
 }
 
-QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNames(const QString& nominalName, const QString& measuredName)
+QMap<GeometryAnalysisService::GlobalName, QString> GeometryAnalysisService::getTemplateGlobalNames(const QString& nominalName, const QString& measuredName)
 {
     auto globalName = QString("Global_%1").arg(nominalName);
     auto globalCVName = QString("GlobalCV_%1").arg(nominalName);
@@ -58,7 +58,7 @@ QMap<ReportGenerator::GlobalName, QString> ReportGenerator::getTemplateGlobalNam
     };
 }
 
-QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(const QString& nominalName)
+QMap<GeometryAnalysisService::FormName, QString> GeometryAnalysisService::getTemplateFormNames(const QString& nominalName)
 {
     auto globalFormName = QString("%1_Form").arg(nominalName);
     auto globalCVFormName = QString("%1_Convex_Form").arg(nominalName);
@@ -74,7 +74,7 @@ QMap<ReportGenerator::FormName, QString> ReportGenerator::getTemplateFormNames(c
     };
 }
 
-QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAdditionalNames(const QString& nominalName, const QString& measuredName)
+QMap<GeometryAnalysisService::AdditionalName, QString> GeometryAnalysisService::getTemplateAdditionalNames(const QString& nominalName, const QString& measuredName)
 {
     auto nomMCLName = QString("%1_MCL").arg(nominalName);
     auto measMCLName = QString("%1_MCL").arg(measuredName);
@@ -92,7 +92,7 @@ QMap<ReportGenerator::AdditionalName, QString> ReportGenerator::getTemplateAddit
     };
 }
 
-QMap<ReportGenerator::InterimName, QString> ReportGenerator::getTemplateInterimNames(
+QMap<GeometryAnalysisService::InterimName, QString> GeometryAnalysisService::getTemplateInterimNames(
     const QString& nominalName, const QString& measuredName)
 {
     auto dummyNominalName = QString("_%1").arg(nominalName);

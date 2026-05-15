@@ -22,16 +22,16 @@ CurveAnalyzer::CurveAnalyzer(std::shared_ptr<ReportSettings> reportSettings)
         _measuredName = "_" + _measuredName;
     }
 
-    auto globalNames = ReportGenerator::getTemplateGlobalNames(_nominalName, _measuredName);
-    using GlobalName = ReportGenerator::GlobalName;
+    auto globalNames = GeometryAnalysisService::getTemplateGlobalNames(_nominalName, _measuredName);
+    using GlobalName = GeometryAnalysisService::GlobalName;
     _globalName = globalNames[GlobalName::GlobalCurve];
     _globalCVName = globalNames[GlobalName::GlobalCV];
     _globalCCName = globalNames[GlobalName::GlobalCC];
     _globalLEName = globalNames[GlobalName::GlobalLE];
     _globalTEName = globalNames[GlobalName::GlobalTE];
 
-    auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
-    using InterimName = ReportGenerator::InterimName;
+    auto dummyNames = GeometryAnalysisService::getTemplateInterimNames(_nominalName, _measuredName);
+    using InterimName = GeometryAnalysisService::InterimName;
 
     _dummyNominalName = dummyNames[InterimName::NominalCurve];
     _dummyMeasuredName = dummyNames[InterimName::MeasuredCurve];
@@ -80,7 +80,7 @@ GlobalCurveMap CurveAnalyzer::run()
         return result;
     }
 
-    CurveParts globalParts = Algorithms::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
+    CurveParts globalParts = BladeGeometryService::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
 
     using EdgeBestFit = ReportSettings::EdgeBestFit;
 
@@ -117,23 +117,23 @@ QPair<CurveAnalyzer::CurveParts, CurveAnalyzer::CurveParts> CurveAnalyzer::analy
     insertCurveInProject(_dummyNominalName, nominalCurve->points(), true);
     insertCurveInProject(_dummyMeasuredName, measuredCurve->points(), true);
 
-    auto nominalParts = Algorithms::divideCurveIntoParts(_dummyNominalName, &params18, _project);
+    auto nominalParts = BladeGeometryService::divideCurveIntoParts(_dummyNominalName, &params18, _project);
     auto direction = _reportSettings->leadingEdgeDirection();
-    Algorithms::reassembleWholeCurve(_dummyNominalName, nominalParts, direction, _project);
+    BladeGeometryService::reassembleWholeCurve(_dummyNominalName, nominalParts, direction, _project);
 
     calculatePreprocessingFunctions(_nominalName, _dummyMeasuredName);
 
-    Algorithms::calculateMeasuredParams(_reportSettings, _dummyMeasuredName);
+    BladeGeometryService::calculateMeasuredParams(_reportSettings, _dummyMeasuredName);
     FigureCreator::createAdditionalFigures(_project, _reportSettings);
 
-    auto measuredParts = Algorithms::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
-    Algorithms::reassembleWholeCurve(_dummyMeasuredName, measuredParts, direction, _project);
+    auto measuredParts = BladeGeometryService::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
+    BladeGeometryService::reassembleWholeCurve(_dummyMeasuredName, measuredParts, direction, _project);
 
     auto globalBestFit = _reportSettings->globalBestFit();
     using GlobalBestFit = ReportSettings::GlobalBestFit;
     if(globalBestFit == GlobalBestFit::WholeLSQ) {
         auto params19 = Function19Params();
-        Algorithms::regenerateCurve(_dummyMeasuredName, _dummyMeasuredName, &params19);
+        BladeGeometryService::regenerateCurve(_dummyMeasuredName, _dummyMeasuredName, &params19);
         auto params6 = _paramsFactory->params6ForGlobalFit();
         calculateBestFit(_dummyNominalName, _dummyMeasuredName, params6);
     }
@@ -153,7 +153,7 @@ QPair<CurveAnalyzer::CurveParts, CurveAnalyzer::CurveParts> CurveAnalyzer::analy
 GlobalCurveMap CurveAnalyzer::analyzeWholeProfile(const Function18Params& params18)
 {
     auto params4 = _paramsFactory->params4(params18, true);
-    Algorithms::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
 
     auto globalCurve = getCurveFromProject(_dummyMeasuredName);
 
@@ -163,10 +163,10 @@ GlobalCurveMap CurveAnalyzer::analyzeWholeProfile(const Function18Params& params
 GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutTE(const Function18Params& params18)
 {
     auto params4 = _paramsFactory->params4(params18, true);
-    Algorithms::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
 
-    auto globalParts = Algorithms::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
-    Algorithms::reassembleCurveWithoutTE(_globalName, globalParts, _reportSettings->leadingEdgeDirection(), _project);
+    auto globalParts = BladeGeometryService::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
+    BladeGeometryService::reassembleCurveWithoutTE(_globalName, globalParts, _reportSettings->leadingEdgeDirection(), _project);
 
     auto globalCurve = getCurveFromProject(_globalName);
 
@@ -177,17 +177,17 @@ GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutEdges(const CurveParts& nomin
     const CurveParts& measuredParts, const Function18Params& params18)
 {
     auto params4 = _paramsFactory->params4(params18, true);
-    Algorithms::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
 
     params4 = _paramsFactory->params4(params18, false);
 
     insertCurveInProject(_dummyNominalCVName, nominalParts.pointsOfHigh, true);
     insertCurveInProject(_dummyMeasuredCVName, measuredParts.pointsOfHigh, true);
-    Algorithms::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
 
     insertCurveInProject(_dummyNominalCCName, nominalParts.pointsOfLow, true);
     insertCurveInProject(_dummyMeasuredCCName, measuredParts.pointsOfLow, true);
-    Algorithms::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
 
     auto globalConvexCurve = getCurveFromProject(_dummyMeasuredCVName);
     auto globalConcaveCurve = getCurveFromProject(_dummyMeasuredCCName);
@@ -209,8 +209,8 @@ GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutEdgesLSQ(const CurveParts& no
     auto lineCVName = QString("%1_CV_Fit").arg(_measuredName);
     auto lineCCName = QString("%1_CC_Fit").arg(_measuredName);
     auto params6 = _paramsFactory->params6ForLocalFit();
-    Algorithms::calculateBestFit(_dummyMeasuredCVName, _dummyNominalCVName, _dummyMeasuredCVName, lineCVName, &params6);
-    Algorithms::calculateBestFit(_dummyMeasuredCCName, _dummyNominalCCName, _dummyMeasuredCCName, lineCCName, &params6);
+    BladeGeometryService::calculateBestFit(_dummyMeasuredCVName, _dummyNominalCVName, _dummyMeasuredCVName, lineCVName, &params6);
+    BladeGeometryService::calculateBestFit(_dummyMeasuredCCName, _dummyNominalCCName, _dummyMeasuredCCName, lineCCName, &params6);
 
     auto lineCVBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineCVName));
     auto lineCCBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineCCName));
@@ -234,14 +234,14 @@ GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutEdgesLSQ(const CurveParts& no
     insertCurveInProject(_dummyMeasuredCCName, curveCC.points(), true);
 
     auto params4 = _paramsFactory->params4(params18, false);
-    Algorithms::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
-    Algorithms::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
 
-    auto curveParts = Algorithms::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
-    Algorithms::reassembleWholeCurve(_dummyMeasuredName, curveParts, _reportSettings->leadingEdgeDirection(), _project);
+    auto curveParts = BladeGeometryService::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
+    BladeGeometryService::reassembleWholeCurve(_dummyMeasuredName, curveParts, _reportSettings->leadingEdgeDirection(), _project);
 
     params4 = _paramsFactory->params4(params18, true);
-    Algorithms::calculateDeviations(_nominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
+    BladeGeometryService::calculateDeviations(_nominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
 
     auto globalConvexCurve = getCurveFromProject(_dummyMeasuredCVName);
     auto globalConcaveCurve = getCurveFromProject(_dummyMeasuredCCName);
@@ -264,8 +264,8 @@ GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutEdgesForm(const CurveParts& n
     auto lineCVName = QString("%1_CV_Fit").arg(_measuredName);
     auto lineCCName = QString("%1_CC_Fit").arg(_measuredName);
     auto params21 = _paramsFactory->params21ForLocalFit();
-    Algorithms::calculateBestFit(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, lineCVName, &params21);
-    Algorithms::calculateBestFit(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, lineCCName, &params21);
+    BladeGeometryService::calculateBestFit(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, lineCVName, &params21);
+    BladeGeometryService::calculateBestFit(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, lineCCName, &params21);
 
     auto lineCVBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineCVName));
     auto lineCCBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineCCName));
@@ -281,11 +281,11 @@ GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutEdgesForm(const CurveParts& n
     _reportSettings->setBestFitValues(offsetXCV, offsetYCV, rotationCV, offsetXCC, offsetYCC, rotationCC);
 
     auto params4 = _paramsFactory->params4(params18, false);
-    Algorithms::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
-    Algorithms::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCVName, _dummyMeasuredCVName, _dummyMeasuredCVName, &params4);
+    BladeGeometryService::calculateDeviations(_dummyNominalCCName, _dummyMeasuredCCName, _dummyMeasuredCCName, &params4);
 
     params4 = _paramsFactory->params4(params18, true);
-    Algorithms::calculateDeviations(_nominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
+    BladeGeometryService::calculateDeviations(_nominalName, _dummyMeasuredName, _dummyMeasuredName, &params4);
 
     auto globalConvexCurve = getCurveFromProject(_dummyMeasuredCVName);
     auto globalConcaveCurve = getCurveFromProject(_dummyMeasuredCCName);
@@ -309,10 +309,10 @@ void CurveAnalyzer::calculateEdgeBestFit(
     switch(bestFit) {
         case EdgeBestFit::FreeFitForm: {
             Function6Params params6 = _paramsFactory->params6ForLocalFit();
-            Algorithms::calculateBestFit(nominalName, measuredName, measuredName, lineBestFitName, &params6);
+            BladeGeometryService::calculateBestFit(nominalName, measuredName, measuredName, lineBestFitName, &params6);
 
             Function21Params params21 = _paramsFactory->params21ForLocalFit();
-            Algorithms::calculateBestFit(nominalName, measuredName, measuredName, lineBestFitName, &params21);
+            BladeGeometryService::calculateBestFit(nominalName, measuredName, measuredName, lineBestFitName, &params21);
 
             break;
         }
@@ -334,7 +334,7 @@ const CurveFigure* CurveAnalyzer::calculateEdgeDeviations(const Function18Params
         case EdgeBestFit::FreeFitForm:
         case EdgeBestFit::NoFit: {
             Function4Params params4 = _paramsFactory->params4(params18, false);
-            Algorithms::calculateDeviations(nominalName, measuredName, globalName, &params4);
+            BladeGeometryService::calculateDeviations(nominalName, measuredName, globalName, &params4);
             break;
         }
         case EdgeBestFit::GlobalFit: {
@@ -353,28 +353,28 @@ void CurveAnalyzer::calculatePreprocessingFunctions(const QString& updatedNomNam
     if(_reportSettings->needSortPoints() || _reportSettings->needRemoveEqualPoints()) {
         auto params1 = Function1Params(0, _reportSettings->limitForEqualPoints(), 0,
             true, true, FunctionParams::Direction::Left, _reportSettings->needSortPoints());
-        Algorithms::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
+        BladeGeometryService::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
     }
     if(_reportSettings->needRadiusCompensation() && !_reportSettings->needUse3DVectors()) {
         auto params1 = Function1Params(0, 0.04, 0, true);
-        Algorithms::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
+        BladeGeometryService::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
         auto params3 = Function3Params(_reportSettings->radiusCompensation(), true, false);
-        Algorithms::makeRadiusCorrection(updatedMeasName, updatedMeasName, &params3);
+        BladeGeometryService::makeRadiusCorrection(updatedMeasName, updatedMeasName, &params3);
         if(_reportSettings->needSortPoints() || _reportSettings->needRemoveEqualPoints()) {
             params1 = Function1Params(0, _reportSettings->limitForEqualPoints(), 0,
                 true, true, FunctionParams::Direction::Left, _reportSettings->needSortPoints());
-            Algorithms::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
+            BladeGeometryService::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
         }
     }
     if(_reportSettings->needUse3DVectors()) {
         auto params42 = Function42Params();
         auto radiusCorrection = _reportSettings->radiusCompensation();
-        Algorithms::calculateCurveUsing3DVectors(updatedNomName, updatedMeasName, updatedMeasName, &params42, radiusCorrection, _project);
+        BladeGeometryService::calculateCurveUsing3DVectors(updatedNomName, updatedMeasName, updatedMeasName, &params42, radiusCorrection, _project);
         auto params1 = Function1Params(0, 0.04, 0, true);
-        Algorithms::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
+        BladeGeometryService::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
         auto params3 = Function3Params(radiusCorrection, true, false);
-        Algorithms::makeRadiusCorrection(updatedMeasName, updatedMeasName, &params3);
-        Algorithms::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
+        BladeGeometryService::makeRadiusCorrection(updatedMeasName, updatedMeasName, &params3);
+        BladeGeometryService::calculateCurve(updatedMeasName, updatedMeasName, &params1, _project);
     }
 }
 
@@ -383,16 +383,16 @@ CurveAnalyzer::CurveParts CurveAnalyzer::getCurvePartsAfterStretching(const QStr
 {
     auto params31 = Function31Params(_reportSettings->isLEStretch(), _reportSettings->isTEStretch());
     auto params6 = Function6Params();
-    Algorithms::calculateStretch(nominalName, measuredName, measuredName, &params31, &params6, _project);
+    BladeGeometryService::calculateStretch(nominalName, measuredName, measuredName, &params31, &params6, _project);
 
-    return Algorithms::divideCurveIntoParts(measuredName, &params18, _project);
+    return BladeGeometryService::divideCurveIntoParts(measuredName, &params18, _project);
 }
 
 template<class T>
 void CurveAnalyzer::calculateBestFit(const QString& updatedNomName, const QString& updatedMeasName, const T& params)
 {
     auto lineName = QString("%1_BF").arg(_measuredName);
-    Algorithms::calculateBestFit(updatedNomName, updatedMeasName, updatedMeasName, lineName, &params);
+    BladeGeometryService::calculateBestFit(updatedNomName, updatedMeasName, updatedMeasName, lineName, &params);
 
     auto lineBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineName));
 
@@ -403,18 +403,18 @@ void CurveAnalyzer::calculateBestFit(const QString& updatedNomName, const QStrin
     auto rotation = lineBF->direction().y / lineBF->direction().x;
     _reportSettings->setBestFitValues(offsetX, offsetY, rotation);
 
-    Algorithms::calculateMeasuredTransformParams(_reportSettings, lineName);
+    BladeGeometryService::calculateMeasuredTransformParams(_reportSettings, lineName);
 }
 
 void CurveAnalyzer::calculateBestFitWithAlignment(const QString& updatedNomName, const QString& updatedMeasName,
     const Function6Params& params6, const CurveParts& nominalParts, CurveParts* measuredParts)
 {
     auto direction = _reportSettings->leadingEdgeDirection();
-    Algorithms::reassembleCurveWithoutEdges(updatedNomName, nominalParts, direction, _project);
-    Algorithms::reassembleCurveWithoutEdges(updatedMeasName, *measuredParts, direction, _project);
+    BladeGeometryService::reassembleCurveWithoutEdges(updatedNomName, nominalParts, direction, _project);
+    BladeGeometryService::reassembleCurveWithoutEdges(updatedMeasName, *measuredParts, direction, _project);
 
     auto lineName = QString("%1_BF").arg(_measuredName);
-    Algorithms::calculateBestFit(updatedNomName, updatedMeasName, updatedMeasName, lineName, &params6);
+    BladeGeometryService::calculateBestFit(updatedNomName, updatedMeasName, updatedMeasName, lineName, &params6);
 
     auto curveBF = dynamic_cast<const CurveFigure*>(_project->findFigure(updatedMeasName));
     auto lineBF = dynamic_cast<const LineFigure*>(_project->findFigure(lineName));
@@ -427,7 +427,7 @@ void CurveAnalyzer::calculateBestFitWithAlignment(const QString& updatedNomName,
     auto rotation = lineBF->direction().y / lineBF->direction().x;
     _reportSettings->setBestFitValues(offsetX, offsetY, rotation);
 
-    Algorithms::calculateMeasuredTransformParams(_reportSettings, lineName);
+    BladeGeometryService::calculateMeasuredTransformParams(_reportSettings, lineName);
 
     auto offsetLE = CurveFigure(QString(), measuredParts->pointsOfLE);
     auto offsetTE = CurveFigure(QString(), measuredParts->pointsOfTE);
@@ -442,21 +442,21 @@ void CurveAnalyzer::calculateBestFitWithAlignment(const QString& updatedNomName,
     measuredParts->pointsOfHigh = highPoints;
     measuredParts->pointsOfLow = lowPoints;
 
-    Algorithms::reassembleCurveWithoutEdges(updatedMeasName, *measuredParts, direction, _project);
-    Algorithms::reassembleCurveWithoutEdges(updatedNomName, nominalParts, direction, _project);
+    BladeGeometryService::reassembleCurveWithoutEdges(updatedMeasName, *measuredParts, direction, _project);
+    BladeGeometryService::reassembleCurveWithoutEdges(updatedNomName, nominalParts, direction, _project);
 }
 
 CurveAnalyzer::CurveParts CurveAnalyzer::alignCurveParts(const CurveParts& curveParts, const Function18Params& params18)
 {
     auto curveName = "dummy";
-    Algorithms::reassembleWholeCurve(curveName, curveParts, _reportSettings->leadingEdgeDirection(), _project);
+    BladeGeometryService::reassembleWholeCurve(curveName, curveParts, _reportSettings->leadingEdgeDirection(), _project);
     auto points = getCurveFromProject(curveName)->points();
 
     auto curve = CurveFigure(curveName, points);
     curve.alignment(_reportSettings->rotation(), _reportSettings->xShift(), _reportSettings->yShift());
     insertCurveInProject(curveName, curve.points(), true);
 
-    return Algorithms::divideCurveIntoParts(curveName, &params18, _project);
+    return BladeGeometryService::divideCurveIntoParts(curveName, &params18, _project);
 }
 
 void CurveAnalyzer::insertCurveInProject(const QString& curveName, const QVector<CurvePoint>& points, bool needToDelete)

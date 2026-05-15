@@ -75,7 +75,7 @@ void RadiusCorrectionDialog::calculateOffsetCurve() {
     }
 
     const Function3Params* params = new Function3Params(offset, isClosed, isExternal, direction, needSort);
-    Algorithms::makeRadiusCorrection(curveName, newCurveName, params);
+    BladeGeometryService::makeRadiusCorrection(curveName, newCurveName, params);
 
     resetDialog();
     accept();

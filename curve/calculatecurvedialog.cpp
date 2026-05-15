@@ -119,14 +119,14 @@ void CalculateCurveDialog::calculateCurve()
         auto intermediate = _ui->intermediateSB->value();
 
         const Function1Params* params = new Function1Params(intermediate, eliminate, minline, isClosed, isExternal, material, needSort);
-        Algorithms::calculateCurve(curveName, newCurveName, params, &Project::instance());
+        BladeGeometryService::calculateCurve(curveName, newCurveName, params, &Project::instance());
     }
     else if(_ui->regenerateRB->isChecked()) {
         auto value = _ui->valueLE->text().toInt();
         auto mode = _ui->numberRB->isChecked() ? "number" : "density";
 
         const Function19Params* params = new Function19Params(isClosed, isExternal, material, mode, value);
-        Algorithms::regenerateCurve(curveName, newCurveName, params);
+        BladeGeometryService::regenerateCurve(curveName, newCurveName, params);
     }
 
     accept();

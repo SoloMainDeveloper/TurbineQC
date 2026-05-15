@@ -18,7 +18,7 @@ BestFitCommand::BestFitCommand(QString nominalCurveName, QString measuredCurveNa
 }
 
 void BestFitCommand::run() {
-    Algorithms::calculateBestFit(_nominalCurveName, _measuredCurveName, _resultCurveName, _bestFitLineName, _params);
+    BladeGeometryService::calculateBestFit(_nominalCurveName, _measuredCurveName, _resultCurveName, _bestFitLineName, _params);
 }
 
 CommandType BestFitCommand::getType() const {

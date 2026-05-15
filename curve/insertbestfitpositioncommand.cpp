@@ -15,7 +15,7 @@ InsertBestFitPositionCommand::InsertBestFitPositionCommand(QString figureName, Q
 }
 
 void InsertBestFitPositionCommand::run() {
-    Algorithms::insertBestFitDimension(_figureName, _parentName, _x, _y, _z, _isShowX, _isShowY, _isShowR);
+    BladeGeometryService::insertBestFitDimension(_figureName, _parentName, _x, _y, _z, _isShowX, _isShowY, _isShowR);
 }
 
 CommandType InsertBestFitPositionCommand::getType() const {

@@ -269,7 +269,7 @@ void BestFitDialog::calculateBestFit(const QString& nominalCurveName, const QStr
         params.setRotationConstraint(rotationFrom, rotationTo);
     }
 
-    Algorithms::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params);
+    BladeGeometryService::calculateBestFit(nominalCurveName, measuredCurveName, resultCurveName, resultCurveName + "_BF", &params);
 
     QApplication::restoreOverrideCursor();
 }

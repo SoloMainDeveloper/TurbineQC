@@ -1005,7 +1005,7 @@ void Plot::drawDistanceBetweenCurvePoints(const DimFigure* dimFigure)
     auto& name = dimFigure->name();
     const auto& firstDimPoint = (Point)firstPointFigure->point();
     const auto& secondDimPoint = (Point)secondPointFigure->point();
-    auto labelPoint = Algorithms::getMiddlePoint(firstDimPoint, secondDimPoint);
+    auto labelPoint = BladeGeometryService::getMiddlePoint(firstDimPoint, secondDimPoint);
     auto& labelPointPx = coordToPixel(labelPoint);
 
     auto label = new QCPItemText(this);

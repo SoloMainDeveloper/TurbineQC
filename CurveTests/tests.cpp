@@ -43,7 +43,7 @@ void TestMyClass::macros1324Test()
     QString resultFLR = MockFileSystem::getMockFilePath("Macros1324/pcdmis-data/1.flr");
     QString curveAnalyzerResult = MockFileSystem::getMockFilePath("Macros1324/pcdmis-data/curveanalyzer.flr");
 
-    auto compareResults = Algorithms::compareOnlyDimensionsFLR(resultFLR, curveAnalyzerResult, 304);
+    auto compareResults = BladeGeometryService::compareOnlyDimensionsFLR(resultFLR, curveAnalyzerResult, 304);
 
     double tolerancePercent = 20;
     for(auto compareParams : compareResults) {

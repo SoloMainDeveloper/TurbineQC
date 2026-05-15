@@ -81,11 +81,11 @@ void ScreenshotCreator::makeScreenshotOfGlobal(const QStringList& globalNames)
 
 QStringList ScreenshotCreator::getAdditionalFigureNamesToVisible()
 {
-	auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
-	auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
+	auto dummyNames = GeometryAnalysisService::getTemplateInterimNames(_nominalName, _measuredName);
+	auto preparedMeasName = dummyNames[GeometryAnalysisService::InterimName::MeasuredCurve];
 
-	using AdditionalName = ReportGenerator::AdditionalName;
-	auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, preparedMeasName);
+	using AdditionalName = GeometryAnalysisService::AdditionalName;
+	auto templateAdditionalNames = GeometryAnalysisService::getTemplateAdditionalNames(_nominalName, preparedMeasName);
 	QStringList figuresToVisible;
 
 	if (_reportSettings->needMCL()) {
@@ -118,10 +118,10 @@ void ScreenshotCreator::makeScreenshotOfEdge(const QString& edgeName, CurveType 
 	QStringList additionalFiguresToVisible;
 
 	if (_reportSettings->needMCL()) {
-		auto dummyNames = ReportGenerator::getTemplateInterimNames(_nominalName, _measuredName);
-		auto preparedMeasName = dummyNames[ReportGenerator::InterimName::MeasuredCurve];
-		auto templateAdditionalNames = ReportGenerator::getTemplateAdditionalNames(_nominalName, preparedMeasName);
-		using AdditionalName = ReportGenerator::AdditionalName;
+		auto dummyNames = GeometryAnalysisService::getTemplateInterimNames(_nominalName, _measuredName);
+		auto preparedMeasName = dummyNames[GeometryAnalysisService::InterimName::MeasuredCurve];
+		auto templateAdditionalNames = GeometryAnalysisService::getTemplateAdditionalNames(_nominalName, preparedMeasName);
+		using AdditionalName = GeometryAnalysisService::AdditionalName;
 		additionalFiguresToVisible.append(templateAdditionalNames[AdditionalName::NominalMCL]);
 		additionalFiguresToVisible.append(templateAdditionalNames[AdditionalName::MeasuredMCL]);
 		_reportPlot->addFigures(additionalFiguresToVisible);

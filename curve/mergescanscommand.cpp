@@ -12,7 +12,7 @@ MergeScansCommand::MergeScansCommand(QString firstCurveName, QString secondCurve
 }
 
 void MergeScansCommand::run() {
-    Algorithms::tryMergePointClouds(_firstCurveName, _secondCurveName, _resultName, _threshold, _needSorted);
+    BladeGeometryService::tryMergePointClouds(_firstCurveName, _secondCurveName, _resultName, _threshold, _needSorted);
 }
 
 CommandType MergeScansCommand::getType() const {

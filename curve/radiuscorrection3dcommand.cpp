@@ -15,7 +15,7 @@ RadiusCorrection3DCommand::RadiusCorrection3DCommand(const QString& nominalCurve
 
 void RadiusCorrection3DCommand::run()
 {
-    Algorithms::calculateCurveUsing3DVectorsTest(_nominalCurveName, _measuredCurveName, _resultCurveName, _params, _radiusCorrection);
+    BladeGeometryService::calculateCurveUsing3DVectorsTest(_nominalCurveName, _measuredCurveName, _resultCurveName, _params, _radiusCorrection);
 }
 
 CommandType RadiusCorrection3DCommand::getType() const

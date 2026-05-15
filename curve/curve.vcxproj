@@ -193,7 +193,7 @@
     <ClCompile Include="removefigurecommand.cpp" />
     <ClCompile Include="renamefigurecommand.cpp" />
     <ClCompile Include="reportsettings.cpp" />
-    <ClCompile Include="reportgenerator.cpp" />
+    <ClCompile Include="geometryanalysisservice.cpp" />
     <ClCompile Include="reportmarkuptemplates.cpp" />
     <ClCompile Include="resultcompareflr.cpp" />
     <ClCompile Include="rotatedialog.cpp" />
@@ -322,7 +322,7 @@
     <QtUic Include="curvegraphicswidget.ui" />
     <QtUic Include="curvewindow.ui" />
     <QtMoc Include="curvewindow.h" />
-    <ClCompile Include="algorithms.cpp" />
+    <ClCompile Include="bladegeometryservice.cpp" />
     <ClCompile Include="curvemachine.cpp" />
     <ClCompile Include="curvewindow.cpp" />
     <ClCompile Include="figure.cpp" />

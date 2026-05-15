@@ -8,7 +8,7 @@ CreateReportCommand::CreateReportCommand(std::shared_ptr<ReportSettings> reportS
 }
 
 void CreateReportCommand::run() {
-    ReportGenerator::createReport(_reportSettings);
+    GeometryAnalysisService::createReport(_reportSettings);
 }
 
 CommandType CreateReportCommand::getType() const {

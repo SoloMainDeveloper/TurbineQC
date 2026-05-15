@@ -17,7 +17,7 @@ Function4Params FunctionParamsFactory::params4(const Function18Params& params18,
 {
     auto evaluationPlace = static_cast<int>(_reportSettings->evaluationPlace());
     auto evaluationDirection = static_cast<int>(_reportSettings->evaluationDirection());
-    double length = Algorithms::getMiddleCurveLength(_reportSettings->nominalName(), params18);
+    double length = BladeGeometryService::getMiddleCurveLength(_reportSettings->nominalName(), params18);
     double nominalTolerance = length / 5.0;
 
     return Function4Params(nominalTolerance, evaluationPlace, evaluationDirection, isClosed);
@@ -95,7 +95,7 @@ Function18Params FunctionParamsFactory::params18()
 
     if(_reportSettings->measureType() == ReportSettings::MeasureType::Length) {
         auto params18 = Function18Params(leadingEdgeDirection, leadingEdgeZone, trailingEdgeZone);
-        double length = Algorithms::getMiddleCurveLength(_reportSettings->nominalName(), params18);
+        double length = BladeGeometryService::getMiddleCurveLength(_reportSettings->nominalName(), params18);
         double leadingEdgeZoneInPercent = _reportSettings->leadingEdgeZone() / length * 100;
         double trailingEdgeZoneInPercent = _reportSettings->trailingEdgeZone() / length * 100;
 

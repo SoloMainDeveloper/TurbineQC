@@ -12,7 +12,7 @@ YMaxDiameter::YMaxDiameter(double nominal, double upperTolerance, double lowerTo
 
 void YMaxDiameter::calculateNominal(const QString& nominalProfileName, const Function18Params& params)
 {
-    CircleFigure circle = Algorithms::getMaxCircle(nominalProfileName, params);
+    CircleFigure circle = BladeGeometryService::getMaxCircle(nominalProfileName, params);
     double yMaxDiameter = circle.center().y;
 
     _nominal = yMaxDiameter;
@@ -20,7 +20,7 @@ void YMaxDiameter::calculateNominal(const QString& nominalProfileName, const Fun
 
 void YMaxDiameter::createMeasured(const QString& nominalProfileName, const QString& measuredProfileName, const Function18Params& params)
 {
-    auto circle = Algorithms::getMaxCircle(measuredProfileName, params);
+    auto circle = BladeGeometryService::getMaxCircle(measuredProfileName, params);
     double yMaxDiameter = circle.center().y;
 
     _measured = yMaxDiameter;
