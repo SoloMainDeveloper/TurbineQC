@@ -1,6 +1,7 @@
 #include "curve/pch.h"
 
 #include "algorithms.h"
+#include "deviationstatistics.h"
 #include "figurecreator.h"
 #include "functionparamsfactory.h"
 #include "reportgenerator.h"
@@ -180,30 +181,46 @@ CurveFigure* FigureCreator::createGlobalPart(const QString& curveName, const QVe
 
 void FigureCreator::createDimension(const QString& dimensionName, const CurveFigure* globalCurve, const Point& labelPoint)
 {
+    auto deviationStatistics = DeviationStatistics(globalCurve->points());
+
+    QMap<int, QPair<DimFigure::ValueType, std::function<double()>>> statisticsMap = {
+        { 6, { DimFigure::ValueType::MinMax, [&]() {
+                  return deviationStatistics.minMax();
+              } } },
+        { 5, { DimFigure::ValueType::Form, [&]() {
+                  return deviationStatistics.form();
+              } } },
+        { 4, { DimFigure::ValueType::Min, [&]() {
+                  return deviationStatistics.min();
+              } } },
+        { 3, { DimFigure::ValueType::Max, [&]() {
+                  return deviationStatistics.max();
+              } } },
+        { 2, { DimFigure::ValueType::MaxAbs, [&]() {
+                  return deviationStatistics.maxAbs();
+              } } },
+        { 1, { DimFigure::ValueType::SupUT, [&]() {
+                  return deviationStatistics.superiorUpperTolerance();
+              } } },
+        { 0, { DimFigure::ValueType::InfLT, [&]() {
+                  return deviationStatistics.inferiorLowerTolerance();
+              } } },
+    };
+
+    int outputFormMode = _reportSettings->outputFormMode();
+    int formValuesNumber = 7;
+    QString binCode = QString("%1").arg(outputFormMode, formValuesNumber, 2, QChar('0'));
+
     auto table = new DimFigure(dimensionName, labelPoint, globalCurve->name());
     table->setDimType(DimFigure::DimType::Form);
     table->setVisible(false);
 
-    auto& points = globalCurve->points();
-    auto minDeviation = points[0].dev;
-    auto maxDeviation = points[0].dev;
-    for(auto& point : points) {
-        if(point.dev < minDeviation) {
-            minDeviation = point.dev;
-        }
-        if(point.dev > maxDeviation) {
-            maxDeviation = point.dev;
+    for(auto [key, statistics] : statisticsMap.asKeyValueRange()) {
+        if(QString(binCode[key]).toInt()) {
+            auto [type, value] = statistics;
+            table->addValue(DimFigure::Value(type, true, value()));
         }
     }
 
-    table->addValues(QVector<DimFigure::Value> {
-        DimFigure::Value(DimFigure::ValueType::MinMax, true, abs(maxDeviation - minDeviation)),
-        DimFigure::Value(DimFigure::ValueType::Form, true, std::max(abs(maxDeviation), abs(minDeviation) * 2)),
-        DimFigure::Value(DimFigure::ValueType::Min, true, minDeviation),
-        DimFigure::Value(DimFigure::ValueType::Max, true, maxDeviation),
-        DimFigure::Value(DimFigure::ValueType::MaxAbs, false, abs(std::max(minDeviation, maxDeviation))),
-        DimFigure::Value(DimFigure::ValueType::SupUT, true, maxDeviation > 0 ? maxDeviation : 0.0),
-        DimFigure::Value(DimFigure::ValueType::InfLT, true, minDeviation < 0 ? minDeviation : 0.0),
-    });
     _project->safeInsert(dimensionName, table, false);
 }

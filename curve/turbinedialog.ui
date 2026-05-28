@@ -2567,7 +2567,7 @@
 }</string>
      </property>
      <property name="title">
-      <string>Nominal/Measured profile</string>
+      <string>Номинальный\Измеренный профиль</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
@@ -2591,7 +2591,7 @@
          <item>
           <widget class="QLineEdit" name="lineNomimal">
            <property name="text">
-            <string>Nominal</string>
+            <string>Номинальный</string>
            </property>
            <property name="frame">
             <bool>false</bool>

@@ -50,13 +50,13 @@ QString ReportMarkupTemplates::globalViewTemplate = R"(
 )";
 
 QString ReportMarkupTemplates::globalTitleTemplate = R"(
-                        <p style="margin: 0;">Section %1 - Global Fit: %2 / %3 / Error amp: %4x</p>
+                        <p style="margin: 0;">Сечение %1 - Тип припасовки: %2 / %3 / Масштаб: %4x</p>
                         <p style="margin: 0;">%5</p>
 )";
 
-QString ReportMarkupTemplates::bestFitValuesTemplate = R"(Best-fit: X: %1, Y: %2, Rotation: %3)";
+QString ReportMarkupTemplates::bestFitValuesTemplate = R"(Припасовка: X: %1, Y: %2, Вращение: %3)";
 
-QString ReportMarkupTemplates::bestFitDualValuesTemplate = R"(Best-fit: CV - X: %1, Y: %2, Rotation: %3 / CC - X: %4, Y: %5, Rotation: %6)";
+QString ReportMarkupTemplates::bestFitDualValuesTemplate = R"(Припасовка: CV - X: %1, Y: %2, Вращение: %3 / CC - X: %4, Y: %5, Вращение: %6)";
 
 QString ReportMarkupTemplates::leadingEdgeViewTemplate = R"(
                 <div class="LE-view" id="rectangle" style="border: 1px solid; overflow: hidden;">
@@ -72,7 +72,7 @@ QString ReportMarkupTemplates::leadingEdgeViewTemplate = R"(
 )";
 
 QString ReportMarkupTemplates::leadingEdgeTitleTemplate = R"(
-                        <p style="margin: 0;">LE - Local Fit: %1 / Error amp: %2x</p>
+                        <p style="margin: 0;">Передняя кромка - Тип припасовки: %1 / Масштаб: %2x</p>
 )";
 
 QString ReportMarkupTemplates::leadingEdgeImageTemplate = R"(
@@ -93,7 +93,7 @@ QString ReportMarkupTemplates::trailingEdgeViewTemplate = R"(
 )";
 
 QString ReportMarkupTemplates::trailingEdgeTitleTemplate = R"(
-                        <p style="margin: 0;">TE - Local Fit: %1 / Error amp: %2x</p>
+                        <p style="margin: 0;">Задняя кромка - Тип припасовки: %1 / Масштаб: %2x</p>
 )";
 
 QString ReportMarkupTemplates::trailingEdgeImageTemplate = R"(
@@ -118,17 +118,17 @@ QString ReportMarkupTemplates::parameterTableTemplate = R"(
                 <div class="parameters" id="rectangle" style="border: 1px solid;">
                     <div id="rectangle" style="background-color: orange; width: 100%; height: 10%; 
                         display: flex; align-items: center; justify-content: center;">
-                        <p style="margin: 0;">Airfoil parameters</p>
+                        <p style="margin: 0;">Параметры лопатки</p>
                     </div>
                     <div>
                         <table style="width: 100%;">
                             <tr>
-                                <th style="font-size: 14px; text-align: center;">Axis</th>
-                                <th style="font-size: 14px; text-align: center;">Nominal</th>
-                                <th style="font-size: 14px; text-align: center;">Upper tol.</th>
-                                <th style="font-size: 14px; text-align: center;">Lower tol.</th>
-                                <th style="font-size: 14px; text-align: center;">Measured</th>
-                                <th style="font-size: 14px; text-align: center;">Dev.</th>
+                                <th style="font-size: 14px; text-align: center;">Измерение</th>
+                                <th style="font-size: 14px; text-align: center;">Номинальное</th>
+                                <th style="font-size: 14px; text-align: center;">Верхний доп.</th>
+                                <th style="font-size: 14px; text-align: center;">Нижний доп.</th>
+                                <th style="font-size: 14px; text-align: center;">Актуальное</th>
+                                <th style="font-size: 14px; text-align: center;">Отк.</th>
                                 <th style="font-size: 14px; text-align: center;">OOT</th>
                             </tr>
                             %1
@@ -177,16 +177,16 @@ QString ReportMarkupTemplates::partDataTemplate = R"(
                     <div id="rectangle" style="border: 1px solid;">
                         <div class="header" id="rectangle" style="background-color: orange; width: 100%; height: 18%; 
                             display: flex; align-items: center; justify-content: center;">
-                            <p style="margin: 0;">Part data</p>
+                            <p style="margin: 0;">Данные о детали</p>
                         </div>
                         <div class="info" style="width: 100%; height: 82%; 
                             display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;">
-                            <div style="align-content: center; margin-left: 5%;"><b>Description: %1</b></div>
-                            <div style="align-content: center; margin-left: 5%;"><b>Part number: %2</b></div>
-                            <div style="align-content: center; margin-left: 5%;"><b>Drawing: %3</b></div>
-                            <div style="align-content: center; margin-left: 5%;"><b>Operator: %4</b></div>
-                            <div style="align-content: center; margin-left: 5%;"><b>Order number: %5</b></div>
-                            <div style="align-content: center; margin-left: 5%;"><b>Note: %6</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Описание: %1</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Номер детали: %2</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Чертеж: %3</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Оператор: %4</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Порядковый номер: %5</b></div>
+                            <div style="align-content: center; margin-left: 5%;"><b>Заметка: %6</b></div>
                         </div>
                     </div>
                     <div id="rectangle" style="border: 1px solid; display: flex; justify-content: center; align-items: center;">

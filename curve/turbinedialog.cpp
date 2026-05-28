@@ -27,7 +27,7 @@ TurbineDialog::TurbineDialog() : _ui(new Ui::TurbineDialog())
     _containerLayout->setContentsMargins(0, 0, 0, 0);
     _containerLayout->addWidget(_curveGraphics, 0, 0);
 
-    this->setWindowTitle("Calculate turbine");
+    this->setWindowTitle("Анализ профиля");
 
     setupWindow();
 
@@ -148,32 +148,32 @@ void TurbineDialog::disableUnrealizedParams()
     axisTECenter->setEnabled(false);
 
     auto globalProfileTypeModel = dynamic_cast<QStandardItemModel*>(_ui->profileType->model());
-    auto wholeGlobal = globalProfileTypeModel->item(0);
-    wholeGlobal->setEnabled(false);
-    auto globalWithoutEdges = globalProfileTypeModel->item(1);
-    globalWithoutEdges->setEnabled(false);
+    // auto wholeGlobal = globalProfileTypeModel->item(0);
+    // wholeGlobal->setEnabled(false);
+    // auto globalWithoutEdges = globalProfileTypeModel->item(1);
+    // globalWithoutEdges->setEnabled(false);
     auto globalWithoutTE = globalProfileTypeModel->item(2);
     globalWithoutTE->setEnabled(false);
-    auto globalWithoutEdgesLSQLocal = globalProfileTypeModel->item(3);
-    globalWithoutEdgesLSQLocal->setEnabled(false);
-    _ui->profileType->setCurrentIndex(4);
+    // auto globalWithoutEdgesLSQLocal = globalProfileTypeModel->item(3);
+    // globalWithoutEdgesLSQLocal->setEnabled(false);
+    _ui->profileType->setCurrentIndex(0);
 
     auto globalBestFitModel = dynamic_cast<QStandardItemModel*>(_ui->globalBestFit->model());
     // auto globalNoFit = globalBestFitModel->item(0);
     // globalNoFit->setEnabled(false);
-    auto wholeGlobalLSQ = globalBestFitModel->item(1);
-    wholeGlobalLSQ->setEnabled(false);
-    auto globalWithoutEdgesLSQ = globalBestFitModel->item(2);
-    globalWithoutEdgesLSQ->setEnabled(false);
+    // auto wholeGlobalLSQ = globalBestFitModel->item(1);
+    // wholeGlobalLSQ->setEnabled(false);
+    // auto globalWithoutEdgesLSQ = globalBestFitModel->item(2);
+    // globalWithoutEdgesLSQ->setEnabled(false);
     auto globalWithoutTELSQ = globalBestFitModel->item(3);
     globalWithoutTELSQ->setEnabled(false);
     auto globalTwoPointsAt = globalBestFitModel->item(4);
     globalTwoPointsAt->setEnabled(false);
     auto globalFitInTolBand = globalBestFitModel->item(5);
     globalFitInTolBand->setEnabled(false);
-    _ui->globalBestFit->setCurrentIndex(6);
+    _ui->globalBestFit->setCurrentIndex(1);
 
-    _ui->bestFitType->setCurrentIndex(6);
+    _ui->bestFitType->setCurrentIndex(0);
 }
 
 void TurbineDialog::initialize()
@@ -245,7 +245,7 @@ void TurbineDialog::run()
             return;
         }
     }
-    _reportSettings->clearTurbineParameters();
+    //_reportSettings->clearTurbineParameters();
     // MacrosManager::executeWithoutLogging([&]() { onCalculateNominals(); });
 
     setSettings();
@@ -643,9 +643,9 @@ void TurbineDialog::closeWindow()
     _ui->needUse3DVectors->setChecked(false);
 
     _ui->formTab->setCurrentIndex(0);
-    _ui->profileType->setCurrentIndex(4);
-    _ui->globalBestFit->setCurrentIndex(6);
-    _ui->bestFitType->setCurrentIndex(6);
+    _ui->profileType->setCurrentIndex(0);
+    _ui->globalBestFit->setCurrentIndex(1);
+    _ui->bestFitType->setCurrentIndex(0);
     _ui->averageDeviation->setChecked(false);
     _ui->stretchLE->setChecked(false);
     _ui->stretchTE->setChecked(false);

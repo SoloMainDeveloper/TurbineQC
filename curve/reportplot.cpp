@@ -1,35 +1,35 @@
 #include "curve/pch.h"
 
-#include "reportplot.h"
 #include "project.h"
+#include "reportplot.h"
 #include "reportsettings.h"
 
 QString ReportPlot::takeScreenshotInBase64(const QStringList& figureNamesToVisible,
-	int width, int height, ReportSettings::Axis axisType)
+    int width, int height, ReportSettings::Axis axisType)
 {
-	//clear();
+    // clear();
 
-	//addFigures(figureNamesToVisible);
+    // addFigures(figureNamesToVisible);
 
-	//zoomExtents();
+    // zoomExtents();
 
-	QString screenshot = getScreenshotInBase64(width, height, axisType);
+    QString screenshot = getScreenshotInBase64(width, height, axisType);
 
-	return screenshot;
+    return screenshot;
 }
 
 void ReportPlot::clear()
 {
-	clearGraphs();
-	clearItems();
+    clearPlottables();
+    clearItems();
 }
 
 void ReportPlot::addFigures(const QStringList& figureNames)
 {
-	Project* project = &Project::instance();
+    Project* project = &Project::instance();
 
-	for (QString name : figureNames) {
-		const Figure* figure = project->findFigure(name);
-		loadFigure(figure);
-	}
+    for(QString name : figureNames) {
+        const Figure* figure = project->findFigure(name);
+        loadFigure(figure);
+    }
 }

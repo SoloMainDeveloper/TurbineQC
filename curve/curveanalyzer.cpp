@@ -157,7 +157,15 @@ GlobalCurveMap CurveAnalyzer::analyzeWholeProfile(const Function18Params& params
 
     auto globalCurve = getCurveFromProject(_dummyMeasuredName);
 
-    return GlobalCurveMap { { FigureCreator::CurveType::WholeGlobal, { _globalName, globalCurve->points() } } };
+    auto globalParts = BladeGeometryService::divideCurveIntoParts(_dummyMeasuredName, &params18, _project);
+
+    return GlobalCurveMap {
+        { FigureCreator::CurveType::WholeGlobal, { _globalName, globalCurve->points() } },
+        { FigureCreator::CurveType::GlobalCC, { _globalCCName, globalParts.pointsOfLow } },
+        { FigureCreator::CurveType::GlobalCV, { _globalCVName, globalParts.pointsOfHigh } },
+        { FigureCreator::CurveType::GlobalLE, { _globalLEName, globalParts.pointsOfLE } },
+        { FigureCreator::CurveType::GlobalTE, { _globalTEName, globalParts.pointsOfTE } },
+    };
 }
 
 GlobalCurveMap CurveAnalyzer::analyzeProfileWithoutTE(const Function18Params& params18)
