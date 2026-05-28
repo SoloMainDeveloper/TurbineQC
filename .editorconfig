@@ -1,0 +1,7 @@
+root = true
+
+[*]
+guidelines = 140
+guidelines_style = 1px solid silver
+indent_style = space
+indent_size = 4
